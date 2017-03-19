@@ -1,0 +1,56 @@
+#!/bin/bash
+#
+# Simple PBS job submission script
+#
+#
+# Specify some 'qsub' options, which can be overridden on the command-line:
+#
+#PBS  -j oe 
+# Join stderr and stdout into a file named ${PBS_JOBNAME}.o${PBS_JOBID}
+#
+#PBS  -m ae
+#PBS  -q medium 
+# Mail user when job aborts or terminates
+#
+#PBS  -l nodes=cpu011:ppn=1
+# Job resources... see "man pbs_resources_linux" 
+#
+
+# Some example feedback from the queue system environment
+echo "================================================="
+echo "Running job '${PBS_JOBNAME}' from '${PBS_O_WORKDIR}'"
+echo "My job ID is '${PBS_JOBID}'"
+echo "I ran on '${HOST}' from the '${PBS_O_QUEUE}' queue"
+echo "================================================="
+
+# NB:  This runs the rest of the script from the directory that the job 
+# NB:  was *submitted* from.  Any directory could be specified here.
+cd ${PBS_O_WORKDIR}
+
+# Example:  Test that the job input was specified correctly
+#if ( ! -f "${PBS_JOBNAME}" ) then
+#   echo "There's no input file named ${PBS_JOBNAME}!"
+#   exit
+#endif
+
+# Do some work!
+#/usr/local/bin/molpro "${PBS_JOBNAME}.in" 
+
+sizeR=40
+sizeL=25
+niter=2000
+Vceil=1000
+symmetrylabel=2
+potlabel=0
+Rbasislabel=1
+parity=0
+Jtotal=0
+permutation=2
+                                                                                                   
+##calculate
+eng=EJ0p0-2000.dat
+wave=WJ0p0-2000.dat
+alphabeta=ABJ0p0-2000.dat
+parameters="$sizeR $sizeL $Jtotal $niter $Vceil $parity $symmetrylabel $potlabel $Rbasislabel $eng $wave $alphabeta $permutation"
+./CO2-H2-He $parameters >EJ0p0-2000.log
+

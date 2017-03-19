@@ -1,0 +1,27 @@
+#ignore all object files
+/home/tapas/CodesForEigenValues/rotor_runs/
+/home/tapas/CodesForEigenValues/run_scripts/
+#
+/home/tapas/CodesForEigenValues/src/*.o
+/home/tapas/CodesForEigenValues/src/H2-H2_directdiag
+/home/tapas/CodesForEigenValues/src/H2H2phi1phi2
+/home/tapas/CodesForEigenValues/src/H2H2rigid
+/home/tapas/CodesForEigenValues/src/all_coefs
+/home/tapas/CodesForEigenValues/src/dimer_tom
+/home/tapas/CodesForEigenValues/src/*/
+#
+/home/tapas/CodesForEigenValues/DiagLinearRotorDimer/*.o
+/home/tapas/CodesForEigenValues/DiagLinearRotorDimer/*.txt
+/home/tapas/CodesForEigenValues/DiagLinearRotorDimer/ev
+/home/tapas/CodesForEigenValues/DiagLinearRotorDimer/H
+/home/tapas/CodesForEigenValues/DiagLinearRotorDimer/V
+/home/tapas/CodesForEigenValues/DiagLinearRotorDimer/log
+/home/tapas/CodesForEigenValues/DiagLinearRotorDimer/*/
+#
+/home/tapas/CodesForEigenValues/DiagLinearRotorMonomer/*.o
+/home/tapas/CodesForEigenValues/DiagLinearRotorMonomer/*.txt
+/home/tapas/CodesForEigenValues/DiagLinearRotorMonomer/ev
+/home/tapas/CodesForEigenValues/DiagLinearRotorMonomer/H
+/home/tapas/CodesForEigenValues/DiagLinearRotorMonomer/V
+/home/tapas/CodesForEigenValues/DiagLinearRotorMonomer/log
+/home/tapas/CodesForEigenValues/DiagLinearRotorMonomer/*/

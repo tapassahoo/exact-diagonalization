@@ -1,0 +1,9 @@
+#!/bin/bash
+#PBS -N job_jrot4
+#PBS -l walltime=400:00:00
+#PBS -l nodes=1:ppn=1
+#PBS -o job_jrot4.out
+#PBS -e job_jrot4.err
+export OMP_NUM_THREADS=1
+cd $PBS_O_WORKDIR
+./run 10.05 0.45 4
