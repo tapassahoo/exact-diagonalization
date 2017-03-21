@@ -8,9 +8,9 @@ import decimal
 import numpy as np
 from numpy import *
 
-nrange       = 19
+nrange       = 20
 dRpt         = 0.5
-value_min    = 1
+value_min    = 0.5
 DipoleMoment = 1.86
 
 file1        = "ev"
@@ -23,7 +23,6 @@ for i in range(nrange):                                                  #change
 
 	value        = i*dRpt + value_min
 	Rpt          = '{:2.1f}'.format(value)
-	DipoleMoment = 1.86
 	command_linden_run = "./run "+str(Rpt)+"  "+str(DipoleMoment)
 	print command_linden_run
 	system(command_linden_run)

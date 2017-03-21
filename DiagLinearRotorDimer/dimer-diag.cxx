@@ -43,29 +43,20 @@ int main(int argc,char **argv)
     double DipoleMoment = atof(argv[2]);
     int sizej           = atoi(argv[3]);
     int jmax            = sizej;//2*(sizej-1);
-	cout<<jmax<<endl;
 	double B            = 20.9561*CMRECIP2KL;
 
     int size_theta1 = 2.*jmax+5;
 	int size_theta2 = 2.*jmax+5;
-    int size_phi    = 2.*(2.*jmax+7); // 
     int size_phi1   = 2.*(2.*jmax+7); // 
     int size_phi2   = 2.*(2.*jmax+7); // 
 
-    // define grid points for theta1 theta2 and phi
-    // initialize vectors of weights
-
     vector weights_theta1(size_theta1);
     vector weights_theta2(size_theta2);
-    vector weights_phi(size_phi); 
     vector weights_phi1(size_phi1); 
     vector weights_phi2(size_phi2); 
 
-    // set vectors of grid and weights
-
     vector grid_theta1 = thetagrid(size_theta1, weights_theta1);
     vector grid_theta2 = thetagrid(size_theta2, weights_theta2);
-    vector grid_phi    = phigrid(size_phi, weights_phi);
     vector grid_phi1   = phigrid(size_phi1, weights_phi1);
     vector grid_phi2   = phigrid(size_phi2, weights_phi2);
 
@@ -76,7 +67,6 @@ int main(int argc,char **argv)
 
     ofstream logout("log");
 
-    // test orthonormality of theta and phi basis
     logout<<"  // test orthonormality of theta and phi basis"<<endl;
     for (int j1 = 0; j1 <= jmax; j1++)
     {
@@ -137,12 +127,13 @@ int main(int argc,char **argv)
         }
     }
 
+//----------------------Full Hamiltonian-----------------------------//
 
     int sizej1j2m1m2 = sizes[1];
-    double theta1,theta2,phi1, phi2;
-    double signm,signmp;
+    double theta1, theta2, phi1, phi2;
   
     matrix Angle_V(size_theta1*size_theta2, size_phi1*size_phi2);
+    matrix Dphi_V(size_theta1*size_theta2, size_phi1*size_phi2);
     for (int i = 0; i < size_theta1; i++)
     {
         theta1 = grid_theta1(i);
@@ -161,28 +152,19 @@ int main(int argc,char **argv)
 					double dphi  = phi2 - phi1;
 
             	    Angle_V(i*size_theta2+j, k*size_phi2+l) = RelativeAngle(theta1, theta2, dphi);
+            	    Dphi_V(i*size_theta2+j, k*size_phi2+l) = PotFunc(Rpt, DipoleMoment, theta1, theta2, dphi);
 				}
             }
         }
     }
 
-    double DipoleMomentAu = DipoleMoment/AuToDebye;
-    double RptAu          = Rpt/AuToAngstrom;
+    matrix VRe_basis(sizej1j2m1m2,sizej1j2m1m2);
+    matrix VIm_basis(sizej1j2m1m2,sizej1j2m1m2);
+    matrix ARe_basis(sizej1j2m1m2,sizej1j2m1m2);
+    matrix AIm_basis(sizej1j2m1m2,sizej1j2m1m2);
 
-    double PrefactorAu    = DipoleMomentAu*DipoleMomentAu/(RptAu*RptAu*RptAu);
-    double Prefactor      = PrefactorAu*AuToKelvin;
-
-    // angular part
-    int index_m1  = 0;
-    int index_m1p = 0;
-
-    matrix Dphi1_V(size_theta1*size_theta2,size_phi1);
-    vector Dtheta_V(size_theta1*size_theta2);
-    vector Dtheta1_V(size_theta1);
-
-    matrix V_basis(sizej1j2m1m2,sizej1j2m1m2);
-    matrix Angle_basis(sizej1j2m1m2,sizej1j2m1m2);
     int index_j1j2m1m2 = 0;
+	// bra parts end here
     for (int j1 = 0; j1 <= jmax; j1++)
     {
         if (j1%skip) continue; // skip iteration if j1 odd
@@ -195,7 +177,8 @@ int main(int argc,char **argv)
 
     		    for (int m2 = -j2; m2 <= j2; m2++) 
     		    {
-// bra parts end here
+					
+					// ket parts end here
 	           		int index_j1j2m1m2p = 0;
 	                for (int j1p = 0; j1p <= jmax; j1p++)
                     {
@@ -211,18 +194,25 @@ int main(int argc,char **argv)
 	                                // theta1 quadrature
                                     double sumt1Re = 0.0;
                                     double sumt1Im = 0.0;
+                                    double sumt1ReA = 0.0;
+                                    double sumt1ImA = 0.0;
 	                                for (int i = 0; i < size_theta1; i++)
                                     {
 		                                theta1 = grid_theta1(i);
 
+	                                	// theta2 quadrature
                                         double sumt2Re = 0.0;
                                         double sumt2Im = 0.0;
+                                        double sumt2ReA = 0.0;
+                                        double sumt2ImA = 0.0;
 		                                for (int j = 0; j < size_theta2; j++)
                                         {
 		                                    theta2 = grid_theta2(j);
 
                                             double sump1Re = 0.0;
                                             double sump1Im = 0.0;
+                                            double sump1ReA = 0.0;
+                                            double sump1ImA = 0.0;
 		                                    // phi1 quadrature
 		                                    for (int k = 0; k < size_phi1; k++)
                                             {
@@ -230,32 +220,52 @@ int main(int argc,char **argv)
 
 												double sump2Re = 0.0; 
 												double sump2Im = 0.0; 
+												double sump2ReA = 0.0; 
+												double sump2ImA = 0.0; 
 		                                        // phi2 quadrature
 		                           	            for (int l = 0; l < size_phi2; l++)
                                    	            {
 		                                	        phi2 = grid_phi2(l);
-                                                    double dphi   = phi1-phi2;
+                                                    double dphi   = phi2 - phi1;
+                                                    double pot    = Dphi_V(i*size_theta2+j, k*size_phi2+l);
+	                                                sump2Re += pot*basisfunctionPRe(m2,weights_phi2(l),phi2)*basisfunctionPRe(m2p,weights_phi2(l),phi2);
+                                                    sump2Re += pot*basisfunctionPIm(m2,weights_phi2(l),phi2)*basisfunctionPIm(m2p,weights_phi2(l),phi2);
+	                                                sump2Im += pot*basisfunctionPIm(m2,weights_phi2(l),phi2)*basisfunctionPRe(m2p,weights_phi2(l),phi2);
+                                                    sump2Im += -pot*basisfunctionPRe(m2,weights_phi2(l),phi2)*basisfunctionPIm(m2p,weights_phi2(l),phi2);
+
                                                     double Angle  = Angle_V(i*size_theta2+j, k*size_phi2+l);
-	                                                sump2Re += Angle*basisfunctionPRe(m2,weights_phi2(l),phi2)*basisfunctionPRe(m2p,weights_phi2(l),phi2);
-                                                    sump2Re += Angle*basisfunctionPIm(m2,weights_phi2(l),phi2)*basisfunctionPIm(m2p,weights_phi2(l),phi2);
-	                                                sump2Im += Angle*basisfunctionPIm(m2,weights_phi2(l),phi2)*basisfunctionPRe(m2p,weights_phi2(l),phi2);
-                                                    sump2Im += -Angle*basisfunctionPRe(m2,weights_phi2(l),phi2)*basisfunctionPIm(m2p,weights_phi2(l),phi2);
+	                                                sump2ReA += Angle*basisfunctionPRe(m2,weights_phi2(l),phi2)*basisfunctionPRe(m2p,weights_phi2(l),phi2);
+                                                    sump2ReA += Angle*basisfunctionPIm(m2,weights_phi2(l),phi2)*basisfunctionPIm(m2p,weights_phi2(l),phi2);
+	                                                sump2ImA += Angle*basisfunctionPIm(m2,weights_phi2(l),phi2)*basisfunctionPRe(m2p,weights_phi2(l),phi2);
+                                                    sump2ImA += -Angle*basisfunctionPRe(m2,weights_phi2(l),phi2)*basisfunctionPIm(m2p,weights_phi2(l),phi2);
 		                            	        }
 								                double p1re  = basisfunctionPRe(m1,weights_phi1(k),phi1)*basisfunctionPRe(m1p,weights_phi1(k),phi1);
                                                 p1re        += basisfunctionPIm(m1,weights_phi1(k),phi1)*basisfunctionPIm(m1p,weights_phi1(k),phi1);
 	                                            double p1im  = basisfunctionPIm(m1,weights_phi1(k),phi1)*basisfunctionPRe(m1p,weights_phi1(k),phi1);
                                                 p1im        += -basisfunctionPRe(m1,weights_phi1(k),phi1)*basisfunctionPIm(m1p,weights_phi1(k),phi1);
+
                                                 sump1Re     += sump2Re*p1re - sump2Im*p1im;
                                                 sump1Im     += sump2Re*p1im + sump2Im*p1re;
+
+                                                sump1ReA     += sump2ReA*p1re - sump2ImA*p1im;
+                                                sump1ImA     += sump2ReA*p1im + sump2ImA*p1re;
 		                                    }
 		                                    sumt2Re         += sump1Re*basisPjm(j2,m2,weights_theta2(j),cos(theta2))*basisPjm(j2p,m2p,weights_theta2(j),cos(theta2));
 		                                    sumt2Im         += sump1Im*basisPjm(j2,m2,weights_theta2(j),cos(theta2))*basisPjm(j2p,m2p,weights_theta2(j),cos(theta2));
+
+		                                    sumt2ReA         += sump1ReA*basisPjm(j2,m2,weights_theta2(j),cos(theta2))*basisPjm(j2p,m2p,weights_theta2(j),cos(theta2));
+		                                    sumt2ImA         += sump1ImA*basisPjm(j2,m2,weights_theta2(j),cos(theta2))*basisPjm(j2p,m2p,weights_theta2(j),cos(theta2));
 		                                }
 		                                sumt1Re             += sumt2Re*basisPjm(j1,m1,weights_theta1(i),cos(theta1))*basisPjm(j1p,m1p,weights_theta1(i),cos(theta1));
 		                                sumt1Im             += sumt2Im*basisPjm(j1,m1,weights_theta1(i),cos(theta1))*basisPjm(j1p,m1p,weights_theta1(i),cos(theta1));
+
+		                                sumt1ReA             += sumt2ReA*basisPjm(j1,m1,weights_theta1(i),cos(theta1))*basisPjm(j1p,m1p,weights_theta1(i),cos(theta1));
+		                                sumt1ImA             += sumt2ImA*basisPjm(j1,m1,weights_theta1(i),cos(theta1))*basisPjm(j1p,m1p,weights_theta1(i),cos(theta1));
 									}
-		                            V_basis(index_j1j2m1m2,index_j1j2m1m2p)     = sumt1Re*Prefactor;
-		                            Angle_basis(index_j1j2m1m2,index_j1j2m1m2p) = sumt1Re;
+		                            VRe_basis(index_j1j2m1m2,index_j1j2m1m2p)   = sumt1Re;
+		                            VIm_basis(index_j1j2m1m2,index_j1j2m1m2p)   = sumt1Im;
+		                            ARe_basis(index_j1j2m1m2,index_j1j2m1m2p)   = sumt1ReA;
+		                            AIm_basis(index_j1j2m1m2,index_j1j2m1m2p)   = sumt1ImA;
 	                                index_j1j2m1m2p++;
 								}	
 	                        }
@@ -267,11 +277,10 @@ int main(int argc,char **argv)
         }
     }
     
-	// setup H
-
-    //cout<<size_nu<<" "<<sizej1j2m<<" "<<jmax<<endl;
-    matrix H(sizej1j2m1m2,sizej1j2m1m2);
-    matrix V(sizej1j2m1m2,sizej1j2m1m2);
+    matrix HRe(sizej1j2m1m2,sizej1j2m1m2);
+    matrix HIm(sizej1j2m1m2,sizej1j2m1m2);
+    matrix VRe(sizej1j2m1m2,sizej1j2m1m2);
+    matrix VIm(sizej1j2m1m2,sizej1j2m1m2);
     matrix Hrot(sizej1j2m1m2,sizej1j2m1m2);
 
     ofstream Vout("V");
@@ -300,15 +309,18 @@ int main(int argc,char **argv)
 	                            for (int m2p = -j2p; m2p <= j2p; m2p++) 
                                 {
 	      
-	                                V(index_jm12,index_jm12p) = V_basis(index_jm12,index_jm12p);
+	                                VRe(index_jm12,index_jm12p) = VRe_basis(index_jm12,index_jm12p);
+	                                VIm(index_jm12,index_jm12p) = VIm_basis(index_jm12,index_jm12p);
 
 	                                if (j1 == j1p && j2 == j2p && m1 == m1p && m2 == m2p)
 									{
-	                				    H(index_jm12,index_jm12p) = B*((double)(j1*(j1+1))+(double)(j2*(j2+1)));
+	                				    HRe(index_jm12,index_jm12p) = B*((double)(j1*(j1+1))+(double)(j2*(j2+1)));
+	                				    HIm(index_jm12,index_jm12p) = 0.0;
 									}
 									else
 									{
-	                				    H(index_jm12,index_jm12p) = 0.0;
+	                				    HRe(index_jm12,index_jm12p) = 0.0;
+	                				    HIm(index_jm12,index_jm12p) = 0.0;
 									}
 	                				index_jm12p++;		       
 	                            }
@@ -326,21 +338,23 @@ int main(int argc,char **argv)
 
     time (&diagstart);
   
-    Hrot = H;
-    H = H+V;
+    Hrot = HRe;
+    HRe = HRe+VRe;
 
     //  ofstream Hout("H");
+	/*
     for (int i = 0; i < sizej1j2m1m2; i++) 
     {
         for (int j = 0; j < sizej1j2m1m2; j++)
         {
-            if(H(i,j) != H(j,i)) Hout<< i<< "   "<<j<<"   "<<H(i,j)<<" "<<H(j,i)<<endl;
+            if(HRe(i,j) != HRe(j,i)) cout<< i<< "   "<<j<<"   "<<HRe(i,j)<<" "<<HRe(j,i)<<endl;
             //Hout<< i<< "   "<<j<<"   "<<H(i,j)<<" "<<H(j,i)<<endl;
 		}
         //Hout<<endl;
   	}
+	*/
 
-	vector ev=diag(H);
+	vector ev=diag(HRe);
 	time (&diagend);
 	double dif2 = difftime (diagend,diagstart);
 	sprintf (timemsg, "Elapsed time for diagonalization is %.2lf seconds.", dif2);
@@ -353,14 +367,14 @@ int main(int argc,char **argv)
     	evalues<<ev(i)<<"   ";
     	for (int j = 0; j < sizej1j2m1m2; j++)
         {
-      		evalues<<H(j,i)<<" ";
+      		evalues<<HRe(j,i)<<" ";
 		}
      	evalues<<endl;
 	}
 
-	matrix avgV    = transpose(H)*V*H;
-	matrix avgHrot = transpose(H)*Hrot*H;
-    matrix avgAng  = transpose(H)*Angle_basis*H;
+	matrix avgV    = transpose(HRe)*VRe*HRe;
+	matrix avgHrot = transpose(HRe)*Hrot*HRe;
+    matrix avgAng  = transpose(HRe)*ARe_basis*HRe;
 
     stringstream bc;
     bc.width(4);
@@ -372,7 +386,7 @@ int main(int argc,char **argv)
     //eigenvalues.open(fname.c_str(), ios::app);
 
     ofstream eigenvalues(fname.c_str(), ios::app);
-    eigenvalues.precision(6);
+    eigenvalues.precision(10);
     eigenvalues.setf(ios::right);
     eigenvalues << showpoint;
     eigenvalues << setw(20)<<setfill(' ');
@@ -590,6 +604,6 @@ double PotFunc(double Rpt, double DipoleMoment, double theta1, double theta2, do
 
 double RelativeAngle(double theta1, double theta2, double phi)
 {
-    double Angle          = sin(theta1)*sin(theta2)*cos(phi) - 2.0*cos(theta1)*cos(theta2);
+    double Angle          = sin(theta1)*sin(theta2)*cos(phi) - cos(theta1)*cos(theta2);
     return Angle;
 }

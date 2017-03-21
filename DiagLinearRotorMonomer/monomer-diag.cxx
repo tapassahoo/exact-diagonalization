@@ -148,6 +148,7 @@ int main(int argc, char **argv) {
         evalues<<ev(i)<<"   ";
         for (int j = 0; j < sizej1; j++)
 		{
+            //if(H(i,j) != H(j,i)) cout<< i<< "   "<<j<<"   "<<H(i,j)<<" "<<H(j,i)<<endl;
             evalues<<H(j,i)<<" ";
         }
         evalues<<endl;
@@ -169,7 +170,7 @@ int main(int argc, char **argv) {
     //eigenvalues.open(fname.c_str(), ios::app);
 
     ofstream eigenvalues(fname.c_str(), ios::app);
-    eigenvalues.precision(6);
+    eigenvalues.precision(10);
     eigenvalues.setf(ios::right);
     eigenvalues << showpoint;
     eigenvalues << setw(20)<<setfill(' ');

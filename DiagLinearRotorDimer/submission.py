@@ -26,12 +26,12 @@ def replace(string_old, string_new, file1, file2):
 	f2.close()
 
 
-def jobstring(file_name, value, Rpt, DipoleMoment, jrot):
+def jobstring(file_name,i, Rpt, DipoleMoment, jrot):
 	'''
 	This function creats jobstring for #PBS script
 	'''
-	job_name       = "job_"+str(file_name)+"%d" % value
-	walltime       = "400:00:00"
+	job_name       = "job_"+str(file_name)+"%d" % i
+	walltime       = "50:00:00"
 	processors     = "nodes=1:ppn=1"
 	command_pimc_run = "./run "+str(Rpt)+" "+str(DipoleMoment)+" "+str(jrot)
 
@@ -48,26 +48,31 @@ cd $PBS_O_WORKDIR
 	return job_string
 
 #initial parameters for qmc.input
-src_path         = "/home/tapas/H2H2/src3/"
-nrange           = 20                                                 #param1
-Rpt              = 10.05
-DipoleMoment     = 0.45
-dRpt             = 0.5
-jrot             = 3
+src_path         = "/home/tapas/CodesForEigenValues/DiagLinearRotorDimer/"
 
-file1_name       = "result-Rpt"               #param4
-argument		 = "Rpt"                                            #param5
+nrange           = 20
+Rpt              = 10.0
+DipoleMoment     = 1.86
+dRpt             = 0.5
+jrot             = 4
+valueMin         = 0.5
+
+argument		 = "Rpt"          
+file1_name       = "Results-Jrot"+str(jrot)+"-"
+file1_name      += argument
+argument1        = "Angstrom"
+
 status           = "submission"
-status           = "analysis"
+#status           = "analysis"
 
 # Loop over your jobs
 for i in range(nrange): 
 
 	#jrot         = "%d" % i
-	value        = i*dRpt + 0.5
+	value        = i*dRpt + valueMin
 	Rpt          = '{:2.1f}'.format(value)
 
-	fldr         = file1_name+str(value)
+	fldr         = file1_name+str(value)+argument1
 	folder_run   = fldr
 
 	if status == "submission":
@@ -84,17 +89,18 @@ for i in range(nrange):
 		fname        = 'submit_'+str(i)
 		fwrite       = open(fname, 'w')
 
-		fwrite.write(jobstring(argument, i, Rpt, DipoleMoment, jrot))
+		fwrite.write(jobstring(argument, i,Rpt, DipoleMoment, jrot))
 		fwrite.close()
 		call(["qsub", fname])
 
 		os.chdir(src_path)
 
 	if status == "analysis":
-		output    = src_path +folder_run+"/EigenValuesFor2HF-DipoleMoment0.45.txt"
+		src_file  = "EigenValuesFor2HF-DipoleMoment"+str(DipoleMoment)+".txt"
+		output    = src_path +folder_run+ "/"+src_file
 		call(["cat", output])
-'''
 
+'''
 call(["rm","*.txt"])
 command_run = "./run"
 system(command_run)
