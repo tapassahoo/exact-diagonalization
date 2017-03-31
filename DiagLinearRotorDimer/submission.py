@@ -63,7 +63,7 @@ file1_name      += argument
 argument1        = "Angstrom"
 
 status           = "submission"
-#status           = "analysis"
+status           = "analysis"
 
 # Loop over your jobs
 for i in range(nrange): 

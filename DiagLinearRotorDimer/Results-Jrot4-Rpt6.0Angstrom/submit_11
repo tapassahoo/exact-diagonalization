@@ -1,9 +1,0 @@
-#!/bin/bash
-#PBS -N job_Rpt11
-#PBS -l walltime=50:00:00
-#PBS -l nodes=1:ppn=1
-#PBS -o job_Rpt11.out
-#PBS -e job_Rpt11.err
-export OMP_NUM_THREADS=1
-cd $PBS_O_WORKDIR
-./run 6.0 1.86 4
