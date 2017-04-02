@@ -8,7 +8,7 @@ import decimal
 import numpy as np
 from numpy import *
 
-nrange       = 20
+nrange       = 21
 dRpt         = 0.5
 value_min    = 0.5
 DipoleMoment = 1.86

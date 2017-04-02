@@ -168,8 +168,8 @@ int main(int argc,char **argv) {
 
 		  							}
 
-	Dtheta_VV(i) += Dphi_VV(i*size_theta2+j)*basisPjm(j2,m2,weights_theta1(j),cos(theta2))*basisPjm(j2p,m2p,weights_theta1(j),cos(theta2));
-	Dtheta_Cost(i) += Dphi_Cost(i*size_theta2+j)*basisPjm(j2,m2,weights_theta1(j),cos(theta2))*basisPjm(j2p,m2p,weights_theta1(j),cos(theta2));
+	Dtheta_VV(i) += Dphi_VV(i*size_theta2+j)*basisPjm(j2,m2,weights_theta2(j),cos(theta2))*basisPjm(j2p,m2p,weights_theta2(j),cos(theta2));
+	Dtheta_Cost(i) += Dphi_Cost(i*size_theta2+j)*basisPjm(j2,m2,weights_theta2(j),cos(theta2))*basisPjm(j2p,m2p,weights_theta2(j),cos(theta2));
 
 								}
 
@@ -260,10 +260,7 @@ int main(int argc,char **argv) {
     bc.width(4);
     bc.fill('0');
     bc<<DipoleMoment;
-    string fname = "EigenValuesFor2HF-DipoleMoment" + bc.str()+".txt";
-
-    //ofstream eigenvalues;
-    //eigenvalues.open(fname.c_str(), ios::app);
+    string fname = "EigenValuesFor2HF-DipoleMoment" + bc.str()+"Debye.txt";
 
     ofstream eigenvalues(fname.c_str(), ios::app);
     eigenvalues.precision(10);
@@ -276,6 +273,152 @@ int main(int argc,char **argv) {
     eigenvalues<< setw(20)<<setfill(' ')<<avgV(0,0);
     eigenvalues<< setw(20)<<setfill(' ')<<avgR(0,0);
     eigenvalues<< setw(20)<<setfill(' ')<<avgCost(0,0)<<endl;
+
+//==============Histogram cos(theta)=================//
+    vector psi(size_theta1*size_theta2*size_phi);
+    int ii=0;
+	double sum1 = 0.0;
+	for (int i = 0; i < size_theta1; i++)
+    {
+    	double theta1 = grid_theta1(i);
+        for (int j = 0; j < size_theta2; j++)
+        {
+            double theta2 = grid_theta2(j);
+            for (int k = 0; k < size_phi; k++)
+            {
+	            double phi = grid_phi(k);
+
+
+                double sum = 0.0;
+                int index_j1j2m = 0;
+				for (int m1 = -jmax; m1 <= jmax; m1++) 
+    			{
+    				for (int j1 = abs(m1); j1 <= jmax; j1++)
+					{
+      					if (j1%skip) continue; 
+      					int m2 = -m1;
+
+      					for (int j2 = abs(m2); j2 <= jmax; j2++)
+						{
+							if (j2%skip) continue;
+
+                            double phipart = basisfunctionP(m1,weights_phi(k),phi)/sqrt(weights_phi(k));
+                                   phipart *= basisPjm(j2,m2,weights_theta2(j),cos(theta2))/sqrt(weights_theta2(j));
+                                   phipart *= basisPjm(j1,m1,weights_theta1(i),cos(theta1))/sqrt(weights_theta1(i));
+                            sum += H(index_j1j2m,0)*phipart;
+                            index_j1j2m++;
+                        }
+                    }
+                }
+            	psi(ii) = sum;
+				sum1 += psi(ii)*psi(ii)*weights_phi(k)*weights_theta2(j)*weights_theta1(i);
+                ii++;
+            }
+        }
+    }
+    cout <<"Norm checking for Ground State "<<sum1 <<endl;
+
+    string fname1 = "DistributionCostFor2HF-DipoleMoment" + bc.str()+"Debye.txt";
+
+    ofstream histogram(fname1.c_str());
+    histogram.precision(10);
+    histogram.setf(ios::right);
+    histogram << showpoint;
+    histogram << setw(20)<<setfill(' ');
+
+
+    ii=0;
+    vector density(size_theta1*size_theta2*size_phi);
+	for (int i = 0; i < size_theta1; i++)
+    {
+    	double theta1 = grid_theta1(i);
+        double sumt2 = 0.0;
+        for (int j = 0; j < size_theta2; j++)
+        {
+            double sump = 0.0;
+            for (int k = 0; k < size_phi; k++)
+            {
+                sump += psi(ii)*psi(ii)*weights_phi(k);
+                density(ii) = psi(ii)*psi(ii);
+                ii++;
+            }
+            sumt2 += sump*weights_theta2(j);
+        }
+        histogram<< setw(20)<<setfill(' ')<<cos(theta1);
+        histogram<< setw(20)<<setfill(' ')<<sumt2<<endl;
+    }
+
+//========================Distribution Phi==============================//
+    for (int k = 0; k < size_phi; k++)
+    {
+        densityphi(k) = 0.0;
+    }
+    ii=0;
+    vector densityphi(size_phi);
+	for (int i = 0; i < size_theta1; i++)
+    {
+        for (int j = 0; j < size_theta2; j++)
+        {
+            for (int k = 0; k < size_phi; k++)
+            {
+                double phi = grid_phi(k); 
+                densityphi(k) += psi(ii)*psi(ii)*weights_theta1(i)*weights_theta2(j);
+                ii++;
+            }
+        }
+    }
+
+//==========================Histogram relative angle============================//
+    int numbins  = 101;
+    double dbins = 2.0/((double)numbins-1);
+    double hist[numbins];
+
+    for (int ibin = 0; ibin < numbins; ibin++)
+    {
+        hist[ibin] = 0.;
+    }
+
+    ii = 0.0;
+	for (int i = 0; i < size_theta1; i++)
+    { 
+       	for (int j = 0; j < size_theta2; j++)
+       	{
+           	for (int k = 0; k < size_phi; k++)
+           	{   
+
+				int ibin = round((Cost(i*size_theta2+j, k)+1.0)/dbins);
+                hist[ibin] += density(ii);
+                ii++;
+			}
+		}
+    }
+    sum1 = 0.0;
+    for (int ibin = 0; ibin < numbins; ibin++)
+    {
+        sum1 += hist[ibin]*dbins;
+    }
+
+    string fname2 = "DistributionRelativeAngleFor2HF-DipoleMoment" + bc.str()+"Debye.txt";
+
+    ofstream histogram1(fname2.c_str());
+    histogram1.precision(10);
+    histogram1.setf(ios::right);
+    histogram1 << showpoint;
+    histogram1 << setw(20)<<setfill(' ');
+
+    double sum = 0.;
+    for (int ibin = 0; ibin < numbins; ibin++) 
+    {
+        sum += hist[ibin]/sum1*dbins;
+        double bins = -1.0 + (double)ibin*dbins;
+        cout<<bins<<"  "<<hist[ibin]/sum1<<endl;
+        histogram1<< setw(20)<<setfill(' ')<<bins;
+        histogram1<< setw(20)<<setfill(' ')<<hist[ibin]/sum1<<endl;
+    }
+    cout<<sum<<endl;
+
+//=============================================================
+
     exit(0);
 }
 

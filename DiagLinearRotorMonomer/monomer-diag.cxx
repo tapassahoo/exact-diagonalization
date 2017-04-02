@@ -8,7 +8,11 @@
 
 using namespace std;
 
-static const double hatocm=219474.63067;
+static const double AuToAngstrom  = 0.52917720859;
+static const double AuToDebye     = 1.0/0.39343;
+static const double AuToCmInverse = 219474.63137;
+static const double AuToKelvin    = 315777.0;
+static const double CMRECIP2KL    = 1.4387672;
 
 EXTERNC void gauleg(double x1,double x2,double *x,double *w,int n);
 EXTERNC double plgndr(int j,int m,double x);
@@ -16,31 +20,11 @@ vector thetagrid(int nsize,vector &weights);
 vector phigrid(int nsize,vector &weights);
 double PjNormal(int j,int m, double x);
 double Pj0(int j,double x);
-void fbasisT1(int jmax,int size_theta1,vector &weights_theta1,vector &grid_theta1,matrix &basisT1);
-void fbasisT2(int jmax,int size_theta2,vector &weights_theta2,vector &grid_theta2,matrix &basisT2);
-void fbasisP(int jmax,int size_phi,vector &weights_phi,vector &grid_phi,matrix &basisP);
-void get_sizes(int jmax, int *sizes);
-void testcall();
 double basisPjm(int j,int m,double w,double x);
-double basisfunctionP(int m,double w,double phi);
 double vpot(double , double, double );
-const double AuToAngstrom  = 0.52917720859;
-const double AuToDebye     = 1.0/0.39343;
-const double AuToCmInverse = 219474.63137;
-const double AuToKelvin    = 315777.0;
-const double CMRECIP2KL    = 1.4387672;
-
 
 int main(int argc, char **argv) {
-    time_t totalstart,totalend,callpotstart,callpotend,diagstart,diagend;
-    time (&totalstart);
-    char timemsg[100];
 	
-    if (argc != 3) 
-    {
-        cerr<<"usage: "<<argv[0]<<" <R value> in bohrs"<<endl;
-        exit(0);
-    }
     double Rpt          = atof(argv[1]);
     double DipoleMoment = atof(argv[2]);
     double B            = 20.9561*CMRECIP2KL;
@@ -48,107 +32,109 @@ int main(int argc, char **argv) {
     int sizej           = 40;
     int jmax            = sizej; //2*(sizej-1);
 
-    int size_theta1     = 2.*jmax+5;
-    vector weights_theta1(size_theta1);
-    vector grid_theta1  = thetagrid(size_theta1,weights_theta1);
-
-    int sizes[2];
-    get_sizes(jmax,sizes);
+    int size_theta     = 4.*jmax;
+    vector weights_theta(size_theta);
+    vector grid_theta = thetagrid(size_theta, weights_theta);
 
     ofstream logout("log");
 
     logout<<"  // test orthonormality of theta and phi basis"<<endl;
-    for (int j1 = 0; j1 <= jmax; j1++)
+    for (int j1 = 0; j1 < jmax; j1++)
     {
-        for (int j2 = 0; j2 <= jmax; j2++)
+        for (int j1p = 0; j1p < jmax; j1p++)
         {
             double sum=0.;
-	        for (int i = 0; i < size_theta1; i++)
+	        for (int i = 0; i < size_theta; i++)
             {
-	            double theta1=grid_theta1(i);
-	            sum+=basisPjm(j1,0,weights_theta1(i),cos(theta1))*basisPjm(j2,0,weights_theta1(i),cos(theta1));
+                int m= 0;
+	            sum += basisPjm(j1,m,weights_theta(i),grid_theta(i))*basisPjm(j1p,m,weights_theta(i),grid_theta(i));
 	        }
-	    logout<<" j1 "<<j1<<" j2 "<<j2<<" Norm "<<sum<<endl;
+	    logout<<" j1 "<<j1<<" j1p "<<j1p<<" Norm "<<sum<<endl;
         }
     }
 
-    int sizej1 = jmax + 1;
-    double theta1;
-
-    vector Theta_V(size_theta1);
-    vector dipole(size_theta1);
-    for (int i = 0; i < size_theta1; i++)
+    vector Theta_V(size_theta);
+    for (int i = 0; i < size_theta; i++)
     {
-        theta1     = grid_theta1(i);
-        Theta_V(i) = vpot(Rpt, DipoleMoment, theta1);
-        dipole(i)  = cos(theta1);
+        Theta_V(i) = vpot(Rpt, DipoleMoment, grid_theta(i));
     }
 
-    matrix V_basis(sizej1,sizej1);
-    matrix dipole_basis(sizej1,sizej1);
-    int index_j1 = 0;
-    for (int j1 = 0; j1 <= jmax; j1++)
+    matrix V(jmax,jmax);
+    matrix Vd(jmax,jmax);
+    double weight, cost;
+    int m = 0;
+    for (int j1 = 0; j1 < jmax; j1++)
     {
-	    int index_j1p = 0;
-	    for (int j1p = 0; j1p <= jmax; j1p++)
+	    for (int j1p = 0; j1p < jmax; j1p++)
         {
-            double sum  = 0.0;
+            long double sum  = 0.0;
             double sumd = 0.0;
-	        for (int i = 0; i < size_theta1; i++)
+	        for (int i = 0; i < size_theta; i++)
             {
-		        theta1=grid_theta1(i);
-		        sum  += Theta_V(i)*basisPjm(j1,0,weights_theta1(i),cos(theta1))*basisPjm(j1p,0,weights_theta1(i),cos(theta1));
-		        sumd += dipole(i)*basisPjm(j1,0,weights_theta1(i),cos(theta1))*basisPjm(j1p,0,weights_theta1(i),cos(theta1));
+                weight = weights_theta(i);
+                cost   = grid_theta(i);
+		        sum+= Theta_V(i)*basisPjm(j1,m,weight,cost)*basisPjm(j1p,m,weight,cost);
+		        sumd+= grid_theta(i)*basisPjm(j1,m,weight,cost)*basisPjm(j1p,m,weight,cost);
 		    }
-            V_basis(index_j1,index_j1p) = sum;
-            dipole_basis(index_j1,index_j1p) = sumd;
-	        index_j1p++;
+            V(j1,j1p) = sum;
+            Vd(j1,j1p) = sumd;
 	    }
-	    index_j1++;
     }
-    matrix H(sizej1,sizej1);
-    matrix Hrot(sizej1,sizej1);
-    matrix V(sizej1,sizej1);
-    matrix Vd(sizej1,sizej1);
+
+    matrix H(jmax,jmax);
+    matrix Hrot(jmax,jmax);
 
     ofstream Vout("V");
     ofstream Hout("H");
-
-    index_j1 = 0;
-    for (int j1 = 0; j1 <= jmax; j1++)
+/*
+    for (int i = 0; i < jmax; i++)
     {
-	    H(index_j1,index_j1) = B*(double)(j1*(j1+1));
-	    int index_j1p = 0;
-	    for (int j1p = 0; j1p <= jmax; j1p++)
+        for (int j = 0; j < jmax; j++)
         {
-	        V(index_j1, index_j1p) = V_basis(index_j1,index_j1p);
-	        Vd(index_j1, index_j1p)= dipole_basis(index_j1,index_j1p);
-	        index_j1p++;		       
-	    }
-	    index_j1++;		       
+            if ((abs(V(i,j)) > 10e-18) || (abs(V(j,i)) > 10e-18))
+            {
+                if (V(i,j) != V(j,i))
+                {
+                    cout << i<<"   "<<j<<"      "<<V(i,j)<<"        "<<V(j,i)<<endl;
+                }
+            }
+        }
+    }
+*/
+    for (int j1 = 0; j1 < jmax; j1++)
+    {
+	    H(j1,j1) = B*(double)(j1*(j1+1));
     }
 
   // Diagonalize
 
-    time (&diagstart);
-  
-    Hrot=H;
-    H=H+V;
+    Hrot = H;
+    H = H + V;
 
+/*
+    for (int i = 0; i < jmax; i++)
+    {
+        for (int j = 0; j < jmax; j++)
+        {
+            if ((abs(H(i,j)) > 10e-12) || (abs(H(j,i)) > 10e-12))
+            {
+                if (H(i,j) != H(j,i))
+                {
+                    cout << i<<"   "<<j<<"      "<<H(i,j)<<"        "<<H(j,i)<<endl;
+                }
+            }
+        }
+    }
+*/
     vector ev=diag(H);
-    time (&diagend);
-    double dif2 = difftime (diagend,diagstart);
-    sprintf (timemsg, "Elapsed time for diagonalization is %.2lf seconds.", dif2);
-    logout<<timemsg<<endl;
 
     ofstream evalues("ev");
     evalues.precision(3);
-    for (int i = 0; i < sizej1; i++)
+    for (int i = 0; i < jmax; i++)
     {
         evalues<<ev(i)<<"   ";
-        for (int j = 0; j < sizej1; j++)
+        for (int j = 0; j < jmax; j++)
 		{
-            //if(H(i,j) != H(j,i)) cout<< i<< "   "<<j<<"   "<<H(i,j)<<" "<<H(j,i)<<endl;
             evalues<<H(j,i)<<" ";
         }
         evalues<<endl;
@@ -164,7 +150,11 @@ int main(int argc, char **argv) {
     bc.width(4);
     bc.fill('0');
     bc<<DipoleMoment;
-    string fname = "EigenValuesFor1HF-DipoleMoment" + bc.str()+".txt";
+    stringstream rpt;
+    //rpt.width(4);
+    //rpt.fill('0');
+    rpt<<Rpt;
+    string fname = "EigenValuesFor1HF-Rpt" + rpt.str() + "Angstrom-DipoleMoment" + bc.str()+"Debye.txt";
 
     //ofstream eigenvalues;
     //eigenvalues.open(fname.c_str(), ios::app);
@@ -181,10 +171,39 @@ int main(int argc, char **argv) {
     eigenvalues<< setw(20)<<setfill(' ')<<avgHrot(0,0);
     eigenvalues<< setw(20)<<setfill(' ')<<avgVd(0,0)<<endl;
 
-    time (&totalend);
-    double dif3 = difftime (totalend,totalstart);
-    sprintf (timemsg, "Total elapsed time is %.2lf seconds.\n", dif3);
-    logout<<timemsg<<endl;
+    double uvec1[jmax];
+    double psi[size_theta];
+    for (int i = 0; i < size_theta; i++)
+    {
+        double sum = 0.0;
+        for (int j = 0; j < jmax; j++)
+        {
+            uvec1[j] = H(j,0); 
+            int m = 0;
+            sum += uvec1[j]*basisPjm(j,m,weights_theta(i),grid_theta(i))/sqrt(weights_theta(i));
+        }
+        psi[i] = sum;
+    }
+
+    string fname1 = "DataForHistogramFor1HF-Rpt" + rpt.str() + "Angstrom-DipoleMoment" + bc.str()+"Debye.txt";
+
+    ofstream histogram(fname1.c_str());
+    histogram.precision(10);
+    histogram.setf(ios::right);
+    histogram << showpoint;
+    histogram << setw(20)<<setfill(' ');
+
+    double sum = 0.0;
+    double density[size_theta];
+    for (int i = 0; i < size_theta; i++)
+    {
+        sum += Theta_V(i)*psi[i]*psi[i]*weights_theta(i);
+        density[i] = psi[i]*psi[i];
+        histogram<< setw(20)<<setfill(' ')<<grid_theta(i);
+        histogram<< setw(20)<<setfill(' ')<<psi[i]*psi[i]<<endl;
+    }
+    cout << sum<<endl;
+    exit(0);
 }
 
 vector thetagrid(int nsize,vector &weights)
@@ -197,7 +216,7 @@ vector thetagrid(int nsize,vector &weights)
   double x2=1.;
   gauleg(x1,x2,x,w,nsize);
   for (i=0;i<nsize;i++) {
-    grid(i)=acos(x[i]);
+    grid(i)=x[i];
     weights(i)=w[i]; // in this case weights_theta=weights since the argument uses a reference operator
   }
   return grid;
@@ -240,9 +259,10 @@ double PjNormal(int j,int m, double x)
   if (j < m) cerr<<"j < m"<<endl;
   double jv=(double)j;
   double mv=fabs((double)m);
-  double PjN= pow(-1.,mv)*sqrt((jv+.5)*exp(lgamma(jv-mv+1.)-lgamma(jv+mv+1.)))*plgndr(j,abs(m),x); // for the normalization constant sqrt(...) refer to 6.55 in Quantum Chemistry. lgamma is the natural logarithim of the gamma function: gamma(n) = (n-1)!
-  if (m<0)
-    PjN=pow(-1.,mv)*PjN; // refer to pg. 9 Angular Momentum, Richard N. Zare 
+  //double PjN= pow(-1.,mv)*sqrt((jv+.5)*exp(lgamma(jv-mv+1.)-lgamma(jv+mv+1.)))*plgndr(j,abs(m),x); // for the normalization constant sqrt(...) refer to 6.55 in Quantum Chemistry. lgamma is the natural logarithim of the gamma function: gamma(n) = (n-1)!
+  double PjN= sqrt((jv+.5)*exp(lgamma(jv-mv+1.)-lgamma(jv+mv+1.)))*plgndr(j,abs(m),x); // for the normalization constant sqrt(...) refer to 6.55 in Quantum Chemistry. lgamma is the natural logarithim of the gamma function: gamma(n) = (n-1)!
+  //if (m<0)
+   // PjN=pow(-1.,mv)*PjN; // refer to pg. 9 Angular Momentum, Richard N. Zare 
   return PjN;
 
 }
@@ -299,14 +319,19 @@ void fbasisT2(int jmax,int size_theta2,vector &weights_theta2,vector &grid_theta
 
 double basisPjm(int j,int m,double w,double x)
 {
-  double phase;
-  double value;
+    double phase;
+    double value;
 
-  if (m>0) phase=pow((-1.),(m)); else phase=1.;							
-  value=sqrt(w)*phase*PjNormal(j,m,x);
-      //      value=sqrt(w)*phase*sqrt(1./(2.*M_PI))*PjNormal(j,m,x);
-    
-  return value;
+    if (m>0)
+    { 
+        phase=pow((-1.),(m)); 
+    }
+    else
+    {
+        phase=1.;							
+    }
+    value=sqrt(w)*phase*PjNormal(j,m,x);
+    return value;
 }
 
 void fbasisP(int jmax,int size_phi,vector &weights_phi,vector &grid_phi,matrix &basisP)
@@ -369,6 +394,6 @@ double vpot(double Rpt, double DipoleMoment, double Theta)
 {
     double DipoleMomentAu = DipoleMoment/AuToDebye;
     double RptAu          = Rpt/AuToAngstrom;
-    double PotAu          = -2.0*DipoleMomentAu*DipoleMomentAu*cos(Theta)/(RptAu*RptAu*RptAu);
+    double PotAu          = -2.0*DipoleMomentAu*DipoleMomentAu*Theta/(RptAu*RptAu*RptAu);
     return PotAu*AuToKelvin;
 }

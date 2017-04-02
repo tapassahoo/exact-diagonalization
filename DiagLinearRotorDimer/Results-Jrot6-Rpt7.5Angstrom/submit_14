@@ -1,0 +1,9 @@
+#!/bin/bash
+#PBS -N job_Rpt14
+#PBS -l walltime=50:00:00
+#PBS -l nodes=1:ppn=1
+#PBS -o job_Rpt14.out
+#PBS -e job_Rpt14.err
+export OMP_NUM_THREADS=1
+cd $PBS_O_WORKDIR
+./run 7.5 1.86 6
