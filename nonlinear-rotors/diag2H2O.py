@@ -129,9 +129,6 @@ if __name__ == '__main__':
 	JKeMQuantumNumList = np.zeros((JKeM,3),int)
 	JKoMQuantumNumList = np.zeros((JKoM,3),int)
 
-	JKeMreverse={}
-	JKoMreverse={}
-
 	#even
 	jtempcounter = 0
 	for J in range(Jmax+1):
@@ -141,7 +138,6 @@ if __name__ == '__main__':
 					JKeMQuantumNumList[jtempcounter,0]=J
 					JKeMQuantumNumList[jtempcounter,1]=K
 					JKeMQuantumNumList[jtempcounter,2]=M
-					JKeMreverse[(J,K,M)]=jtempcounter
 					jtempcounter+=1
 		else:
 			for K in range(-J+1,J,2):
@@ -149,29 +145,23 @@ if __name__ == '__main__':
 					JKeMQuantumNumList[jtempcounter,0]=J
 					JKeMQuantumNumList[jtempcounter,1]=K
 					JKeMQuantumNumList[jtempcounter,2]=M
-					JKeMreverse[(J,K,M)]=jtempcounter
 					jtempcounter+=1
-	#print(jtempcounter)
     #odd
 	jtempcounter = 0
 	for J in range(Jmax+1):
 		if J%2==0:
 			for K in range(-J+1,J,2):
-				#print(K)
 				for M in range(-J,J+1):
 					JKoMQuantumNumList[jtempcounter,0]=J
 					JKoMQuantumNumList[jtempcounter,1]=K
 					JKoMQuantumNumList[jtempcounter,2]=M
-					JKoMreverse[(J,K,M)]=jtempcounter
 					jtempcounter+=1
 		else:
 			for K in range(-J,J+1,2):
-				#print(K)
 				for M in range(-J,J+1):
 					JKoMQuantumNumList[jtempcounter,0]=J
 					JKoMQuantumNumList[jtempcounter,1]=K
 					JKoMQuantumNumList[jtempcounter,2]=M
-					JKoMreverse[(J,K,M)]=jtempcounter
 					jtempcounter+=1
 
 	# Compute littleD(j,m,k,theta) and compare it with the date estimated by asymrho.f
@@ -186,6 +176,8 @@ if __name__ == '__main__':
 	KJKeM = np.zeros((JKeM,angleNum),complex)
 	MJKeM = np.zeros((JKeM,angleNum),complex)
 
+
+	#block for construction of individual basis begins 
 	Nk = 1.
 	for s in range(JKeM):
 		for th in range(len(xGL)):
@@ -194,8 +186,9 @@ if __name__ == '__main__':
 		for ph in range(angleNum):
 			KJKeM[s,ph] = np.exp(1j*phixiGridPts[ph]*JKeMQuantumNumList[s,1])*np.sqrt(dphixi)*Nk
 			MJKeM[s,ph] = np.exp(1j*phixiGridPts[ph]*JKeMQuantumNumList[s,2])*np.sqrt(dphixi)*Nk
+	#block for construction of individual basis ends
 
-	#Normalization checking
+	#block for normalization checking begins
 	if (normCheckMJKeM == True):
 		print("Normalization test for |MJKeM> basis ")
 		for s1 in range(JKeM):
@@ -211,12 +204,14 @@ if __name__ == '__main__':
 			for s2 in range(JKeM):
 				if (JKeMQuantumNumList[s1,1] != JKeMQuantumNumList[s2,1]):
 					print("M1 = ",JKeMQuantumNumList[s1,1]," M2 = ",JKeMQuantumNumList[s2,1], " <M1|M2> = ",np.inner(KJKeM[s1,:],np.conjugate(KJKeM[s2,:])))
+	#block for normalization checking ends
     
 
+	#block for construction of |J1K1M1,J2K2M2> basis begins 
 	eEEbasisuse = KJKeM[:,np.newaxis,np.newaxis,:,np.newaxis,np.newaxis,np.newaxis,np.newaxis]*MJKeM[:,np.newaxis,:,np.newaxis,np.newaxis,np.newaxis,np.newaxis,np.newaxis]*dJKeM[:,:,np.newaxis,np.newaxis,np.newaxis,np.newaxis,np.newaxis,np.newaxis]*KJKeM[np.newaxis,np.newaxis,np.newaxis,np.newaxis,:,np.newaxis,np.newaxis,:]*MJKeM[np.newaxis,np.newaxis,np.newaxis,np.newaxis,:,np.newaxis,:,np.newaxis]*dJKeM[np.newaxis,np.newaxis,np.newaxis,np.newaxis,:,:,np.newaxis,np.newaxis]
 	eEEebasisuse = np.reshape(eEEbasisuse,(JKeM,len(xGL)*angleNum*angleNum,JKeM,len(xGL)*angleNum*angleNum),order='C')
 	normMat = np.tensordot(eEEebasisuse, np.conjugate(eEEebasisuse), axes=([1,3],[1,3]))
-
+	#block for construction of |J1K1M1,J2K2M2> basis ends
 
 
 	#Norms are Saved in norm-check.dat
@@ -278,12 +273,15 @@ if __name__ == '__main__':
 						pot_check_write.write("Norm: "+str(np.abs(Hpot[s1,s2,s3,s4]))+"\n")
 						pot_check_write.write("\n")
 	pot_check_write.close()
+	# printing block is closed
+
 
     #Computation of Hrot (Asymmetric Top Hamiltonian in Symmetric Top Basis)
+	HpotKee = np.reshape(Hpot,(JKeeM,JKeeM),order='C')
 	HrotKee = np.zeros((JKeeM,JKeeM),dtype=float)
-	print(HrotKee.shape)
-	print(Hpot.shape)
-	exit()
+
+	#print(np.any(HpotKee.imag > 10e-13))
+	#print(np.any(HpotKee.real > 10e-13))
 
 	jkm12 = 0 
 	for jkm1 in range(JKeM):
@@ -312,7 +310,21 @@ if __name__ == '__main__':
 					jkmp12 += 1
 			jkm12 += 1
 
-	rotest = LA.eigh(HrotKee)[0] 
+	if (np.any(HpotKee.imag < 10e-10) == True):
+		Htot = HrotKee + HpotKee.real
+	else:
+		print("HpotKee is not real .... ")
+		exit()
+
+	rotest = LA.eigh(Htot)[0] 
 	azdx = rotest.argsort()     # prints out eigenvalues for pure asymmetric top rotor (z_ORTHOz)
 	rotest = rotest[azdx]       
-	print(rotest)               
+
+
+	#printing block is opened
+	eig_file = "eigen-values.dat"
+	eig_write = open(eig_file,'w')
+	eig_write.write("Eigen values - "+"\n")
+	eig_write.write(str(rotest))
+	eig_write.close()
+	# printing block is closed
