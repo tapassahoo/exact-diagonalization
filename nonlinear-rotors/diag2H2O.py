@@ -68,41 +68,10 @@ if __name__ == '__main__':
 	normCheckMJKeM = False
 	normCheckKJKeM = False
 
-	"""
-	# Universal constants
-	#NA = 6.022140857*(10**23)
-	NA = 6.02214076*(10**23)
-	h = 6.62607015*(10**-34)
-	hbar = h/(2.*np.pi)
-	clight = 299792458.
-	jpcm = h*clight*100.
-	#jpcm = 1.9863*(10**-23)
-
-    #JOULES TO 1/cm  ==>  E = hc/lam   E / hc 
-    
-    #Molecular constants are given below -
-	massh2o = (18.01056/(NA*1000.))
-
-	mO = 15.9994
-	mH = 1.008
-	mH2O = 2.*mH + mO
-	"""
-					
 	#The rotational A, B, C constants are indicated by Ah2o, Bh2o and Ch2o, respectively. The unit is cm^-1. 
 	Ah2o= 27.877 #cm-1 
 	Bh2o= 14.512 #cm-1
 	Ch2o= 9.285  #cm-1
-
-	"""
-	Ost = np.array([0., 0., -0.006563807])
-	H1st = np.array([0.07575, 0., 0.052086193])
-	H2st = np.array([-0.07575, 0., 0.052086193])
-
-	H2OCoM = (mH*(H1st+H2st) + mO*Ost)/mH2O
-
-	print("H2O CoM: ")
-	print(H2OCoM)
-	"""
 
 	thetaNum = int(angleNum+1)                                           
 	xGL,wGL = np.polynomial.legendre.leggauss(thetaNum)              
@@ -217,32 +186,14 @@ if __name__ == '__main__':
 	KJKeM = np.zeros((JKeM,angleNum),complex)
 	MJKeM = np.zeros((JKeM,angleNum),complex)
 
-	KJKeMc = np.zeros((JKeM,angleNum),float)
-	KJKeMs = np.zeros((JKeM,angleNum),float)
-	MJKeMc = np.zeros((JKeM,angleNum),float)
-	MJKeMs = np.zeros((JKeM,angleNum),float)
-
-	Nk = 1./np.sqrt(2.*np.pi)
-
+	Nk = 1.
 	for s in range(JKeM):
-		"""
-		if JKeMQuantumNumList[s,1] == 0:
-			Nk = 0.5
-		else:
-			Nk = 1./np.sqrt(2.)
-		"""
 		for th in range(len(xGL)):
-
 			dJKeM[s,th] = np.sqrt((2.*JKeMQuantumNumList[s,0]+1)/(8.*np.pi**2))*littleD(JKeMQuantumNumList[s,0],JKeMQuantumNumList[s,2],JKeMQuantumNumList[s,1],np.arccos(xGL[th]))*np.sqrt(wGL[th])
 
 		for ph in range(angleNum):
-			KJKeMc[s,ph] = np.cos(phixiGridPts[ph]*JKeMQuantumNumList[s,1])*np.sqrt(dphixi)*Nk
-			KJKeMs[s,ph] = np.sin(phixiGridPts[ph]*JKeMQuantumNumList[s,1])*np.sqrt(dphixi)*Nk
-			MJKeMc[s,ph] = np.cos(phixiGridPts[ph]*JKeMQuantumNumList[s,2])*np.sqrt(dphixi)*Nk
-			MJKeMs[s,ph] = np.sin(phixiGridPts[ph]*JKeMQuantumNumList[s,2])*np.sqrt(dphixi)*Nk
-
-			KJKeM[s,ph] = np.exp(-1j*phixiGridPts[ph]*JKeMQuantumNumList[s,1])*np.sqrt(dphixi)*Nk
-			MJKeM[s,ph] = np.exp(-1j*phixiGridPts[ph]*JKeMQuantumNumList[s,2])*np.sqrt(dphixi)*Nk
+			KJKeM[s,ph] = np.exp(1j*phixiGridPts[ph]*JKeMQuantumNumList[s,1])*np.sqrt(dphixi)*Nk
+			MJKeM[s,ph] = np.exp(1j*phixiGridPts[ph]*JKeMQuantumNumList[s,2])*np.sqrt(dphixi)*Nk
 
 	#Normalization checking
 	if (normCheckMJKeM == True):
@@ -262,59 +213,77 @@ if __name__ == '__main__':
 					print("M1 = ",JKeMQuantumNumList[s1,1]," M2 = ",JKeMQuantumNumList[s2,1], " <M1|M2> = ",np.inner(KJKeM[s1,:],np.conjugate(KJKeM[s2,:])))
     
 
-	eEEbasisuse = KJKeM[:,np.newaxis,np.newaxis,np.newaxis,:]*np.conj(KJKeM[np.newaxis,:,np.newaxis,np.newaxis,:]) * MJKeM[:,np.newaxis,np.newaxis,:,np.newaxis] * np.conj(MJKeM[np.newaxis,:,np.newaxis,:,np.newaxis]) * dJKeM[:,np.newaxis,:,np.newaxis,np.newaxis] * dJKeM[np.newaxis,:,:,np.newaxis,np.newaxis]
-
-	#eIIbasisuse = invKJKeM[:,np.newaxis,np.newaxis,np.newaxis,:]*np.conj(invKJKeM[np.newaxis,:,np.newaxis,np.newaxis,:]) * MJKeM[:,np.newaxis,np.newaxis,:,np.newaxis] * np.conj(MJKeM[np.newaxis,:,np.newaxis,:,np.newaxis]) * invdJKeM[:,np.newaxis,:,np.newaxis,np.newaxis] * invdJKeM[np.newaxis,:,:,np.newaxis,np.newaxis]
-
-	#eEIbasisuse = KJKeM[:,np.newaxis,np.newaxis,np.newaxis,:]*np.conj(invKJKeM[np.newaxis,:,np.newaxis,np.newaxis,:]) * MJKeM[:,np.newaxis,np.newaxis,:,np.newaxis] * np.conj(MJKeM[np.newaxis,:,np.newaxis,:,np.newaxis]) * dJKeM[:,np.newaxis,:,np.newaxis,np.newaxis] * invdJKeM[np.newaxis,:,:,np.newaxis,np.newaxis]
-
-	#eIEbasisuse = invKJKeM[:,np.newaxis,np.newaxis,np.newaxis,:]*np.conj(KJKeM[np.newaxis,:,np.newaxis,np.newaxis,:]) * MJKeM[:,np.newaxis,np.newaxis,:,np.newaxis] * np.conj(MJKeM[np.newaxis,:,np.newaxis,:,np.newaxis]) * invdJKeM[:,np.newaxis,:,np.newaxis,np.newaxis] * dJKeM[np.newaxis,:,:,np.newaxis,np.newaxis]
-
-	print(eEEbasisuse.shape)
-	#print("V SIZE: ", v6d.shape)
-	#print("PSInlm: ", PSInlm.shape)
-
-	#eEEebasisuse = np.reshape(eEEbasisuse,(JKeM*JKeM,angleNum*angleNum*thetaNum),order='C')
-	#eIIebasisuse = np.reshape(eIIbasisuse,(JKeM*JKeM,angleNum*angleNum*thetaNum),order='C')
-	#eEIebasisuse = np.reshape(eEIbasisuse,(JKeM*JKeM,angleNum*angleNum*thetaNum),order='C')
-	#eIEebasisuse = np.reshape(eIEbasisuse,(JKeM*JKeM,angleNum*angleNum*thetaNum),order='C')
-	exit()
-
-	"""
-    #Calculate the V element for Au block
-	#JKeMrange = range(JKeM)                         
-	#JKoMrange = range(JKoM)
-	v6d = np.reshape(v6d, (cageGridNum*cageAngleNum*cageAngleNum, thetaNum*angleNum*angleNum), order='C')  #
+	eEEbasisuse = KJKeM[:,np.newaxis,np.newaxis,:,np.newaxis,np.newaxis,np.newaxis,np.newaxis]*MJKeM[:,np.newaxis,:,np.newaxis,np.newaxis,np.newaxis,np.newaxis,np.newaxis]*dJKeM[:,:,np.newaxis,np.newaxis,np.newaxis,np.newaxis,np.newaxis,np.newaxis]*KJKeM[np.newaxis,np.newaxis,np.newaxis,np.newaxis,:,np.newaxis,np.newaxis,:]*MJKeM[np.newaxis,np.newaxis,np.newaxis,np.newaxis,:,np.newaxis,:,np.newaxis]*dJKeM[np.newaxis,np.newaxis,np.newaxis,np.newaxis,:,:,np.newaxis,np.newaxis]
+	eEEebasisuse = np.reshape(eEEbasisuse,(JKeM,len(xGL)*angleNum*angleNum,JKeM,len(xGL)*angleNum*angleNum),order='C')
+	normMat = np.tensordot(eEEebasisuse, np.conjugate(eEEebasisuse), axes=([1,3],[1,3]))
 
 
-	print("eEE i")
-	tempa = np.tensordot(eEEebasisuse, v6d, axes=([1],[1]))
-	tempa = np.reshape(tempa,(JKeM,JKeM,cageGridNum*cageAngleNum*cageAngleNum),order='C')
-	vNJKeMEE = np.tensordot(tempa,(PSInlm[:,np.newaxis,:]*PSIconjnlm[np.newaxis,:,:]), axes=([2],[2]))
+
+	#Norms are Saved in norm-check.dat
+	#printing block is opened
+	norm_check_file = "norm-check.dat"
+	norm_check_write = open(norm_check_file,'w')
+	norm_check_write.write("eEEbasisuse.shape: shape of the even |J1K1M1>|J2K2M2> basis: " + str(eEEbasisuse.shape)+" \n")
+	norm_check_write.write("eEEebasisuse.shape: reduced shape of the even |J1K1M1>|J2K2M2> basis: " + str(eEEebasisuse.shape)+" \n")
+	norm_check_write.write("normMat.shape: shape of the even <J1K1M1|<J2K2M2||J2K2M2>|J1K1M1> basis: " + str(normMat.shape)+" \n")
+	norm_check_write.write("\n")
+	norm_check_write.write("\n")
+
+	for s1 in range(JKeM):
+		for s2 in range(JKeM):
+			for s3 in range(JKeM):
+				for s4 in range(JKeM):
+					if (np.abs(normMat[s1,s2,s3,s4]) > 0.0000000001):
+						norm_check_write.write("L vec Rotor1: "+str(JKeMQuantumNumList[s1,0])+" "+str(JKeMQuantumNumList[s1,1])+" "+str(JKeMQuantumNumList[s1,2])+"\n")
+						norm_check_write.write("R vec Rotor1: "+str(JKeMQuantumNumList[s3,0])+" "+str(JKeMQuantumNumList[s3,1])+" "+str(JKeMQuantumNumList[s3,2])+"\n")
+						norm_check_write.write("L vec Rotor2: "+str(JKeMQuantumNumList[s2,0])+" "+str(JKeMQuantumNumList[s2,1])+" "+str(JKeMQuantumNumList[s2,2])+"\n")
+						norm_check_write.write("R vec Rotor2: "+str(JKeMQuantumNumList[s4,0])+" "+str(JKeMQuantumNumList[s4,1])+" "+str(JKeMQuantumNumList[s4,2])+"\n")
+						norm_check_write.write("Norm: "+str(np.abs(normMat[s1,s2,s3,s4]))+"\n")
+						norm_check_write.write("\n")
+	norm_check_write.close()
+	#printing block is closed
 
 
-	sys.stdout.flush()
-	print("eII i")
-	tempa = np.tensordot(eIIebasisuse, v6d, axes=([1],[1]))
-	tempa = np.reshape(tempa,(JKeM,JKeM,cageGridNum*cageAngleNum*cageAngleNum),order='C')
-	vNJKeMII = np.tensordot(tempa, (PSInlminv[:,np.newaxis,:]*PSIconjnlminv[np.newaxis,:,:]), axes=([2],[2]))
 
-	sys.stdout.flush()
+	#Construction of a constant potential matrix over the six Euler angles
+	v6d = np.zeros((len(xGL)*angleNum*angleNum, len(xGL)*angleNum*angleNum),dtype=float)
+	v6d.fill(100.)
+	v6d = v6d[np.newaxis,:,np.newaxis,:]
+	tempa = v6d*eEEebasisuse
+	Hpot = np.tensordot(np.conjugate(eEEebasisuse), tempa, axes=([1,3],[1,3]))
 
-	print("eEI i")
-	tempa = np.tensordot(eEIebasisuse, v6d, axes=([1],[1]))
-	tempa = np.reshape(tempa,(JKeM,JKeM,cageGridNum*cageAngleNum*cageAngleNum),order='C')
-	vNJKeMEI = np.tensordot(tempa, (PSInlm[:,np.newaxis,:]*PSIconjnlminv[np.newaxis,:,:]), axes=([2],[2]))
 
-	sys.stdout.flush()
-	print("eIE i")
-	tempa = np.tensordot(eIEebasisuse, v6d, axes=([1],[1]))
-	tempa = np.reshape(tempa,(JKeM,JKeM,cageGridNum*cageAngleNum*cageAngleNum),order='C')
-	vNJKeMIE = np.tensordot(tempa, (PSInlminv[:,np.newaxis,:]*PSIconjnlm[np.newaxis,:,:]), axes=([2],[2]))
+	#Norms are Saved in norm-check.dat
+	#printing block is opened
+	pot_check_file = "pot-check.dat"
+	pot_check_write = open(pot_check_file,'w')
+	pot_check_write.write("Printing of shapes and elements of potential matrix - "+"\n")
+	pot_check_write.write("\n")
+	pot_check_write.write("\n")
+	pot_check_write.write("shape of potential matrix over six Euler angles : " + str(v6d.shape)+" \n")
+	pot_check_write.write("eEEebasisuse.shape: reduced shape of the even |J1K1M1>|J2K2M2> basis: " + str(eEEebasisuse.shape)+" \n")
+	pot_check_write.write("shape of Hpot : " + str(Hpot.shape)+" \n")
+	pot_check_write.write("\n")
+	pot_check_write.write("\n")
+
+	for s1 in range(JKeM):
+		for s2 in range(JKeM):
+			for s3 in range(JKeM):
+				for s4 in range(JKeM):
+					if (np.abs(Hpot[s1,s2,s3,s4]) > 0.0000000001):
+						pot_check_write.write("L vec Rotor1: "+str(JKeMQuantumNumList[s1,0])+" "+str(JKeMQuantumNumList[s1,1])+" "+str(JKeMQuantumNumList[s1,2])+"\n")
+						pot_check_write.write("R vec Rotor1: "+str(JKeMQuantumNumList[s3,0])+" "+str(JKeMQuantumNumList[s3,1])+" "+str(JKeMQuantumNumList[s3,2])+"\n")
+						pot_check_write.write("L vec Rotor2: "+str(JKeMQuantumNumList[s2,0])+" "+str(JKeMQuantumNumList[s2,1])+" "+str(JKeMQuantumNumList[s2,2])+"\n")
+						pot_check_write.write("R vec Rotor2: "+str(JKeMQuantumNumList[s4,0])+" "+str(JKeMQuantumNumList[s4,1])+" "+str(JKeMQuantumNumList[s4,2])+"\n")
+						pot_check_write.write("Norm: "+str(np.abs(Hpot[s1,s2,s3,s4]))+"\n")
+						pot_check_write.write("\n")
+	pot_check_write.close()
 
     #Computation of Hrot (Asymmetric Top Hamiltonian in Symmetric Top Basis)
 	HrotKee = np.zeros((JKeeM,JKeeM),dtype=float)
-	HrotKoo = np.zeros((JKooM,JKooM),dtype=float)
+	print(HrotKee.shape)
+	print(Hpot.shape)
+	exit()
 
 	jkm12 = 0 
 	for jkm1 in range(JKeM):
@@ -347,4 +316,3 @@ if __name__ == '__main__':
 	azdx = rotest.argsort()     # prints out eigenvalues for pure asymmetric top rotor (z_ORTHOz)
 	rotest = rotest[azdx]       
 	print(rotest)               
-	"""

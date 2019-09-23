@@ -58,53 +58,17 @@ def littleD(ldJ,ldmp,ldm,ldtheta):
 			tempD = tempD + (((-1.0)**v)/(np.math.factorial(a)*np.math.factorial(b)*np.math.factorial(c)*np.math.factorial(v)))*((np.cos(ldtheta/2.))**(2.*ldJ+ldm-ldmp-2.*v))*((-np.sin(ldtheta/2.))**(ldmp-ldm+2.*v))
 	return dval*tempD
 
-
-def calcvr(r):
-	#FUNCTION: calcvr(r) :  calculate the potential (THETA,PHI,theta, phi, xi) at a given r    
-	temp = np.array([[np.zeros(rotOx.shape) for TH in range(cageAngleNum)] for PHI in range(cageAngleNum)])
-	counter = 0
-	for TH in range(cageAngleNum):
-		for PHI in range(len(cagephiGrid)):
-			counter+=1
-			if counter%100 ==0:
-				print(r, counter)
-			v = 0.
-			x = cagerGrid[r] * np.sin(np.arccos(cagexGL[TH])) * np.cos(cagephiGrid[PHI]) * (10**9)
-			y = cagerGrid[r] * np.sin(np.arccos(cagexGL[TH])) * np.sin(cagephiGrid[PHI]) * (10**9)
-			z = cagerGrid[r] * cagexGL[TH] * (10**9)
-
-			positTempx = x + rotOx
-			positTempy = y + rotOy
-			positTempz = z + rotOz
-			temprsq =(positTempx[:,:,:,np.newaxis] - xdat[np.newaxis,np.newaxis,np.newaxis,:])**2 + (positTempy[:,:,:,np.newaxis] - ydat[np.newaxis,np.newaxis,np.newaxis,:])**2 + (positTempz[:,:,:,np.newaxis] - zdat[np.newaxis,np.newaxis,np.newaxis,:])**2
-			tempr6 = temprsq*temprsq*temprsq
-			tempr12 = tempr6*tempr6
-			v += np.sum((sigO12ep/tempr12) - (sigO6ep/tempr6),axis=-1)
-
-			positTempx = x + roth1x
-			positTempy = y + roth1y
-			positTempz = z + roth1z
-			temprsq =(positTempx[:,:,:,np.newaxis] - xdat[np.newaxis,np.newaxis,np.newaxis,:])**2 + (positTempy[:,:,:,np.newaxis] - ydat[np.newaxis,np.newaxis,np.newaxis,:])**2 + (positTempz[:,:,:,np.newaxis] - zdat[np.newaxis,np.newaxis,np.newaxis,:])**2
-			tempr6 = temprsq*temprsq*temprsq
-			tempr12 = tempr6*tempr6
-			v += np.sum((sigH12ep/tempr12) - (sigH6ep/tempr6),axis=-1)
-
-			positTempx = x + roth2x
-			positTempy = y + roth2y
-			positTempz = z + roth2z
-			temprsq =(positTempx[:,:,:,np.newaxis] - xdat[np.newaxis,np.newaxis,np.newaxis,:])**2 + (positTempy[:,:,:,np.newaxis] - ydat[np.newaxis,np.newaxis,np.newaxis,:])**2 + (positTempz[:,:,:,np.newaxis] - zdat[np.newaxis,np.newaxis,np.newaxis,:])**2
-			tempr6 = temprsq*temprsq*temprsq
-			tempr12 = tempr6*tempr6
-			v += np.sum((sigH12ep/tempr12) - (sigH6ep/tempr6),axis=-1)
-			temp[TH][PHI] = v
-	return temp
-
 if __name__ == '__main__':    
 	Jmax=int(sys.argv[1])
 	angleNum = int(sys.argv[2])
 	print("Jmax = ", Jmax)
 	print("angleNum = ", angleNum)
+	
+	#print the normalization 
+	normCheckMJKeM = False
+	normCheckKJKeM = False
 
+	"""
 	# Universal constants
 	#NA = 6.022140857*(10**23)
 	NA = 6.02214076*(10**23)
@@ -122,12 +86,14 @@ if __name__ == '__main__':
 	mO = 15.9994
 	mH = 1.008
 	mH2O = 2.*mH + mO
+	"""
 					
 	#The rotational A, B, C constants are indicated by Ah2o, Bh2o and Ch2o, respectively. The unit is cm^-1. 
 	Ah2o= 27.877 #cm-1 
 	Bh2o= 14.512 #cm-1
 	Ch2o= 9.285  #cm-1
 
+	"""
 	Ost = np.array([0., 0., -0.006563807])
 	H1st = np.array([0.07575, 0., 0.052086193])
 	H2st = np.array([-0.07575, 0., 0.052086193])
@@ -136,10 +102,7 @@ if __name__ == '__main__':
 
 	print("H2O CoM: ")
 	print(H2OCoM)
-
-	OMF = Ost - H2OCoM
-	H1MF = H1st - H2OCoM
-	H2MF = H2st - H2OCoM
+	"""
 
 	thetaNum = int(angleNum+1)                                           
 	xGL,wGL = np.polynomial.legendre.leggauss(thetaNum)              
@@ -176,14 +139,6 @@ if __name__ == '__main__':
 		print("Wrong index estimation ...")
 		exit()
     
-	shortJKeM = 0
-	shortJKoM = 0
-	for J in range(Jmax+1):
-		for K in range(0,J+1,2):
-			shortJKeM+= 2*J+1
-		for K in range(1,J+1,2):
-			shortJKoM+=2*J+1
-	
 	print("|------------------------------------------------")
 	print("| Number of basis functions calculations ....")
 	print("| ")
@@ -200,23 +155,13 @@ if __name__ == '__main__':
 	print("| # of |J1K1M1;J2K2M2> basis= # of ChkJKM")
 	print("| # of |J1K1M1;J2K2M2> basis= "+str(JKM2))
 	print("| # of ChkJKM = " + str(ChkJKM))
-	print("| ")
-	print("| ")
-	print("| # of positive even K only in |JKM> = "+str(shortJKeM))
-	print("| # of positive odd  K only in |JKM> = "+str(shortJKoM))
 	print("|------------------------------------------------")
     
 	JKeMQuantumNumList = np.zeros((JKeM,3),int)
 	JKoMQuantumNumList = np.zeros((JKoM,3),int)
 
-	shortJKeMQuantumNumList = np.zeros((shortJKeM,3),int)
-	shortJKoMQuantumNumList = np.zeros((shortJKoM,3),int)
-
 	JKeMreverse={}
 	JKoMreverse={}
-
-	shortJKeMreverse={}
-	shortJKoMreverse={}
 
 	#even
 	jtempcounter = 0
@@ -260,111 +205,106 @@ if __name__ == '__main__':
 					JKoMreverse[(J,K,M)]=jtempcounter
 					jtempcounter+=1
 
-	jtempcounter=0
-	for J in range(Jmax+1):
-		for K in range(0,J+1,2):
-			for M in range(-J,J+1):
-				shortJKeMQuantumNumList[jtempcounter,0]=J
-				shortJKeMQuantumNumList[jtempcounter,1]=K
-				shortJKeMQuantumNumList[jtempcounter,2]=M
-				shortJKeMreverse[(J,K,M)]=jtempcounter
-				jtempcounter+=1
+	# Compute littleD(j,m,k,theta) and compare it with the date estimated by asymrho.f
+	"""
+	theta = 1.0 # in degree
+	for s in range(JKeM):
+		print("j=",JKeMQuantumNumList[s,0],"m=",JKeMQuantumNumList[s,2],"k=",JKeMQuantumNumList[s,1],littleD(JKeMQuantumNumList[s,0],JKeMQuantumNumList[s,2],JKeMQuantumNumList[s,1],theta*np.pi/180.))
+	"""
 
-	jtempcounter=0
-	for J in range(Jmax+1):
-		for K in range(1,J+1,2):
-			for M in range(-J,J+1):
-				shortJKoMQuantumNumList[jtempcounter,0]=J
-				shortJKoMQuantumNumList[jtempcounter,1]=K
-				shortJKoMQuantumNumList[jtempcounter,2]=M
-				shortJKoMreverse[(J,K,M)]=jtempcounter
-				jtempcounter+=1
+	#
+	dJKeM = np.zeros((JKeM,len(xGL)),float)
+	KJKeM = np.zeros((JKeM,angleNum),complex)
+	MJKeM = np.zeros((JKeM,angleNum),complex)
 
+	KJKeMc = np.zeros((JKeM,angleNum),float)
+	KJKeMs = np.zeros((JKeM,angleNum),float)
+	MJKeMc = np.zeros((JKeM,angleNum),float)
+	MJKeMs = np.zeros((JKeM,angleNum),float)
 
-	dJKeM = np.zeros((shortJKeM, len(xGL)), complex)
-	invdJKeM = np.zeros((shortJKeM, len(xGL)), complex)
+	#Nk = 1./np.sqrt(2.*np.pi)
+	Nk = 1.
 
-	KJKeM = np.zeros( (shortJKeM, angleNum),complex)
-	invKJKeM = np.zeros((shortJKeM, angleNum),complex)
-
-	MJKeM = np.zeros( (shortJKeM, angleNum),complex)
-
-	for s in range(shortJKeM):
-		if shortJKeMQuantumNumList[s,1] == 0:
-			Nk = 0.5
-		else:
-			Nk = 1./np.sqrt(2.)
+	for s in range(JKeM):
 		for th in range(len(xGL)):
 
-			dJKeM[s,th] = np.sqrt( (2.*shortJKeMQuantumNumList[s,0]+1) / (8.*np.pi**2) ) * littleD(shortJKeMQuantumNumList[s,0],shortJKeMQuantumNumList[s,2],shortJKeMQuantumNumList[s,1],np.arccos(xGL[th])) * np.sqrt(wGL[th])
-
-			#cdJKeM[s,th] = (-1.0)**(shortJKeMQuantumNumList[s,1] - shortJKeMQuantumNumList[s,2]) * np.sqrt( (2.*shortJKeMQuantumNumList[s,0]+1) / (8.*np.pi**2) ) * littleD(shortJKeMQuantumNumList[s,0],shortJKeMQuantumNumList[s,2],shortJKeMQuantumNumList[s,1],np.arccos(xGL[th])) * np.sqrt(wGL[th])
-
-			invdJKeM[s,th] = ((-1.0)**(shortJKeMQuantumNumList[s,0]))*np.sqrt( (2.*shortJKeMQuantumNumList[s,0]+1) / (8.*np.pi**2) ) * littleD(shortJKeMQuantumNumList[s,0],shortJKeMQuantumNumList[s,2],-shortJKeMQuantumNumList[s,1],np.arccos(xGL[th])) * np.sqrt(wGL[th])
-
-			#invcdJKeM[s,th] = ((-1.0)**(shortJKeMQuantumNumList[s,0] +shortJKeMQuantumNumList[s,1] - shortJKeMQuantumNumList[s,2]))*np.sqrt( (2.*shortJKeMQuantumNumList[s,0]+1) / (8.*np.pi**2) ) * littleD(shortJKeMQuantumNumList[s,0],shortJKeMQuantumNumList[s,2],-shortJKeMQuantumNumList[s,1],np.arccos(xGL[th])) * np.sqrt(wGL[th])
+			dJKeM[s,th] = np.sqrt((2.*JKeMQuantumNumList[s,0]+1)/(8.*np.pi**2))*littleD(JKeMQuantumNumList[s,0],JKeMQuantumNumList[s,2],JKeMQuantumNumList[s,1],np.arccos(xGL[th]))*np.sqrt(wGL[th])
 
 		for ph in range(angleNum):
-			KJKeM[s,ph] = np.exp(-1j*phixiGridPts[ph]*shortJKeMQuantumNumList[s,1]) * np.sqrt(dphixi) * Nk
-			invKJKeM[s,ph] = ((-1.0)**(shortJKeMQuantumNumList[s,1])) * np.exp(1j*phixiGridPts[ph]*shortJKeMQuantumNumList[s,1]) * np.sqrt(dphixi) * Nk
+			KJKeMc[s,ph] = np.cos(phixiGridPts[ph]*JKeMQuantumNumList[s,1])*np.sqrt(dphixi)*Nk
+			KJKeMs[s,ph] = np.sin(phixiGridPts[ph]*JKeMQuantumNumList[s,1])*np.sqrt(dphixi)*Nk
+			MJKeMc[s,ph] = np.cos(phixiGridPts[ph]*JKeMQuantumNumList[s,2])*np.sqrt(dphixi)*Nk
+			MJKeMs[s,ph] = np.sin(phixiGridPts[ph]*JKeMQuantumNumList[s,2])*np.sqrt(dphixi)*Nk
 
-			MJKeM[s,ph] = np.exp(-1j*phixiGridPts[ph]*shortJKeMQuantumNumList[s,2]) * np.sqrt(dphixi)
+			KJKeM[s,ph] = np.exp(1j*phixiGridPts[ph]*JKeMQuantumNumList[s,1])*np.sqrt(dphixi)*Nk
+			MJKeM[s,ph] = np.exp(1j*phixiGridPts[ph]*JKeMQuantumNumList[s,2])*np.sqrt(dphixi)*Nk
 
-    #Calculate the V element for Au block
-	shortJKeMrange = range(shortJKeM)                         
-	shortJKoMrange = range(shortJKoM)
+	#Normalization checking
+	if (normCheckMJKeM == True):
+		print("Normalization test for |MJKeM> basis ")
+		for s1 in range(JKeM):
+			for s2 in range(JKeM):
+				if (JKeMQuantumNumList[s1,2] != JKeMQuantumNumList[s2,2]):
+					print("M1 = ",JKeMQuantumNumList[s1,2]," M2 = ",JKeMQuantumNumList[s2,2], " <M1|M2> = ",np.inner(MJKeM[s1,:],np.conjugate(MJKeM[s2,:])))
+
+		print("")
+
+	if (normCheckKJKeM == True):
+		print("Normalization test for |KJKeM> basis ")
+		for s1 in range(JKeM):
+			for s2 in range(JKeM):
+				if (JKeMQuantumNumList[s1,1] != JKeMQuantumNumList[s2,1]):
+					print("M1 = ",JKeMQuantumNumList[s1,1]," M2 = ",JKeMQuantumNumList[s2,1], " <M1|M2> = ",np.inner(KJKeM[s1,:],np.conjugate(KJKeM[s2,:])))
     
-	print("shortJKeM ", shortJKeM)
-	print("shortJKoM ", shortJKoM)
-	print("KJKeM: ", KJKeM.shape)
-	print("MJKeM: ", MJKeM.shape)
-	print("dJKeM: ", dJKeM.shape)
 
-	eEEbasisuse = KJKeM[:,np.newaxis,np.newaxis,np.newaxis,:]*np.conj(KJKeM[np.newaxis,:,np.newaxis,np.newaxis,:]) * MJKeM[:,np.newaxis,np.newaxis,:,np.newaxis] * np.conj(MJKeM[np.newaxis,:,np.newaxis,:,np.newaxis]) * dJKeM[:,np.newaxis,:,np.newaxis,np.newaxis] * dJKeM[np.newaxis,:,:,np.newaxis,np.newaxis]
-
-	eIIbasisuse = invKJKeM[:,np.newaxis,np.newaxis,np.newaxis,:]*np.conj(invKJKeM[np.newaxis,:,np.newaxis,np.newaxis,:]) * MJKeM[:,np.newaxis,np.newaxis,:,np.newaxis] * np.conj(MJKeM[np.newaxis,:,np.newaxis,:,np.newaxis]) * invdJKeM[:,np.newaxis,:,np.newaxis,np.newaxis] * invdJKeM[np.newaxis,:,:,np.newaxis,np.newaxis]
-
-	eEIbasisuse = KJKeM[:,np.newaxis,np.newaxis,np.newaxis,:]*np.conj(invKJKeM[np.newaxis,:,np.newaxis,np.newaxis,:]) * MJKeM[:,np.newaxis,np.newaxis,:,np.newaxis] * np.conj(MJKeM[np.newaxis,:,np.newaxis,:,np.newaxis]) * dJKeM[:,np.newaxis,:,np.newaxis,np.newaxis] * invdJKeM[np.newaxis,:,:,np.newaxis,np.newaxis]
-
-	eIEbasisuse = invKJKeM[:,np.newaxis,np.newaxis,np.newaxis,:]*np.conj(KJKeM[np.newaxis,:,np.newaxis,np.newaxis,:]) * MJKeM[:,np.newaxis,np.newaxis,:,np.newaxis] * np.conj(MJKeM[np.newaxis,:,np.newaxis,:,np.newaxis]) * invdJKeM[:,np.newaxis,:,np.newaxis,np.newaxis] * dJKeM[np.newaxis,:,:,np.newaxis,np.newaxis]
+	eEEbasisuse = KJKeM[:,np.newaxis,np.newaxis,:]*MJKeM[:,np.newaxis,:,np.newaxis]*dJKeM[:,:,np.newaxis,np.newaxis]
+	eEEebasisuse = np.reshape(eEEbasisuse,(JKeM,len(xGL)*angleNum*angleNum),order='C')
 
 	print(eEEbasisuse.shape)
+	print(eEEebasisuse.shape)
+	tempa = np.tensordot(eEEebasisuse, np.conjugate(eEEebasisuse), axes=([1],[1]))
+	for s1 in range(JKeM):
+		for s2 in range(JKeM):
+			if (np.abs(tempa[s1,s2]) > 0.0000001):
+				print(JKeMQuantumNumList[s1,0],JKeMQuantumNumList[s1,1],JKeMQuantumNumList[s1,2])
+				print(JKeMQuantumNumList[s2,0],JKeMQuantumNumList[s2,1],JKeMQuantumNumList[s2,2])
+				print(np.abs(tempa[s1,s2]))
+				print("")
 	#print("V SIZE: ", v6d.shape)
 	#print("PSInlm: ", PSInlm.shape)
 
-	#eEEebasisuse = np.reshape(eEEbasisuse,(shortJKeM*shortJKeM,angleNum*angleNum*thetaNum),order='C')
-	#eIIebasisuse = np.reshape(eIIbasisuse,(shortJKeM*shortJKeM,angleNum*angleNum*thetaNum),order='C')
-	#eEIebasisuse = np.reshape(eEIbasisuse,(shortJKeM*shortJKeM,angleNum*angleNum*thetaNum),order='C')
-	#eIEebasisuse = np.reshape(eIEbasisuse,(shortJKeM*shortJKeM,angleNum*angleNum*thetaNum),order='C')
 	exit()
 
 	"""
+    #Calculate the V element for Au block
+	#JKeMrange = range(JKeM)                         
+	#JKoMrange = range(JKoM)
 	v6d = np.reshape(v6d, (cageGridNum*cageAngleNum*cageAngleNum, thetaNum*angleNum*angleNum), order='C')  #
 
 
 	print("eEE i")
 	tempa = np.tensordot(eEEebasisuse, v6d, axes=([1],[1]))
-	tempa = np.reshape(tempa,(shortJKeM,shortJKeM,cageGridNum*cageAngleNum*cageAngleNum),order='C')
+	tempa = np.reshape(tempa,(JKeM,JKeM,cageGridNum*cageAngleNum*cageAngleNum),order='C')
 	vNJKeMEE = np.tensordot(tempa,(PSInlm[:,np.newaxis,:]*PSIconjnlm[np.newaxis,:,:]), axes=([2],[2]))
 
 
 	sys.stdout.flush()
 	print("eII i")
 	tempa = np.tensordot(eIIebasisuse, v6d, axes=([1],[1]))
-	tempa = np.reshape(tempa,(shortJKeM,shortJKeM,cageGridNum*cageAngleNum*cageAngleNum),order='C')
+	tempa = np.reshape(tempa,(JKeM,JKeM,cageGridNum*cageAngleNum*cageAngleNum),order='C')
 	vNJKeMII = np.tensordot(tempa, (PSInlminv[:,np.newaxis,:]*PSIconjnlminv[np.newaxis,:,:]), axes=([2],[2]))
 
 	sys.stdout.flush()
 
 	print("eEI i")
 	tempa = np.tensordot(eEIebasisuse, v6d, axes=([1],[1]))
-	tempa = np.reshape(tempa,(shortJKeM,shortJKeM,cageGridNum*cageAngleNum*cageAngleNum),order='C')
+	tempa = np.reshape(tempa,(JKeM,JKeM,cageGridNum*cageAngleNum*cageAngleNum),order='C')
 	vNJKeMEI = np.tensordot(tempa, (PSInlm[:,np.newaxis,:]*PSIconjnlminv[np.newaxis,:,:]), axes=([2],[2]))
 
 	sys.stdout.flush()
 	print("eIE i")
 	tempa = np.tensordot(eIEebasisuse, v6d, axes=([1],[1]))
-	tempa = np.reshape(tempa,(shortJKeM,shortJKeM,cageGridNum*cageAngleNum*cageAngleNum),order='C')
+	tempa = np.reshape(tempa,(JKeM,JKeM,cageGridNum*cageAngleNum*cageAngleNum),order='C')
 	vNJKeMIE = np.tensordot(tempa, (PSInlminv[:,np.newaxis,:]*PSIconjnlm[np.newaxis,:,:]), axes=([2],[2]))
 
     #Computation of Hrot (Asymmetric Top Hamiltonian in Symmetric Top Basis)
