@@ -4,19 +4,9 @@
 #   - compute the eigenvalues and wavefunctions for the full 6D problen
 #   - Symmetry adapted basis:
 #         -- Ortho/Para (K-even or K-odd)
-import gc
 import sys
-import os
 import numpy as np
-import math
-#from numpy import linalg as LA
 from scipy import linalg as LA
-from datetime import datetime
-from pprint import pprint
-import multiprocessing as mp
-#np.show_config()
-
-startTime = datetime.now()
 
 def binom(n,k):
 	"""
