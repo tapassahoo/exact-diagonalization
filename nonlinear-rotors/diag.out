@@ -1,5 +1,5 @@
 ============================================================
-running job 'diag' (600116)
+running job 'diag' (600120)
 on node 'gregoire' in partition 'serial'
 on cluster 'feynman'
 as 'tapas' (1172)

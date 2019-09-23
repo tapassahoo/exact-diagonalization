@@ -2,11 +2,13 @@
 #
 #  Features:
 #   - compute the eigenvalues and wavefunctions for the full 6D problen
-#   - Symmetry adapted basis:
-#         -- Ortho/Para (K-even or K-odd)
+#	- consider only even K 
+#
 import sys
+import math
 import numpy as np
 from scipy import linalg as LA
+import pot
 
 def binom(n,k):
 	"""
@@ -76,6 +78,26 @@ if __name__ == '__main__':
 	print("")
 	print(wGL)
 	print("|------------------------------------------------")
+
+	#Construction of potential matrix begins
+	com1=[0.0,0.0,0.0]
+	com2=[0.0,0.0,10.05]
+	v6d = np.zeros((len(xGL)*angleNum*angleNum,len(xGL)*angleNum*angleNum),float)
+	ii=0
+	for th1 in range(len(xGL)):
+		for ph1 in range(angleNum):
+			for ch1 in range(angleNum):
+				Eulang1=[math.acos(xGL[th1]),phixiGridPts[ph1],phixiGridPts[ch1]]
+
+				jj=0
+				for th2 in range(len(xGL)):
+					for ph2 in range(angleNum):
+						for ch2 in range(angleNum):
+							Eulang2=[math.acos(xGL[th2]),phixiGridPts[ph2],phixiGridPts[ch2]]
+							v6d[ii,jj]=pot.caleng(com1,com2,Eulang1,Eulang2)
+							jj=jj+1
+				ii=ii+1
+	#Construction of potential matrix ends
 
 	JKM = int(((2*Jmax+1)*(2*Jmax+2)*(2*Jmax+3)/6)) #JKM = "Sum[(2J+1)**4,{J,0,Jmax}]" is computed in mathematica
 
@@ -231,8 +253,8 @@ if __name__ == '__main__':
 
 
 	#Construction of a constant potential matrix over the six Euler angles
-	v6d = np.zeros((len(xGL)*angleNum*angleNum, len(xGL)*angleNum*angleNum),dtype=float)
-	v6d.fill(100.)
+	#v6d = np.zeros((len(xGL)*angleNum*angleNum, len(xGL)*angleNum*angleNum),dtype=float)
+	#v6d.fill(100.)
 	v6d = v6d[np.newaxis,:,np.newaxis,:]
 	tempa = v6d*eEEebasisuse
 	Hpot = np.tensordot(np.conjugate(eEEebasisuse), tempa, axes=([1,3],[1,3]))

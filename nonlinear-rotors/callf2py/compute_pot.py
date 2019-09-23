@@ -1,5 +1,5 @@
 import pot
-print(pot.__doc__)
+#print(pot.__doc__)
 com1=[0.0,0.0,0.0]
 com2=[0.0,0.0,10.0]
 Eulang2=[-2.0,1.0,1.0]
