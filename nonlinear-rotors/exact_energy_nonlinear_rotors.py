@@ -64,6 +64,10 @@ if __name__ == '__main__':
 	Ah2o= 27.877 #cm-1 
 	Bh2o= 14.512 #cm-1
 	Ch2o= 9.285  #cm-1
+	CMRECIP2KL = 1.4387672;       	# cm^-1 to Kelvin conversion factor
+	Ah2o=Ah2o*CMRECIP2KL
+	Bh2o=Bh2o*CMRECIP2KL
+	Ch2o=Ch2o*CMRECIP2KL
 
 	thetaNum = int(angleNum+1)                                           
 	xGL,wGL = np.polynomial.legendre.leggauss(thetaNum)              
