@@ -55,6 +55,7 @@ if __name__ == '__main__':
 	angleNum = int(sys.argv[2])
 	print("Jmax = ", Jmax)
 	print("angleNum = ", angleNum)
+	strFile = "-Jmax-"+str(Jmax)+"-grid-"+str(angleNum)+".txt"
 	
 	#print the normalization 
 	normCheckMJKeM = False
@@ -232,7 +233,7 @@ if __name__ == '__main__':
 
 	#Norms are Saved in norm-check.dat
 	#printing block is opened
-	norm_check_file = "norm-check.dat"
+	norm_check_file = "norm-check"+strFile
 	norm_check_write = open(norm_check_file,'w')
 	norm_check_write.write("eEEbasisuse.shape: shape of the even |J1K1M1>|J2K2M2> basis: " + str(eEEbasisuse.shape)+" \n")
 	norm_check_write.write("eEEebasisuse.shape: reduced shape of the even |J1K1M1>|J2K2M2> basis: " + str(eEEebasisuse.shape)+" \n")
@@ -266,7 +267,7 @@ if __name__ == '__main__':
 
 	#Norms are Saved in norm-check.dat
 	#printing block is opened
-	pot_check_file = "pot-check.dat"
+	pot_check_file = "pot-check"+strFile
 	pot_check_write = open(pot_check_file,'w')
 	pot_check_write.write("Printing of shapes and elements of potential matrix - "+"\n")
 	pot_check_write.write("\n")
@@ -326,21 +327,46 @@ if __name__ == '__main__':
 					jkmp12 += 1
 			jkm12 += 1
 
-	if (np.any(HpotKee.imag < 10e-10) == True):
-		Htot = HrotKee + HpotKee.real
-	else:
-		print("HpotKee is not real .... ")
+	Htot = HrotKee + HpotKee   #Unit Kelvin
+
+	# check to make sure H is hermitian
+	hermiticity = np.sum(Htot-np.conj(Htot.T))
+	if (hermiticity > 1e-10):
+		print("Htot-Htot.T*", hermiticity)
+		print("It is experiencing hermiticiy issue .......... ")
 		exit()
 
-	rotest = LA.eigh(Htot)[0] 
+	tot_est = LA.eigh(Htot)[0] 
+	sort_indx = tot_est.argsort()     # prints out eigenvalues for pure asymmetric top rotor (z_ORTHOz)
+	tot_est = tot_est[sort_indx]       
+
+	#printing block is opened
+	tot_est_comb = np.array([tot_est, tot_est/CMRECIP2KL])
+
+	eig_file = "eigen-values"+strFile
+	np.savetxt(eig_file, tot_est_comb.T, fmt='%20.8f', delimiter=' ', header='Eigen values of (Htot = Hrot + Hvpot) - Units associated with the first and second columns are Kelvin and wavenumber, respectively. ')
+	# printing block is closed
+
+	#Computation of rotational energy of a asymmetric top molecule
+	HrotKe = np.zeros((JKeM,JKeM),dtype=float)
+    
+	for jkm in range(JKeM):
+		for jkmp in range(JKeM):
+			if JKeMQuantumNumList[jkm,0]==JKeMQuantumNumList[jkmp,0] and JKeMQuantumNumList[jkm,2]==JKeMQuantumNumList[jkmp,2]:
+				if JKeMQuantumNumList[jkm,1]==(JKeMQuantumNumList[jkmp,1]-2):
+					HrotKe[jkm,jkmp] += 0.25*(Ah2o-Ch2o)*off_diag(JKeMQuantumNumList[jkm,0],JKeMQuantumNumList[jkm,1])*off_diag(JKeMQuantumNumList[jkm,0],JKeMQuantumNumList[jkm,1]+1)
+				elif JKeMQuantumNumList[jkm,1]==(JKeMQuantumNumList[jkmp,1]+2):
+					HrotKe[jkm,jkmp] += 0.25*(Ah2o-Ch2o)*off_diag(JKeMQuantumNumList[jkm,0],JKeMQuantumNumList[jkm,1]-1)*off_diag(JKeMQuantumNumList[jkm,0],JKeMQuantumNumList[jkm,1]-2)
+				elif JKeMQuantumNumList[jkm,1]==(JKeMQuantumNumList[jkmp,1]):
+					HrotKe[jkm,jkmp] += (0.5*(Ah2o + Ch2o)*(JKeMQuantumNumList[jkm,0]*(JKeMQuantumNumList[jkm,0]+1)) + (Bh2o - 0.5*(Ah2o+Ch2o)) * ((JKeMQuantumNumList[jkm,1])**2))
+    
+	rotest = LA.eigh(HrotKe)[0] 
 	azdx = rotest.argsort()     # prints out eigenvalues for pure asymmetric top rotor (z_ORTHOz)
 	rotest = rotest[azdx]       
 
-
 	#printing block is opened
-	eig_file = "eigen-values.dat"
-	eig_write = open(eig_file,'w')
-	eig_write.write("Eigen values - "+"\n")
-	eig_write.write(str(rotest))
-	eig_write.close()
+	rotest_comb = np.array([rotest, rotest/CMRECIP2KL])
+
+	eig_rot_file = "rotational-eigen-values"+strFile
+	np.savetxt(eig_rot_file, rotest_comb.T, fmt='%20.8f', delimiter=' ', header='Only rotational energy levels of a aymmetric top - Units associated with the first and second columns are Kelvin and wavenumber, respectively. ')
 	# printing block is closed
