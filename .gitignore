@@ -26,7 +26,7 @@
 /home/tapas/CodesForEigenValues/DiagLinearRotorMonomer/log
 /home/tapas/CodesForEigenValues/DiagLinearRotorMonomer/*/
 #
-/home/tapas/CodesForEigenValues/nonlinear-rotors/*.dat
-/home/tapas/CodesForEigenValues/nonlinear-rotors/*.txt
-/home/tapas/CodesForEigenValues/nonlinear-rotors/*.pyc
-/home/tapas/CodesForEigenValues/nonlinear-rotors/diag.out
+nonlinear-rotors/*.dat
+nonlinear-rotors/*.txt
+nonlinear-rotors/*.pyc
+nonlinear-rotors/*.out

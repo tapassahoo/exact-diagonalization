@@ -352,8 +352,13 @@ if __name__ == '__main__':
 	# printing block is closed
 	"""
 
-	evals_large, evecs_large = eigsh(Htot, 3, which='SA')
-	print(evals_large)
+	evals_large, evecs_large = eigsh(Htot, 5, which='SA')
+	#printing block is opened
+	tot_est_comb = np.array([evals_large, evals_large/CMRECIP2KL])
+
+	eig_file = "eigen-values"+strFile
+	np.savetxt(eig_file, tot_est_comb.T, fmt='%20.8f', delimiter=' ', header='Eigen values of (Htot = Hrot + Hvpot) - Units associated with the first and second columns are Kelvin and wavenumber, respectively. ')
+	# printing block is closed
 
 	#Computation of rotational energy of a asymmetric top molecule
 	HrotKe = np.zeros((JKeM,JKeM),dtype=float)
