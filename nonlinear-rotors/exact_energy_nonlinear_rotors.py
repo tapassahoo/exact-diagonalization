@@ -9,6 +9,7 @@ import math
 import numpy as np
 from scipy import linalg as LA
 import pot
+from scipy.sparse.linalg import eigs, eigsh
 
 def binom(n,k):
 	"""
@@ -53,8 +54,8 @@ def littleD(ldJ,ldmp,ldm,ldtheta):
 if __name__ == '__main__':    
 	Jmax=int(sys.argv[1])
 	angleNum = int(sys.argv[2])
-	print("Jmax = ", Jmax)
-	print("angleNum = ", angleNum)
+	print("Jmax = ", Jmax, flush=True)
+	print("angleNum = ", angleNum, flush=True)
 	strFile = "-Jmax-"+str(Jmax)+"-grid-"+str(angleNum)+".txt"
 	
 	#print the normalization 
@@ -83,6 +84,7 @@ if __name__ == '__main__':
 	print("")
 	print(wGL)
 	print("|------------------------------------------------")
+	sys.stdout.flush()
 
 	#Construction of potential matrix begins
 	com1=[0.0,0.0,0.0]
@@ -226,6 +228,7 @@ if __name__ == '__main__':
 
 	#block for construction of |J1K1M1,J2K2M2> basis begins 
 	eEEbasisuse = KJKeM[:,np.newaxis,np.newaxis,:,np.newaxis,np.newaxis,np.newaxis,np.newaxis]*MJKeM[:,np.newaxis,:,np.newaxis,np.newaxis,np.newaxis,np.newaxis,np.newaxis]*dJKeM[:,:,np.newaxis,np.newaxis,np.newaxis,np.newaxis,np.newaxis,np.newaxis]*KJKeM[np.newaxis,np.newaxis,np.newaxis,np.newaxis,:,np.newaxis,np.newaxis,:]*MJKeM[np.newaxis,np.newaxis,np.newaxis,np.newaxis,:,np.newaxis,:,np.newaxis]*dJKeM[np.newaxis,np.newaxis,np.newaxis,np.newaxis,:,:,np.newaxis,np.newaxis]
+	sys.stdout.flush()
 	eEEebasisuse = np.reshape(eEEbasisuse,(JKeM,len(xGL)*angleNum*angleNum,JKeM,len(xGL)*angleNum*angleNum),order='C')
 	normMat = np.tensordot(eEEebasisuse, np.conjugate(eEEebasisuse), axes=([1,3],[1,3]))
 	#block for construction of |J1K1M1,J2K2M2> basis ends
@@ -336,6 +339,7 @@ if __name__ == '__main__':
 		print("It is experiencing hermiticiy issue .......... ")
 		exit()
 
+	"""
 	tot_est = LA.eigh(Htot)[0] 
 	sort_indx = tot_est.argsort()     # prints out eigenvalues for pure asymmetric top rotor (z_ORTHOz)
 	tot_est = tot_est[sort_indx]       
@@ -346,6 +350,10 @@ if __name__ == '__main__':
 	eig_file = "eigen-values"+strFile
 	np.savetxt(eig_file, tot_est_comb.T, fmt='%20.8f', delimiter=' ', header='Eigen values of (Htot = Hrot + Hvpot) - Units associated with the first and second columns are Kelvin and wavenumber, respectively. ')
 	# printing block is closed
+	"""
+
+	evals_large, evecs_large = eigsh(Htot, 3, which='SA')
+	print(evals_large)
 
 	#Computation of rotational energy of a asymmetric top molecule
 	HrotKe = np.zeros((JKeM,JKeM),dtype=float)
