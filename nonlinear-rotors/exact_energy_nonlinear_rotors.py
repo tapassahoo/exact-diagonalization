@@ -86,6 +86,7 @@ if __name__ == '__main__':
 	print("|------------------------------------------------")
 	sys.stdout.flush()
 
+	"""
 	#Construction of potential matrix begins
 	com1=[0.0,0.0,0.0]
 	com2=[0.0,0.0,10.05]
@@ -105,6 +106,7 @@ if __name__ == '__main__':
 							jj=jj+1
 				ii=ii+1
 	#Construction of potential matrix ends
+	"""
 
 	JKM = int(((2*Jmax+1)*(2*Jmax+2)*(2*Jmax+3)/6)) #JKM = "Sum[(2J+1)**4,{J,0,Jmax}]" is computed in mathematica
 
@@ -207,6 +209,7 @@ if __name__ == '__main__':
 			MJKeM[s,ph] = np.exp(1j*phixiGridPts[ph]*JKeMQuantumNumList[s,2])*np.sqrt(dphixi)*Nk
 	#block for construction of individual basis ends
 
+	"""
 	#block for normalization checking begins
 	if (normCheckMJKeM == True):
 		print("Normalization test for |MJKeM> basis ")
@@ -340,6 +343,7 @@ if __name__ == '__main__':
 		exit()
 
 	"""
+	"""
 	tot_est = LA.eigh(Htot)[0] 
 	sort_indx = tot_est.argsort()     # prints out eigenvalues for pure asymmetric top rotor (z_ORTHOz)
 	tot_est = tot_est[sort_indx]       
@@ -349,6 +353,7 @@ if __name__ == '__main__':
 
 	eig_file = "eigen-values"+strFile
 	np.savetxt(eig_file, tot_est_comb.T, fmt='%20.8f', delimiter=' ', header='Eigen values of (Htot = Hrot + Hvpot) - Units associated with the first and second columns are Kelvin and wavenumber, respectively. ')
+	"""
 	# printing block is closed
 	"""
 
@@ -359,8 +364,33 @@ if __name__ == '__main__':
 	eig_file = "eigen-values"+strFile
 	np.savetxt(eig_file, tot_est_comb.T, fmt='%20.8f', delimiter=' ', header='Eigen values of (Htot = Hrot + Hvpot) - Units associated with the first and second columns are Kelvin and wavenumber, respectively. ')
 	# printing block is closed
+	"""
 
+	
+
+	# 1 H2O under field
 	#Computation of rotational energy of a asymmetric top molecule
+	#Construction of potential matrix begins
+	v1d = np.zeros(len(xGL)*angleNum*angleNum,float)
+	ii = 0
+	for th1 in range(len(xGL)):
+		for ph1 in range(angleNum):
+			for ch1 in range(angleNum):
+				v1d[ii]=-20.0*math.acos(xGL[th1])
+				ii = ii + 1
+	#Construction of potential matrix ends
+
+	#block for construction of |J1K1M1,J2K2M2> basis begins 
+	eEEbasisuse1H2O = KJKeM[:,np.newaxis,np.newaxis,:]*MJKeM[:,np.newaxis,:,np.newaxis]*dJKeM[:,:,np.newaxis,np.newaxis]
+	eEEebasisuse1H2O = np.reshape(eEEbasisuse1H2O,(JKeM,len(xGL)*angleNum*angleNum),order='C')
+	#block for construction of |J1K1M1,J2K2M2> basis ends
+
+	#Construction of a constant potential matrix over the three Euler angles
+	tempa = v1d*eEEebasisuse1H2O
+	Hpot = np.tensordot(np.conjugate(eEEebasisuse1H2O), tempa, axes=([1],[1]))
+
+
+	# construction of kinetic energy matrix - BEGINS
 	HrotKe = np.zeros((JKeM,JKeM),dtype=float)
     
 	for jkm in range(JKeM):
@@ -372,8 +402,9 @@ if __name__ == '__main__':
 					HrotKe[jkm,jkmp] += 0.25*(Ah2o-Ch2o)*off_diag(JKeMQuantumNumList[jkm,0],JKeMQuantumNumList[jkm,1]-1)*off_diag(JKeMQuantumNumList[jkm,0],JKeMQuantumNumList[jkm,1]-2)
 				elif JKeMQuantumNumList[jkm,1]==(JKeMQuantumNumList[jkmp,1]):
 					HrotKe[jkm,jkmp] += (0.5*(Ah2o + Ch2o)*(JKeMQuantumNumList[jkm,0]*(JKeMQuantumNumList[jkm,0]+1)) + (Bh2o - 0.5*(Ah2o+Ch2o)) * ((JKeMQuantumNumList[jkm,1])**2))
+	# construction of kinetic energy matrix - ENDS
     
-	rotest = LA.eigh(HrotKe)[0] 
+	rotest = LA.eigh(HrotKe+Hpot)[0] 
 	azdx = rotest.argsort()     # prints out eigenvalues for pure asymmetric top rotor (z_ORTHOz)
 	rotest = rotest[azdx]       
 
