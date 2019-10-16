@@ -237,6 +237,7 @@ if __name__ == '__main__':
 	eigValKe, eigVecKe = LA.eigh(HtotKe)
 	sortIndex_eigValKe = eigValKe.argsort()     # prints out eigenvalues for pure asymmetric top rotor (z_ORTHOz)
 	eigValKe_sort = eigValKe[sortIndex_eigValKe]       
+	eigVecKe_sort = eigVecKe[:,sortIndex_eigValKe]       
 	#Estimation of eigenvalues and eigenvectors ends here
 
 	#printing block is opened
@@ -244,8 +245,12 @@ if __name__ == '__main__':
 
 	eigValKe_file = "eigen-values"+strFile
 	np.savetxt(eigValKe_file, eigValKe_comb.T, fmt='%20.8f', delimiter=' ', header='Energy levels of a aymmetric top - Units associated with the first and second columns are Kelvin and wavenumber, respectively. ')
-	print(v1d.shape)
-	print(eigVecKe.shape)
-	exit()
-	#print(np.dot(vecest,np.dot(v1d,vecest)))
+	#print(np.dot(HpotKe,eigVecKe_sort[idx,idx])
+	idx = 1
+	eigVecKeRe = np.real(np.dot(eigVecKe_sort[:,idx].T,eigVecKe_sort[:,idx]))
+	eigVecKeIm = np.imag(np.dot(eigVecKe_sort[:,idx].T,eigVecKe_sort[:,idx]))
+	print("Checking normalization of ground state eigenfunction - Re: "+str(eigVecKeRe)+" Im: "+str(eigVecKeIm))
+	avgHpotKeL = np.dot(HpotKe,eigVecKe_sort[:,idx])
+	avgHpotKe = np.dot(eigVecKe_sort[:,idx].T,avgHpotKeL)
+	print(avgHpotKe.real,avgHpotKe.imag)
 	# printing block is closed
