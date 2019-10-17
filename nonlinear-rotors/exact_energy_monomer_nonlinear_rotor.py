@@ -245,12 +245,28 @@ if __name__ == '__main__':
 
 	eigValKe_file = "eigen-values"+strFile
 	np.savetxt(eigValKe_file, eigValKe_comb.T, fmt='%20.8f', delimiter=' ', header='Energy levels of a aymmetric top - Units associated with the first and second columns are Kelvin and wavenumber, respectively. ')
-	#print(np.dot(HpotKe,eigVecKe_sort[idx,idx])
-	idx = 1
-	eigVecKeRe = np.real(np.dot(eigVecKe_sort[:,idx].T,eigVecKe_sort[:,idx]))
-	eigVecKeIm = np.imag(np.dot(eigVecKe_sort[:,idx].T,eigVecKe_sort[:,idx]))
-	print("Checking normalization of ground state eigenfunction - Re: "+str(eigVecKeRe)+" Im: "+str(eigVecKeIm))
-	avgHpotKeL = np.dot(HpotKe,eigVecKe_sort[:,idx])
-	avgHpotKe = np.dot(eigVecKe_sort[:,idx].T,avgHpotKeL)
-	print(avgHpotKe.real,avgHpotKe.imag)
+
+	for idx in range(4):
+		eigVecKeRe = np.real(np.dot(np.conjugate(eigVecKe_sort[:,idx].T),eigVecKe_sort[:,idx]))
+		eigVecKeIm = np.imag(np.dot(np.conjugate(eigVecKe_sort[:,idx].T),eigVecKe_sort[:,idx]))
+		print("Checking normalization of ground state eigenfunction - Re: "+str(eigVecKeRe)+" Im: "+str(eigVecKeIm))
+
+		avgHpotKeL = np.dot(HpotKe,eigVecKe_sort[:,idx])
+		avgHpotKe = np.dot(np.conjugate(eigVecKe_sort[:,idx].T),avgHpotKeL)
+		print("Expectation value of ground state potential - Re: "+str(avgHpotKe.real)+" Im: "+str(avgHpotKe.imag))
 	# printing block is closed
+
+	# printing block is opened
+	idx=0
+	avgHpotKeL = np.dot(HpotKe,eigVecKe_sort[:,idx])
+	avgHpotKe = np.dot(np.conjugate(eigVecKe_sort[:,idx].T),avgHpotKeL)
+
+	gs_eng_file = "ground-state-energies"+strFile
+	gs_eng_write = open(gs_eng_file,'w')
+	gs_eng_write.write("#Printing of ground state energies in inverse Kelvin - "+"\n")
+	gs_eng_write.write('{0:1} {1:^19} {2:^20}'.format("#","<T+V>", "<V>"))
+	gs_eng_write.write("\n")
+	gs_eng_write.write('{0:^20.8f} {1:^20.8f}'.format(eigValKe_sort[0], avgHpotKe.real))
+	gs_eng_write.close()
+	# printing block is closed
+
