@@ -86,7 +86,6 @@ if __name__ == '__main__':
 	print("|------------------------------------------------")
 	sys.stdout.flush()
 
-	"""
 	#Construction of potential matrix begins
 	com1=[0.0,0.0,0.0]
 	com2=[0.0,0.0,10.05]
@@ -106,7 +105,6 @@ if __name__ == '__main__':
 							jj=jj+1
 				ii=ii+1
 	#Construction of potential matrix ends
-	"""
 
 	JKM = int(((2*Jmax+1)*(2*Jmax+2)*(2*Jmax+3)/6)) #JKM = "Sum[(2J+1)**4,{J,0,Jmax}]" is computed in mathematica
 
@@ -209,7 +207,6 @@ if __name__ == '__main__':
 			MJKeM[s,ph] = np.exp(1j*phixiGridPts[ph]*JKeMQuantumNumList[s,2])*np.sqrt(dphixi)*Nk
 	#block for construction of individual basis ends
 
-	"""
 	#block for normalization checking begins
 	if (normCheckMJKeM == True):
 		print("Normalization test for |MJKeM> basis ")
@@ -227,11 +224,9 @@ if __name__ == '__main__':
 				if (JKeMQuantumNumList[s1,1] != JKeMQuantumNumList[s2,1]):
 					print("M1 = ",JKeMQuantumNumList[s1,1]," M2 = ",JKeMQuantumNumList[s2,1], " <M1|M2> = ",np.inner(KJKeM[s1,:],np.conjugate(KJKeM[s2,:])))
 	#block for normalization checking ends
-    
 
-	#block for construction of |J1K1M1,J2K2M2> basis begins 
+	#block for construction of <omega1,omega2|J1K1M1,J2K2M2> basis begins 
 	eEEbasisuse = KJKeM[:,np.newaxis,np.newaxis,:,np.newaxis,np.newaxis,np.newaxis,np.newaxis]*MJKeM[:,np.newaxis,:,np.newaxis,np.newaxis,np.newaxis,np.newaxis,np.newaxis]*dJKeM[:,:,np.newaxis,np.newaxis,np.newaxis,np.newaxis,np.newaxis,np.newaxis]*KJKeM[np.newaxis,np.newaxis,np.newaxis,np.newaxis,:,np.newaxis,np.newaxis,:]*MJKeM[np.newaxis,np.newaxis,np.newaxis,np.newaxis,:,np.newaxis,:,np.newaxis]*dJKeM[np.newaxis,np.newaxis,np.newaxis,np.newaxis,:,:,np.newaxis,np.newaxis]
-	sys.stdout.flush()
 	eEEebasisuse = np.reshape(eEEbasisuse,(JKeM,len(xGL)*angleNum*angleNum,JKeM,len(xGL)*angleNum*angleNum),order='C')
 	normMat = np.tensordot(eEEebasisuse, np.conjugate(eEEebasisuse), axes=([1,3],[1,3]))
 	#block for construction of |J1K1M1,J2K2M2> basis ends
@@ -260,9 +255,11 @@ if __name__ == '__main__':
 						norm_check_write.write("\n")
 	norm_check_write.close()
 	#printing block is closed
+	exit()
 
 
 
+	"""
 	#Construction of a constant potential matrix over the six Euler angles
 	#v6d = np.zeros((len(xGL)*angleNum*angleNum, len(xGL)*angleNum*angleNum),dtype=float)
 	#v6d.fill(100.)
