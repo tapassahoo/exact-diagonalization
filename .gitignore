@@ -30,3 +30,4 @@ nonlinear-rotors/*.dat
 nonlinear-rotors/*.txt
 nonlinear-rotors/*.pyc
 nonlinear-rotors/*.out
+nonlinear-rotors/*_old.py
