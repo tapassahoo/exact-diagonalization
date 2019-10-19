@@ -56,11 +56,13 @@ if __name__ == '__main__':
 	angleNum = int(sys.argv[2])
 	print("Jmax = ", Jmax, flush=True)
 	print("angleNum = ", angleNum, flush=True)
-	strFile = "-Jmax-"+str(Jmax)+"-grid-"+str(angleNum)+".txt"
+	strFile = "-Jmax-"+str(Jmax)+"-grid-"+str(angleNum)+"-saved-basis.txt"
+	tol = 10e-8
 	
 	#print the normalization 
 	normCheckMJKeM = False
 	normCheckKJKeM = False
+	potwrite = False
 
 	#The rotational A, B, C constants are indicated by Ah2o, Bh2o and Ch2o, respectively. The unit is cm^-1. 
 	Ah2o= 27.877 #cm-1 
@@ -106,7 +108,7 @@ if __name__ == '__main__':
 				ii=ii+1
 	#Construction of potential matrix ends
 
-	JKM = int(((2*Jmax+1)*(2*Jmax+2)*(2*Jmax+3)/6)) #JKM = "Sum[(2J+1)**4,{J,0,Jmax}]" is computed in mathematica
+	JKM = int(((2*Jmax+1)*(2*Jmax+2)*(2*Jmax+3)/6)) #JKM = "Sum[(2J+1)**2,{J,0,Jmax}]" is computed in mathematica
 
 	if Jmax%2 ==0:
 		JKeM = int((JKM+Jmax+1)/2)
@@ -246,20 +248,17 @@ if __name__ == '__main__':
 		for s2 in range(JKeM):
 			for s3 in range(JKeM):
 				for s4 in range(JKeM):
-					if (np.abs(normMat[s1,s2,s3,s4]) > 0.0000000001):
+					if (np.abs(normMat[s1,s2,s3,s4]) > tol):
 						norm_check_write.write("L vec Rotor1: "+str(JKeMQuantumNumList[s1,0])+" "+str(JKeMQuantumNumList[s1,1])+" "+str(JKeMQuantumNumList[s1,2])+"\n")
 						norm_check_write.write("R vec Rotor1: "+str(JKeMQuantumNumList[s3,0])+" "+str(JKeMQuantumNumList[s3,1])+" "+str(JKeMQuantumNumList[s3,2])+"\n")
 						norm_check_write.write("L vec Rotor2: "+str(JKeMQuantumNumList[s2,0])+" "+str(JKeMQuantumNumList[s2,1])+" "+str(JKeMQuantumNumList[s2,2])+"\n")
 						norm_check_write.write("R vec Rotor2: "+str(JKeMQuantumNumList[s4,0])+" "+str(JKeMQuantumNumList[s4,1])+" "+str(JKeMQuantumNumList[s4,2])+"\n")
-						norm_check_write.write("Norm: "+str(np.abs(normMat[s1,s2,s3,s4]))+"\n")
+						norm_check_write.write("Norm: Real "+str(np.real(normMat[s1,s2,s3,s4]))+"\n")
+						norm_check_write.write("Norm: Imag "+str(np.imag(normMat[s1,s2,s3,s4]))+"\n")
 						norm_check_write.write("\n")
 	norm_check_write.close()
 	#printing block is closed
-	exit()
 
-
-
-	"""
 	#Construction of a constant potential matrix over the six Euler angles
 	#v6d = np.zeros((len(xGL)*angleNum*angleNum, len(xGL)*angleNum*angleNum),dtype=float)
 	#v6d.fill(100.)
@@ -267,8 +266,6 @@ if __name__ == '__main__':
 	tempa = v6d*eEEebasisuse
 	Hpot = np.tensordot(np.conjugate(eEEebasisuse), tempa, axes=([1,3],[1,3]))
 
-
-	#Norms are Saved in norm-check.dat
 	#printing block is opened
 	pot_check_file = "pot-check"+strFile
 	pot_check_write = open(pot_check_file,'w')
@@ -281,17 +278,19 @@ if __name__ == '__main__':
 	pot_check_write.write("\n")
 	pot_check_write.write("\n")
 
-	for s1 in range(JKeM):
-		for s2 in range(JKeM):
-			for s3 in range(JKeM):
-				for s4 in range(JKeM):
-					if (np.abs(Hpot[s1,s2,s3,s4]) > 0.0000000001):
-						pot_check_write.write("L vec Rotor1: "+str(JKeMQuantumNumList[s1,0])+" "+str(JKeMQuantumNumList[s1,1])+" "+str(JKeMQuantumNumList[s1,2])+"\n")
-						pot_check_write.write("R vec Rotor1: "+str(JKeMQuantumNumList[s3,0])+" "+str(JKeMQuantumNumList[s3,1])+" "+str(JKeMQuantumNumList[s3,2])+"\n")
-						pot_check_write.write("L vec Rotor2: "+str(JKeMQuantumNumList[s2,0])+" "+str(JKeMQuantumNumList[s2,1])+" "+str(JKeMQuantumNumList[s2,2])+"\n")
-						pot_check_write.write("R vec Rotor2: "+str(JKeMQuantumNumList[s4,0])+" "+str(JKeMQuantumNumList[s4,1])+" "+str(JKeMQuantumNumList[s4,2])+"\n")
-						pot_check_write.write("Norm: "+str(np.abs(Hpot[s1,s2,s3,s4]))+"\n")
-						pot_check_write.write("\n")
+	if (potwrite == True):
+		for s1 in range(JKeM):
+			for s2 in range(JKeM):
+				for s3 in range(JKeM):
+					for s4 in range(JKeM):
+						if (np.abs(Hpot[s1,s2,s3,s4]) > tol):
+							pot_check_write.write("L vec Rotor1: "+str(JKeMQuantumNumList[s1,0])+" "+str(JKeMQuantumNumList[s1,1])+" "+str(JKeMQuantumNumList[s1,2])+"\n")
+							pot_check_write.write("R vec Rotor1: "+str(JKeMQuantumNumList[s3,0])+" "+str(JKeMQuantumNumList[s3,1])+" "+str(JKeMQuantumNumList[s3,2])+"\n")
+							pot_check_write.write("L vec Rotor2: "+str(JKeMQuantumNumList[s2,0])+" "+str(JKeMQuantumNumList[s2,1])+" "+str(JKeMQuantumNumList[s2,2])+"\n")
+							pot_check_write.write("R vec Rotor2: "+str(JKeMQuantumNumList[s4,0])+" "+str(JKeMQuantumNumList[s4,1])+" "+str(JKeMQuantumNumList[s4,2])+"\n")
+							pot_check_write.write("Potential: Real "+str(np.real(Hpot[s1,s2,s3,s4]))+"\n")
+							pot_check_write.write("Potential: Imag "+str(np.imag(Hpot[s1,s2,s3,s4]))+"\n")
+							pot_check_write.write("\n")
 	pot_check_write.close()
 	# printing block is closed
 
@@ -330,16 +329,14 @@ if __name__ == '__main__':
 					jkmp12 += 1
 			jkm12 += 1
 
-	Htot = HrotKee + HpotKee   #Unit Kelvin
+	HtotKee = HrotKee + HpotKee   #Unit Kelvin
 
 	# check to make sure H is hermitian
-	hermiticity = np.sum(Htot-np.conj(Htot.T))
-	if (hermiticity > 1e-10):
-		print("Htot-Htot.T*", hermiticity)
-		print("It is experiencing hermiticiy issue .......... ")
+	if (np.all(np.abs(HtotKee-HtotKee.T) < tol) == False):
+		print("The Hamiltonian matrx HtotKe is not hermitian.")
 		exit()
 
-	"""
+# printing block is open
 	"""
 	tot_est = LA.eigh(Htot)[0] 
 	sort_indx = tot_est.argsort()     # prints out eigenvalues for pure asymmetric top rotor (z_ORTHOz)
@@ -352,62 +349,10 @@ if __name__ == '__main__':
 	np.savetxt(eig_file, tot_est_comb.T, fmt='%20.8f', delimiter=' ', header='Eigen values of (Htot = Hrot + Hvpot) - Units associated with the first and second columns are Kelvin and wavenumber, respectively. ')
 	"""
 	# printing block is closed
-	"""
-
-	evals_large, evecs_large = eigsh(Htot, 5, which='SA')
+	evals_large, evecs_large = eigsh(HtotKee, 5, which='SA')
 	#printing block is opened
 	tot_est_comb = np.array([evals_large, evals_large/CMRECIP2KL])
 
 	eig_file = "eigen-values"+strFile
 	np.savetxt(eig_file, tot_est_comb.T, fmt='%20.8f', delimiter=' ', header='Eigen values of (Htot = Hrot + Hvpot) - Units associated with the first and second columns are Kelvin and wavenumber, respectively. ')
-	# printing block is closed
-	"""
-
-	
-
-	# 1 H2O under field
-	#Computation of rotational energy of a asymmetric top molecule
-	#Construction of potential matrix begins
-	v1d = np.zeros(len(xGL)*angleNum*angleNum,float)
-	ii = 0
-	for th1 in range(len(xGL)):
-		for ph1 in range(angleNum):
-			for ch1 in range(angleNum):
-				v1d[ii]=-20.0*math.acos(xGL[th1])
-				ii = ii + 1
-	#Construction of potential matrix ends
-
-	#block for construction of |J1K1M1,J2K2M2> basis begins 
-	eEEbasisuse1H2O = KJKeM[:,np.newaxis,np.newaxis,:]*MJKeM[:,np.newaxis,:,np.newaxis]*dJKeM[:,:,np.newaxis,np.newaxis]
-	eEEebasisuse1H2O = np.reshape(eEEbasisuse1H2O,(JKeM,len(xGL)*angleNum*angleNum),order='C')
-	#block for construction of |J1K1M1,J2K2M2> basis ends
-
-	#Construction of a constant potential matrix over the three Euler angles
-	tempa = v1d*eEEebasisuse1H2O
-	Hpot = np.tensordot(np.conjugate(eEEebasisuse1H2O), tempa, axes=([1],[1]))
-
-
-	# construction of kinetic energy matrix - BEGINS
-	HrotKe = np.zeros((JKeM,JKeM),dtype=float)
-    
-	for jkm in range(JKeM):
-		for jkmp in range(JKeM):
-			if JKeMQuantumNumList[jkm,0]==JKeMQuantumNumList[jkmp,0] and JKeMQuantumNumList[jkm,2]==JKeMQuantumNumList[jkmp,2]:
-				if JKeMQuantumNumList[jkm,1]==(JKeMQuantumNumList[jkmp,1]-2):
-					HrotKe[jkm,jkmp] += 0.25*(Ah2o-Ch2o)*off_diag(JKeMQuantumNumList[jkm,0],JKeMQuantumNumList[jkm,1])*off_diag(JKeMQuantumNumList[jkm,0],JKeMQuantumNumList[jkm,1]+1)
-				elif JKeMQuantumNumList[jkm,1]==(JKeMQuantumNumList[jkmp,1]+2):
-					HrotKe[jkm,jkmp] += 0.25*(Ah2o-Ch2o)*off_diag(JKeMQuantumNumList[jkm,0],JKeMQuantumNumList[jkm,1]-1)*off_diag(JKeMQuantumNumList[jkm,0],JKeMQuantumNumList[jkm,1]-2)
-				elif JKeMQuantumNumList[jkm,1]==(JKeMQuantumNumList[jkmp,1]):
-					HrotKe[jkm,jkmp] += (0.5*(Ah2o + Ch2o)*(JKeMQuantumNumList[jkm,0]*(JKeMQuantumNumList[jkm,0]+1)) + (Bh2o - 0.5*(Ah2o+Ch2o)) * ((JKeMQuantumNumList[jkm,1])**2))
-	# construction of kinetic energy matrix - ENDS
-    
-	rotest = LA.eigh(HrotKe+Hpot)[0] 
-	azdx = rotest.argsort()     # prints out eigenvalues for pure asymmetric top rotor (z_ORTHOz)
-	rotest = rotest[azdx]       
-
-	#printing block is opened
-	rotest_comb = np.array([rotest, rotest/CMRECIP2KL])
-
-	eig_rot_file = "rotational-eigen-values"+strFile
-	np.savetxt(eig_rot_file, rotest_comb.T, fmt='%20.8f', delimiter=' ', header='Only rotational energy levels of a aymmetric top - Units associated with the first and second columns are Kelvin and wavenumber, respectively. ')
 	# printing block is closed
