@@ -229,7 +229,7 @@ if __name__ == '__main__':
 					for ph2 in range(angleNum):
 						for ch2 in range(angleNum):
 							Eulang2=[math.acos(xGL[th2]),phixiGridPts[ph2],phixiGridPts[ch2]]
-							v6d=pot.caleng(com1,com2,Eulang1,Eulang2)
+							v6d=20.0#pot.caleng(com1,com2,Eulang1,Eulang2)
 
 							jkm12 = 0 
 							for jkm1 in range(JKeM):
