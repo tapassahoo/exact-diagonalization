@@ -264,7 +264,7 @@ if __name__ == '__main__':
 	#v6d.fill(100.)
 	v6d = v6d[np.newaxis,:,np.newaxis,:]
 	tempa = v6d*eEEebasisuse
-	Hpot = np.tensordot(np.conjugate(eEEebasisuse), tempa, axes=([1,3],[1,3]))
+	HpotKee = np.tensordot(np.conjugate(eEEebasisuse), tempa, axes=([1,3],[1,3]))
 
 	#printing block is opened
 	pot_check_file = "pot-check"+strFile
@@ -274,7 +274,7 @@ if __name__ == '__main__':
 	pot_check_write.write("\n")
 	pot_check_write.write("shape of potential matrix over six Euler angles : " + str(v6d.shape)+" \n")
 	pot_check_write.write("eEEebasisuse.shape: reduced shape of the even |J1K1M1>|J2K2M2> basis: " + str(eEEebasisuse.shape)+" \n")
-	pot_check_write.write("shape of Hpot : " + str(Hpot.shape)+" \n")
+	pot_check_write.write("shape of Hpot : " + str(HpotKee.shape)+" \n")
 	pot_check_write.write("\n")
 	pot_check_write.write("\n")
 
@@ -283,20 +283,20 @@ if __name__ == '__main__':
 			for s2 in range(JKeM):
 				for s3 in range(JKeM):
 					for s4 in range(JKeM):
-						if (np.abs(Hpot[s1,s2,s3,s4]) > tol):
+						if (np.abs(HpotKee[s1,s2,s3,s4]) > tol):
 							pot_check_write.write("L vec Rotor1: "+str(JKeMQuantumNumList[s1,0])+" "+str(JKeMQuantumNumList[s1,1])+" "+str(JKeMQuantumNumList[s1,2])+"\n")
 							pot_check_write.write("R vec Rotor1: "+str(JKeMQuantumNumList[s3,0])+" "+str(JKeMQuantumNumList[s3,1])+" "+str(JKeMQuantumNumList[s3,2])+"\n")
 							pot_check_write.write("L vec Rotor2: "+str(JKeMQuantumNumList[s2,0])+" "+str(JKeMQuantumNumList[s2,1])+" "+str(JKeMQuantumNumList[s2,2])+"\n")
 							pot_check_write.write("R vec Rotor2: "+str(JKeMQuantumNumList[s4,0])+" "+str(JKeMQuantumNumList[s4,1])+" "+str(JKeMQuantumNumList[s4,2])+"\n")
-							pot_check_write.write("Potential: Real "+str(np.real(Hpot[s1,s2,s3,s4]))+"\n")
-							pot_check_write.write("Potential: Imag "+str(np.imag(Hpot[s1,s2,s3,s4]))+"\n")
+							pot_check_write.write("Potential: Real "+str(np.real(HpotKee[s1,s2,s3,s4]))+"\n")
+							pot_check_write.write("Potential: Imag "+str(np.imag(HpotKee[s1,s2,s3,s4]))+"\n")
 							pot_check_write.write("\n")
 	pot_check_write.close()
 	# printing block is closed
 
 
     #Computation of Hrot (Asymmetric Top Hamiltonian in Symmetric Top Basis)
-	HpotKee = np.reshape(Hpot,(JKeeM,JKeeM),order='C')
+	HpotKee = np.reshape(HpotKee,(JKeeM,JKeeM),order='C')
 	HrotKee = np.zeros((JKeeM,JKeeM),dtype=float)
 
 	#print(np.any(HpotKee.imag > 10e-13))

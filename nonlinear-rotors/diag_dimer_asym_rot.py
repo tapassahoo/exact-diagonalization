@@ -71,7 +71,7 @@ if __name__ == '__main__':
 	thetaNum = int(angleNum+1)                                           
 	xGL,wGL = np.polynomial.legendre.leggauss(thetaNum)              
 	phixiGridPts = np.linspace(0,2*np.pi,angleNum, endpoint=False)  
-	dphixi = 2.*np.pi / angleNum                                 
+	dphixi = 2.*np.pi/angleNum                                 
 	print("|------------------------------------------------")
 	print("| A list of Gaussian quadrature points of Legendre polynomials - ")
 	print("")
@@ -216,7 +216,7 @@ if __name__ == '__main__':
 
     #Computation of Hpot (Asymmetric Top Hamiltonian in Symmetric Top Basis)
 	HpotKee = np.zeros((JKeeM,JKeeM),dtype=complex)
-	normMat = np.zeros((JKeeM,JKeeM),dtype=complex)
+	normMat = np.zeros((JKeM,JKeM,JKeM,JKeM),dtype=complex)
 
 	com1=[0.0,0.0,0.0]
 	com2=[0.0,0.0,10.05]
@@ -229,22 +229,22 @@ if __name__ == '__main__':
 					for ph2 in range(angleNum):
 						for ch2 in range(angleNum):
 							Eulang2=[math.acos(xGL[th2]),phixiGridPts[ph2],phixiGridPts[ch2]]
-							v6d=20.0#pot.caleng(com1,com2,Eulang1,Eulang2)
+							v6d=pot.caleng(com1,com2,Eulang1,Eulang2)
 
 							jkm12 = 0 
 							for jkm1 in range(JKeM):
-								lvecKee = dJKeM[jkm1,th1]*MJKeM[jkm1,ph1]*KJKeM[jkm1,ch1]
+								lvecKee1 = dJKeM[jkm1,th1]*MJKeM[jkm1,ph1]*KJKeM[jkm1,ch1]
 								for jkm2 in range(JKeM):
-									lvecKee *= dJKeM[jkm2,th2]*MJKeM[jkm2,ph2]*KJKeM[jkm2,ch2]
+									lvecKee2 = lvecKee1*dJKeM[jkm2,th2]*MJKeM[jkm2,ph2]*KJKeM[jkm2,ch2]
 
 									jkmp12 = 0 
 									for jkmp1 in range(JKeM):
-										rvecKee = dJKeM[jkmp1,th1]*MJKeM[jkmp1,ph1]*KJKeM[jkmp1,ch1]
+										rvecKee1 = dJKeM[jkmp1,th1]*MJKeM[jkmp1,ph1]*KJKeM[jkmp1,ch1]
 										for jkmp2 in range(JKeM):
-											rvecKee *= dJKeM[jkmp2,th2]*MJKeM[jkmp2,ph2]*KJKeM[jkmp2,ch2]
+											rvecKee2 = rvecKee1*dJKeM[jkmp2,th2]*MJKeM[jkmp2,ph2]*KJKeM[jkmp2,ch2]
 											
-											normMat[jkm12,jkmp12] += np.conjugate(lvecKee)*rvecKee
-											HpotKee[jkm12,jkmp12] += np.conjugate(lvecKee)*v6d*rvecKee
+											normMat[jkm1,jkm2,jkmp1,jkmp2] += lvecKee2.conjugate()*rvecKee2
+											HpotKee[jkm12,jkmp12] += lvecKee2.conjugate()*v6d*rvecKee2
 											jkmp12 += 1
 									jkm12 += 1
 
@@ -253,21 +253,17 @@ if __name__ == '__main__':
 	#printing block is opened
 	norm_check_file = "norm-check"+strFile
 	norm_check_write = open(norm_check_file,'w')
-	ii=0
 	for s1 in range(JKeM):
 		for s2 in range(JKeM):
-			jj=0
 			for s3 in range(JKeM):
 				for s4 in range(JKeM):
-					if (np.abs(normMat[ii,jj]) > tol):
+					if (np.abs(normMat[s1,s2,s3,s4]) > tol):
 						norm_check_write.write("L vec Rotor1: "+str(JKeMQuantumNumList[s1,0])+" "+str(JKeMQuantumNumList[s1,1])+" "+str(JKeMQuantumNumList[s1,2])+"\n")
 						norm_check_write.write("R vec Rotor1: "+str(JKeMQuantumNumList[s3,0])+" "+str(JKeMQuantumNumList[s3,1])+" "+str(JKeMQuantumNumList[s3,2])+"\n")
 						norm_check_write.write("L vec Rotor2: "+str(JKeMQuantumNumList[s2,0])+" "+str(JKeMQuantumNumList[s2,1])+" "+str(JKeMQuantumNumList[s2,2])+"\n")
 						norm_check_write.write("R vec Rotor2: "+str(JKeMQuantumNumList[s4,0])+" "+str(JKeMQuantumNumList[s4,1])+" "+str(JKeMQuantumNumList[s4,2])+"\n")
-						norm_check_write.write("Norm: "+str(normMat[ii,jj])+"\n")
+						norm_check_write.write("Norm: "+str(normMat[s1,s2,s3,s4])+"\n")
 						norm_check_write.write("\n")
-					jj=jj+1
-			ii=ii+1
 	norm_check_write.close()
 	sys.stdout.flush()
 	#printing block is closed
