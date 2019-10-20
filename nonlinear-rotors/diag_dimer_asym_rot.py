@@ -56,7 +56,7 @@ if __name__ == '__main__':
 	angleNum = int(sys.argv[2])
 	print("Jmax = ", Jmax, flush=True)
 	print("angleNum = ", angleNum, flush=True)
-	strFile = "-Jmax-"+str(Jmax)+"-grid-"+str(angleNum)+".txt"
+	strFile = "-Jmax-"+str(Jmax)+"-grid-"+str(angleNum)+"-N2.txt"
 	tol = 10e-8
 	
 	#The rotational A, B, C constants are indicated by Ah2o, Bh2o and Ch2o, respectively. The unit is cm^-1. 

@@ -56,7 +56,7 @@ if __name__ == '__main__':
 	angleNum = int(sys.argv[2])
 	print("Jmax = ", Jmax, flush=True)
 	print("angleNum = ", angleNum, flush=True)
-	strFile = "-Jmax-"+str(Jmax)+"-grid-"+str(angleNum)+"-saved-basis.txt"
+	strFile = "-Jmax-"+str(Jmax)+"-grid-"+str(angleNum)+"-saved-basis-N2.txt"
 	tol = 10e-8
 	
 	#print the normalization 
