@@ -182,7 +182,7 @@ if __name__ == '__main__':
 	for th1 in range(len(xGL)):
 		for ph1 in range(angleNum):
 			for ch1 in range(angleNum):
-				v1d[ii]=-20.0*xGL[th1]
+				v1d[ii]=-50.0*xGL[th1]
 				ii = ii + 1
 	#Construction of potential matrix ends
 

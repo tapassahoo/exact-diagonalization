@@ -10,6 +10,7 @@ import numpy as np
 from scipy import linalg as LA
 import pot
 from scipy.sparse.linalg import eigs, eigsh
+import time
 
 def binom(n,k):
 	"""
@@ -82,6 +83,28 @@ if __name__ == '__main__':
 	print(wGL)
 	print("|------------------------------------------------")
 	sys.stdout.flush()
+
+
+	#Construction of potential matrix begins
+	com1=[0.0,0.0,0.0]
+	com2=[0.0,0.0,10.05]
+	v6d = np.zeros((len(xGL)*angleNum*angleNum,len(xGL)*angleNum*angleNum),float)
+	ii=0
+	for th1 in range(len(xGL)):
+		for ph1 in range(angleNum):
+			for ch1 in range(angleNum):
+				Eulang1=[math.acos(xGL[th1]),phixiGridPts[ph1],phixiGridPts[ch1]]
+
+				jj=0
+				for th2 in range(len(xGL)):
+					for ph2 in range(angleNum):
+						for ch2 in range(angleNum):
+							Eulang2=[math.acos(xGL[th2]),phixiGridPts[ph2],phixiGridPts[ch2]]
+							v6d[ii,jj]=pot.caleng(com1,com2,Eulang1,Eulang2)
+							jj=jj+1
+				ii=ii+1
+	#Construction of potential matrix ends
+
 
 	JKM = int(((2*Jmax+1)*(2*Jmax+2)*(2*Jmax+3)/6)) #JKM = "Sum[(2J+1)**2,{J,0,Jmax}]" is computed in mathematica
 
@@ -218,36 +241,28 @@ if __name__ == '__main__':
 	HpotKee = np.zeros((JKeeM,JKeeM),dtype=complex)
 	normMat = np.zeros((JKeM,JKeM,JKeM,JKeM),dtype=complex)
 
-	com1=[0.0,0.0,0.0]
-	com2=[0.0,0.0,10.05]
-	for th1 in range(len(xGL)):
-		for ph1 in range(angleNum):
-			for ch1 in range(angleNum):
-				Eulang1=[math.acos(xGL[th1]),phixiGridPts[ph1],phixiGridPts[ch1]]
+	start=time.time()
+	for igrid in range(len(xGL)*angleNum*angleNum):
+		for jgrid in range(len(xGL)*angleNum*angleNum):
+			jkm12 = 0 
+			for jkm1 in range(JKeM):
+				lvecKee1 = dJKeM[jkm1,th1]*MJKeM[jkm1,ph1]*KJKeM[jkm1,ch1]
+				for jkm2 in range(JKeM):
+					lvecKee2 = lvecKee1*dJKeM[jkm2,th2]*MJKeM[jkm2,ph2]*KJKeM[jkm2,ch2]
 
-				for th2 in range(len(xGL)):
-					for ph2 in range(angleNum):
-						for ch2 in range(angleNum):
-							Eulang2=[math.acos(xGL[th2]),phixiGridPts[ph2],phixiGridPts[ch2]]
-							v6d=pot.caleng(com1,com2,Eulang1,Eulang2)
-
-							jkm12 = 0 
-							for jkm1 in range(JKeM):
-								lvecKee1 = dJKeM[jkm1,th1]*MJKeM[jkm1,ph1]*KJKeM[jkm1,ch1]
-								for jkm2 in range(JKeM):
-									lvecKee2 = lvecKee1*dJKeM[jkm2,th2]*MJKeM[jkm2,ph2]*KJKeM[jkm2,ch2]
-
-									jkmp12 = 0 
-									for jkmp1 in range(JKeM):
-										rvecKee1 = dJKeM[jkmp1,th1]*MJKeM[jkmp1,ph1]*KJKeM[jkmp1,ch1]
-										for jkmp2 in range(JKeM):
-											rvecKee2 = rvecKee1*dJKeM[jkmp2,th2]*MJKeM[jkmp2,ph2]*KJKeM[jkmp2,ch2]
-											
-											normMat[jkm1,jkm2,jkmp1,jkmp2] += lvecKee2.conjugate()*rvecKee2
-											HpotKee[jkm12,jkmp12] += lvecKee2.conjugate()*v6d*rvecKee2
-											jkmp12 += 1
-									jkm12 += 1
-
+					jkmp12 = 0 
+					for jkmp1 in range(JKeM):
+						rvecKee1 = dJKeM[jkmp1,th1]*MJKeM[jkmp1,ph1]*KJKeM[jkmp1,ch1]
+						for jkmp2 in range(JKeM):
+							rvecKee2 = rvecKee1*dJKeM[jkmp2,th2]*MJKeM[jkmp2,ph2]*KJKeM[jkmp2,ch2]
+							
+							normMat[jkm1,jkm2,jkmp1,jkmp2] += lvecKee2.conjugate()*rvecKee2
+							HpotKee[jkm12,jkmp12] += lvecKee2.conjugate()*v6d[igrid,jgrid]*rvecKee2
+							jkmp12 += 1
+					jkm12 += 1
+	end=time.time()
+	print("Time measured in seconds - ")
+	print(end-start)
 
 	#Norms are Saved in norm-check.dat
 	#printing block is opened
@@ -271,9 +286,9 @@ if __name__ == '__main__':
 	HtotKee = HrotKee + HpotKee   #Unit Kelvin
 
 	# check to make sure H is hermitian
-	if (np.all(np.abs(HtotKee-HtotKee.T) < tol) == False):
-		print("The Hamiltonian matrx HtotKe is not hermitian.")
-		exit()
+	#if (np.all(np.abs(HtotKee-HtotKee.T) < tol) == False):
+	#	print("The Hamiltonian matrx HtotKe is not hermitian.")
+	#	exit()
 
 	evals_large, evecs_large = eigsh(HtotKee, 3, which='SA')
 

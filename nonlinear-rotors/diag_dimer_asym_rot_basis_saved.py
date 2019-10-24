@@ -96,13 +96,13 @@ if __name__ == '__main__':
 	for th1 in range(len(xGL)):
 		for ph1 in range(angleNum):
 			for ch1 in range(angleNum):
-				Eulang1=[math.acos(xGL[th1]),phixiGridPts[ph1],phixiGridPts[ch1]]
+				Eulang1=[phixiGridPts[ph1], math.acos(xGL[th1]), phixiGridPts[ch1]]
 
 				jj=0
 				for th2 in range(len(xGL)):
 					for ph2 in range(angleNum):
 						for ch2 in range(angleNum):
-							Eulang2=[math.acos(xGL[th2]),phixiGridPts[ph2],phixiGridPts[ch2]]
+							Eulang2=[phixiGridPts[ph2], math.acos(xGL[th2]), phixiGridPts[ch2]]
 							v6d[ii,jj]=pot.caleng(com1,com2,Eulang1,Eulang2)
 							jj=jj+1
 				ii=ii+1
@@ -332,9 +332,9 @@ if __name__ == '__main__':
 	HtotKee = HrotKee + HpotKee   #Unit Kelvin
 
 	# check to make sure H is hermitian
-	if (np.all(np.abs(HtotKee-HtotKee.T) < tol) == False):
-		print("The Hamiltonian matrx HtotKe is not hermitian.")
-		exit()
+	#if (np.all(np.abs(HtotKee-HtotKee.T) < tol) == False):
+	#	print("The Hamiltonian matrx HtotKe is not hermitian.")
+	#	exit()
 
 # printing block is open
 	"""
