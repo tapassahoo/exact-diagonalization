@@ -52,11 +52,12 @@ def littleD(ldJ,ldmp,ldm,ldtheta):
 	return dval*tempD
 
 if __name__ == '__main__':    
-	Jmax=int(sys.argv[1])
-	angleNum = int(sys.argv[2])
+	strength=float(sys.argv[1])
+	Jmax=int(sys.argv[2])
+	angleNum = int(sys.argv[3])
 	print("Jmax = ", Jmax, flush=True)
 	print("angleNum = ", angleNum, flush=True)
-	strFile = "-Jmax-"+str(Jmax)+"-grid-"+str(angleNum)+"-N1.txt"
+	strFile = "-Field-Strength-"+str(strength)+"Kinv-N1-Jmax-"+str(Jmax)+"-grid-"+str(angleNum)+".txt"
 	
 	#print the normalization 
 	write_pot = False
@@ -157,7 +158,7 @@ if __name__ == '__main__':
 	#printing block is opened
 	normMat = np.tensordot(eEEebasisuse, np.conjugate(eEEebasisuse), axes=([1],[1]))
 	norm_check_file = "norm-check"+strFile
-	norm_check_write = open(norm_check_file,'w')
+	norm_check_write = open("Exact-energies-of-H2O/"+norm_check_file,'w')
 	norm_check_write.write("eEEbasisuse.shape: shape of the even |JKM> basis: " + str(eEEbasisuse.shape)+" \n")
 	norm_check_write.write("eEEebasisuse.shape: reduced shape of the even |JKM> basis: " + str(eEEebasisuse.shape)+" \n")
 	norm_check_write.write("normMat.shape: shape of the even <JKM|JKM> basis: " + str(normMat.shape)+" \n")
@@ -182,7 +183,7 @@ if __name__ == '__main__':
 	for th1 in range(len(xGL)):
 		for ph1 in range(angleNum):
 			for ch1 in range(angleNum):
-				v1d[ii]=-50.0*xGL[th1]
+				v1d[ii]=-strength*xGL[th1]
 				ii = ii + 1
 	#Construction of potential matrix ends
 
@@ -192,7 +193,7 @@ if __name__ == '__main__':
 
 	#printing block is opened
 	pot_check_file = "pot-check"+strFile
-	pot_check_write = open(pot_check_file,'w')
+	pot_check_write = open("Exact-energies-of-H2O/"+pot_check_file,'w')
 	pot_check_write.write("Printing of shapes and elements of potential matrix - "+"\n")
 	pot_check_write.write("\n")
 	pot_check_write.write("\n")
@@ -244,7 +245,7 @@ if __name__ == '__main__':
 	eigValKe_comb = np.array([eigValKe_sort, eigValKe_sort/CMRECIP2KL])
 
 	eigValKe_file = "eigen-values"+strFile
-	np.savetxt(eigValKe_file, eigValKe_comb.T, fmt='%20.8f', delimiter=' ', header='Energy levels of a aymmetric top - Units associated with the first and second columns are Kelvin and wavenumber, respectively. ')
+	np.savetxt("Exact-energies-of-H2O/"+eigValKe_file, eigValKe_comb.T, fmt='%20.8f', delimiter=' ', header='Energy levels of a aymmetric top - Units associated with the first and second columns are Kelvin and wavenumber, respectively. ')
 
 	for idx in range(4):
 		eigVecKeRe = np.real(np.dot(np.conjugate(eigVecKe_sort[:,idx].T),eigVecKe_sort[:,idx]))
@@ -262,7 +263,7 @@ if __name__ == '__main__':
 	avgHpotKe = np.dot(np.conjugate(eigVecKe_sort[:,idx].T),avgHpotKeL)
 
 	gs_eng_file = "ground-state-energies"+strFile
-	gs_eng_write = open(gs_eng_file,'w')
+	gs_eng_write = open("Exact-energies-of-H2O/"+gs_eng_file,'w')
 	gs_eng_write.write("#Printing of ground state energies in inverse Kelvin - "+"\n")
 	gs_eng_write.write('{0:1} {1:^19} {2:^20}'.format("#","<T+V>", "<V>"))
 	gs_eng_write.write("\n")
