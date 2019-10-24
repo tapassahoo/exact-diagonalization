@@ -158,7 +158,7 @@ if __name__ == '__main__':
 	#printing block is opened
 	normMat = np.tensordot(eEEebasisuse, np.conjugate(eEEebasisuse), axes=([1],[1]))
 	norm_check_file = "norm-check"+strFile
-	norm_check_write = open("Exact-energies-of-H2O/"+norm_check_file,'w')
+	norm_check_write = open("exact-energies-of-H2O/"+norm_check_file,'w')
 	norm_check_write.write("eEEbasisuse.shape: shape of the even |JKM> basis: " + str(eEEbasisuse.shape)+" \n")
 	norm_check_write.write("eEEebasisuse.shape: reduced shape of the even |JKM> basis: " + str(eEEebasisuse.shape)+" \n")
 	norm_check_write.write("normMat.shape: shape of the even <JKM|JKM> basis: " + str(normMat.shape)+" \n")
@@ -193,7 +193,7 @@ if __name__ == '__main__':
 
 	#printing block is opened
 	pot_check_file = "pot-check"+strFile
-	pot_check_write = open("Exact-energies-of-H2O/"+pot_check_file,'w')
+	pot_check_write = open("exact-energies-of-H2O/"+pot_check_file,'w')
 	pot_check_write.write("Printing of shapes and elements of potential matrix - "+"\n")
 	pot_check_write.write("\n")
 	pot_check_write.write("\n")
@@ -245,7 +245,7 @@ if __name__ == '__main__':
 	eigValKe_comb = np.array([eigValKe_sort, eigValKe_sort/CMRECIP2KL])
 
 	eigValKe_file = "eigen-values"+strFile
-	np.savetxt("Exact-energies-of-H2O/"+eigValKe_file, eigValKe_comb.T, fmt='%20.8f', delimiter=' ', header='Energy levels of a aymmetric top - Units associated with the first and second columns are Kelvin and wavenumber, respectively. ')
+	np.savetxt("exact-energies-of-H2O/"+eigValKe_file, eigValKe_comb.T, fmt='%20.8f', delimiter=' ', header='Energy levels of a aymmetric top - Units associated with the first and second columns are Kelvin and wavenumber, respectively. ')
 
 	for idx in range(4):
 		eigVecKeRe = np.real(np.dot(np.conjugate(eigVecKe_sort[:,idx].T),eigVecKe_sort[:,idx]))
@@ -263,7 +263,7 @@ if __name__ == '__main__':
 	avgHpotKe = np.dot(np.conjugate(eigVecKe_sort[:,idx].T),avgHpotKeL)
 
 	gs_eng_file = "ground-state-energies"+strFile
-	gs_eng_write = open("Exact-energies-of-H2O/"+gs_eng_file,'w')
+	gs_eng_write = open("exact-energies-of-H2O/"+gs_eng_file,'w')
 	gs_eng_write.write("#Printing of ground state energies in inverse Kelvin - "+"\n")
 	gs_eng_write.write('{0:1} {1:^19} {2:^20}'.format("#","<T+V>", "<V>"))
 	gs_eng_write.write("\n")

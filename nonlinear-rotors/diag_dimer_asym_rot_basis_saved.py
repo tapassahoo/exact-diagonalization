@@ -52,11 +52,12 @@ def littleD(ldJ,ldmp,ldm,ldtheta):
 	return dval*tempD
 
 if __name__ == '__main__':    
-	Jmax=int(sys.argv[1])
-	angleNum = int(sys.argv[2])
+	zCOM=float(sys.argv[1])
+	Jmax=int(sys.argv[2])
+	angleNum = int(sys.argv[3])
 	print("Jmax = ", Jmax, flush=True)
 	print("angleNum = ", angleNum, flush=True)
-	strFile = "-Jmax-"+str(Jmax)+"-grid-"+str(angleNum)+"-saved-basis-N2.txt"
+	strFile = "-zCOM2-"+str(zCOM)+"Angtrom-N2-Jmax-"+str(Jmax)+"-grid-"+str(angleNum)+"-saved-basis.txt"
 	tol = 10e-8
 	
 	#print the normalization 
@@ -90,7 +91,7 @@ if __name__ == '__main__':
 
 	#Construction of potential matrix begins
 	com1=[0.0,0.0,0.0]
-	com2=[0.0,0.0,10.05]
+	com2=[0.0,0.0,zCOM]
 	v6d = np.zeros((len(xGL)*angleNum*angleNum,len(xGL)*angleNum*angleNum),float)
 	ii=0
 	for th1 in range(len(xGL)):
@@ -237,7 +238,7 @@ if __name__ == '__main__':
 	#Norms are Saved in norm-check.dat
 	#printing block is opened
 	norm_check_file = "norm-check"+strFile
-	norm_check_write = open("Exact-energies-of-H2O/"+norm_check_file,'w')
+	norm_check_write = open("exact-energies-of-H2O/"+norm_check_file,'w')
 	norm_check_write.write("eEEbasisuse.shape: shape of the even |J1K1M1>|J2K2M2> basis: " + str(eEEbasisuse.shape)+" \n")
 	norm_check_write.write("eEEebasisuse.shape: reduced shape of the even |J1K1M1>|J2K2M2> basis: " + str(eEEebasisuse.shape)+" \n")
 	norm_check_write.write("normMat.shape: shape of the even <J1K1M1|<J2K2M2||J2K2M2>|J1K1M1> basis: " + str(normMat.shape)+" \n")
@@ -268,7 +269,7 @@ if __name__ == '__main__':
 
 	#printing block is opened
 	pot_check_file = "pot-check"+strFile
-	pot_check_write = open("Exact-energies-of-H2O/"+pot_check_file,'w')
+	pot_check_write = open("exact-energies-of-H2O/"+pot_check_file,'w')
 	pot_check_write.write("Printing of shapes and elements of potential matrix - "+"\n")
 	pot_check_write.write("\n")
 	pot_check_write.write("\n")
@@ -346,7 +347,7 @@ if __name__ == '__main__':
 	tot_est_comb = np.array([tot_est, tot_est/CMRECIP2KL])
 
 	eig_file = "eigen-values"+strFile
-	np.savetxt("Exact-energies-of-H2O/"+eig_file, tot_est_comb.T, fmt='%20.8f', delimiter=' ', header='Eigen values of (Htot = Hrot + Hvpot) - Units associated with the first and second columns are Kelvin and wavenumber, respectively. ')
+	np.savetxt("exact-energies-of-H2O/"+eig_file, tot_est_comb.T, fmt='%20.8f', delimiter=' ', header='Eigen values of (Htot = Hrot + Hvpot) - Units associated with the first and second columns are Kelvin and wavenumber, respectively. ')
 	"""
 	# printing block is closed
 	evals_large, evecs_large = eigsh(HtotKee, 5, which='SA')
@@ -354,5 +355,5 @@ if __name__ == '__main__':
 	tot_est_comb = np.array([evals_large, evals_large/CMRECIP2KL])
 
 	eig_file = "eigen-values"+strFile
-	np.savetxt("Exact-energies-of-H2O/"+eig_file, tot_est_comb.T, fmt='%20.8f', delimiter=' ', header='Eigen values of (Htot = Hrot + Hvpot) - Units associated with the first and second columns are Kelvin and wavenumber, respectively. ')
+	np.savetxt("exact-energies-of-H2O/"+eig_file, tot_est_comb.T, fmt='%20.8f', delimiter=' ', header='Eigen values of (Htot = Hrot + Hvpot) - Units associated with the first and second columns are Kelvin and wavenumber, respectively. ')
 	# printing block is closed
