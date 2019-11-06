@@ -10,6 +10,8 @@ matrix::matrix(int rows,int columns)
   Rows=rows;
   Columns=columns;
   TheMatrix = new double[rows*columns];
+  b=new double *[rows];
+  b[0]=TheMatrix;
   for (int i=0;i<Rows*Columns;i++) TheMatrix[i]=0.;
   if (!TheMatrix) exit(1); // test for excessive memory
 }
@@ -26,7 +28,7 @@ matrix& matrix::operator=(const matrix& arg)
 {
 #ifdef DEBUG
   if (Rows != arg.Rows || Columns != arg.Columns)  {
-    cerr<<"matrix sizes not matching"<<endl;
+    std::cerr<<"matrix sizes not matching"<<std::endl;
     exit(1);
   }
 #endif
@@ -41,7 +43,6 @@ matrix::~matrix()
 }
 matrix operator+(const matrix& arg1, const matrix& arg2)
 {
-  // matrix plus
   matrix sum(arg1.Rows,arg2.Columns);
   int Rows=arg1.Rows;
   int Columns=arg2.Columns;
@@ -52,7 +53,6 @@ matrix operator+(const matrix& arg1, const matrix& arg2)
 }
 matrix operator-(const matrix& arg1, const matrix& arg2)
 {
-  // matrix minus
   matrix dif(arg1.Rows,arg2.Columns);
   int Rows=arg1.Rows;
   int Columns=arg2.Columns;
@@ -61,7 +61,7 @@ matrix operator-(const matrix& arg1, const matrix& arg2)
   if (!dif.TheMatrix) exit(1);
   return dif;
 }
-matrix operator*(const matrix& arg1, const matrix& arg2)
+const matrix operator*(const matrix& arg1, const matrix& arg2)
 {
 // matrix product
   matrix prod(arg1.Rows,arg2.Columns);
@@ -94,9 +94,8 @@ matrix operator*(const matrix& arg1, const matrix& arg2)
 	return prod;
 #endif
 }
-matrix transpose(const matrix& arg1)
+const matrix transpose(const matrix& arg1)
 {
-  // matrix transpose
   int Rows=arg1.Rows;
   int Columns=arg1.Columns;
   matrix trans(Columns,Rows);
@@ -105,7 +104,7 @@ matrix transpose(const matrix& arg1)
   if (!trans.TheMatrix) exit(1);
   return trans;
 }
-matrix operator*(const double arg1, const matrix& arg2)
+const matrix operator*(const double arg1, const matrix& arg2)
 {
 // multiplication by a scalar
 	matrix prod(arg2.Rows,arg2.Columns);
@@ -115,7 +114,7 @@ matrix operator*(const double arg1, const matrix& arg2)
         prod.TheMatrix[i+j*Rows]=arg1*arg2.TheMatrix[i+j*Rows];
 	return prod;
 }
-vector operator*(const double arg1, const vector& arg2)
+const vector operator*(const double arg1, const vector& arg2)
 {
 // multiplication by a scalar
 	vector prod(arg2.Sz);
@@ -123,7 +122,7 @@ vector operator*(const double arg1, const vector& arg2)
 	for (int i=0;i<Sz;i++) prod.TheVector[i]=arg1*arg2.TheVector[i];
 	return prod;
 }
-vector operator*(const matrix& arg1, const vector& arg2)
+const vector operator*(const matrix& arg1, const vector& arg2)
 {
 // matrix vector product
 	vector prod(arg1.Rows);
@@ -165,7 +164,7 @@ vector operator*(const matrix& arg1, const vector& arg2)
 //	return prod;
 //}
 
-matrix operator*(const matrix& arg1, const diagmat& arg2)
+const matrix operator*(const matrix& arg1, const diagmat& arg2)
 {
 	int Rows=arg1.Rows;
 	int Columns=arg1.Columns;
@@ -176,7 +175,7 @@ matrix operator*(const matrix& arg1, const diagmat& arg2)
 		  prod.TheMatrix[i+j*Rows]=arg1.TheMatrix[i+j*Rows]*arg2.TheMatrix[j];
 	return prod;
 }
- cmatrix operator*(const cmatrix& arg1, const cdiagmat& arg2)
+const cmatrix operator*(const cmatrix& arg1, const cdiagmat& arg2)
 {
 	int Rows=arg1.Rows;
 	int Columns=arg1.Columns;
@@ -187,7 +186,7 @@ matrix operator*(const matrix& arg1, const diagmat& arg2)
 		  prod.TheMatrix[i+j*Rows]=arg1.TheMatrix[i+j*Rows]*arg2.TheMatrix[j];
 	return prod;
 }
-matrix  operator*(const diagmat& arg1, const matrix& arg2)
+const matrix  operator*(const diagmat& arg1, const matrix& arg2)
 {
 	int Rows=arg2.Rows;
 	int Columns=arg2.Columns;
@@ -198,7 +197,7 @@ matrix  operator*(const diagmat& arg1, const matrix& arg2)
 		  prod.TheMatrix[i+j*Rows]=arg2.TheMatrix[i+j*Rows]*arg1.TheMatrix[i];
 	return prod;
 }
-vector  operator*(const diagmat& arg1, const vector& arg2)
+const vector  operator*(const diagmat& arg1, const vector& arg2)
 {
 	int Sz=arg1.Sz;
 	vector prod(Sz);
@@ -207,7 +206,7 @@ vector  operator*(const diagmat& arg1, const vector& arg2)
 	FORTRAN(dmatvecprod)(prod.TheVector,arg1.TheMatrix,arg2.TheVector,&Sz);
 	return prod;
 }
- cvector  operator*(const cdiagmat& arg1, const cvector& arg2)
+const cvector  operator*(const cdiagmat& arg1, const cvector& arg2)
 {
 	int Sz=arg1.Sz;
 	cvector prod(Sz);
@@ -215,7 +214,7 @@ vector  operator*(const diagmat& arg1, const vector& arg2)
 		  prod.TheVector[i]=arg1.TheMatrix[i]*arg2.TheVector[i];
 	return prod;
 }
- cmatrix  operator*(const cdiagmat& arg1, const cmatrix& arg2)
+const cmatrix  operator*(const cdiagmat& arg1, const cmatrix& arg2)
 {
 	int Rows=arg2.Rows;
 	int Columns=arg2.Columns;
@@ -298,7 +297,7 @@ cmatrix  operator-(const cdiagmat& arg1, const cmatrix& arg2)
     if (!sum.TheMatrix) exit(1);
     return sum;
 }
- diagmat operator*(const diagmat& arg1, const diagmat& arg2)
+const diagmat operator*(const diagmat& arg1, const diagmat& arg2)
 {
 	int Sz=arg1.Sz;
 	diagmat prod(Sz);
@@ -306,7 +305,7 @@ cmatrix  operator-(const cdiagmat& arg1, const cmatrix& arg2)
 		prod.TheMatrix[i]=arg1.TheMatrix[i]*arg2.TheMatrix[i];
 	return prod;
 }
- cdiagmat operator*(const cdiagmat& arg1, const cdiagmat& arg2)
+const cdiagmat operator*(const cdiagmat& arg1, const cdiagmat& arg2)
 {
 	int Sz=arg1.Sz;
 	cdiagmat prod(Sz);
@@ -314,7 +313,7 @@ cmatrix  operator-(const cdiagmat& arg1, const cmatrix& arg2)
 		prod.TheMatrix[i]=arg1.TheMatrix[i]*arg2.TheMatrix[i];
 	return prod;
 }
- diagmat operator*(const double arg1, const diagmat& arg2)
+const diagmat operator*(const double arg1, const diagmat& arg2)
 {
 	int Sz=arg2.Sz;
 	diagmat prod(Sz);
@@ -322,7 +321,7 @@ cmatrix  operator-(const cdiagmat& arg1, const cmatrix& arg2)
 		prod.TheMatrix[i]=arg1*arg2.TheMatrix[i];
 	return prod;
 }
- cdiagmat operator*(const complex arg1, const cdiagmat& arg2)
+const cdiagmat operator*(const complex arg1, const cdiagmat& arg2)
 {
 	int Sz=arg2.Sz;
 	cdiagmat prod(Sz);
@@ -330,7 +329,7 @@ cmatrix  operator-(const cdiagmat& arg1, const cmatrix& arg2)
 		prod.TheMatrix[i]=arg1*arg2.TheMatrix[i];
 	return prod;
 }
- diagmat operator*(const diagmat& arg1, const double arg2)
+const diagmat operator*(const diagmat& arg1, const double arg2)
 {
 	int Sz=arg1.Sz;
 	diagmat prod(Sz);
@@ -338,7 +337,7 @@ cmatrix  operator-(const cdiagmat& arg1, const cmatrix& arg2)
 		prod.TheMatrix[i]=arg1.TheMatrix[i]*arg2;
 	return prod;
 }
- cdiagmat operator*(const cdiagmat& arg1, const complex arg2)
+const cdiagmat operator*(const cdiagmat& arg1, const complex arg2)
 {
 	int Sz=arg1.Sz;
 	cdiagmat prod(Sz);
@@ -461,9 +460,9 @@ matrix inverse(const matrix& a)
 	FORTRAN(dpotrf)(&UPLO,&N,inv.TheMatrix,&LDA,&INFO);
 	FORTRAN(dpotri)(&UPLO,&N,inv.TheMatrix,&LDA,&INFO);
 	if (INFO != 0) {
-		if (INFO < 0) {cerr<<"illegal value for argument "<<INFO;
-				cerr<<"in dpotri (inverse)"<<endl;}
-		if (INFO > 0) cerr<<"inverse could not be computed"<<endl;
+		if (INFO < 0) {std::cerr<<"illegal value for argument "<<INFO;
+				std::cerr<<"in dpotri (inverse)"<<std::endl;}
+		if (INFO > 0) std::cerr<<"inverse could not be computed"<<std::endl;
 	}
 	// fill the lower triangle
 	for (int i=0;i<N;i++) 
@@ -478,14 +477,13 @@ double det(const matrix& a)
   matrix A=transpose(a)*a;
   /* vector WKSPCE(n);
      f03aaf_(A.TheMatrix,&n,&n,&DET,WKSPCE.TheVector,&IFAIL);
-
-     cerr<<"det to be implemented"<<endl;
+     std::cerr<<"det to be implemented"<<std::endl;
      exit(1); */
   vector v=diag(A);
   double DET=1.;
   for (int i=0;i<n;i++) DET*=v(i);
   DET=sqrt(DET);
-  cout<<DET<<endl;
+  std::cout<<DET<<std::endl;
   return DET;
 }
 cdiagmat inverse(const cdiagmat& v)
@@ -513,7 +511,7 @@ cdiagmat sqrtdiagmat(const cdiagmat& v)
     return sq;
 }
 
-double operator*(const vector& arg1, const vector& arg2)
+const double operator*(const vector& arg1, const vector& arg2)
 {
 	int Sz=arg2.Sz;
 	double dot=0.;
@@ -628,7 +626,7 @@ vector& vector::operator=(const vector& arg)
 {
 #ifdef DEBUG
 	if (Sz != arg.Sz)  {
-		cerr<<"vector sizes not matching"<<endl;
+		std::cerr<<"vector sizes not matching"<<std::endl;
 		exit(1);
 	}
 #endif
@@ -640,7 +638,7 @@ diagmat& diagmat::operator=(const diagmat& arg)
 {
 #ifdef DEBUG
 	if (Sz != arg.Sz)  {
-		cerr<<"diagmat sizes not matching"<<endl;
+		std::cerr<<"diagmat sizes not matching"<<std::endl;
 		exit(1);
 	}
 #endif
@@ -652,7 +650,7 @@ cdiagmat& cdiagmat::operator=(const cdiagmat& arg)
 {
 #ifdef DEBUG
 	if (Sz != arg.Sz)  {
-		cerr<<"cdiagmat sizes not matching"<<endl;
+		std::cerr<<"cdiagmat sizes not matching"<<std::endl;
 		exit(1);
 	}
 #endif
@@ -699,7 +697,7 @@ vector compdiag(const matrix& PRe,const matrix& PIm)
   
   /*f02awf_(PRe.TheMatrix,&nsize,PIm.TheMatrix,&nsize,&nsize,eval.TheVector,
     WK1.TheVector,WK2.TheVector,WK3.TheVector,&IFAIL);*/
-  cerr<<"compdiag to be implemented"<<endl;
+  std::cerr<<"compdiag to be implemented"<<std::endl;
   exit(1);
   
   
@@ -734,10 +732,10 @@ vector compgene(cmatrix& A,cmatrix& B)
 			BI.TheMatrix,&N,&EPS1,ALFR.TheVector,ALFI.TheVector,
 			BETA.TheVector,&MATV,VR.TheMatrix,&N, 
            VI.TheMatrix,&N,ITER,&IFAIL); */
-	cerr<<"compgene to be implemented"<<endl;
+	std::cerr<<"compgene to be implemented"<<std::endl;
         exit(1);
 
-	if (IFAIL != 0) cerr <<"error in compgene "<<endl;
+	if (IFAIL != 0) std::cerr <<"error in compgene "<<std::endl;
 	if (!ALFR.TheVector) exit(1);
 	for (i=0;i<N;i++) ALFR(i)=ALFR(i)/BETA(i);
 // sort !
@@ -745,10 +743,10 @@ vector compgene(cmatrix& A,cmatrix& B)
 	int M1=1;
 	int M2=N;
 	/* m01caf_(ALFR.TheVector,&M1,&M2,&ORDER,&IFAIL);*/
-	 cerr<<"sort to be implemented"<<endl;
+	 std::cerr<<"sort to be implemented"<<std::endl;
         exit(1);
 
-	if (IFAIL != 0) cerr <<"error in m01caf_ "<<endl;
+	if (IFAIL != 0) std::cerr <<"error in m01caf_ "<<std::endl;
 	return ALFR;
 }
 vector hermdiag(matrix& PRe,matrix& PIm)
@@ -764,12 +762,12 @@ vector hermdiag(matrix& PRe,matrix& PIm)
 	/* f02axf_(PRe.TheMatrix,&nsize,PIm.TheMatrix,&nsize,&nsize,
 		eval.TheVector,TR.TheMatrix,&nsize,TI.TheMatrix,&nsize,WK1.TheVector,
 		WK2.TheVector, WK3.TheVector,&IFAIL);*/
-	cerr<<"hermdiag to be implemented"<<endl;
+	std::cerr<<"hermdiag to be implemented"<<std::endl;
         exit(1);
 
 	PRe=TR;
 	PIm=TI;
-	if (IFAIL != 0) cerr <<"error in hermdiag "<<endl;
+	if (IFAIL != 0) std::cerr <<"error in hermdiag "<<std::endl;
 	if (!eval.TheVector) exit(1);
 	return eval;
 }
@@ -850,7 +848,7 @@ vector hermdl(cmatrix& a)
 	vector RWORK(3*N);
 	FORTRAN(cheev)(&JOBZ,&UPLO,&N,a.TheMatrix,&LDA,W.TheVector,WORK.TheVector,
 		&LWORK,RWORK.TheVector,&INFO);
-	if (INFO != 0) cerr<<"diagonalization failed"<<endl;
+	if (INFO != 0) std::cerr<<"diagonalization failed"<<std::endl;
 	return W;
 }
 // construct identity matrix
@@ -873,7 +871,7 @@ vector diaggen(matrix& a)
 	FORTRAN(dgeev)(&JOBVL,&JOBVR,&N,a.TheMatrix,&LDA,WR.TheVector, 
 	WI.TheVector,VL.TheMatrix,&LDVL,VR.TheMatrix,&LDVR,WORK.TheVector, 
 	&LWORK,&INFO);
-	if (INFO != 0) cerr<<"diagonalization failed"<<endl; 
+	if (INFO != 0) std::cerr<<"diagonalization failed"<<std::endl; 
 	return WR; 
 }
 vector diag(matrix& a)
@@ -890,7 +888,7 @@ vector diag(matrix& a)
   vector W(N);
   FORTRAN(dsyev)(&JOBZ,&UPLO,&N,a.TheMatrix,&LDA,W.TheVector,WORK.TheVector,
 	 &LWORK,&INFO);
-  if (INFO != 0) cerr<<"diagonalization failed"<<endl;
+  if (INFO != 0) std::cerr<<"diagonalization failed"<<std::endl;
   return W;
 }
 cvector diag(cmatrix& a,cmatrix &VL,cmatrix &VR)
@@ -912,7 +910,7 @@ cvector diag(cmatrix& a,cmatrix &VL,cmatrix &VR)
   FORTRAN(zgeev)(&JOBVL,&JOBVR,&N,a.TheMatrix,&LDA,W.TheVector,VL.TheMatrix,&LDVL,
         VR.TheMatrix,&LDVR,WORK.TheVector,&LWORK,
          RWORK.TheVector,&INFO);
-  if (INFO != 0) cerr<<"diagonalization failed"<<endl;
+  if (INFO != 0) std::cerr<<"diagonalization failed"<<std::endl;
   return W;
 }
 cmatrix inverse(const cmatrix &A)
@@ -966,7 +964,7 @@ cmatrix& cmatrix::operator=(const cmatrix& arg)
 {
 #ifdef DEBUG
 	if (Rows != arg.Rows || Columns != arg.Columns)  {
-		cerr<<"matrix sizes not matching"<<endl;
+		std::cerr<<"matrix sizes not matching"<<std::endl;
 		exit(1);
 	}
 #endif
@@ -983,7 +981,7 @@ complex& cmatrix::operator() (int rindex,int cindex) const
 {
 #ifdef DEBUG
     if (rindex < 0 || rindex >=Rows || cindex< 0 || cindex >=Columns) {
-        cerr<<"Indices exceed cmatrix size:\n"<<"rindex="<<rindex<<",cindex="<<cindex<<"Actual cmatrix size is: "<<Rows<<" by "<<Columns<<endl;
+        std::cerr<<"Indices exceed cmatrix size:\n"<<"rindex="<<rindex<<",cindex="<<cindex<<"Actual cmatrix size is: "<<Rows<<" by "<<Columns<<std::endl;
         exit(1);
     }
 #endif
@@ -1009,7 +1007,7 @@ cmatrix operator-(const cmatrix& arg1, const cmatrix& arg2)
 	if (!dif.TheMatrix) exit(1);
 	return dif;
 }
- cmatrix operator*(const cmatrix& arg1, const cmatrix& arg2)
+const cmatrix operator*(const cmatrix& arg1, const cmatrix& arg2)
 {
 // cmatrix product
 	cmatrix prod(arg1.Rows,arg2.Columns);
@@ -1059,7 +1057,7 @@ cdiagmat transpose(const cdiagmat& arg1)
   if (!trans.TheMatrix) exit(1);
   return trans;
 }
- cmatrix operator*(const complex arg1, const cmatrix& arg2)
+const cmatrix operator*(const complex arg1, const cmatrix& arg2)
 {
 // multiplication by a scalar
 	cmatrix prod(arg2.Rows,arg2.Columns);
@@ -1070,7 +1068,7 @@ cdiagmat transpose(const cdiagmat& arg1)
 	if (!prod.TheMatrix) exit(1);
 	return prod;
 }
- cvector operator*(const complex arg1, const cvector& arg2)
+const cvector operator*(const complex arg1, const cvector& arg2)
 {
 // multiplication by a scalar
 	cvector prod(arg2.Sz);
@@ -1079,7 +1077,7 @@ cdiagmat transpose(const cdiagmat& arg1)
 	if (!prod.TheVector) exit(1);
 	return prod;
 }
- cvector operator*(const cmatrix& arg1, const cvector& arg2)
+const cvector operator*(const cmatrix& arg1, const cvector& arg2)
 {
 // cmatrix cvector product
 	cvector prod(arg1.Rows);
@@ -1125,7 +1123,7 @@ cvector zmatvec(const cmatrix& arg1, const cvector& arg2,complex scalar)
 			arg2.TheVector,&incx,&beta,prod.TheVector,&incy);
 	return prod;
 }
- complex operator*(const cvector& arg1, const cvector& arg2)
+const complex operator*(const cvector& arg1, const cvector& arg2)
 {
 	int Sz=arg2.Sz;
 	complex dot=complex(0.,0.);
@@ -1194,7 +1192,7 @@ cvector& cvector::operator=(const cvector& arg)
 {
 #ifdef DEBUG
 	if (Sz != arg.Sz)  {
-		cerr<<"vector sizes not matching"<<endl;
+		std::cerr<<"vector sizes not matching"<<std::endl;
 		exit(1);
 	}
 #endif
@@ -1250,9 +1248,9 @@ matrix HCSCE(matrix &a,matrix &B)
   int LDB=LDA;
   int N=LDA;
   FORTRAN(spotrf)(&UPLO,&N,B.TheMatrix,&LDA,&INFO);
-  cout<<INFO<<endl;
+  std::cout<<INFO<<std::endl;
   FORTRAN(ssygst)(&ITYPE,&UPLO,&N,A.TheMatrix,&LDA,B.TheMatrix,&LDB,&INFO);
-  cout<<INFO<<endl;
+  std::cout<<INFO<<std::endl;
   // fill the lower triangle
   for (int i=0;i<N;i++) 
     for (int j=0;j<i;j++)
