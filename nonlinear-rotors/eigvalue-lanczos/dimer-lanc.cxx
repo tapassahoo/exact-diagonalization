@@ -36,7 +36,7 @@ void get_JKMbasis(int jkem, int size_theta, int size_phi, matrix &dJKeM, matrix 
 void check_normJKeM(int jkem, int size_grid, vector &basisJKeMRe, vector &basisJKeMIm, matrix &jkemQuantumNumList); 
 void get_pot(int size_theta, int size_phi, vector &grid_theta, vector &grid_phi, double *com1, double *com2, matrix &Vpot);
 extern "C" void caleng_(double *com1, double *com2, double *E_2H2O, double *Eulang1, double *Eulang2);
-vector Hv(int jkem, int size_grid, vector &HrotKe, matrix &Vpot, vector &basisJKeMRe, vector &basisJKeMIm, vector &v0);
+cvector Hv(int jkem, int size_grid, vector &HrotKe, matrix &Vpot, vector &basisJKeMRe, vector &basisJKeMIm, cvector &v0);
 void printIndex(int jkem);
  
 int main(int argc,char **argv) 
@@ -110,22 +110,22 @@ int main(int argc,char **argv)
 	// PI lanczos
 	int ngood;
 
-	vector r(jkem*jkem);
+	cvector r(jkem*jkem);
 	vector evalerr(niter);
 	vector eval(niter);
 	vector alpha(niter);
 	vector beta(niter+1);
 	vector beta2(niter+1);
 
-	vector v0(jkem*jkem);
+	cvector v0(jkem*jkem);
 	for (int i=0; i<jkem; i++) {
 		for (int j=0; j<jkem; j++) {
 			v0(j+i*jkem)=2.0*(randomseed->frand()-0.5);
 		}
 	}
-	normalise(v0);
+	cnormalise(v0);
 
-	vector u=v0;
+	cvector u=v0;
 	logout<<"start iterations"<<endl;
 	for (int i=1;i<=niter;i++) {
 
@@ -133,13 +133,13 @@ int main(int argc,char **argv)
 
 		r=r+u;
 
-		alpha(i-1)=v0*r;
-		r=r-(alpha(i-1)*v0);
+		alpha(i-1)=real(v0*r);
+		r=r-(complex(alpha(i-1),0)*v0);
 
-		beta2(i)=r*r;
+		beta2(i)=real(r*r);
 		beta(i)=sqrt(beta2(i));
-		r=(1./beta(i))*r; // to get v
-		v0=(-beta(i))*v0; // prepare r check minus sign!!!
+		r=complex((1./beta(i)),0)*r; // to get v
+		v0=complex((-beta(i)),0)*v0; // prepare r check minus sign!!!
 
 		u=v0;     // swapping
 		v0=r;
@@ -147,7 +147,7 @@ int main(int argc,char **argv)
 		if (i%1 == 0) logout<<"iteration "<<i<<endl;
 	}                  
 
-	double emax=0.0;
+	double emax=50.0;
 	double emin=-20.0;
 	lancbis(niter,eval,evalerr,emin,emax,ngood,alpha,beta,beta2);
 	cout<<" ngood = "<<ngood<<endl;
@@ -651,9 +651,9 @@ void get_pot(int size_theta, int size_phi, vector &grid_theta, vector &grid_phi,
     }
 }
 
-vector Hv(int jkem, int size_grid, vector &HrotKe, matrix &Vpot, vector &basisJKeMRe, vector &basisJKeMIm, vector &v)
+cvector Hv(int jkem, int size_grid, vector &HrotKe, matrix &Vpot, vector &basisJKeMRe, vector &basisJKeMIm, cvector &v)
 {
-	vector u(jkem*jkem);
+	cvector u(jkem*jkem);
 	int i1, i1p, i2, i2p;
   
 	// oprate with K1
@@ -684,8 +684,8 @@ vector Hv(int jkem, int size_grid, vector &HrotKe, matrix &Vpot, vector &basisJK
 	for (i1=0;i1<jkem;i1++) {
 		for (ig2=0;ig2<size_grid;ig2++) {
 			for (i2=0;i2<jkem;i2++) {
-				temp1re(ig2+i1*size_grid)+=basisJKeMRe(ig2+i2*size_grid)*v(i2+i1*jkem);
-				temp1im(ig2+i1*size_grid)+=basisJKeMIm(ig2+i2*size_grid)*v(i2+i1*jkem);
+				temp1re(ig2+i1*size_grid)+=(basisJKeMRe(ig2+i2*size_grid)*real(v(i2+i1*jkem))-basisJKeMIm(ig2+i2*size_grid)*imag(v(i2+i1*jkem)));
+				temp1im(ig2+i1*size_grid)+=(basisJKeMIm(ig2+i2*size_grid)*real(v(i2+i1*jkem))+basisJKeMRe(ig2+i2*size_grid)*imag(v(i2+i1*jkem)));
 			}
 		}
 	}
@@ -710,16 +710,16 @@ vector Hv(int jkem, int size_grid, vector &HrotKe, matrix &Vpot, vector &basisJK
 		for (i2=0; i2<jkem; i2++) {
 			for (ig2=0; ig2<size_grid; ig2++) {
 				temp1re(ig1+i2*size_grid)+=(temp2re(ig2+ig1*size_grid)*basisJKeMRe(ig2+i2*size_grid)+temp2im(ig2+ig1*size_grid)*basisJKeMIm(ig2+i2*size_grid));
-				temp1im(ig1+i2*size_grid)+=(temp2re(ig2+ig1*size_grid)*basisJKeMRe(ig2+i2*size_grid)-temp2im(ig2+ig1*size_grid)*basisJKeMIm(ig2+i2*size_grid));
+				temp1im(ig1+i2*size_grid)+=(temp2im(ig2+ig1*size_grid)*basisJKeMRe(ig2+i2*size_grid)-temp2re(ig2+ig1*size_grid)*basisJKeMIm(ig2+i2*size_grid));
 			}
 		}
 	}
 
-	vector vec(jkem*jkem);
+	cvector vec(jkem*jkem);
 	for (i2=0; i2<jkem; i2++) {
 		for (i1=0; i1<jkem; i1++) {
 			for (ig1=0; ig1<size_grid; ig1++) {
-				vec(i2+i1*jkem)+=(temp1re(ig1+i2*size_grid)*basisJKeMRe(ig1+i1*size_grid)+temp1im(ig1+i2*size_grid)*basisJKeMIm(ig1+i1*size_grid));
+				vec(i2+i1*jkem)+=complex((temp1re(ig1+i2*size_grid)*basisJKeMRe(ig1+i1*size_grid)+temp1im(ig1+i2*size_grid)*basisJKeMIm(ig1+i1*size_grid)), (temp1im(ig1+i2*size_grid)*basisJKeMRe(ig1+i1*size_grid)-temp1re(ig1+i2*size_grid)*basisJKeMIm(ig1+i1*size_grid)));
 			}
 		}
 	}

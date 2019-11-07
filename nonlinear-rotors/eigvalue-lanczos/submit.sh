@@ -6,4 +6,4 @@
 #SBATCH --mem-per-cpu=16GB
 #SBATCH --cpus-per-task=1
 export OMP_NUM_THREADS=1
-./run 10.05 4 50
+./run 10.05 6 5000
