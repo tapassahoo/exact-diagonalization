@@ -1,0 +1,175 @@
+// !$*UTF8*$!
+{
+	08FB7793FE84155DC02AAC07 /* Project object */ = {
+		activeBuildConfigurationName = Debug;
+		activeBuildStyle = 014CEA520018CE5811CA2923 /* Debug */;
+		activeTarget = 6C66D0620A2F8BAC00B847B2 /* makefile */;
+		addToTargets = (
+			6C66D0620A2F8BAC00B847B2 /* makefile */,
+		);
+		breakpointsGroup = 6C66D0890A2F8DF700B847B2 /* XCBreakpointsBucket */;
+		codeSenseManager = 6C66D0600A2F8B9A00B847B2 /* Code sense */;
+		perUserDictionary = {
+			PBXConfiguration.PBXFileTableDataSource3.PBXErrorsWarningsDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXErrorsWarningsDataSource_LocationID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					300,
+					200,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXErrorsWarningsDataSource_TypeID,
+					PBXErrorsWarningsDataSource_MessageID,
+					PBXErrorsWarningsDataSource_LocationID,
+				);
+			};
+			PBXConfiguration.PBXFileTableDataSource3.PBXFileTableDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					944,
+					20,
+					48,
+					43,
+					43,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+					PBXFileDataSource_Target_ColumnID,
+				);
+			};
+			PBXConfiguration.PBXTargetDataSource.PBXTargetDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					200,
+					63,
+					20,
+					48.1626,
+					43,
+					43,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXTargetDataSource_PrimaryAttribute,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+				);
+			};
+			PBXPerProjectTemplateStateSaveDate = 170888082;
+			PBXWorkspaceStateSaveDate = 170888082;
+		};
+		perUserProjectItems = {
+			6C66D08F0A2F8E1100B847B2 /* PBXTextBookmark */ = 6C66D08F0A2F8E1100B847B2 /* PBXTextBookmark */;
+			6C66D0900A2F8E1100B847B2 /* PBXTextBookmark */ = 6C66D0900A2F8E1100B847B2 /* PBXTextBookmark */;
+			6C66D0910A2F8E1100B847B2 /* PBXTextBookmark */ = 6C66D0910A2F8E1100B847B2 /* PBXTextBookmark */;
+			6C66D0920A2F8E1100B847B2 /* PBXTextBookmark */ = 6C66D0920A2F8E1100B847B2 /* PBXTextBookmark */;
+			6C66D0BE0A2FB8F700B847B2 /* PBXTextBookmark */ = 6C66D0BE0A2FB8F700B847B2 /* PBXTextBookmark */;
+		};
+		sourceControlManager = 6C66D05F0A2F8B9A00B847B2 /* Source Control */;
+		userBuildSettings = {
+		};
+	};
+	6C66D05F0A2F8B9A00B847B2 /* Source Control */ = {
+		isa = PBXSourceControlManager;
+		fallbackIsa = XCSourceControlManager;
+		isSCMEnabled = 0;
+		scmConfiguration = {
+		};
+		scmType = "";
+	};
+	6C66D0600A2F8B9A00B847B2 /* Code sense */ = {
+		isa = PBXCodeSenseManager;
+		indexTemplatePath = "";
+	};
+	6C66D0620A2F8BAC00B847B2 /* makefile */ = {
+		activeExec = 0;
+	};
+	6C66D06D0A2F8BED00B847B2 /* trimer.cxx */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1724, 13186}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRect = "{{0, 1178}, {1136, 741}}";
+		};
+	};
+	6C66D07C0A2F8CB600B847B2 /* backward_warning.h */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.c.h;
+		name = backward_warning.h;
+		path = "/usr/include/c++/4.0.0/backward/backward_warning.h";
+		sourceTree = "<absolute>";
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1136, 760}}";
+			sepNavSelRange = "{1475, 76}";
+			sepNavVisRect = "{{0, 0}, {1136, 623}}";
+		};
+	};
+	6C66D0890A2F8DF700B847B2 /* XCBreakpointsBucket */ = {
+		isa = XCBreakpointsBucket;
+		name = "Project Breakpoints";
+		objects = (
+		);
+	};
+	6C66D08F0A2F8E1100B847B2 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6C66D07C0A2F8CB600B847B2 /* backward_warning.h */;
+		name = "#warning This file includes at least one deprecated or antiquated header. \\";
+		rLen = 76;
+		rLoc = 1475;
+		rType = 0;
+		vrLen = 1630;
+		vrLoc = 0;
+	};
+	6C66D0900A2F8E1100B847B2 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6C66D06D0A2F8BED00B847B2 /* trimer.cxx */;
+		name = "trimer.cxx: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 1441;
+		vrLoc = 0;
+	};
+	6C66D0910A2F8E1100B847B2 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6C66D06D0A2F8BED00B847B2 /* trimer.cxx */;
+		name = "trimer.cxx: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 1441;
+		vrLoc = 0;
+	};
+	6C66D0920A2F8E1100B847B2 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6C66D07C0A2F8CB600B847B2 /* backward_warning.h */;
+		name = "#warning This file includes at least one deprecated or antiquated header. \\";
+		rLen = 76;
+		rLoc = 1475;
+		rType = 0;
+		vrLen = 1630;
+		vrLoc = 0;
+	};
+	6C66D0BE0A2FB8F700B847B2 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6C66D06D0A2F8BED00B847B2 /* trimer.cxx */;
+		name = "trimer.cxx: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 702;
+		vrLoc = 2292;
+	};
+}

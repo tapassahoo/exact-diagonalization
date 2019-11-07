@@ -187,11 +187,12 @@ if __name__ == '__main__':
 					jtempcounter+=1
 
 	# Compute littleD(j,m,k,theta) and compare it with the date estimated by asymrho.f
-	"""
+	'''
 	theta = 1.0 # in degree
 	for s in range(JKeM):
 		print("j=",JKeMQuantumNumList[s,0],"m=",JKeMQuantumNumList[s,2],"k=",JKeMQuantumNumList[s,1],littleD(JKeMQuantumNumList[s,0],JKeMQuantumNumList[s,2],JKeMQuantumNumList[s,1],theta*np.pi/180.))
-	"""
+	exit()
+	'''
 
 	#
 	dJKeM = np.zeros((JKeM,len(xGL)),float)

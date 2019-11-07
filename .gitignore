@@ -32,3 +32,8 @@ nonlinear-rotors/*.pyc
 nonlinear-rotors/*.out
 nonlinear-rotors/*_old.py
 nonlinear-rotors/exact-energies-of-H2O
+nonlinear-rotors/eigvalue-lanczos/*.txt
+nonlinear-rotors/eigvalue-lanczos/*.dat
+nonlinear-rotors/eigvalue-lanczos/*.out
+nonlinear-rotors/eigvalue-lanczos/log
+
