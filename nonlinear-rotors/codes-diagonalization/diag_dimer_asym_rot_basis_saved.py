@@ -58,7 +58,7 @@ if __name__ == '__main__':
 	#thetaNum = int(2*Jmax+1+incr)
 	#angleNum = int(2*Jmax+1+incr)
 	thetaNum = 5
-	angleNum = 5
+	angleNum = 7
 	print("Jmax = ", Jmax, flush=True)
 	print("angleNum = ", angleNum, flush=True)
 	strFile = "diag-2-p-H2O-jmax"+str(Jmax)+"-Rpt"+str(zCOM)+"Angstrom-grid-"+str(thetaNum)+"-"+str(angleNum)+"-saved-basis.txt"
@@ -97,21 +97,25 @@ if __name__ == '__main__':
 	com1=[0.0,0.0,0.0]
 	com2=[0.0,0.0,zCOM]
 	v6d = np.zeros((len(xGL)*angleNum*angleNum,len(xGL)*angleNum*angleNum),float)
-	ii=0
 	for th1 in range(len(xGL)):
 		for ph1 in range(angleNum):
 			for ch1 in range(angleNum):
+				ii = ch1+(ph1+th1*angleNum)*angleNum
 				Eulang1=[phixiGridPts[ph1], math.acos(xGL[th1]), phixiGridPts[ch1]]
 
-				jj=0
 				for th2 in range(len(xGL)):
 					for ph2 in range(angleNum):
 						for ch2 in range(angleNum):
+							jj = ch2+(ph2+th2*angleNum)*angleNum
 							Eulang2=[phixiGridPts[ph2], math.acos(xGL[th2]), phixiGridPts[ch2]]
 							v6d[ii,jj]=pot.caleng(com1,com2,Eulang1,Eulang2)
-							jj=jj+1
-				ii=ii+1
 	#Construction of potential matrix ends
+
+	'''
+	for i in range(len(xGL)*angleNum*angleNum):
+		print(v6d[0,i])
+	exit()
+	'''
 
 	JKM = int(((2*Jmax+1)*(2*Jmax+2)*(2*Jmax+3)/6)) #JKM = "Sum[(2J+1)**2,{J,0,Jmax}]" is computed in mathematica
 
@@ -281,7 +285,7 @@ if __name__ == '__main__':
 	HpotKee = np.tensordot(np.conjugate(eEEebasisuse), tempa, axes=([1,3],[1,3]))
 
 	#printing block is opened
-	if (io_write1 == True):
+	if (io_write == True):
 		pot_check_file = "pot-check"+strFile
 		pot_check_write = open(pot_check_file,'w')
 		pot_check_write.write("Printing of shapes and elements of potential matrix - "+"\n")
@@ -297,15 +301,27 @@ if __name__ == '__main__':
 			for s2 in range(JKeM):
 				for s3 in range(JKeM):
 					for s4 in range(JKeM):
-						if (np.abs(HpotKee[s1,s2,s3,s4]) > tol):
-							pot_check_write.write("L vec Rotor1: "+str(JKeMQuantumNumList[s1,0])+" "+str(JKeMQuantumNumList[s1,1])+" "+str(JKeMQuantumNumList[s1,2])+"\n")
-							pot_check_write.write("R vec Rotor1: "+str(JKeMQuantumNumList[s3,0])+" "+str(JKeMQuantumNumList[s3,1])+" "+str(JKeMQuantumNumList[s3,2])+"\n")
-							pot_check_write.write("L vec Rotor2: "+str(JKeMQuantumNumList[s2,0])+" "+str(JKeMQuantumNumList[s2,1])+" "+str(JKeMQuantumNumList[s2,2])+"\n")
-							pot_check_write.write("R vec Rotor2: "+str(JKeMQuantumNumList[s4,0])+" "+str(JKeMQuantumNumList[s4,1])+" "+str(JKeMQuantumNumList[s4,2])+"\n")
+						if (np.abs(HpotKee[s1,s2,s3,s4]) > 10e-2):
+							pot_check_write.write("L vec Rotor1: s1 "+str(s1)+"  "+str(JKeMQuantumNumList[s1,0])+" "+str(JKeMQuantumNumList[s1,1])+" "+str(JKeMQuantumNumList[s1,2])+"\n")
+							pot_check_write.write("R vec Rotor1: s3 "+str(s3)+"  "+str(JKeMQuantumNumList[s3,0])+" "+str(JKeMQuantumNumList[s3,1])+" "+str(JKeMQuantumNumList[s3,2])+"\n")
+							pot_check_write.write("L vec Rotor2: s2 "+str(s2)+"  "+str(JKeMQuantumNumList[s2,0])+" "+str(JKeMQuantumNumList[s2,1])+" "+str(JKeMQuantumNumList[s2,2])+"\n")
+							pot_check_write.write("R vec Rotor2: s4 "+str(s4)+"  "+str(JKeMQuantumNumList[s4,0])+" "+str(JKeMQuantumNumList[s4,1])+" "+str(JKeMQuantumNumList[s4,2])+"\n")
 							pot_check_write.write("Potential: Real "+str(np.real(HpotKee[s1,s2,s3,s4]))+"\n")
 							pot_check_write.write("Potential: Imag "+str(np.imag(HpotKee[s1,s2,s3,s4]))+"\n")
 							pot_check_write.write("\n")
 		pot_check_write.close()
+	'''
+	s1=1
+	s2=0
+	s3=1
+	s4=0
+	print("L vec Rotor1: s1 "+str(s1)+"  "+str(JKeMQuantumNumList[s1,0])+" "+str(JKeMQuantumNumList[s1,1])+" "+str(JKeMQuantumNumList[s1,2]))
+	print("L vec Rotor2: s2 "+str(s2)+"  "+str(JKeMQuantumNumList[s2,0])+" "+str(JKeMQuantumNumList[s2,1])+" "+str(JKeMQuantumNumList[s2,2]))
+	print("R vec Rotor1: s3 "+str(s3)+"  "+str(JKeMQuantumNumList[s3,0])+" "+str(JKeMQuantumNumList[s3,1])+" "+str(JKeMQuantumNumList[s3,2]))
+	print("R vec Rotor2: s4 "+str(s4)+"  "+str(JKeMQuantumNumList[s4,0])+" "+str(JKeMQuantumNumList[s4,1])+" "+str(JKeMQuantumNumList[s4,2]))
+	print(HpotKee[s1,s2,s3,s4])
+	exit()
+	'''
 	# printing block is closed
 
     #Computation of Hrot (Asymmetric Top Hamiltonian in Symmetric Top Basis)

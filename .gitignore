@@ -1,0 +1,6 @@
+exact-energies-of-H2O/
+Results-p-H2O/
+*.txt
+log*
+*.o
+*.pyc

@@ -1,6 +1,0 @@
-# Eigen values of (Htot = Hrot + Hvpot) - Units associated with the first and second columns are Kelvin and wavenumber, respectively. 
-        -59.52220343         -41.37028105
-        -28.04173831         -19.49011508
-         11.00378123           7.64806233
-         11.00378123           7.64806233
-         89.12088742          61.94253485
