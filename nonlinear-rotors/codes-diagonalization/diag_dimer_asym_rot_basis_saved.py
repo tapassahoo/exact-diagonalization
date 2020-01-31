@@ -55,10 +55,8 @@ if __name__ == '__main__':
 	zCOM=float(sys.argv[1])
 	Jmax=int(sys.argv[2])
 	incr=int(sys.argv[3])
-	#thetaNum = int(2*Jmax+1+incr)
-	#angleNum = int(2*Jmax+1+incr)
-	thetaNum = 5
-	angleNum = 7
+	thetaNum = int(2*Jmax+3+incr)
+	angleNum = int(2*(2*Jmax+1)+incr)
 	print("Jmax = ", Jmax, flush=True)
 	print("angleNum = ", angleNum, flush=True)
 	strFile = "diag-2-p-H2O-jmax"+str(Jmax)+"-Rpt"+str(zCOM)+"Angstrom-grid-"+str(thetaNum)+"-"+str(angleNum)+"-saved-basis.txt"
@@ -68,7 +66,7 @@ if __name__ == '__main__':
 	normCheckMJKeM = False
 	normCheckKJKeM = False
 	potwrite = False
-	io_write = True
+	io_write = False
 
 	#The rotational A, B, C constants are indicated by Ah2o, Bh2o and Ch2o, respectively. The unit is cm^-1. 
 	Ah2o= 27.877 #cm-1 
@@ -236,8 +234,7 @@ if __name__ == '__main__':
 					print("M1 = ",JKeMQuantumNumList[s1,1]," M2 = ",JKeMQuantumNumList[s2,1], " <M1|M2> = ",np.inner(KJKeM[s1,:],np.conjugate(KJKeM[s2,:])))
 	#block for normalization checking ends
 
-	io_write1 = False
-	if (io_write1 == True):
+	if (io_write == True):
 		eEEbasisuseTest = KJKeM[:,np.newaxis,np.newaxis,:]*MJKeM[:,np.newaxis,:,np.newaxis]*dJKeM[:,:,np.newaxis,np.newaxis]
 		eEEebasisuseTest = np.reshape(eEEbasisuseTest,(JKeM,len(xGL)*angleNum*angleNum),order='C')
 
@@ -254,27 +251,28 @@ if __name__ == '__main__':
 
 	#Norms are Saved in norm-check.dat
 	#printing block is opened
-	norm_check_file = "norm-check"+strFile
-	norm_check_write = open(norm_check_file,'w')
-	norm_check_write.write("eEEbasisuse.shape: shape of the even |J1K1M1>|J2K2M2> basis: " + str(eEEbasisuse.shape)+" \n")
-	norm_check_write.write("eEEebasisuse.shape: reduced shape of the even |J1K1M1>|J2K2M2> basis: " + str(eEEebasisuse.shape)+" \n")
-	norm_check_write.write("normMat.shape: shape of the even <J1K1M1|<J2K2M2||J2K2M2>|J1K1M1> basis: " + str(normMat.shape)+" \n")
-	norm_check_write.write("\n")
-	norm_check_write.write("\n")
+	if (io_write == True):
+		norm_check_file = "norm-check"+strFile
+		norm_check_write = open(norm_check_file,'w')
+		norm_check_write.write("eEEbasisuse.shape: shape of the even |J1K1M1>|J2K2M2> basis: " + str(eEEbasisuse.shape)+" \n")
+		norm_check_write.write("eEEebasisuse.shape: reduced shape of the even |J1K1M1>|J2K2M2> basis: " + str(eEEebasisuse.shape)+" \n")
+		norm_check_write.write("normMat.shape: shape of the even <J1K1M1|<J2K2M2||J2K2M2>|J1K1M1> basis: " + str(normMat.shape)+" \n")
+		norm_check_write.write("\n")
+		norm_check_write.write("\n")
 
-	for s1 in range(JKeM):
-		for s2 in range(JKeM):
-			for s3 in range(JKeM):
-				for s4 in range(JKeM):
-					if (np.abs(normMat[s1,s2,s3,s4]) > tol):
-						norm_check_write.write("L vec Rotor1: "+str(JKeMQuantumNumList[s1,0])+" "+str(JKeMQuantumNumList[s1,1])+" "+str(JKeMQuantumNumList[s1,2])+"\n")
-						norm_check_write.write("R vec Rotor1: "+str(JKeMQuantumNumList[s3,0])+" "+str(JKeMQuantumNumList[s3,1])+" "+str(JKeMQuantumNumList[s3,2])+"\n")
-						norm_check_write.write("L vec Rotor2: "+str(JKeMQuantumNumList[s2,0])+" "+str(JKeMQuantumNumList[s2,1])+" "+str(JKeMQuantumNumList[s2,2])+"\n")
-						norm_check_write.write("R vec Rotor2: "+str(JKeMQuantumNumList[s4,0])+" "+str(JKeMQuantumNumList[s4,1])+" "+str(JKeMQuantumNumList[s4,2])+"\n")
-						norm_check_write.write("Norm: Real "+str(np.real(normMat[s1,s2,s3,s4]))+"\n")
-						norm_check_write.write("Norm: Imag "+str(np.imag(normMat[s1,s2,s3,s4]))+"\n")
-						norm_check_write.write("\n")
-	norm_check_write.close()
+		for s1 in range(JKeM):
+			for s2 in range(JKeM):
+				for s3 in range(JKeM):
+					for s4 in range(JKeM):
+						if (np.abs(normMat[s1,s2,s3,s4]) > tol):
+							norm_check_write.write("L vec Rotor1: "+str(JKeMQuantumNumList[s1,0])+" "+str(JKeMQuantumNumList[s1,1])+" "+str(JKeMQuantumNumList[s1,2])+"\n")
+							norm_check_write.write("R vec Rotor1: "+str(JKeMQuantumNumList[s3,0])+" "+str(JKeMQuantumNumList[s3,1])+" "+str(JKeMQuantumNumList[s3,2])+"\n")
+							norm_check_write.write("L vec Rotor2: "+str(JKeMQuantumNumList[s2,0])+" "+str(JKeMQuantumNumList[s2,1])+" "+str(JKeMQuantumNumList[s2,2])+"\n")
+							norm_check_write.write("R vec Rotor2: "+str(JKeMQuantumNumList[s4,0])+" "+str(JKeMQuantumNumList[s4,1])+" "+str(JKeMQuantumNumList[s4,2])+"\n")
+							norm_check_write.write("Norm: Real "+str(np.real(normMat[s1,s2,s3,s4]))+"\n")
+							norm_check_write.write("Norm: Imag "+str(np.imag(normMat[s1,s2,s3,s4]))+"\n")
+							norm_check_write.write("\n")
+		norm_check_write.close()
 	#printing block is closed
 
 	#Construction of a constant potential matrix over the six Euler angles
@@ -310,18 +308,18 @@ if __name__ == '__main__':
 							pot_check_write.write("Potential: Imag "+str(np.imag(HpotKee[s1,s2,s3,s4]))+"\n")
 							pot_check_write.write("\n")
 		pot_check_write.close()
-	'''
-	s1=1
-	s2=0
-	s3=1
-	s4=0
-	print("L vec Rotor1: s1 "+str(s1)+"  "+str(JKeMQuantumNumList[s1,0])+" "+str(JKeMQuantumNumList[s1,1])+" "+str(JKeMQuantumNumList[s1,2]))
-	print("L vec Rotor2: s2 "+str(s2)+"  "+str(JKeMQuantumNumList[s2,0])+" "+str(JKeMQuantumNumList[s2,1])+" "+str(JKeMQuantumNumList[s2,2]))
-	print("R vec Rotor1: s3 "+str(s3)+"  "+str(JKeMQuantumNumList[s3,0])+" "+str(JKeMQuantumNumList[s3,1])+" "+str(JKeMQuantumNumList[s3,2]))
-	print("R vec Rotor2: s4 "+str(s4)+"  "+str(JKeMQuantumNumList[s4,0])+" "+str(JKeMQuantumNumList[s4,1])+" "+str(JKeMQuantumNumList[s4,2]))
-	print(HpotKee[s1,s2,s3,s4])
-	exit()
-	'''
+		'''
+		s1=1
+		s2=0
+		s3=1
+		s4=0
+		print("L vec Rotor1: s1 "+str(s1)+"  "+str(JKeMQuantumNumList[s1,0])+" "+str(JKeMQuantumNumList[s1,1])+" "+str(JKeMQuantumNumList[s1,2]))
+		print("L vec Rotor2: s2 "+str(s2)+"  "+str(JKeMQuantumNumList[s2,0])+" "+str(JKeMQuantumNumList[s2,1])+" "+str(JKeMQuantumNumList[s2,2]))
+		print("R vec Rotor1: s3 "+str(s3)+"  "+str(JKeMQuantumNumList[s3,0])+" "+str(JKeMQuantumNumList[s3,1])+" "+str(JKeMQuantumNumList[s3,2]))
+		print("R vec Rotor2: s4 "+str(s4)+"  "+str(JKeMQuantumNumList[s4,0])+" "+str(JKeMQuantumNumList[s4,1])+" "+str(JKeMQuantumNumList[s4,2]))
+		print(HpotKee[s1,s2,s3,s4])
+		exit()
+		'''
 	# printing block is closed
 
     #Computation of Hrot (Asymmetric Top Hamiltonian in Symmetric Top Basis)
@@ -360,27 +358,31 @@ if __name__ == '__main__':
 
 	HtotKee = HrotKee + HpotKee   #Unit Kelvin
 
+	#Checking it the 'HtotKee' matrix is hermitian.
 	if (np.allclose(HtotKee, HtotKee.T) == False):
 		print("The Hamiltonian matrx - 'HtotKe' is not hermitian.")
 		exit()
 		
-# printing block is open
-	"""
-	tot_est = LA.eigh(Htot)[0] 
-	sort_indx = tot_est.argsort()     # prints out eigenvalues for pure asymmetric top rotor (z_ORTHOz)
-	tot_est = tot_est[sort_indx]       
+	#See https://docs.scipy.org/doc/numpy/reference/generated/numpy.linalg.eigh.html
+	eig_vals, eig_vecs = LA.eigh(HtotKee)
 
 	#printing block is opened
-	tot_est_comb = np.array([tot_est, tot_est/CMRECIP2KL])
+	energy_comb = np.array([eig_vals, eig_vals/CMRECIP2KL])
 
-	eig_file = "eigen-values"+strFile
-	np.savetxt("exact-energies-of-H2O/"+eig_file, tot_est_comb.T, fmt='%20.8f', delimiter=' ', header='Eigen values of (Htot = Hrot + Hvpot) - Units associated with the first and second columns are Kelvin and wavenumber, respectively. ')
-	"""
+	eig_file = "ground-state-energy-"+strFile
+	np.savetxt(eig_file, energy_comb.T, fmt='%20.8f', delimiter=' ', header='Eigen values of (Htot = Hrot + Hvpot) - Units associated with the first and second columns are Kelvin and wavenumber, respectively. ')
 	# printing block is closed
-	evals_large, evecs_large = eigsh(HtotKee, 5, which='SA')
-	#printing block is opened
-	tot_est_comb = np.array([evals_large, evals_large/CMRECIP2KL])
 
-	eig_file = "boundstates-"+strFile
-	np.savetxt(eig_file, tot_est_comb.T, fmt='%20.8f', delimiter=' ', header='Eigen values of (Htot = Hrot + Hvpot) - Units associated with the first and second columns are Kelvin and wavenumber, respectively. ')
+	#Computations of entropies
+	vec_gr = eig_vecs[:,0]	
+	vec_gr_2d = np.reshape(vec_gr, (JKeM, JKeM))
+	s_svd = np.linalg.svd(vec_gr_2d, full_matrices=False)[1]
+
+	S_2=-math.log(np.sum(np.power(s_svd, 4)))
+	S_vN = -np.sum(np.square(s_svd)*np.log(np.square(s_svd)))
+	ent_comb = np.array([S_vN, S_2])
+
+	#printing block is opened
+	ent_file = "ground-state-entropies-"+strFile
+	np.savetxt(ent_file, ent_comb.T, fmt='%20.8f', delimiter=' ', header='First col -- SvN, Second one -- S2, respectively. ')
 	# printing block is closed
