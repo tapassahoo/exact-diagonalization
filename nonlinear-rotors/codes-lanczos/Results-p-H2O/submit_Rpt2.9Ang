@@ -1,9 +1,0 @@
-#!/bin/bash
-#SBATCH --job-name=Rpt2.9
-#SBATCH --output=log-p-H2O-Rpt2.9ang-j2-niter0.txt
-#SBATCH --time=7-00:00
-
-#SBATCH --mem-per-cpu=16GB
-#SBATCH --cpus-per-task=1
-export OMP_NUM_THREADS=1
-./run  2.9  2  0
