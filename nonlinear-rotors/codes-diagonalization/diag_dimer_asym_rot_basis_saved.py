@@ -360,11 +360,10 @@ if __name__ == '__main__':
 
 	HtotKee = HrotKee + HpotKee   #Unit Kelvin
 
-	# check to make sure H is hermitian
-	#if (np.all(np.abs(HtotKee-HtotKee.T) < tol) == False):
-	#	print("The Hamiltonian matrx HtotKe is not hermitian.")
-	#	exit()
-
+	if (np.allclose(HtotKee, HtotKee.T) == False):
+		print("The Hamiltonian matrx - 'HtotKe' is not hermitian.")
+		exit()
+		
 # printing block is open
 	"""
 	tot_est = LA.eigh(Htot)[0] 

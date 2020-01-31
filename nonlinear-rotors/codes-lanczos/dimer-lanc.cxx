@@ -683,76 +683,34 @@ void check_normJKeM(string fname, int jkem, int size_grid, vector &basisJKeMRe, 
 
 void get_pot(int size_theta, int size_phi, vector &grid_theta, vector &grid_phi, double *com1, double *com2, matrix &Vpot)
 {
-    double theta1, theta2, phi1, phi2, chi1, chi2;
 	double Eulang1[3];
 	double Eulang2[3];
 	double E_2H2O;
 
-    for (int it = 0; it < size_theta; it++) {
-		for (int ip = 0; ip < size_phi; ip++) {
-			for (int ic = 0; ic < size_phi; ic++) {
-				for (int jt = 0; jt < size_theta; jt++) {
-					for (int jp = 0; jp < size_phi; jp++) {
-						for (int jc = 0; jc < size_phi; jc++) {
+    for (int it=0; it<size_theta; it++) {
+		Eulang1[1]=grid_theta(it);
+		for (int ip=0; ip<size_phi; ip++) {
+			Eulang1[0]=grid_phi(ip);
+			for (int ic=0; ic<size_phi; ic++) {
+				Eulang1[2]=grid_phi(ic);
 
-							Eulang1[0]=grid_phi(ip);
-							Eulang1[1]=grid_theta(it);
-							Eulang1[2]=grid_phi(ic);
-
-							Eulang2[0]=grid_phi(jp);
-							Eulang2[1]=grid_theta(jt);
+				for (int jt=0; jt<size_theta; jt++) {
+					Eulang2[1]=grid_theta(jt);
+					for (int jp=0; jp<size_phi; jp++) {
+						Eulang2[0]=grid_phi(jp);
+						for (int jc=0; jc<size_phi; jc++) {
 							Eulang2[2]=grid_phi(jc);
 
-							caleng_(com1, com2, &E_2H2O, Eulang1, Eulang2);
-							int ii = ic+(ip+it*size_phi)*size_phi;
-							int jj = jc+(jp+jt*size_phi)*size_phi;
-							Vpot(ii,jj) = E_2H2O;
+							caleng_(com1,com2,&E_2H2O,Eulang1,Eulang2);
+							int ii=ic+(ip+it*size_phi)*size_phi;
+							int jj=jc+(jp+jt*size_phi)*size_phi;
+							Vpot(ii,jj)=E_2H2O;
 						}
 					}
 				}
             }
         }
     }
-	/*
-    for (int it = 0; it < size_theta; it++)
-    {
-        theta1 = grid_theta(it);
-		Eulang1[1]=theta1;
-
-		for (int ip = 0; ip < size_phi; ip++)
-		{
-			phi1 = grid_phi(ip);
-			Eulang1[0]=phi1;
-
-			for (int ic = 0; ic < size_phi; ic++)
-			{
-				chi1 = grid_phi(ic);
-				Eulang1[2]=chi1;
-
-				for (int jt = 0; jt < size_theta; jt++)
-				{
-					theta2 = grid_theta(jt);
-					Eulang2[1]=theta2;
-
-					for (int jp = 0; jp < size_phi; jp++)
-					{
-						phi2 = grid_phi(jp);
-						Eulang2[0]=phi2;
-
-						for (int jc = 0; jc < size_phi; jc++)
-						{
-							chi1 = grid_phi(jc);
-							Eulang2[2]=chi2;
-
-							caleng_(com1, com2, &E_2H2O, Eulang1, Eulang2);
-							Vpot(ic+(ip+it*size_phi)*size_phi, jc+(jp+jt*size_phi)*size_phi) = E_2H2O;
-						}
-					}
-				}
-            }
-        }
-    }
-	*/
 }
 
 cvector Hv(int jkem, int size_grid, vector &HrotKe, matrix &Vpot, vector &basisJKeMRe, vector &basisJKeMIm, cvector &v)
