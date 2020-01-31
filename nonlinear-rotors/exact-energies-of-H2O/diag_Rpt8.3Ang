@@ -1,9 +1,0 @@
-#!/bin/bash
-#SBATCH --job-name=diag-Rpt8.3
-#SBATCH --output=/home/tapas/CodesForEigenValues/nonlinear-rotors/exact-energies-of-H2O/diag-submit-p-H2O-Rpt8.3ang-j3-grid4.txt
-#SBATCH --time=1-00:00
-
-#SBATCH --mem-per-cpu=256GB
-#SBATCH --cpus-per-task=1
-export OMP_NUM_THREADS=1
-python /home/tapas/CodesForEigenValues/nonlinear-rotors/codes-diagonalization/diag_dimer_asym_rot_basis_saved.py  8.3  3  4
