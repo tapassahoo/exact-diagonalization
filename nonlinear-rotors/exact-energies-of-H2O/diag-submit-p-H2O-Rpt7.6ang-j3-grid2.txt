@@ -1,0 +1,36 @@
+============================================================
+running job 'diag-Rpt7.6' (771151)
+on node 'cpu64001' in partition 'highmem'
+on cluster 'feynman'
+as 'tapas' (1172)
+============================================================
+Jmax =  3
+angleNum =  9
+|------------------------------------------------
+| A list of Gaussian quadrature points of Legendre polynomials - 
+
+[-0.96816024 -0.83603111 -0.61337143 -0.32425342  0.          0.32425342
+  0.61337143  0.83603111  0.96816024]
+
+| A list of the corrsponding weights - 
+
+[ 0.08127439  0.18064816  0.2606107   0.31234708  0.33023936  0.31234708
+  0.2606107   0.18064816  0.08127439]
+|------------------------------------------------
+|------------------------------------------------
+| Number of basis functions calculations ....
+| 
+| # of |JKM> basis = 84
+| 
+| # of even K in |JKM> = 40
+| # of odd  K in |JKM> = 44
+| 
+| # of even K1, even K2 in the |J1K1M1,J2K2M2> = 1600
+| # of even K1, odd  K2 in the |J1K1M1,J2K2M2> = 1760
+| # of odd  K1, even K2 in the |J1K1M1,J2K2M2> = 1760
+| # of odd  K1, odd  K2 in the |J1K1M1,J2K2M2> = 1936
+| 
+| # of |J1K1M1;J2K2M2> basis= # of ChkJKM
+| # of |J1K1M1;J2K2M2> basis= 7056
+| # of ChkJKM = 7056
+|------------------------------------------------

@@ -1,0 +1,11205 @@
+eEEbasisuse.shape: shape of the even |J1K1M1>|J2K2M2> basis: (40, 8, 8, 8, 40, 8, 8, 8) 
+eEEebasisuse.shape: reduced shape of the even |J1K1M1>|J2K2M2> basis: (40, 512, 40, 512) 
+normMat.shape: shape of the even <J1K1M1|<J2K2M2||J2K2M2>|J1K1M1> basis: (40, 40, 40, 40) 
+
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -2
+R vec Rotor1: 2 -2 -2
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 -1
+R vec Rotor1: 2 -2 -1
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 0
+R vec Rotor1: 2 -2 0
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 1
+R vec Rotor1: 2 -2 1
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 -2 2
+R vec Rotor1: 2 -2 2
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -2
+R vec Rotor1: 2 0 -2
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 -1
+R vec Rotor1: 2 0 -1
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 0
+R vec Rotor1: 2 0 0
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 1
+R vec Rotor1: 2 0 1
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 0 2
+R vec Rotor1: 2 0 2
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -2
+R vec Rotor1: 2 2 -2
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 -1
+R vec Rotor1: 2 2 -1
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 0
+R vec Rotor1: 2 2 0
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 1
+R vec Rotor1: 2 2 1
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 2 2 2
+R vec Rotor1: 2 2 2
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -3
+R vec Rotor1: 3 -2 -3
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -2
+R vec Rotor1: 3 -2 -2
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 -1
+R vec Rotor1: 3 -2 -1
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 0
+R vec Rotor1: 3 -2 0
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 1
+R vec Rotor1: 3 -2 1
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 2
+R vec Rotor1: 3 -2 2
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 -2 3
+R vec Rotor1: 3 -2 3
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -3
+R vec Rotor1: 3 0 -3
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -2
+R vec Rotor1: 3 0 -2
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 -1
+R vec Rotor1: 3 0 -1
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 0
+R vec Rotor1: 3 0 0
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 1
+R vec Rotor1: 3 0 1
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 2
+R vec Rotor1: 3 0 2
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 0 3
+R vec Rotor1: 3 0 3
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -3
+R vec Rotor1: 3 2 -3
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -2
+R vec Rotor1: 3 2 -2
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 -1
+R vec Rotor1: 3 2 -1
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 0
+R vec Rotor1: 3 2 0
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 1
+R vec Rotor1: 3 2 1
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 2
+R vec Rotor1: 3 2 2
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 2 -2 -2
+R vec Rotor2: 2 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 2 -2 -1
+R vec Rotor2: 2 -2 -1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 2 -2 0
+R vec Rotor2: 2 -2 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 2 -2 1
+R vec Rotor2: 2 -2 1
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 2 -2 2
+R vec Rotor2: 2 -2 2
+Norm: Real 1.0
+Norm: Imag 4.23516473627e-21
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 2 0 -2
+R vec Rotor2: 2 0 -2
+Norm: Real 1.0
+Norm: Imag -2.80792249195e-19
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 2 0 -1
+R vec Rotor2: 2 0 -1
+Norm: Real 1.0
+Norm: Imag 4.71109137351e-19
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 2 0 0
+R vec Rotor2: 2 0 0
+Norm: Real 1.0
+Norm: Imag -2.70838784885e-19
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 2 0 1
+R vec Rotor2: 2 0 1
+Norm: Real 1.0
+Norm: Imag -8.95737341721e-20
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 2 0 2
+R vec Rotor2: 2 0 2
+Norm: Real 1.0
+Norm: Imag -2.27270354841e-19
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 2 2 -2
+R vec Rotor2: 2 2 -2
+Norm: Real 1.0
+Norm: Imag 3.78517848304e-21
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 2 2 -1
+R vec Rotor2: 2 2 -1
+Norm: Real 1.0
+Norm: Imag 4.79126469116e-20
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 2 2 0
+R vec Rotor2: 2 2 0
+Norm: Real 1.0
+Norm: Imag 1.05879118407e-21
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 2 2 1
+R vec Rotor2: 2 2 1
+Norm: Real 1.0
+Norm: Imag 1.44127949931e-20
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 2 2 2
+R vec Rotor2: 2 2 2
+Norm: Real 1.0
+Norm: Imag -5.08219768353e-21
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 3 -2 -3
+R vec Rotor2: 3 -2 -3
+Norm: Real 1.0
+Norm: Imag -7.54388718648e-21
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 3 -2 -2
+R vec Rotor2: 3 -2 -2
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 3 -2 -1
+R vec Rotor2: 3 -2 -1
+Norm: Real 1.0
+Norm: Imag 1.49289556954e-20
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 3 -2 0
+R vec Rotor2: 3 -2 0
+Norm: Real 0.999999999999
+Norm: Imag 5.39983503875e-21
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 3 -2 1
+R vec Rotor2: 3 -2 1
+Norm: Real 1.0
+Norm: Imag 7.17827335574e-21
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 3 -2 2
+R vec Rotor2: 3 -2 2
+Norm: Real 1.0
+Norm: Imag 1.4823076577e-21
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 3 -2 3
+R vec Rotor2: 3 -2 3
+Norm: Real 1.0
+Norm: Imag 4.5797644674e-21
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 3 0 -3
+R vec Rotor2: 3 0 -3
+Norm: Real 1.0
+Norm: Imag -5.06073958446e-19
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 3 0 -2
+R vec Rotor2: 3 0 -2
+Norm: Real 0.999999999999
+Norm: Imag 7.73049913268e-20
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 3 0 -1
+R vec Rotor2: 3 0 -1
+Norm: Real 0.999999999999
+Norm: Imag 1.79994501292e-19
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 3 0 0
+R vec Rotor2: 3 0 0
+Norm: Real 1.0
+Norm: Imag -3.18484388168e-19
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 3 0 1
+R vec Rotor2: 3 0 1
+Norm: Real 0.999999999999
+Norm: Imag -2.13134665353e-19
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 3 0 2
+R vec Rotor2: 3 0 2
+Norm: Real 0.999999999999
+Norm: Imag -2.41212484065e-19
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 3 0 3
+R vec Rotor2: 3 0 3
+Norm: Real 1.0
+Norm: Imag -2.24930870934e-18
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 3 2 -3
+R vec Rotor2: 3 2 -3
+Norm: Real 1.0
+Norm: Imag -1.73898675329e-20
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 3 2 -2
+R vec Rotor2: 3 2 -2
+Norm: Real 1.0
+Norm: Imag 1.4823076577e-21
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 3 2 -1
+R vec Rotor2: 3 2 -1
+Norm: Real 1.0
+Norm: Imag -2.31998312427e-20
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 3 2 0
+R vec Rotor2: 3 2 0
+Norm: Real 0.999999999999
+Norm: Imag 3.28225267061e-21
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 3 2 1
+R vec Rotor2: 3 2 1
+Norm: Real 1.0
+Norm: Imag 2.22346148654e-21
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 3 2 2
+R vec Rotor2: 3 2 2
+Norm: Real 1.0
+Norm: Imag -6.77626357803e-21
+
+L vec Rotor1: 3 2 3
+R vec Rotor1: 3 2 3
+L vec Rotor2: 3 2 3
+R vec Rotor2: 3 2 3
+Norm: Real 1.0
+Norm: Imag 5.42630481835e-21
+

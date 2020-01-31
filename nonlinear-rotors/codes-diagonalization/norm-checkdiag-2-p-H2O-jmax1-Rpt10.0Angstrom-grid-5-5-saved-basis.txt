@@ -1,0 +1,117 @@
+eEEbasisuse.shape: shape of the even |J1K1M1>|J2K2M2> basis: (4, 5, 5, 5, 4, 5, 5, 5) 
+eEEebasisuse.shape: reduced shape of the even |J1K1M1>|J2K2M2> basis: (4, 125, 4, 125) 
+normMat.shape: shape of the even <J1K1M1|<J2K2M2||J2K2M2>|J1K1M1> basis: (4, 4, 4, 4) 
+
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 5.39983503875e-19
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 0 0 0
+R vec Rotor1: 0 0 0
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag -5.39983503875e-19
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag -7.82234926789e-18
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 1.47320205351e-18
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag -4.09963946471e-18
+
+L vec Rotor1: 1 0 -1
+R vec Rotor1: 1 0 -1
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag -1.64148246426e-18
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag -1.09097843606e-18
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 0.0
+
+L vec Rotor1: 1 0 0
+R vec Rotor1: 1 0 0
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag 1.09097843606e-18
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 0 0 0
+R vec Rotor2: 0 0 0
+Norm: Real 1.0
+Norm: Imag 7.82234926789e-18
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 1 0 -1
+R vec Rotor2: 1 0 -1
+Norm: Real 1.0
+Norm: Imag 1.64148246426e-18
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 1 0 0
+R vec Rotor2: 1 0 0
+Norm: Real 1.0
+Norm: Imag 4.09963946471e-18
+
+L vec Rotor1: 1 0 1
+R vec Rotor1: 1 0 1
+L vec Rotor2: 1 0 1
+R vec Rotor2: 1 0 1
+Norm: Real 1.0
+Norm: Imag -1.47320205351e-18
+

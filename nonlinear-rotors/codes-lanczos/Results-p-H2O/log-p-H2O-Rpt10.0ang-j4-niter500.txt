@@ -1,0 +1,7 @@
+============================================================
+running job 'Rpt10.0' (771303)
+on node 'cpu16002' in partition 'serial'
+on cluster 'feynman'
+as 'tapas' (1172)
+============================================================
+slurmstepd-cpu16002: error: *** JOB 771303 ON cpu16002 CANCELLED AT 2020-01-15T14:32:28 ***
