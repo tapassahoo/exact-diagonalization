@@ -74,8 +74,8 @@ int main(int argc,char **argv)
 	thetaprefix<<size_theta;
 	string fname = "lanc-2-p-H2O-jmax" + jprefix.str()+"-Rpt"+rprefix.str() + "Angstrom-grid-"+thetaprefix.str()+"-"+phiprefix.str()+"-niter"+iterprefix.str()+".txt";
 	string fname1="logout-"+fname;
-	string fname2="ground-state-energy-"+fname;
-	string fname3="states_zpe-"+fname;
+	string fname2="energy-levels-"+fname;
+	string fname3="ground-state-energy-"+fname;
 //
     ofstream logout(fname1.c_str());
 
@@ -164,20 +164,20 @@ int main(int argc,char **argv)
 		if (i%1 == 0) logout<<"iteration "<<i<<endl;
 	}                  
 
-	double emax=1000.0;
+	double emax=100.0;
 	double emin=-2000.0;
 	lancbis(niter,eval,evalerr,emin,emax,ngood,alpha,beta,beta2);
 	logout<<" ngood = "<<ngood<<endl;
 	cout<<"E0 = "<<eval(0)<<endl;
 	// lanczos report:
-	ofstream lancout(fname2.c_str());
-	ofstream lanczpeout(fname3.c_str());
-	for (int i=0; i<ngood; i++) {
-		lancout<<eval(i)<<" "<<evalerr(i)<<endl;
-		lanczpeout<<(eval(i)-eval(0))<<endl;
-	}
-	lancout.flush();
-	lancout.close();
+	ofstream lancout2(fname2.c_str());
+	ofstream lancout3(fname3.c_str());
+	lancout3<<eval(0)<<" "<<evalerr(0)<<endl;
+	for (int i=0; i<ngood; i++) lancout2<<eval(i)<<" "<<evalerr(i)<<endl;
+	lancout2.flush();
+	lancout2.close();
+	lancout3.flush();
+	lancout3.close();
 	logout.close();
 
 

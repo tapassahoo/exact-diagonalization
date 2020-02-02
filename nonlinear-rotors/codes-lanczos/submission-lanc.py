@@ -7,7 +7,7 @@ import numpy as np
  
 def jobstring(NameOfServer,Rpt,jmax,dir_output,niter):
 	logfile = dir_output+"/lanc-submit-p-H2O-Rpt"+str(Rpt)+"ang-j"+str(jmax)+"-niter"+str(niter)+".txt"
-	jobname = "lanc-Rpt"+str(Rpt)
+	jobname = "lcR"+str(Rpt)
 
 	command_execution = "./run  " +  str(Rpt) + "  " + str(jmax) + "  " + str(niter)
 
@@ -21,7 +21,7 @@ def jobstring(NameOfServer,Rpt,jmax,dir_output,niter):
 #SBATCH --output=%s
 #SBATCH --time=1-00:00
 %s
-#SBATCH --mem-per-cpu=16GB
+#SBATCH --mem-per-cpu=8GB
 #SBATCH --cpus-per-task=1
 export OMP_NUM_THREADS=1
 %s
@@ -29,10 +29,10 @@ export OMP_NUM_THREADS=1
 	return job_string
 
 #initial parameters for qmc.input
-status = 'S'
-niter = 400
-jrot = 4
-zmin = 2.5
+status = 'A'
+niter = 100
+jrot = 2
+zmin = 2.6
 zmax = 10.0
 dz = 0.1
 nz = int(((zmax-zmin)+dz*0.5)/dz)
@@ -56,6 +56,7 @@ if (status == 'A'):
 	S2vsRpt = np.zeros(nz)
 
 # Loop over your jobs
+index_end=0
 for i in range(nz): 
 
 	value = zmin+i*dz
@@ -83,10 +84,15 @@ for i in range(nz):
 
 		fileAnalyze_energy = "ground-state-energy-"+strFile
 		data_input_energy = dir_output+"/"+fileAnalyze_energy
-		eig_kelvin = np.loadtxt(data_input_energy, usecols=([0]), unpack=True)
-		eigvalvsRpt1[i] = eig_kelvin[0]
 		CMRECIP2KL = 1.4387672
-		eigvalvsRpt2[i] = eig_kelvin[0]/CMRECIP2KL
+		if (os.path.isfile(data_input_energy) == True):
+			eig_kelvin= np.loadtxt(data_input_energy, usecols=(0), unpack=True)
+			eigvalvsRpt1[i] = eig_kelvin
+			eigvalvsRpt2[i] = eig_kelvin/CMRECIP2KL
+			index_end = index_end+1
+			print(index_end)
+		else:
+			break
 
 		'''
 		fileAnalyze_entropy = "ground-state-entropies-"+strFile
@@ -100,14 +106,12 @@ if (status == "A"):
 	#printing block is opened
 	strFile1 = "lanc-2-p-H2O-jmax"+str(jrot)+"-grid-"+str(thetaNum)+"-"+str(angleNum)+"-niter"+str(niter)+".txt"
 
-	energy_comb = np.array([saved_Rpt, eigvalvsRpt1, eigvalvsRpt2])
+	energy_comb = np.array([saved_Rpt[:index_end], eigvalvsRpt1[:index_end], eigvalvsRpt2[:index_end]])
 	eig_file = dir_output+"/ground-state-energy-vs-Rpt-"+strFile1
 	np.savetxt(eig_file, energy_comb.T, fmt='%20.8f', delimiter=' ', header='First col. --> Rpt (Angstrom); 2nd and 3rd cols are the eigen values of (Htot = Hrot + Hvpot) in Kelvin and wavenumber, respectively. ')
 
-	'''
-	entropy_comb = np.array([saved_Rpt, SvNvsRpt, S2vsRpt])
-	ent_file = dir_output+"/ground-state-entropies-vs-Rpt-"+strFile1
-	np.savetxt(ent_file, entropy_comb.T, fmt='%20.8f', delimiter=' ', header='First col. --> Rpt (Angstrom); 2nd and 3rd cols are the S_vN and S_2, respectively. ')
-	'''
+	#entropy_comb = np.array([saved_Rpt, SvNvsRpt, S2vsRpt])
+	#ent_file = dir_output+"/ground-state-entropies-vs-Rpt-"+strFile1
+	#np.savetxt(ent_file, entropy_comb.T, fmt='%20.8f', delimiter=' ', header='First col. --> Rpt (Angstrom); 2nd and 3rd cols are the S_vN and S_2, respectively. ')
 	# printing block is closed
 
