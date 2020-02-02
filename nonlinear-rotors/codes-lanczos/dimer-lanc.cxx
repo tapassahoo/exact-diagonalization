@@ -67,13 +67,12 @@ int main(int argc,char **argv)
 
 // Generation of names of output file //
 	stringstream rprefix, jprefix, iterprefix, thetaprefix, phiprefix;
-	rprefix.precision(3);
-	rprefix<<zCOM;
+	rprefix<<fixed<<setprecision(1)<<zCOM;
 	jprefix<<jmax;
 	iterprefix<<niter;
 	phiprefix<<size_phi;
 	thetaprefix<<size_theta;
-	string fname = "lanc-2-p-H2O-jmax" + jprefix.str()+"-Rpt"+rprefix.str() + "Angstrom-grid"+thetaprefix.str()+"-"+phiprefix.str()+"-niter"+iterprefix.str()+".txt";
+	string fname = "lanc-2-p-H2O-jmax" + jprefix.str()+"-Rpt"+rprefix.str() + "Angstrom-grid-"+thetaprefix.str()+"-"+phiprefix.str()+"-niter"+iterprefix.str()+".txt";
 	string fname1="logout-"+fname;
 	string fname2="ground-state-energy-"+fname;
 	string fname3="states_zpe-"+fname;
@@ -165,7 +164,7 @@ int main(int argc,char **argv)
 		if (i%1 == 0) logout<<"iteration "<<i<<endl;
 	}                  
 
-	double emax=0.0;
+	double emax=1000.0;
 	double emin=-2000.0;
 	lancbis(niter,eval,evalerr,emin,emax,ngood,alpha,beta,beta2);
 	logout<<" ngood = "<<ngood<<endl;

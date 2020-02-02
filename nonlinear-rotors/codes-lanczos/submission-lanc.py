@@ -30,8 +30,8 @@ export OMP_NUM_THREADS=1
 
 #initial parameters for qmc.input
 status = 'S'
-niter = 100
-jrot = 2
+niter = 400
+jrot = 4
 zmin = 2.5
 zmax = 10.0
 dz = 0.1
@@ -83,7 +83,7 @@ for i in range(nz):
 
 		fileAnalyze_energy = "ground-state-energy-"+strFile
 		data_input_energy = dir_output+"/"+fileAnalyze_energy
-		eig_kelvin = np.loadtxt(data_input_energy, usecols=(0), unpack=True)
+		eig_kelvin = np.loadtxt(data_input_energy, usecols=([0]), unpack=True)
 		eigvalvsRpt1[i] = eig_kelvin[0]
 		CMRECIP2KL = 1.4387672
 		eigvalvsRpt2[i] = eig_kelvin[0]/CMRECIP2KL
@@ -98,7 +98,7 @@ for i in range(nz):
 
 if (status == "A"):
 	#printing block is opened
-	strFile1 = "lanc-2-p-H2O-jmax"+str(jrot)+"-grid-"+str(thetaNum)+"-"+str(angleNum)+"-niter"+str(niter)".txt"
+	strFile1 = "lanc-2-p-H2O-jmax"+str(jrot)+"-grid-"+str(thetaNum)+"-"+str(angleNum)+"-niter"+str(niter)+".txt"
 
 	energy_comb = np.array([saved_Rpt, eigvalvsRpt1, eigvalvsRpt2])
 	eig_file = dir_output+"/ground-state-energy-vs-Rpt-"+strFile1
