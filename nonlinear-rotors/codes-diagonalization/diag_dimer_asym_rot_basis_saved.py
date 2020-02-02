@@ -55,8 +55,12 @@ if __name__ == '__main__':
 	zCOM=float(sys.argv[1])
 	Jmax=int(sys.argv[2])
 	incr=int(sys.argv[3])
-	thetaNum = int(2*Jmax+3+incr)
-	angleNum = int(2*(2*Jmax+1)+incr)
+	if (Jmax < 3):
+		thetaNum = int(2*Jmax+3+incr)
+		angleNum = int(2*(2*Jmax+1)+incr)
+	else:
+		thetaNum = int(2*Jmax+1+incr)
+		angleNum = int(2*Jmax+1+incr)
 	print("Jmax = ", Jmax, flush=True)
 	print("angleNum = ", angleNum, flush=True)
 	strFile = "diag-2-p-H2O-jmax"+str(Jmax)+"-Rpt"+str(zCOM)+"Angstrom-grid-"+str(thetaNum)+"-"+str(angleNum)+"-saved-basis.txt"
@@ -72,7 +76,7 @@ if __name__ == '__main__':
 	Ah2o= 27.877 #cm-1 
 	Bh2o= 14.512 #cm-1
 	Ch2o= 9.285  #cm-1
-	CMRECIP2KL = 1.4387672;       	# cm^-1 to Kelvin conversion factor
+	CMRECIP2KL = 1.4387672       	# cm^-1 to Kelvin conversion factor
 	Ah2o=Ah2o*CMRECIP2KL
 	Bh2o=Bh2o*CMRECIP2KL
 	Ch2o=Ch2o*CMRECIP2KL

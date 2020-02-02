@@ -11,8 +11,8 @@ objects=ran1.o four1.o prod.o gaulegf.o \
 plgndr.o inter.o  gauleg.o sturmi.o inverr.o inverm.o isoev.o \
 lancbis.o bisec.o genran.o scalar.o trivec.o caleng_tip4p_2005.o rotden.o rotpro_sub.o
 all: run
-run: dimer-lanc-diag-test.o  $(objects) matvec.o BF.h
-	$(CC) $(options) -o run dimer-lanc-diag-test.o matvec.o $(objects) \
+run: dimer-lanc.o  $(objects) matvec.o BF.h
+	$(CC) $(options) -o run dimer-lanc.o matvec.o $(objects) \
 -lblas -llapack -L/usr/local/lib -lgfortran
 clean:
 	rm *.o run

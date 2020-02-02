@@ -63,7 +63,7 @@ int main(int argc,char **argv)
     ch2o=ch2o*CMRECIP2KL;
 
     int size_theta = 2*jmax+3;
-    int size_phi   = 2*(2*jmax+3);
+    int size_phi   = 2*(2*jmax+1);
 
 // Generation of names of output file //
 	stringstream rprefix, jprefix, iterprefix, thetaprefix, phiprefix;
@@ -75,7 +75,7 @@ int main(int argc,char **argv)
 	thetaprefix<<size_theta;
 	string fname = "lanc-2-p-H2O-jmax" + jprefix.str()+"-Rpt"+rprefix.str() + "Angstrom-grid"+thetaprefix.str()+"-"+phiprefix.str()+"-niter"+iterprefix.str()+".txt";
 	string fname1="logout-"+fname;
-	string fname2="boundstates-"+fname;
+	string fname2="ground-state-energy-"+fname;
 	string fname3="states_zpe-"+fname;
 //
     ofstream logout(fname1.c_str());
@@ -166,7 +166,7 @@ int main(int argc,char **argv)
 	}                  
 
 	double emax=0.0;
-	double emin=-1000.0;
+	double emin=-2000.0;
 	lancbis(niter,eval,evalerr,emin,emax,ngood,alpha,beta,beta2);
 	logout<<" ngood = "<<ngood<<endl;
 	cout<<"E0 = "<<eval(0)<<endl;

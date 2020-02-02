@@ -21,7 +21,7 @@ def jobstring(NameOfServer, src_code, Rpt, jmax, size_grid, dir_output):
 #SBATCH --output=%s
 #SBATCH --time=1-00:00
 %s
-#SBATCH --mem-per-cpu=128GB
+#SBATCH --mem-per-cpu=256GB
 #SBATCH --cpus-per-task=1
 export OMP_NUM_THREADS=1
 %s
@@ -30,8 +30,8 @@ export OMP_NUM_THREADS=1
 
 #initial parameters for qmc.input
 status = 'S'
-grid_increment = 0
-jrot = 3
+grid_increment = 4
+jrot = 2
 zmin = 2.5
 zmax = 10.0
 dz = 0.1
