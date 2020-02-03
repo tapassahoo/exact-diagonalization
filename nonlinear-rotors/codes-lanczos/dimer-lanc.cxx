@@ -62,8 +62,15 @@ int main(int argc,char **argv)
     bh2o=bh2o*CMRECIP2KL;
     ch2o=ch2o*CMRECIP2KL;
 
-    int size_theta = 2*jmax+3;
-    int size_phi   = 2*(2*jmax+1);
+	int size_theta, size_phi;
+	if (jmax <= 4) {
+		size_theta = 2*jmax+3;
+		size_phi   = 2*(2*jmax+1);
+	}
+	else {
+		size_theta = 2*jmax+1;
+		size_phi   = 2*jmax+1;
+	}
 
 // Generation of names of output file //
 	stringstream rprefix, jprefix, iterprefix, thetaprefix, phiprefix;
