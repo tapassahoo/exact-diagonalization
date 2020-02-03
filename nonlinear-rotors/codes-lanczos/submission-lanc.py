@@ -31,7 +31,7 @@ export OMP_NUM_THREADS=1
 #initial parameters for qmc.input
 status = 'A'
 niter = 100
-jrot = 2
+jrot = 4
 zmin = 2.6
 zmax = 10.0
 dz = 0.1
