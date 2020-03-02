@@ -381,6 +381,7 @@ if __name__ == '__main__':
 	vec_gr = eig_vecs[:,0]	
 	vec_gr_2d = np.reshape(vec_gr, (JKeM, JKeM))
 	s_svd = np.linalg.svd(vec_gr_2d, full_matrices=False)[1]
+	print(s_svd)
 
 	S_2=-math.log(np.sum(np.power(s_svd, 4)))
 	S_vN = -np.sum(np.square(s_svd)*np.log(np.square(s_svd)))

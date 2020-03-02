@@ -63,13 +63,13 @@ int main(int argc,char **argv)
     ch2o=ch2o*CMRECIP2KL;
 
 	int size_theta, size_phi;
-	if (jmax <= 4) {
+	if (jmax <= 6) {
 		size_theta = 2*jmax+3;
 		size_phi   = 2*(2*jmax+1);
 	}
 	else {
-		size_theta = 2*jmax+1;
-		size_phi   = 2*jmax+1;
+		size_theta = jmax+2;
+		size_phi   = 2*jmax+2;
 	}
 
 // Generation of names of output file //
@@ -83,6 +83,7 @@ int main(int argc,char **argv)
 	string fname1="logout-"+fname;
 	string fname2="energy-levels-"+fname;
 	string fname3="ground-state-energy-"+fname;
+	string fname4="ground-state-entropies-"+fname;
 //
     ofstream logout(fname1.c_str());
 
@@ -138,6 +139,8 @@ int main(int argc,char **argv)
 	vector beta2(niter+1);
 
 	int size_basis = jkem*jkem;
+	logout<<"size of basis = "<<size_basis<<endl;
+	logout<<"size of grids = "<<size_grid<<endl;
 	cvector v0(size_basis);
 	for (int i=0; i<jkem; i++) {
 		for (int j=0; j<jkem; j++) {
@@ -172,7 +175,7 @@ int main(int argc,char **argv)
 	}                  
 
 	double emax=100.0;
-	double emin=-2000.0;
+	double emin=-3000.0;
 	lancbis(niter,eval,evalerr,emin,emax,ngood,alpha,beta,beta2);
 	logout<<" ngood = "<<ngood<<endl;
 	cout<<"E0 = "<<eval(0)<<endl;
@@ -185,10 +188,7 @@ int main(int argc,char **argv)
 	lancout2.close();
 	lancout3.flush();
 	lancout3.close();
-	logout.close();
 
-
-	/*
 	//computation of eigenvectors begins
 	matrix evtr(niter,ngood);
 	lanczosvectors(alpha,beta,beta2,niter,eval,ngood,evtr);
@@ -205,7 +205,7 @@ int main(int argc,char **argv)
 	cvector ARvL(size_basis*ngood);
 	vector testv(size_basis);
 
-	for (int i=0;i<size_basis;i++) r(i)=0.;
+	for (int i=0;i<size_basis;i++) r(i)=complex(0.,0.);
 
 	// lanczos vector coefficent matrix
 	for (int n=0;n<ngood;n++) cumulnorm(n)=0.;
@@ -241,7 +241,7 @@ int main(int argc,char **argv)
 		v0 =r;
 		r=u;	
 		
-		if (j%100 == 0) logout<<"iteration "<<j<<endl;
+		if (j%1 == 0) logout<<"iteration "<<j<<endl;
     }         
 	
 	cvector psi0(size_basis);
@@ -254,8 +254,30 @@ int main(int argc,char **argv)
     }
 	
 	logout<<psi0*psi0<<endl;
-	*/
-	exit(111);
+
+	cmatrix psi0_mat(jkem,jkem);
+	for (int i=0; i<jkem; i++) {
+		for (int j=0; j<jkem; j++) {
+			psi0_mat(i,j)=psi0(j+i*jkem);
+		}
+	}
+	vector svd_alpha=copsvd(psi0_mat);
+	double sums2=0.0;
+	double sumsvn=0.0;
+    for (int i = 0; i<jkem; i++) {
+		sums2+=pow(svd_alpha(i),4);
+		sumsvn+=svd_alpha(i)*svd_alpha(i)*log(svd_alpha(i)*svd_alpha(i));
+    }
+	double S_2 = -log(sums2);
+	double S_vN = -sumsvn;
+	
+	ofstream lancout4(fname4.c_str());
+    lancout4<<S_vN<<endl;
+    lancout4<<S_2<<endl;
+	lancout4.close();
+
+	logout.close();
+	exit(1);
 }
 
 vector thetagrid(int nsize,vector &weights)

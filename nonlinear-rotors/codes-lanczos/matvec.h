@@ -127,6 +127,7 @@ class vector {
 	friend vector operator+(const vector& arg1, const double& arg2);
 	friend void normalise(vector& arg1);
 	friend vector hermdl(cmatrix& a);
+	friend vector copsvd(cmatrix& a);
 	friend vector compgene(cmatrix& A,cmatrix& B);
 	friend vector realpart(const cvector& arg1);
 	friend vector imagpart(const cvector& arg1);
@@ -182,6 +183,7 @@ public:
 	friend const cvector operator*(const cdiagmat& arg1, const cvector& arg2);
 	friend void cnormalise(cvector& arg1);
 	friend vector hermdl(cmatrix& a);	
+	friend vector copsvd(cmatrix& a);
 	friend cvector cconj(const cvector& arg1);
 	friend vector realpart(const cvector& arg1);
 	friend vector imagpart(const cvector& arg1);
@@ -502,6 +504,7 @@ public:
 	friend const cmatrix operator*(const complex arg1, const cmatrix& arg2);
 	friend cmatrix transpose(const cmatrix& arg1);
 	friend vector hermdl(cmatrix& a);
+	friend vector copsvd(cmatrix& a);
 	friend const cmatrix  operator*(const cmatrix&, const cdiagmat&);
 	friend const cmatrix  operator*(const cdiagmat&, const cmatrix&);
 	friend cmatrix  operator+(const cmatrix& arg1, const cdiagmat& arg2);

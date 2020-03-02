@@ -891,6 +891,28 @@ vector diag(matrix& a)
   if (INFO != 0) std::cerr<<"diagonalization failed"<<std::endl;
   return W;
 }
+vector copsvd(cmatrix& a)
+{
+	// returns eigenvalues in a vector and transforms the matrix argument
+	// for symmetric matrices
+	char JOBU='N';
+	char JOBVT='N';
+	int M=a.Rows;
+	int N=a.Columns;
+	int LDA=M;
+	int LDU=M;
+	int LDVT=M;
+	vector S(M);
+	cmatrix U(LDU,N);
+	cmatrix VT(LDVT,N);
+	int LWORK=3*N;
+	cvector WORK(LWORK);
+	vector RWORK(5*M);
+	int INFO=0;
+	FORTRAN(zgesvd)(&JOBU,&JOBVT,&M,&N,a.TheMatrix,&LDA,S.TheVector,U.TheMatrix,&LDU,VT.TheMatrix,&LDVT,WORK.TheVector,&LWORK,RWORK.TheVector,&INFO);
+	if (INFO != 0) std::cerr<<"svd failed"<<std::endl;
+	return S;
+}
 cvector diag(cmatrix& a,cmatrix &VL,cmatrix &VR)
   // returns eigenvalues in a vector and transforms the matrix argument
   // for symmetric matrices

@@ -30,9 +30,9 @@ export OMP_NUM_THREADS=1
 
 #initial parameters for qmc.input
 status = 'S'
-grid_increment = 4
+grid_increment = 0
 jrot = 2
-zmin = 2.5
+zmin = 10.0
 zmax = 10.0
 dz = 0.1
 nz = int(((zmax-zmin)+dz*0.5)/dz)
