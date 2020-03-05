@@ -64,8 +64,8 @@ int main(int argc,char **argv)
 
 	int size_theta, size_phi;
 	if (jmax <= 6) {
-		size_theta = 2*jmax+3;
-		size_phi   = 2*(2*jmax+1);
+		size_theta = 2*jmax+5;
+		size_phi   = 2*(2*jmax+5);
 	}
 	else {
 		size_theta = jmax+2;

@@ -50,64 +50,75 @@ def littleD(ldJ,ldmp,ldm,ldtheta):
 			tempD = tempD + (((-1.0)**v)/(np.math.factorial(a)*np.math.factorial(b)*np.math.factorial(c)*np.math.factorial(v)))*((np.cos(ldtheta/2.))**(2.*ldJ+ldm-ldmp-2.*v))*((-np.sin(ldtheta/2.))**(ldmp-ldm+2.*v))
 	return dval*tempD
 
-def hv(JKeM, size_grid, HrotKe, Vpot, basisJKeM, v):
-	u=np.zeros((jkem*jkem), dtype=complex);
+class mv():
+	def __init__(self, JKeM, size_grid, HrotKe, Vpot, basisJKeM):
+		self.JKeM = JKeM
+		self.size_grid = size_grid
+		self.HrotKe = HrotKe
+		self.Vpot = Vpot
+		self.basisJKeM = basisJKeM
+
+	def __call__(self, v):
+		self.v=v
+
+		u=np.zeros((self.JKeM*self.JKeM), dtype=complex);
   
-	# oprate with K1
-	for i2 in range(JKeM):
-		for i1 in range(JKeM):
-			for i1p in range(JKeM):
-				u[i2+i1*jkem]+=HrotKe[i1p+i1*jkem]*v[i2+i1p*jkem]
+		# oprate with K1
+		for i2 in range(self.JKeM):
+			for i1 in range(self.JKeM):
+				for i1p in range(self.JKeM):
+					u[i2+i1*self.JKeM]+=self.HrotKe[i1p+i1*self.JKeM]*self.v[i2+i1p*self.JKeM]
 
-	# oprate with K2
-	for i1 in range(JKeM):
-		for i2 in range(JKeM):
-			for i2p in range(JKeM):
-				u[i2+i1*jkem]+=HrotKe[i2p+i2*jkem]*v[i2p+i1*jkem]
+		# oprate with K2
+		for i1 in range(self.JKeM):
+			for i2 in range(self.JKeM):
+				for i2p in range(self.JKeM):
+					u[i2+i1*self.JKeM]+=self.HrotKe[i2p+i2*self.JKeM]*self.v[i2p+i1*self.JKeM]
 
-	# potential term
-	temp1 = np.zeros((jkem*size_grid),dtype=complex);
-	temp2 = np.zeros((size_grid*size_grid),dtype=complex);
-	temp3 = np.zeros((jkem*size_grid),dtype=complex);
+		# potential term
+		temp1 = np.zeros((self.JKeM*self.size_grid),dtype=complex);
+		temp2 = np.zeros((self.size_grid*self.size_grid),dtype=complex);
+		temp3 = np.zeros((self.JKeM*self.size_grid),dtype=complex);
 
-	for i1 in range(JKeM):
-		for i2 in range(JKeM):
-			for ig2 in range(size_grid):
-				temp1[ig2+i1*size_grid]+=basisJKeM[ig2+i2*size_grid]*v[i2+i1*jkem]
+		for i1 in range(self.JKeM):
+			for i2 in range(self.JKeM):
+				for ig2 in range(self.size_grid):
+					temp1[ig2+i1*self.size_grid]+=self.basisJKeM[ig2+i2*self.size_grid]*self.v[i2+i1*self.JKeM]
 
-	for i1 in range(JKeM):
-		for ig1 in range(size_grid):
-			for ig2 in range(size_grid):
-				temp2[ig2+ig1*size_grid]+=basisJKeM[ig1+i1*size_grid]*temp1[ig2+i1*size_grid]
+		for i1 in range(self.JKeM):
+			for ig1 in range(self.size_grid):
+				for ig2 in range(self.size_grid):
+					temp2[ig2+ig1*self.size_grid]+=self.basisJKeM[ig1+i1*self.size_grid]*temp1[ig2+i1*self.size_grid]
 
-	for ig1 in range(size_grid):
-		for ig2 in range(size_grid):
-			temp2[ig2+ig1*size_grid]=Vpot[ig1,ig2]*temp2[ig2+ig1*size_grid]
+		for ig1 in range(self.size_grid):
+			for ig2 in range(self.size_grid):
+				temp2[ig2+ig1*self.size_grid]=self.Vpot[ig1,ig2]*temp2[ig2+ig1*self.size_grid]
 
-	for ig1 in range(size_grid):
-		for i2 in range(JKeM):
-			for ig2 in range(size_grid):
-				temp3[ig1+i2*size_grid]+=temp2[ig2+ig1*size_grid]*np.conjugate(basisJKeM[ig2+i2*size_grid])
+		for ig1 in range(self.size_grid):
+			for i2 in range(self.JKeM):
+				for ig2 in range(self.size_grid):
+					temp3[ig1+i2*self.size_grid]+=temp2[ig2+ig1*self.size_grid]*np.conjugate(self.basisJKeM[ig2+i2*self.size_grid])
 
-	vec=np.zeros((jkem*jkem), dtype=complex);
-	for i1 in range(JKeM):
-		for i2 in range(JKeM):
-			for ig1 in range(size_grid):
-				vec[i2+i1*jkem]+=temp3[ig1+i2*size_grid]*np.conjugate(basisJKeM[ig1+i1*size_grid])
-	u=u+vec
-	return u
+		vec=np.zeros((self.JKeM*self.JKeM), dtype=complex);
+		for i1 in range(self.JKeM):
+			for i2 in range(self.JKeM):
+				for ig1 in range(self.size_grid):
+					vec[i2+i1*self.JKeM]+=temp3[ig1+i2*self.size_grid]*np.conjugate(self.basisJKeM[ig1+i1*self.size_grid])
+		u=u+vec
+		return u
 
 if __name__ == '__main__':    
-	write_log = True
-	write_norm = True
+	write_log = False
+	write_norm = False
 	write_pot = False
 	zCOM = sys.argv[1]
 	Jmax=int(sys.argv[2])
+	niter=int(sys.argv[3])
 
-	size_theta = int(2*Jmax+3)
-	size_phi = int(2*(2*Jmax+1))
+	size_theta = int(2*Jmax+1)
+	size_phi = int(2*Jmax+3)
 	size_grid = size_theta*size_phi*size_phi
-	strFile = "arpack-2-p-H2O-jmax"+str(Jmax)+"-Rpt"+str(zCOM)+"Angstrom-grid"+str(size_theta)+"-"+str(size_phi)+".txt"
+	strFile = "arpack-2-p-H2O-jmax"+str(Jmax)+"-Rpt"+str(zCOM)+"Angstrom-grid"+str(size_theta)+"-"+str(size_phi)+"-maxiter"+str(niter)+".txt"
 	path_dir = ""
 
 	if (write_log):
@@ -210,6 +221,7 @@ if __name__ == '__main__':
 	#block for construction of |J1K1M1,J2K2M2> basis begins 
 	eEEbasisuse = KJKeM[:,np.newaxis,np.newaxis,:]*MJKeM[:,np.newaxis,:,np.newaxis]*dJKeM[:,:,np.newaxis,np.newaxis]
 	eEEebasisuse = np.reshape(eEEbasisuse,(JKeM,size_grid),order='C')
+	basisJKeM = np.reshape(eEEebasisuse,(JKeM*size_grid),order='C')
 	#block for construction of |J1K1M1,J2K2M2> basis ends
 
 	normMat = np.tensordot(eEEebasisuse, np.conjugate(eEEebasisuse), axes=([1],[1]))
@@ -253,18 +265,24 @@ if __name__ == '__main__':
 	#Construction of potential matrix ends
 
 	# construction of kinetic energy matrix - BEGINS
-	HrotKe = np.zeros((JKeM,JKeM),dtype=float)
+	HrotKe = np.zeros((JKeM*JKeM),dtype=float)
     
 	for jkm in range(JKeM):
 		for jkmp in range(JKeM):
+			jj = jkmp+jkm*JKeM
 			if JKeMQuantumNumList[jkm,0]==JKeMQuantumNumList[jkmp,0] and JKeMQuantumNumList[jkm,2]==JKeMQuantumNumList[jkmp,2]:
 				if JKeMQuantumNumList[jkm,1]==(JKeMQuantumNumList[jkmp,1]-2):
-					HrotKe[jkm,jkmp] += 0.25*(Ah2o-Ch2o)*off_diag(JKeMQuantumNumList[jkm,0],JKeMQuantumNumList[jkm,1])*off_diag(JKeMQuantumNumList[jkm,0],JKeMQuantumNumList[jkm,1]+1)
+					HrotKe[jj] += 0.25*(Ah2o-Ch2o)*off_diag(JKeMQuantumNumList[jkm,0],JKeMQuantumNumList[jkm,1])*off_diag(JKeMQuantumNumList[jkm,0],JKeMQuantumNumList[jkm,1]+1)
 				elif JKeMQuantumNumList[jkm,1]==(JKeMQuantumNumList[jkmp,1]+2):
-					HrotKe[jkm,jkmp] += 0.25*(Ah2o-Ch2o)*off_diag(JKeMQuantumNumList[jkm,0],JKeMQuantumNumList[jkm,1]-1)*off_diag(JKeMQuantumNumList[jkm,0],JKeMQuantumNumList[jkm,1]-2)
+					HrotKe[jj] += 0.25*(Ah2o-Ch2o)*off_diag(JKeMQuantumNumList[jkm,0],JKeMQuantumNumList[jkm,1]-1)*off_diag(JKeMQuantumNumList[jkm,0],JKeMQuantumNumList[jkm,1]-2)
 				elif JKeMQuantumNumList[jkm,1]==(JKeMQuantumNumList[jkmp,1]):
-					HrotKe[jkm,jkmp] += (0.5*(Ah2o + Ch2o)*(JKeMQuantumNumList[jkm,0]*(JKeMQuantumNumList[jkm,0]+1)) + (Bh2o - 0.5*(Ah2o+Ch2o)) * ((JKeMQuantumNumList[jkm,1])**2))
+					HrotKe[jj] += (0.5*(Ah2o + Ch2o)*(JKeMQuantumNumList[jkm,0]*(JKeMQuantumNumList[jkm,0]+1)) + (Bh2o - 0.5*(Ah2o+Ch2o)) * ((JKeMQuantumNumList[jkm,1])**2))
 	# construction of kinetic energy matrix - ENDS
     
-	#Hv(JKeM, size_grid, HrotKe, Vpot, basisJKeM, v)
-	#Av = LinearOperator((JKeM*JKeM,1), matvec=mv(JKeM, size_grid, HrotKe, v6d, eEEebasisuse, v))
+	hv=mv(JKeM, size_grid, HrotKe, v6d, basisJKeM)
+	A = LinearOperator((JKeM*JKeM,JKeM*JKeM), matvec=hv, dtype=complex)
+	vals = eigsh(A, k=1, which='SA', maxiter=niter, sigma = -10, tol=1e-2, return_eigenvectors=False)
+	energy_file = path_dir+"energy-levels-"+strFile
+	energy_write = open(energy_file,'w')
+	energy_write.write(str(vals)+"\n")
+	energy_write.close()

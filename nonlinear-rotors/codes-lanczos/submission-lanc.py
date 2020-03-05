@@ -29,7 +29,7 @@ export OMP_NUM_THREADS=1
 	return job_string
 
 #initial parameters for qmc.input
-status = 'A'
+status = 'S'
 niter = 400
 jrot = 2
 zmin = 2.6
