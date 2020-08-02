@@ -9,7 +9,7 @@ f77=gfortran #/opt/openmpi/bin/mpif90
 #plgndr.o inter.o  gauleg.o genran.o scalar.o cmdstuff.o 
 objects=ran1.o four1.o prod.o gaulegf.o \
 plgndr.o inter.o  gauleg.o sturmi.o inverr.o inverm.o isoev.o \
-lancbis.o bisec.o genran.o scalar.o trivec.o caleng_tip4p_2005.o rotden.o rotpro_sub.o
+lancbis.o bisec.o genran.o scalar.o trivec.o caleng_qtip4p_rigid.o rotden.o rotpro_sub.o
 all: run
 run: dimer-lanc.o  $(objects) matvec.o BF.h
 	$(CC) $(options) -o run dimer-lanc.o matvec.o $(objects) \

@@ -54,6 +54,7 @@ int main(int argc,char **argv)
     double zCOM = atof(argv[1]);
     int jmax = atoi(argv[2]);
 	int niter = atoi(argv[3]);
+    double zCOM = atof(argv[1]);
 
 	//The rotational A, B, C constants are indicated by ah2o, bh2o and ch2o, respectively. The unit is cm^-1.
     double ah2o= 27.877;//cm-1

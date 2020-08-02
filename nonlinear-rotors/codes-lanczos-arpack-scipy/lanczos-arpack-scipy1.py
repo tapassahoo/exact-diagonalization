@@ -51,12 +51,13 @@ def littleD(ldJ,ldmp,ldm,ldtheta):
 	return dval*tempD
 
 class mv():
-	def __init__(self, JKeM, size_grid, HrotKe, Vpot, basisJKeM):
+	def __init__(self, JKeM, size_grid, HrotKe, Vpot, basisJKeM, count):
 		self.JKeM = JKeM
 		self.size_grid = size_grid
 		self.HrotKe = HrotKe
 		self.Vpot = Vpot
 		self.basisJKeM = basisJKeM
+		self.count=count
 
 	def __call__(self, v):
 		self.v=v
@@ -105,17 +106,19 @@ class mv():
 				for ig1 in range(self.size_grid):
 					vec[i2+i1*self.JKeM]+=temp3[ig1+i2*self.size_grid]*np.conjugate(self.basisJKeM[ig1+i1*self.size_grid])
 		u=u+vec
+		self.count=self.count+1
+		print(self.count)
 		return u
 
 if __name__ == '__main__':    
-	write_log = False
+	write_log = True
 	write_norm = False
 	write_pot = False
 	zCOM = sys.argv[1]
 	Jmax=int(sys.argv[2])
 	niter=int(sys.argv[3])
 
-	size_theta = int(2*Jmax+1)
+	size_theta = int(Jmax+1)
 	size_phi = int(2*Jmax+3)
 	size_grid = size_theta*size_phi*size_phi
 	strFile = "arpack-2-p-H2O-jmax"+str(Jmax)+"-Rpt"+str(zCOM)+"Angstrom-grid"+str(size_theta)+"-"+str(size_phi)+"-maxiter"+str(niter)+".txt"
@@ -279,9 +282,18 @@ if __name__ == '__main__':
 					HrotKe[jj] += (0.5*(Ah2o + Ch2o)*(JKeMQuantumNumList[jkm,0]*(JKeMQuantumNumList[jkm,0]+1)) + (Bh2o - 0.5*(Ah2o+Ch2o)) * ((JKeMQuantumNumList[jkm,1])**2))
 	# construction of kinetic energy matrix - ENDS
     
-	hv=mv(JKeM, size_grid, HrotKe, v6d, basisJKeM)
+	count=0
+	hv=mv(JKeM, size_grid, HrotKe, v6d, basisJKeM,count)
 	A = LinearOperator((JKeM*JKeM,JKeM*JKeM), matvec=hv, dtype=complex)
-	vals = eigsh(A, k=1, which='SA', maxiter=niter, sigma = -10, tol=1e-2, return_eigenvectors=False)
+	'''
+	start_time = timeit.default_timer()
+	for i in range(1):
+		A.matvec(np.ones(JKeM*JKeM))
+	print(timeit.default_timer() - start_time)
+
+	exit()
+	'''
+	vals = eigsh(A, k=1, which='SA', maxiter=None, return_eigenvectors=False)
 	energy_file = path_dir+"energy-levels-"+strFile
 	energy_write = open(energy_file,'w')
 	energy_write.write(str(vals)+"\n")

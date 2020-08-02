@@ -16,7 +16,7 @@ c        rotmat_1, rotmat_2 computed within the code with
 c        Eulang_1, Eulang_2, respectively.
 c     _______________________________________________________
 c     A general purpose model for the condensed phases of water: 
-c     TIP4P/2005 --> J. Chem. Phys. 123, 234505 (2005)
+c     q-TIP4P/F --> J. Chem. Phys. 131, 024501 (2009).
 c     _______________________________________________________
       implicit double precision(a-h,o-z)
       parameter(zero=0.d0)
@@ -27,16 +27,17 @@ c     _______________________________________________________
      +          RH2_1_sf(3), RH2_2_sf(3),
      +          RM_1_sf(3), RM_2_sf(3), 
      +          rotmat_2(3,3), rotmat_1(3,3)
-      parameter(br2ang=0.52917721092d0,hr2k=3.1577502480407d5)
-c     TIP4P parameters (L-J) 
-      parameter(angHOH=104.52d0,dOH=0.9572d0,dOM=0.1546d0,
-     +          epsoo=93.2d0,sigoo=3.1589d0,qh=0.5564d0)
+      parameter(br2ang=0.52917721092d0,hr2k=3.1577502480407d5,
+     +          akcal2k=503.228d0)
+c     q-TIP4P/F parameters
+      parameter(angHOH=107.4d0,dOH=0.9419d0,agamma=0.73612d0,
+     +          epsoo1=0.1852d0,sigoo=3.1589d0,qh=0.5564d0)
       data ROwf/zero,zero,zero/
 c     units
 c     angHOH in degree
 c     dOH in Angstrom
 c     dOM in Angstrom
-c     epsoo in Kelvin
+c     epsoo1 in kcal/mole
 c     sigoo in Angstrom
 c     qh in e
 
@@ -54,10 +55,11 @@ c...
       RH2wf(2)=RH1wf(2)
       RH2wf(3)=RH1wf(3)
 c...
-      RMwf(1)=zero
-      RMwf(2)=zero
-      RMwf(3)=ROwf(3)-dOM
+      do i=1,3
+         RMwf(i)=agamma*ROwf(i)+0.5*(1.0-agamma)*(RH1wf(i)+RH2wf(i))
+      enddo
 c...
+      epsoo=epsoo1*akcal2k
       qm=-2.0d0*qh
 c     
 c     prepare rotational matrix for water 1
@@ -117,7 +119,7 @@ c     call DGEMV ('N', 3, 3, 1.d0, rotmat2, 3, R2wf, 1, 1.d0, R22sf, 1 )
       call rottrn(rotmat_2, RH2wf, RH2_2_sf, com_2)
 c
 c
-c ... calculate water dimer energies through SPC/WF formula
+c ... calculate water dimer energies through q-TIP4P/F formula
       E_2H2O=0.d0
 c ... O-O interaction
       roo=0.0d0

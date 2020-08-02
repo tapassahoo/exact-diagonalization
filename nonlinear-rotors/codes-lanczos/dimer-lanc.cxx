@@ -6,6 +6,7 @@
 #include <sstream>
 #include <iomanip>
 #include "random.h"
+#include <complex>
 //#include "BF.h"
 
 using namespace std;
@@ -53,6 +54,8 @@ int main(int argc,char **argv)
     double zCOM = atof(argv[1]);
     int jmax = atoi(argv[2]);
 	int niter = atoi(argv[3]);
+    double emin = atof(argv[4]);
+    double emax = atof(argv[5]);
 
 	//The rotational A, B, C constants are indicated by ah2o, bh2o and ch2o, respectively. The unit is cm^-1.
     double ah2o= 27.877;//cm-1
@@ -64,8 +67,8 @@ int main(int argc,char **argv)
 
 	int size_theta, size_phi;
 	if (jmax <= 6) {
-		size_theta = 2*jmax+5;
-		size_phi   = 2*(2*jmax+5);
+		size_theta = 20;//2*jmax+12;
+		size_phi   = 2*(2*jmax+2);
 	}
 	else {
 		size_theta = jmax+2;
@@ -74,7 +77,7 @@ int main(int argc,char **argv)
 
 // Generation of names of output file //
 	stringstream rprefix, jprefix, iterprefix, thetaprefix, phiprefix;
-	rprefix<<fixed<<setprecision(1)<<zCOM;
+	rprefix<<fixed<<setprecision(2)<<zCOM;
 	jprefix<<jmax;
 	iterprefix<<niter;
 	phiprefix<<size_phi;
@@ -84,6 +87,7 @@ int main(int argc,char **argv)
 	string fname2="energy-levels-"+fname;
 	string fname3="ground-state-energy-"+fname;
 	string fname4="ground-state-entropies-"+fname;
+	string fname5="ground-state-theta-distribution-"+fname;
 //
     ofstream logout(fname1.c_str());
 
@@ -174,8 +178,8 @@ int main(int argc,char **argv)
 		if (i%1 == 0) logout<<"iteration "<<i<<endl;
 	}                  
 
-	double emax=100.0;
-	double emin=-3000.0;
+	//double emax=100.0;
+	//double emin=-3000.0;
 	lancbis(niter,eval,evalerr,emin,emax,ngood,alpha,beta,beta2);
 	logout<<" ngood = "<<ngood<<endl;
 	cout<<"E0 = "<<eval(0)<<endl;
@@ -275,6 +279,38 @@ int main(int argc,char **argv)
     lancout4<<S_vN<<endl;
     lancout4<<S_2<<endl;
 	lancout4.close();
+
+	/* computation of reduced density matrix */
+	cmatrix reduced_density(jkem,jmax+1);
+	for (int i=0; i<jkem; i++) {
+		for (int ip=0; ip<jkem; ip++) {
+			if ((jkemQuantumNumList(i,1)==jkemQuantumNumList(ip,1)) and (jkemQuantumNumList(i,2)==jkemQuantumNumList(ip,2))) {
+				complex sum2=(0.0,0.0);
+				for (int j=0; j<jkem; j++) {
+					sum2+=conj(psi0(j+i*jkem))*psi0(j+ip*jkem);
+				}
+				reduced_density(i,jkemQuantumNumList(ip,0))=sum2;
+			}
+		}
+	}
+
+    ofstream densout(fname5.c_str());
+	complex sum3=(0.0,0.0);
+	for (int th=0; th<size_theta; th++) {
+		complex sum1=(0.0,0.0);
+		for (int i=0; i<jkem; i++) {
+			for (int ip=0; ip<jkem; ip++) {
+				if ((jkemQuantumNumList(i,1)==jkemQuantumNumList(ip,1)) and (jkemQuantumNumList(i,2)==jkemQuantumNumList(ip,2))) {
+					sum1+=4.0*M_PI*M_PI*reduced_density(i,jkemQuantumNumList(ip,0))*dJKeM(i,th)*dJKeM(ip,th);
+				}
+			}
+		}
+		densout<<cos(grid_theta(th))<<"   "<<real(sum1)/weights_theta(th)<<endl;
+		sum3+=sum1;
+	}
+	densout.close();
+ 	
+	logout<<"Normalization: reduced density matrix = "<<sum3<<endl;
 
 	logout.close();
 	exit(1);
