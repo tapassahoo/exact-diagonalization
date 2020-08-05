@@ -98,7 +98,7 @@ for r in zList:
 		thetaNum = int(2*jrot+3)
 		angleNum = int(2*(2*jrot+1))
 			
-		strFile = "diag-2-p-H2O-one-rotor-fixed-cost1-jmax"+str(jrot)+"-Rpt"+str(Rpt)+"Angstrom-grids-"+str(thetaNum)+"-"+str(angleNum)+"-saved-basis.txt"
+		strFile = "diag-2-p-H2O-one-rotor-fixed-cost-1-jmax"+str(jrot)+"-Rpt"+str(Rpt)+"Angstrom-grids-"+str(thetaNum)+"-"+str(angleNum)+"-saved-basis.txt"
 
 		fileAnalyze_energy = "ground-state-energies-"+strFile
 		data_input_energy = dir_output+"/"+fileAnalyze_energy
@@ -121,7 +121,7 @@ for r in zList:
 
 if (status == "A"):
 	#printing block is opened
-	strFile1 = "diag-2-p-H2O-one-rotor-fixed-cost1-jmax"+str(jrot)+"-grid-"+str(thetaNum)+"-"+str(angleNum)+"-saved-basis.txt"
+	strFile1 = "diag-2-p-H2O-one-rotor-fixed-cost-1-jmax"+str(jrot)+"-grid-"+str(thetaNum)+"-"+str(angleNum)+"-saved-basis.txt"
 
 	energy_comb = np.array([saved_Rpt, eigvalvsRpt1, eigvalvsRpt2])
 	eig_file = dir_output+"/ground-state-energy-vs-Rpt-"+strFile1

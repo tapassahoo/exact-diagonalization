@@ -10,6 +10,7 @@ import numpy as np
 from scipy import linalg as LA
 import qpot
 from scipy.sparse.linalg import eigs, eigsh
+import cmath
 
 def binom(n,k):
 	"""
@@ -201,7 +202,7 @@ if __name__ == '__main__':
 	#Construction of potential matrix begins
 	com1=[0.0,0.0,0.0]
 	com2=[0.0,0.0,zCOM]
-	Eulang2=[0.0, 0.0, 0.0]
+	Eulang2=[0.0, 0.0, 0.0] 
 	#Eulang2=[0.0, math.pi, 0.0]
 	v1d = np.zeros(size_theta*size_phi*size_phi,float)
 	for th1 in range(size_theta):
@@ -298,3 +299,30 @@ if __name__ == '__main__':
 	gs_eng_write.close()
 	# printing block is closed
 
+	# computation of reduced density matrix
+	reduced_density=np.zeros((JKeM,Jmax+1),dtype=complex)
+	for i in range(JKeM):
+		for ip in range(JKeM):
+			if ((JKeMQuantumNumList[i,1]==JKeMQuantumNumList[ip,1]) and (JKeMQuantumNumList[i,2]==JKeMQuantumNumList[ip,2])):
+				reduced_density[i,JKeMQuantumNumList[ip,0]]=np.conjugate(eigVecKe_sort[i,0])*eigVecKe_sort[ip,0]
+
+	gs_ang_file = "../exact-energies-of-H2O/ground-state-theta-distribution-"+strFile
+	gs_ang_write = open(gs_ang_file,'w')
+	gs_ang_write.write("#Printing of ground state theta distribution - "+"\n")
+	gs_ang_write.write('{0:1} {1:^19} {2:^20}'.format("#","cos(theta)", "reduced density"))
+	gs_ang_write.write("\n")
+	
+	sum3=complex(0.0,0.0)
+	for th in range(size_theta):
+		sum1=complex(0.0,0.0)
+		for i in range(JKeM):
+			for ip in range(JKeM):
+				if ((JKeMQuantumNumList[i,1]==JKeMQuantumNumList[ip,1]) and (JKeMQuantumNumList[i,2]==JKeMQuantumNumList[ip,2])):
+					sum1+=4.0*math.pi*math.pi*reduced_density[i,JKeMQuantumNumList[ip,0]]*dJKeM[i,th]*dJKeM[ip,th]
+		gs_ang_write.write('{0:^20.8f} {1:^20.8f}'.format(xGL[th],sum1.real/wGL[th]))
+		gs_ang_write.write("\n")
+		sum3+=sum1
+	gs_ang_write.close()
+	# printing block is closed
+ 	
+	print("Normalization: reduced density matrix = ",sum3)
