@@ -14,7 +14,7 @@ def jobstring(NameOfServer,Rpt,jmax,dir_output,niter,emin,emax):
 	logfile=dir_output+"/lanc-submit-p-H2O-Rpt"+str(Rpt)+"ang-j"+str(jmax)+"-niter"+str(niter)+".txt"
 	jobname="lcR"+str(Rpt)
 
-	command_execution="./run  "+str(Rpt)+"  "+str(jmax)+"  "+str(niter)+"  "+str(emin)+"  "+str(emax)
+	command_execution="time ./run  "+str(Rpt)+"  "+str(jmax)+"  "+str(niter)+"  "+str(emin)+"  "+str(emax)
 
 	if (NameOfServer=="graham"):
 		account="#SBATCH --account=rrg-pnroy"
@@ -27,16 +27,16 @@ def jobstring(NameOfServer,Rpt,jmax,dir_output,niter,emin,emax):
 #SBATCH --time=14-00:00
 %s
 #SBATCH --mem-per-cpu=6GB
-#SBATCH --cpus-per-task=1
-export OMP_NUM_THREADS=1
+#SBATCH --cpus-per-task=16
+export OMP_NUM_THREADS=16
 %s
 """ % (jobname,logfile,account,command_execution)
 	return job_string
 
 #initial parameters for qmc.input
 status = 'A'
-niter = 400
-jrot = 6
+niter = 600
+jrot = 10
 
 # making grid points for the intermolecular distance, r
 zmin = 2.5
@@ -47,18 +47,20 @@ nz += 1
 zList = [zmin+dz*i for i in range(nz)]
 zList += [2.75]
 zmin = 2.8
-zmax = 5.0
+zmax = 4.0
 dz = 0.1
 nz = int(((zmax-zmin)+dz*0.5)/dz)
 nz += 1
 zList += [zmin+dz*i for i in range(nz)]
+'''
 zmin = 5.2
 zmax = 10.0
 dz = 0.2
 nz = int(((zmax-zmin)+dz*0.5)/dz)
 nz += 1
-print(nz)
 zList += [zmin+dz*i for i in range(nz)]
+print(nz)
+'''
 
 NameOfServer='nlogn'
 dir_output="/home/tapas/CodesForEigenValues/nonlinear-rotors/exact-energies-of-H2O"
@@ -105,8 +107,8 @@ for r in zList:
 			fwrite.write(jobstring(NameOfServer,Rpt,jrot,dir_output,niter,emin,emax))
 			fwrite.close()
 			#call(["sbatch", "-p", "highmem", fname])
-			#call(["sbatch", fname])
-			call(["sbatch", "-C", "faster", fname])
+			call(["sbatch", fname])
+			#call(["sbatch", "-C", "faster", fname])
 
 		os.chdir(src_dir)
 
@@ -117,7 +119,7 @@ for r in zList:
 			angleNum = int(2*(2*jrot+2))
 		else:
 			thetaNum = 20
-			angleNum = int(2*(2*jrot+2))
+			angleNum = 20 #int(2*(2*jrot+2))
 			
 		strFile = "lanc-2-p-H2O-jmax"+str(jrot)+"-Rpt"+str(Rpt)+"Angstrom-grid-"+str(thetaNum)+"-"+str(angleNum)+"-niter"+str(niter)+".txt"
 
