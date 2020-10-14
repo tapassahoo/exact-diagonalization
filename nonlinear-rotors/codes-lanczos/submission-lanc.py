@@ -35,7 +35,7 @@ export OMP_NUM_THREADS=16
 
 #initial parameters for qmc.input
 status = 'A'
-niter = 600
+niter = 800
 jrot = 10
 
 # making grid points for the intermolecular distance, r
