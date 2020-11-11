@@ -66,13 +66,15 @@ int main(int argc,char **argv)
     ch2o=ch2o*CMRECIP2KL;
 
 	int size_theta, size_phi;
-	if (jmax <= 7) {
+	if (jmax <= 8) {
 		size_theta = 20;//2*jmax+12;
 		size_phi   = 2*(2*jmax+2);
 	}
 	else {
-		size_theta = 20;
-		size_phi   = 20;
+		size_theta = 2*jmax+1;
+		size_phi   = 2*jmax+10;
+		//size_theta = 20;
+		//size_phi   = 20;
 	}
 
 // Generation of names of output file //

@@ -34,11 +34,12 @@ export OMP_NUM_THREADS=16
 	return job_string
 
 #initial parameters for qmc.input
-status = 'A'
-niter = 800
+status = 'S'
+niter = 10
 jrot = 10
 
 # making grid points for the intermolecular distance, r
+'''
 zmin = 2.5
 zmax = 2.7
 dz = 0.02
@@ -52,7 +53,6 @@ dz = 0.1
 nz = int(((zmax-zmin)+dz*0.5)/dz)
 nz += 1
 zList += [zmin+dz*i for i in range(nz)]
-'''
 zmin = 5.2
 zmax = 10.0
 dz = 0.2
@@ -61,6 +61,13 @@ nz += 1
 zList += [zmin+dz*i for i in range(nz)]
 print(nz)
 '''
+zmin = 10.0
+zmax = 10.0
+dz = 1.0
+nz = int(((zmax-zmin)+dz*0.5)/dz)
+nz += 1
+zList = [zmin+dz*i for i in range(nz)]
+print(nz)
 
 NameOfServer='nlogn'
 dir_output="/home/tapas/CodesForEigenValues/nonlinear-rotors/exact-energies-of-H2O"
@@ -107,8 +114,8 @@ for r in zList:
 			fwrite.write(jobstring(NameOfServer,Rpt,jrot,dir_output,niter,emin,emax))
 			fwrite.close()
 			#call(["sbatch", "-p", "highmem", fname])
-			call(["sbatch", fname])
-			#call(["sbatch", "-C", "faster", fname])
+			#call(["sbatch", fname])
+			call(["sbatch", "-C", "faster", fname])
 
 		os.chdir(src_dir)
 

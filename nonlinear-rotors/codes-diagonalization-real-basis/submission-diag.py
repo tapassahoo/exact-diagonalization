@@ -5,11 +5,11 @@ import os
 import decimal
 import numpy as np
  
-def jobstring(NameOfServer, src_code, Rpt, jmax, spin_isomer, dir_output):
+def jobstring(NameOfServer, src_code, Rpt, jmax, dir_output):
 	logfile = dir_output+"/diag-submit-p-H2O-Rpt"+str(Rpt)+"ang-j"+str(jmax)+".txt"
 	jobname = "dg-R"+str(Rpt)
 
-	command_execution = "python " + src_code +"  " +  str(Rpt) + "  " + str(jmax) + " " + spin_isomer
+	command_execution = "python " + src_code +"  " +  str(Rpt) + "  " + str(jmax)
 
 	if NameOfServer == "graham":
 		account = "#SBATCH --account=rrg-pnroy"
@@ -21,7 +21,7 @@ def jobstring(NameOfServer, src_code, Rpt, jmax, spin_isomer, dir_output):
 #SBATCH --output=%s
 #SBATCH --time=1-00:00
 %s
-#SBATCH --mem-per-cpu=64GB
+#SBATCH --mem-per-cpu=32GB
 #SBATCH --cpus-per-task=1
 export OMP_NUM_THREADS=1
 %s
@@ -29,8 +29,7 @@ export OMP_NUM_THREADS=1
 	return job_string
 
 #initial parameters for qmc.input
-spin_isomer = "spinless"
-status = 'A'
+status = 'S'
 jrot = 16
 
 # making grid points for the intermolecular distance, r
@@ -57,13 +56,6 @@ zList += [zmin+dz*i for i in range(nz)]
 
 NameOfServer = 'nlogn'
 dir_output = "/home/tapas/CodesForEigenValues/nonlinear-rotors/exact-energies-of-H2O"
-
-if (spin_isomer == "spinless"):
-	isomer = "-"
-if (spin_isomer == "para"):
-	isomer = "-p-"
-if (spin_isomer == "ortho"):
-	isomer = "-o-"
 
 if (status == 'S'):
 	src_dir = os.getcwd()
@@ -94,10 +86,10 @@ for r in zList:
 			exit()
 		else:
 			fwrite=open(fname, 'w')
-			fwrite.write(jobstring(NameOfServer, run_command, Rpt, jrot, spin_isomer, dir_output))
+			fwrite.write(jobstring(NameOfServer, run_command, Rpt, jrot, dir_output))
 			fwrite.close()
-			#call(["sbatch", "-p", "highmem", fname])
-			call(["sbatch", "-C", "faster", fname])
+			call(["sbatch", "-p", "highmem", fname])
+			#call(["sbatch", "-C", "faster", fname])
 
 		os.chdir(src_dir)
 
@@ -106,9 +98,9 @@ for r in zList:
 		thetaNum = int(2*jrot+3)
 		angleNum = int(2*(2*jrot+1))
 			
-		strFile = "diag-2"+isomer+"H2O-one-rotor-fixed-cost-1-jmax"+str(jrot)+"-Rpt"+str(Rpt)+"Angstrom-grids-"+str(thetaNum)+"-"+str(angleNum)+"-saved-basis.txt"
+		strFile = "diag-2-p-H2O-one-rotor-fixed-cost1-jmax"+str(jrot)+"-Rpt"+str(Rpt)+"Angstrom-grids-"+str(thetaNum)+"-"+str(angleNum)+"-saved-basis.txt"
 
-		fileAnalyze_energy = "ground-state-energy-"+strFile
+		fileAnalyze_energy = "ground-state-energies-"+strFile
 		data_input_energy = dir_output+"/"+fileAnalyze_energy
 		CMRECIP2KL = 1.4387672
 
@@ -129,7 +121,7 @@ for r in zList:
 
 if (status == "A"):
 	#printing block is opened
-	strFile1 = "diag-2"+isomer+"H2O-one-rotor-fixed-cost-1-jmax"+str(jrot)+"-grid-"+str(thetaNum)+"-"+str(angleNum)+"-saved-basis.txt"
+	strFile1 = "diag-2-p-H2O-one-rotor-fixed-cost1-jmax"+str(jrot)+"-grid-"+str(thetaNum)+"-"+str(angleNum)+"-saved-basis.txt"
 
 	energy_comb = np.array([saved_Rpt, eigvalvsRpt1, eigvalvsRpt2])
 	eig_file = dir_output+"/ground-state-energy-vs-Rpt-"+strFile1
