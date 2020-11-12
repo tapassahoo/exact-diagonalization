@@ -52,7 +52,7 @@ def littleD(ldJ,ldmp,ldm,ldtheta):
 			tempD = tempD + (((-1.0)**v)/(np.math.factorial(a)*np.math.factorial(b)*np.math.factorial(c)*np.math.factorial(v)))*((np.cos(ldtheta/2.))**(2.*ldJ+ldm-ldmp-2.*v))*((-np.sin(ldtheta/2.))**(ldmp-ldm+2.*v))
 	return dval*tempD
 
-def wigner_basis(njkm,size_theta,size_phi,njkmQuantumNumList,littleD,xGL,wGL,phixiGridPts):
+def wigner_basis(njkm,size_theta,size_phi,njkmQuantumNumList,littleD,xGL,wGL,phixiGridPts,dphixi):
 
 	'''
 	construnction of wigner basis
@@ -170,15 +170,116 @@ def get_rot(njkm,njkmQuantumNumList,Ah2o,Bh2o,Ch2o,off_diag):
 
 	return Hrot
 
-'''
-def wigner_basisre(njkmQuantumNumList,littleD,xGL,wGL):
-	#dJKM[s,th] = np.sqrt((2.*njkmQuantumNumList[s,0]+1)/(8.*np.pi**2))*littleD(njkmQuantumNumList[s,0],njkmQuantumNumList[s,2],njkmQuantumNumList[s,1],np.arccos(xGL[th]))*np.sqrt(wGL[th])
-	theta0 = np.sqrt((2.*njkmQuantumNumList[s,0]+1)/(8.*np.pi**2))*littleD(njkmQuantumNumList[s,0],njkmQuantumNumList[s,2],njkmQuantumNumList[s,1],np.arccos(xGL[th]))*np.sqrt(wGL[th])
-	thetac = np.sqrt((2.*njkmQuantumNumList[s,0]+1)/(8.*np.pi**2))*littleD(njkmQuantumNumList[s,0],njkmQuantumNumList[s,2],njkmQuantumNumList[s,1],np.arccos(xGL[th]))*np.sqrt(wGL[th])
-	thetac =
-	thetas = 
-	return theta_jkmre
-'''
+def wigner_basisre(njkm_J,njkm_K,njkm_M,theta,wt,phi,wp,chi,wc):
+
+	theta0 = math.sqrt((2.*njkm_J+1)/(8.*math.pi**2))*littleD(njkm_J,0,0,np.arccos(theta))*math.sqrt(wt)*math.sqrt(wp)*math.sqrt(wc)
+	dd = math.sqrt((2.*njkm_J+1)/(4.*math.pi**2))*littleD(njkm_J,njkm_M,njkm_K,np.arccos(theta))*math.sqrt(wt)
+	thetac = dd*math.cos(phi*njkm_M+chi*njkm_K)*math.sqrt(wp)*math.sqrt(wc)
+	thetas = dd*math.sin(phi*njkm_M+chi*njkm_K)*math.sqrt(wp)*math.sqrt(wc)
+
+	return theta0,thetac,thetas
+
+def get_basisre(Jmax,njkm,size_theta,size_phi,xGL,wGL,phixiGridPts,dphixi):
+
+	basisf = np.zeros((njkm,size_theta*size_phi*size_phi),dtype=float)
+			
+	for th in range(size_theta):
+		theta=xGL[th]
+		wt=wGL[th]
+		for ph in range(size_phi):
+			phi=phixiGridPts[ph]
+			wp=dphixi
+			itp=ph+th*size_phi
+			for ch in range(size_phi):
+				chi=phixiGridPts[ch]
+				wc=dphixi
+				itpc=ch+itp*size_phi
+
+				ib=0
+				for J in range(Jmax+1):
+					K=0
+
+					M=0
+					theta0,thetac,thetas = wigner_basisre(J,K,M,theta,wt,phi,wp,chi,wc)
+					basisf[ib,itpc]=theta0
+					ib=ib+1
+
+					for M in range(1,J+1,1):
+						theta0,thetac,thetas = wigner_basisre(J,K,M,theta,wt,phi,wp,chi,wc)
+						basisf[ib,itpc]=thetac
+						ib=ib+1
+						basisf[ib,itpc]=thetas
+						ib=ib+1
+						
+					for K in range(1,J+1):
+						for M in range(-J,J+1,1):
+							theta0,thetac,thetas = wigner_basisre(J,K,M,theta,wt,phi,wp,chi,wc)
+							basisf[ib,itpc]=thetac
+							ib=ib+1
+							basisf[ib,itpc]=thetas
+							ib=ib+1
+					
+	
+	return basisf
+
+def get_normbasisre(prefile,strFile,basis_type,eEEebasisuse,normMat,njkm,tol):
+	norm_check_file = prefile+"norm-check-"+strFile
+	norm_check_write = open(norm_check_file,'w')
+	norm_check_write.write("eEEebasisuse.shape: reduced shape of the "+basis_type+" |JKM> basis: " + str(eEEebasisuse.shape)+" \n")
+	norm_check_write.write("normMat.shape: shape of the "+basis_type+" <JKM|JKM> basis: " + str(normMat.shape)+" \n")
+	norm_check_write.write("\n")
+	norm_check_write.write("\n")
+
+	for s1 in range(njkm):
+		for s2 in range(njkm):
+			if (np.abs(normMat[s1,s2]) > tol):
+				norm_check_write.write("L vec Rotor1: "+str(s1)+"\n")
+				norm_check_write.write("R vec Rotor1: "+str(s2)+"\n")
+				norm_check_write.write("Norm: "+str(normMat[s1,s2])+"\n")
+				norm_check_write.write("\n")
+	norm_check_write.close()
+
+def get_njkmQuantumNumList(Jmax,njkm):
+
+	JKMQuantumNumList = np.zeros((njkm,3),int)
+
+	jtempcounter = 0
+	for J in range(Jmax+1):
+		K=0
+		M=0
+
+		JKMQuantumNumList[jtempcounter,0]=J
+		JKMQuantumNumList[jtempcounter,1]=K
+		JKMQuantumNumList[jtempcounter,2]=M
+		jtempcounter=jtempcounter+1
+
+		for M in range(1,J+1,1):
+
+			JKMQuantumNumList[jtempcounter,0]=J
+			JKMQuantumNumList[jtempcounter,1]=K
+			JKMQuantumNumList[jtempcounter,2]=M
+			jtempcounter=jtempcounter+1
+
+			JKMQuantumNumList[jtempcounter,0]=J
+			JKMQuantumNumList[jtempcounter,1]=K
+			JKMQuantumNumList[jtempcounter,2]=M
+			jtempcounter=jtempcounter+1
+			
+		for K in range(1,J+1):
+			for M in range(-J,J+1,1):
+				JKMQuantumNumList[jtempcounter,0]=J
+				JKMQuantumNumList[jtempcounter,1]=K
+				JKMQuantumNumList[jtempcounter,2]=M
+				jtempcounter=jtempcounter+1
+
+				JKMQuantumNumList[jtempcounter,0]=J
+				JKMQuantumNumList[jtempcounter,1]=K
+				JKMQuantumNumList[jtempcounter,2]=M
+				jtempcounter=jtempcounter+1
+		
+	
+	return JKMQuantumNumList
+
 
 if __name__ == '__main__':    
 	zCOM=float(sys.argv[1])
@@ -190,8 +291,8 @@ if __name__ == '__main__':
 
 	tol = 10e-8
 	#print the normalization 
-	norm_check = False
-	io_write = False
+	norm_check = True
+	io_write = True
 	pot_write = False
 	if (io_write == True):
 		print("Jmax = ", Jmax, flush=True)
@@ -258,6 +359,7 @@ if __name__ == '__main__':
 		print("| ")
 		print("|------------------------------------------------")
 		
+	'''
 	JKMQuantumNumList = np.zeros((JKM,3),int)
 	JKeMQuantumNumList = np.zeros((JKeM,3),int)
 	JKoMQuantumNumList = np.zeros((JKoM,3),int)
@@ -305,42 +407,26 @@ if __name__ == '__main__':
 					JKoMQuantumNumList[jtempcounter,1]=K
 					JKoMQuantumNumList[jtempcounter,2]=M
 					jtempcounter+=1
+	'''
+	njkm = JKM	
+	njkmQuantumNumList = get_njkmQuantumNumList(Jmax,njkm)
 
-	if (spin_isomer == "spinless"):
-		njkm = JKM	
-		njkmQuantumNumList = JKMQuantumNumList
-	if (spin_isomer == "para"):
-		njkm = JKeM	
-		njkmQuantumNumList = JKeMQuantumNumList
-	if (spin_isomer == "ortho"):
-		njkm = JKoM	
-		njkmQuantumNumList = JKoMQuantumNumList
-
-	dJKM, KJKM, MJKM = wigner_basis(njkm,size_theta,size_phi,njkmQuantumNumList,littleD,xGL,wGL,phixiGridPts)
-
-	#block for construction of |J1K1M1,J2K2M2> basis begins 
-	eEEbasisuse = KJKM[:,np.newaxis,np.newaxis,:]*MJKM[:,np.newaxis,:,np.newaxis]*dJKM[:,:,np.newaxis,np.newaxis]
-	eEEebasisuse = np.reshape(eEEbasisuse,(njkm,size_theta*size_phi*size_phi),order='C')
-	#block for construction of |J1K1M1,J2K2M2> basis ends
-
+	eEEebasisuse = get_basisre(Jmax,njkm,size_theta,size_phi,xGL,wGL,phixiGridPts,dphixi)
 	if (norm_check == True):
-		normMat = np.tensordot(eEEebasisuse, np.conjugate(eEEebasisuse), axes=([1],[1]))
-		norm_wigner(prefile,strFile,basis_type,eEEbasisuse,eEEebasisuse,normMat,njkm,njkmQuantumNumList,tol)
+		normMat = np.tensordot(eEEebasisuse, eEEebasisuse, axes=([1],[1]))
+		get_normbasisre(prefile,strFile,basis_type,eEEebasisuse,normMat,njkm,tol)
 
 	v1d = get_pot(size_theta,size_phi,zCOM,xGL,phixiGridPts)
 
 	tempa = v1d[np.newaxis,:]*eEEebasisuse
-	Hpot = np.tensordot(np.conjugate(eEEebasisuse), tempa, axes=([1],[1]))
+	Hpot = np.tensordot(eEEebasisuse, tempa, axes=([1],[1]))
 
-	if (pot_write == True):
-		get_norm(prefile,strFile,basis_type,v1d,eEEebasisuse,Hpot,njkm,njkmQuantumNumList,tol)
+	#if (pot_write == True):
+	#	get_norm(prefile,strFile,basis_type,v1d,eEEebasisuse,Hpot,njkm,njkmQuantumNumList,tol)
 
 	Hrot = get_rot(njkm,njkmQuantumNumList,Ah2o,Bh2o,Ch2o,off_diag)
     
-	Htot = Hrot + Hpot
-	if (np.all(np.abs(Htot-Htot.T) < tol) == False):
-		print("The Hamiltonian matrx Htot is not hermitian.")
-		exit()
+	Htot = Hrot #+ Hpot
 
 	#Estimation of eigenvalues and eigenvectors begins here
 	eigVal, eigVec = LA.eigh(Htot)
@@ -354,6 +440,7 @@ if __name__ == '__main__':
 
 	eigVal_file = prefile+"eigen-values-"+strFile
 	np.savetxt(eigVal_file, eigVal_comb.T, fmt='%20.8f', delimiter=' ', header='Energy levels of a aymmetric top - Units associated with the first and second columns are Kelvin and wavenumber, respectively. ')
+	exit()
 
 	for idx in range(4):
 		eigVecRe = np.real(np.dot(np.conjugate(eigVec_sort[:,idx].T),eigVec_sort[:,idx]))
@@ -380,30 +467,3 @@ if __name__ == '__main__':
 	gs_eng_write.close()
 	# printing block is closed
 
-	# computation of reduced density matrix
-	reduced_density=np.zeros((njkm,Jmax+1),dtype=complex)
-	for i in range(njkm):
-		for ip in range(njkm):
-			if ((njkmQuantumNumList[i,1]==njkmQuantumNumList[ip,1]) and (njkmQuantumNumList[i,2]==njkmQuantumNumList[ip,2])):
-				reduced_density[i,njkmQuantumNumList[ip,0]]=np.conjugate(eigVec_sort[i,0])*eigVec_sort[ip,0]
-
-	gs_ang_file = prefile+"ground-state-theta-distribution-"+strFile
-	gs_ang_write = open(gs_ang_file,'w')
-	gs_ang_write.write("#Printing of ground state theta distribution - "+"\n")
-	gs_ang_write.write('{0:1} {1:^19} {2:^20}'.format("#","cos(theta)", "reduced density"))
-	gs_ang_write.write("\n")
-	
-	sum3=complex(0.0,0.0)
-	for th in range(size_theta):
-		sum1=complex(0.0,0.0)
-		for i in range(njkm):
-			for ip in range(njkm):
-				if ((njkmQuantumNumList[i,1]==njkmQuantumNumList[ip,1]) and (njkmQuantumNumList[i,2]==njkmQuantumNumList[ip,2])):
-					sum1+=4.0*math.pi*math.pi*reduced_density[i,njkmQuantumNumList[ip,0]]*dJKM[i,th]*dJKM[ip,th]
-		gs_ang_write.write('{0:^20.8f} {1:^20.8f}'.format(xGL[th],sum1.real/wGL[th]))
-		gs_ang_write.write("\n")
-		sum3+=sum1
-	gs_ang_write.close()
-	# printing block is closed
- 	
-	print("Normalization: reduced density matrix = ",sum3)
