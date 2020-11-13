@@ -21,7 +21,7 @@ def jobstring(NameOfServer, src_code, Rpt, jmax, spin_isomer, dir_output):
 #SBATCH --output=%s
 #SBATCH --time=1-00:00
 %s
-#SBATCH --mem-per-cpu=64GB
+#SBATCH --mem-per-cpu=16GB
 #SBATCH --cpus-per-task=1
 export OMP_NUM_THREADS=1
 %s
@@ -30,8 +30,8 @@ export OMP_NUM_THREADS=1
 
 #initial parameters for qmc.input
 spin_isomer = "spinless"
-status = 'A'
-jrot = 16
+status = 'S'
+jrot = 12
 
 # making grid points for the intermolecular distance, r
 zmin = 2.5
@@ -106,7 +106,8 @@ for r in zList:
 		thetaNum = int(2*jrot+3)
 		angleNum = int(2*(2*jrot+1))
 			
-		strFile = "diag-2"+isomer+"H2O-one-rotor-fixed-cost-1-jmax"+str(jrot)+"-Rpt"+str(Rpt)+"Angstrom-grids-"+str(thetaNum)+"-"+str(angleNum)+"-saved-basis.txt"
+		#strFile = "of-2"+isomer+"H2O-one-rotor-fixed-cost-1-jmax"+str(jrot)+"-Rpt"+str(Rpt)+"Angstrom-grids-"+str(thetaNum)+"-"+str(angleNum)+"-saved-basis.txt"
+		strFile = "of-1"+isomer+"H2O-jmax"+str(jrot)+"-Rpt"+str(Rpt)+"Angstrom-grids-"+str(thetaNum)+"-"+str(angleNum)+"-diag.txt"
 
 		fileAnalyze_energy = "ground-state-energy-"+strFile
 		data_input_energy = dir_output+"/"+fileAnalyze_energy
@@ -129,7 +130,8 @@ for r in zList:
 
 if (status == "A"):
 	#printing block is opened
-	strFile1 = "diag-2"+isomer+"H2O-one-rotor-fixed-cost-1-jmax"+str(jrot)+"-grid-"+str(thetaNum)+"-"+str(angleNum)+"-saved-basis.txt"
+	#strFile1 = "diag-2"+isomer+"H2O-one-rotor-fixed-cost-1-jmax"+str(jrot)+"-grid-"+str(thetaNum)+"-"+str(angleNum)+"-saved-basis.txt"
+	strFile1 = "of-1"+isomer+"H2O-jmax"+str(jrot)+"-grid-"+str(thetaNum)+"-"+str(angleNum)+"-diag.txt"
 
 	energy_comb = np.array([saved_Rpt, eigvalvsRpt1, eigvalvsRpt2])
 	eig_file = dir_output+"/ground-state-energy-vs-Rpt-"+strFile1

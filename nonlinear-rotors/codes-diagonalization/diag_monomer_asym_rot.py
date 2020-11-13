@@ -43,9 +43,10 @@ if __name__ == '__main__':
 		isomer = "-o-" 
 		basis_type = "odd"
 
-	strFile = "diag-2"+isomer+"H2O-one-rotor-fixed-cost-1-jmax"+str(Jmax)+"-Rpt"+str(zCOM)+"Angstrom-grids-"+str(size_theta)+"-"+str(size_phi)+"-saved-basis.txt"
-	#prefile = "../exact-energies-of-H2O/"
-	prefile = ""
+	#strFile = "of-2"+isomer+"H2O-one-rotor-fixed-cost-1-jmax"+str(Jmax)+"-Rpt"+str(zCOM)+"Angstrom-grids-"+str(size_theta)+"-"+str(size_phi)+"-diag.txt"
+	strFile = "of-1"+isomer+"H2O-jmax"+str(Jmax)+"-Rpt"+str(zCOM)+"Angstrom-grids-"+str(size_theta)+"-"+str(size_phi)+"-diag.txt"
+	prefile = "../exact-energies-of-H2O/"
+	#prefile = ""
 
 	#The rotational A, B, C constants are indicated by Ah2o, Bh2o and Ch2o, respectively. The unit is cm^-1. 
 	Ah2o= 27.877 #cm-1 
@@ -121,7 +122,7 @@ if __name__ == '__main__':
 
 	Hrot = dg.get_rotmat(njkm,njkmQuantumNumList,Ah2o,Bh2o,Ch2o)
     
-	Htot = Hrot + Hpot
+	Htot = Hrot #+ Hpot
 	if (np.all(np.abs(Htot-Htot.T) < tol) == False):
 		print("The Hamiltonian matrx Htot is not hermitian.")
 		exit()
