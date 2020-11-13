@@ -359,7 +359,6 @@ if __name__ == '__main__':
 		print("| ")
 		print("|------------------------------------------------")
 		
-	'''
 	JKMQuantumNumList = np.zeros((JKM,3),int)
 	JKeMQuantumNumList = np.zeros((JKeM,3),int)
 	JKoMQuantumNumList = np.zeros((JKoM,3),int)
@@ -407,9 +406,8 @@ if __name__ == '__main__':
 					JKoMQuantumNumList[jtempcounter,1]=K
 					JKoMQuantumNumList[jtempcounter,2]=M
 					jtempcounter+=1
-	'''
 	njkm = JKM	
-	njkmQuantumNumList = get_njkmQuantumNumList(Jmax,njkm)
+	njkmQuantumNumList = JKMQuantumNumList#get_njkmQuantumNumList(Jmax,njkm)
 
 	eEEebasisuse = get_basisre(Jmax,njkm,size_theta,size_phi,xGL,wGL,phixiGridPts,dphixi)
 	if (norm_check == True):
@@ -426,7 +424,7 @@ if __name__ == '__main__':
 
 	Hrot = get_rot(njkm,njkmQuantumNumList,Ah2o,Bh2o,Ch2o,off_diag)
     
-	Htot = Hrot #+ Hpot
+	Htot = Hrot + Hpot
 
 	#Estimation of eigenvalues and eigenvectors begins here
 	eigVal, eigVec = LA.eigh(Htot)
