@@ -98,8 +98,8 @@ def get_pot(size_theta,size_phi,val,xGL,phixiGridPts):
 	'''
 	com1=[0.0,0.0,0.0]
 	com2=[0.0,0.0,val]
-	#Eulang2=[0.0, 0.0, 0.0] 
-	Eulang2=[0.0, math.pi, 0.0]
+	Eulang2=[0.0,0.0,0.0] 
+	#Eulang2=[0.0, math.pi, 0.0]
 	v1d = np.zeros(size_theta*size_phi*size_phi,float)
 	ii = 0
 	for th1 in range(size_theta):

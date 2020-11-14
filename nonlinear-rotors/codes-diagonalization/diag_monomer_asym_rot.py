@@ -43,8 +43,8 @@ if __name__ == '__main__':
 		isomer = "-o-" 
 		basis_type = "odd"
 
-	#strFile = "of-2"+isomer+"H2O-one-rotor-fixed-cost-1-jmax"+str(Jmax)+"-Rpt"+str(zCOM)+"Angstrom-grids-"+str(size_theta)+"-"+str(size_phi)+"-diag.txt"
-	strFile = "of-1"+isomer+"H2O-jmax"+str(Jmax)+"-Rpt"+str(zCOM)+"Angstrom-grids-"+str(size_theta)+"-"+str(size_phi)+"-diag.txt"
+	strFile = "of-2"+isomer+"H2O-one-rotor-fixed-cost1-jmax"+str(Jmax)+"-Rpt"+str(zCOM)+"Angstrom-grids-"+str(size_theta)+"-"+str(size_phi)+"-diag.txt"
+	#strFile = "of-1"+isomer+"H2O-jmax"+str(Jmax)+"-Rpt"+str(zCOM)+"Angstrom-grids-"+str(size_theta)+"-"+str(size_phi)+"-diag.txt"
 	prefile = "../exact-energies-of-H2O/"
 	#prefile = ""
 
@@ -122,7 +122,7 @@ if __name__ == '__main__':
 
 	Hrot = dg.get_rotmat(njkm,njkmQuantumNumList,Ah2o,Bh2o,Ch2o)
     
-	Htot = Hrot #+ Hpot
+	Htot = Hrot + Hpot
 	if (np.all(np.abs(Htot-Htot.T) < tol) == False):
 		print("The Hamiltonian matrx Htot is not hermitian.")
 		exit()
