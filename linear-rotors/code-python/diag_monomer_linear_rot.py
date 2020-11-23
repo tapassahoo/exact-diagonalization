@@ -19,13 +19,13 @@ if __name__ == '__main__':
 	Jmax=int(sys.argv[2])
 	spin_isomer = sys.argv[3]
 
-	size_theta = int(2*Jmax+3)
-	size_phi = int(2*(2*Jmax+1))
+	size_theta = int(2*Jmax+5)
+	size_phi = int(2*(2*Jmax+5))
 
 	tol = 10e-8
 	#print the normalization 
 	io_write = False
-	norm_check = False
+	norm_check = True
 	pot_write = False
 	if (io_write == True):
 		print("Jmax = ", Jmax, flush=True)

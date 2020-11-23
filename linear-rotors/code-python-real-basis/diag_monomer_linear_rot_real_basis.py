@@ -130,7 +130,7 @@ if __name__ == '__main__':
 			if (jm==jmp):
 				Hrot[jm,jm]=Bconst*njmQuantumNumList[jm,0]*(njmQuantumNumList[jm,0]+1.0)
     
-	Htot = Hrot + Hpot
+	Htot = Hrot1 + Hpot
 	if (np.all(np.abs(Htot-Htot.T) < tol) == False):
 		print("The Hamiltonian matrx Htot is not hermitian.")
 		exit()

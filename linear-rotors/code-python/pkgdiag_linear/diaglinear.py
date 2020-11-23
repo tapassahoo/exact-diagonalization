@@ -7,6 +7,7 @@
 import sys
 import math
 import numpy as np
+from scipy import special as sp
 from scipy import linalg as LA
 import qpot
 from scipy.sparse.linalg import eigs, eigsh
@@ -265,3 +266,75 @@ def normalization_checkLinear(prefile,strFile,basis_type,eEEbasisuse,normMat,njm
 				norm_check_write.write("Constant potential field - Re: "+str(np.real(normMat[s1,s2]))+"   Im: "+str(np.imag(normMat[s1,s2]))+"\n")
 				norm_check_write.write("\n")
 	norm_check_write.close()
+
+def spherical_harmonicsReal(njm,size_theta,size_phi,njmQuantumNumList,xGL,wGL,phixiGridPts,dphixi):
+
+	'''
+	construnction of real spherical harmonics
+	'''
+	basisfun = np.zeros((size_theta*size_phi,njm),float)
+	#basisfun = np.zeros((size_theta*size_phi,njm),complex)
+
+	'''
+	for s in range(njm):
+		Nk1=np.sqrt(2.0)*(-1.0)**njmQuantumNumList[s,1]
+		Nk2=(2.*njmQuantumNumList[s,0]+1.0)/(4.0*np.pi)
+		Nk3=math.factorial(njmQuantumNumList[s,0]-abs(njmQuantumNumList[s,1]))/math.factorial(njmQuantumNumList[s,0]+abs(njmQuantumNumList[s,1]))
+		for th in range(size_theta):
+			for ph in range(size_phi):
+				ii = ph+th*size_phi
+			
+				if (njmQuantumNumList[s,1] == 0):
+					basisfun[ii,s] = np.sqrt(Nk2)*sp.lpmv(0,float(njmQuantumNumList[s,0]),xGL[th])*np.sqrt(wGL[th])*np.sqrt(dphixi)
+				if (njmQuantumNumList[s,1] < 0):
+					Nk=Nk1*np.sqrt(Nk2*Nk3)
+					basisfun[ii,s] = Nk*sp.lpmv(abs(njmQuantumNumList[s,1]),float(njmQuantumNumList[s,0]),xGL[th])*np.sin(abs(njmQuantumNumList[s,0])*phixiGridPts[ph])*np.sqrt(wGL[th])*np.sqrt(dphixi)
+				if (njmQuantumNumList[s,1] > 0):
+					Nk=Nk1*np.sqrt(Nk2*Nk3)
+					basisfun[ii,s] = Nk*sp.lpmv(njmQuantumNumList[s,1],float(njmQuantumNumList[s,0]),xGL[th])*np.cos(njmQuantumNumList[s,0]*phixiGridPts[ph])*np.sqrt(wGL[th])*np.sqrt(dphixi)
+	'''
+
+	'''
+	for jm in range(njm):
+		for th in range(size_theta):
+			for ph in range(size_phi):
+				ii = ph+th*size_phi
+			
+				if (njmQuantumNumList[jm,1] == 0):
+					basisfun[ii,jm]=sp.sph_harm(njmQuantumNumList[jm,1],njmQuantumNumList[jm,0],phixiGridPts[ph],np.arccos(xGL[th]))*np.sqrt(wGL[th])*np.sqrt(dphixi)
+				if (njmQuantumNumList[jm,1] < 0):
+					Nk=1./np.sqrt(2.0)
+					basisfun[ii,jm]=Nk*(sp.sph_harm(abs(njmQuantumNumList[jm,1]),njmQuantumNumList[jm,0],phixiGridPts[ph],np.arccos(xGL[th]))-1j*sp.sph_harm(-abs(njmQuantumNumList[jm,1]),njmQuantumNumList[jm,0],phixiGridPts[ph],np.arccos(xGL[th])))*np.sqrt(wGL[th])*np.sqrt(dphixi)
+				if (njmQuantumNumList[jm,1] > 0):
+					Nk=((-1.0)**njmQuantumNumList[jm,1])/np.sqrt(2.0)
+					basisfun[ii,jm]=Nk*(sp.sph_harm(abs(njmQuantumNumList[jm,1]),njmQuantumNumList[jm,0],phixiGridPts[ph],np.arccos(xGL[th]))+1j*sp.sph_harm(-abs(njmQuantumNumList[jm,1]),njmQuantumNumList[jm,0],phixiGridPts[ph],np.arccos(xGL[th])))*np.sqrt(wGL[th])*np.sqrt(dphixi)
+	'''
+
+	for jm in range(njm):
+		for th in range(size_theta):
+			for ph in range(size_phi):
+				ii = ph+th*size_phi
+			
+				if (njmQuantumNumList[jm,1] == 0):
+					basisfun[ii,jm]=sp.sph_harm(njmQuantumNumList[jm,1],njmQuantumNumList[jm,0],phixiGridPts[ph],np.arccos(xGL[th])).real*np.sqrt(wGL[th])*np.sqrt(dphixi)
+				if (njmQuantumNumList[jm,1] < 0):
+					Nk=((-1.0)**njmQuantumNumList[jm,1])*np.sqrt(2.0)
+					basisfun[ii,jm]=Nk*sp.sph_harm(abs(njmQuantumNumList[jm,1]),njmQuantumNumList[jm,0],phixiGridPts[ph],np.arccos(xGL[th])).imag*np.sqrt(wGL[th])*np.sqrt(dphixi)
+				if (njmQuantumNumList[jm,1] > 0):
+					Nk=((-1.0)**njmQuantumNumList[jm,1])*np.sqrt(2.0)
+					#basisfun[ii,jm]=Nk*np.real(sp.sph_harm(njmQuantumNumList[jm,1],njmQuantumNumList[jm,0],phixiGridPts[ph],np.arccos(xGL[th])))*np.sqrt(wGL[th])*np.sqrt(dphixi)
+					basisfun[ii,jm]=Nk*sp.sph_harm(njmQuantumNumList[jm,1],njmQuantumNumList[jm,0],phixiGridPts[ph],np.arccos(xGL[th])).real*np.sqrt(wGL[th])*np.sqrt(dphixi)
+	
+
+	return basisfun
+
+
+def spherical_harmonicsComp(njm,size_theta,size_phi,njmQuantumNumList,xGL,wGL,phixiGridPts,dphixi):
+	basisfun=np.zeros((size_theta*size_phi,njm),complex)
+	for jm in range(njm):
+		for th in range(size_theta):
+			for ph in range(size_phi):
+				ii = ph+th*size_phi
+				basisfun[ii,jm]=sp.sph_harm(njmQuantumNumList[jm,1],njmQuantumNumList[jm,0],phixiGridPts[ph],np.arccos(xGL[th]))*np.sqrt(wGL[th])*np.sqrt(dphixi)
+	return basisfun
+
