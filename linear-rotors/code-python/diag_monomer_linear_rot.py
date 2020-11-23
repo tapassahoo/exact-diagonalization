@@ -7,14 +7,15 @@
 import sys
 import math
 import numpy as np
+import scipy
 from scipy import linalg as LA
 import qpot
 from scipy.sparse.linalg import eigs, eigsh
 import cmath
-import pkgdiag.diagfuns as dg
+import pkgdiag_linear.diaglinear as dg
 
 if __name__ == '__main__':    
-	zCOM=float(sys.argv[1])
+	strength=float(sys.argv[1])
 	Jmax=int(sys.argv[2])
 	spin_isomer = sys.argv[3]
 
@@ -23,15 +24,14 @@ if __name__ == '__main__':
 
 	tol = 10e-8
 	#print the normalization 
-	norm_check = False
 	io_write = False
+	norm_check = False
 	pot_write = False
 	if (io_write == True):
 		print("Jmax = ", Jmax, flush=True)
 		print(" Number of theta grids = ", size_theta, flush=True)
 		print(" Number of phi and chi grids = ", size_phi, flush=True)
 		sys.stdout.flush()
-	zCOM = '{:3.2f}'.format(zCOM)
 
 	if (spin_isomer == "spinless"):
 		isomer = "-" 
@@ -43,24 +43,14 @@ if __name__ == '__main__':
 		isomer = "-o-" 
 		basis_type = "odd"
 
-	strFile = "of-2"+isomer+"H2O-one-rotor-fixed-cost-1-jmax"+str(Jmax)+"-Rpt"+str(zCOM)+"Angstrom-grids-"+str(size_theta)+"-"+str(size_phi)+"-diag.txt"
-	#strFile = "of-1"+isomer+"H2O-jmax"+str(Jmax)+"-Rpt"+str(zCOM)+"Angstrom-grids-"+str(size_theta)+"-"+str(size_phi)+"-diag.txt"
-	prefile = "../exact-energies-of-H2O/"
-	#prefile = ""
+	strFile = "of-1"+isomer+"H2-jmax"+str(Jmax)+"-Field-Strength"+str(strength)+"Kelvin-grids-"+str(size_theta)+"-"+str(size_phi)+"-diag.txt"
+	#prefile = "../exact-energies-of-H2O/"
+	prefile = ""
 
-	#The rotational A, B, C constants are indicated by Ah2o, Bh2o and Ch2o, respectively. The unit is cm^-1. 
-	Ah2o= 27.877 #cm-1 
-	Bh2o= 14.512 #cm-1
-	Ch2o= 9.285  #cm-1
+	Bconst = 60.853 #cm-1 Taken from NIST data https://webbook.nist.gov/cgi/cbook.cgi?ID=C1333740&Mask=1000
 	CMRECIP2KL = 1.4387672;       	# cm^-1 to Kelvin conversion factor
-	Ah2o=Ah2o*CMRECIP2KL
-	Bh2o=Bh2o*CMRECIP2KL
-	Ch2o=Ch2o*CMRECIP2KL
-	print(Ah2o)
-	print(Bh2o)
-	print(Ch2o)
-	exit()
-
+	Bconst = Bconst*CMRECIP2KL
+	
 	xGL,wGL=np.polynomial.legendre.leggauss(size_theta)              
 	phixiGridPts=np.linspace(0,2*np.pi,size_phi,endpoint=False)  
 	dphixi=2.*np.pi/size_phi
@@ -76,55 +66,62 @@ if __name__ == '__main__':
 		print("|------------------------------------------------")
 		sys.stdout.flush()
 
-	JKM = int(((2*Jmax+1)*(2*Jmax+2)*(2*Jmax+3)/6)) #JKM = "Sum[(2J+1)**2,{J,0,Jmax}]" is computed in mathematica
+	JM = int((Jmax+1)**2) #JKM = "Sum[(2J+1)**2,{J,0,Jmax}]" is computed in mathematica
 
 	if ((Jmax%2) ==0):
-		JKeM = int((JKM+Jmax+1)/2)
-		JKoM = int(JKM-JKeM)
+		JeM = int((JM+Jmax+1)/2)
+		JoM = int(JM-JeM)
 	else:
-		JKoM = int((JKM+Jmax+1)/2)
-		JKeM = int(JKM-JKoM)
+		JoM = int((JM+Jmax+1)/2)
+		JeM = int(JM-JoM)
 
 	if (io_write == True):
 		print("|------------------------------------------------")
 		print("| Number of basis functions calculations ....")
 		print("| ")
-		print("| # of |JKM> basis = "+str(JKM))
+		print("| # of |JM> basis = "+str(JM))
 		print("| ")
-		print("| # of even K in |JKM> = "+str(JKeM))
-		print("| # of odd  K in |JKM> = "+str(JKoM))
+		print("| # of even J in |JM> = "+str(JeM))
+		print("| # of odd  J in |JM> = "+str(JoM))
 		print("| ")
 		print("|------------------------------------------------")
 		
 	if (spin_isomer == "spinless"):
-		njkm = JKM	
+		njm = JM	
 	if (spin_isomer == "para"):
-		njkm = JKeM	
+		njm = JeM	
 	if (spin_isomer == "ortho"):
-		njkm = JKoM	
+		njm = JoM	
 
-	njkmQuantumNumList = dg.get_numbbasis(njkm,Jmax,spin_isomer)
+	njmQuantumNumList = dg.get_numbbasisLinear(njm,Jmax,spin_isomer)
 
-	dJKM, KJKM, MJKM = dg.wigner_basis(njkm,size_theta,size_phi,njkmQuantumNumList,xGL,wGL,phixiGridPts,dphixi)
-
-	#block for construction of |J1K1M1,J2K2M2> basis begins 
-	eEEbasisuse = KJKM[:,np.newaxis,np.newaxis,:]*MJKM[:,np.newaxis,:,np.newaxis]*dJKM[:,:,np.newaxis,np.newaxis]
-	eEEebasisuse = np.reshape(eEEbasisuse,(njkm,size_theta*size_phi*size_phi),order='C')
-	#block for construction of |J1K1M1,J2K2M2> basis ends
+	basisfun=np.zeros((size_theta*size_phi,njm),complex)
+	for jm in range(njm):
+		for th in range(size_theta):
+			for ph in range(size_phi):
+				ii = ph+th*size_phi
+				basisfun[ii,jm]=scipy.special.sph_harm(njmQuantumNumList[jm,1],njmQuantumNumList[jm,0],phixiGridPts[ph],np.arccos(xGL[th]))*np.sqrt(wGL[th])*np.sqrt(dphixi)
 
 	if (norm_check == True):
-		normMat = np.tensordot(eEEebasisuse, np.conjugate(eEEebasisuse), axes=([1],[1]))
-		dg.normalization_check(prefile,strFile,basis_type,eEEbasisuse,eEEebasisuse,normMat,njkm,njkmQuantumNumList,tol)
+		normMat = np.tensordot(basisfun, np.conjugate(basisfun), axes=([0],[0]))
+		dg.normalization_checkLinear(prefile,strFile,basis_type,basisfun,normMat,njm,njmQuantumNumList,tol)
 
-	v1d = dg.get_pot(size_theta,size_phi,zCOM,xGL,phixiGridPts)
+	v1d=np.zeros((size_theta*size_phi),float)
+	for th in range(size_theta):
+		for ph in range(size_phi):
+			v1d[ph+th*size_phi] = -strength*xGL[th] #A*cos(theta)
 
-	tempa = v1d[np.newaxis,:]*eEEebasisuse
-	Hpot = np.tensordot(np.conjugate(eEEebasisuse), tempa, axes=([1],[1]))
+	tempa = v1d[:,np.newaxis]*basisfun
+	Hpot = np.tensordot(np.conjugate(basisfun), tempa, axes=([0],[0]))
 
 	if (pot_write == True):
-		dg.normalization_check(prefile,strFile,basis_type,v1d,eEEebasisuse,Hpot,njkm,njkmQuantumNumList,tol)
+		dg.normalization_checkLinear(prefile,strFile,basis_type,v1d,Hpot,njm,njmQuantumNumList,tol)
 
-	Hrot = dg.get_rotmat(njkm,njkmQuantumNumList,Ah2o,Bh2o,Ch2o)
+	Hrot=np.zeros((njm,njm),float)
+	for jm in range(njm):
+		for jmp in range(njm):
+			if (jm==jmp):
+				Hrot[jm,jm]=Bconst*njmQuantumNumList[jm,0]*(njmQuantumNumList[jm,0]+1.0)
     
 	Htot = Hrot + Hpot
 	if (np.all(np.abs(Htot-Htot.T) < tol) == False):
@@ -143,6 +140,7 @@ if __name__ == '__main__':
 
 	eigVal_file = prefile+"eigen-values-"+strFile
 	np.savetxt(eigVal_file, eigVal_comb.T, fmt='%20.8f', delimiter=' ', header='Energy levels of a aymmetric top - Units associated with the first and second columns are Kelvin and wavenumber, respectively. ')
+	exit()
 
 	for idx in range(4):
 		eigVecRe = np.real(np.dot(np.conjugate(eigVec_sort[:,idx].T),eigVec_sort[:,idx]))

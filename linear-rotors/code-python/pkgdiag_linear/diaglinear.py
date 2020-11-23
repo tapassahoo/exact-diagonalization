@@ -209,3 +209,59 @@ def normalization_check(prefile,strFile,basis_type,eEEbasisuse,eEEebasisuse,norm
 				norm_check_write.write("Constant potential field - Re: "+str(np.real(normMat[s1,s2]))+"   Im: "+str(np.imag(normMat[s1,s2]))+"\n")
 				norm_check_write.write("\n")
 	norm_check_write.close()
+
+def get_numbbasisLinear(njm,Jmax,spin_isomer):
+
+	if (spin_isomer == "spinless"):
+		JM=njm
+		JMQuantumNumList = np.zeros((JM,2),int)
+		#all J
+		jtempcounter = 0
+		for J in range(Jmax+1):
+			for M in range(-J,J+1):
+				JMQuantumNumList[jtempcounter,0]=J
+				JMQuantumNumList[jtempcounter,1]=M
+				jtempcounter+=1
+		return JMQuantumNumList
+
+	if (spin_isomer == "para"):
+		JeM=njm
+		JeMQuantumNumList = np.zeros((JeM,2),int)
+		#even
+		jtempcounter = 0
+		for J in range(0,Jmax+1,2):
+			for M in range(-J,J+1):
+				JeMQuantumNumList[jtempcounter,0]=J
+				JeMQuantumNumList[jtempcounter,1]=M
+				jtempcounter+=1
+		return JeMQuantumNumList
+
+	if (spin_isomer == "ortho"):
+		JoM=njm
+		JoMQuantumNumList = np.zeros((JoM,2),int)
+		#odd
+		jtempcounter = 0
+		for J in range(1,Jmax+1,2):
+			for M in range(-J,J+1):
+				JoMQuantumNumList[jtempcounter,0]=J
+				JoMQuantumNumList[jtempcounter,1]=M
+				jtempcounter+=1
+
+		return JoMQuantumNumList
+
+def normalization_checkLinear(prefile,strFile,basis_type,eEEbasisuse,normMat,njm,njmQuantumNumList,tol):
+	norm_check_file = prefile+"norm-check-"+strFile
+	norm_check_write = open(norm_check_file,'w')
+	norm_check_write.write("eEEbasisuse.shape: shape of the "+basis_type+" |JM> basis: " + str(eEEbasisuse.shape)+" \n")
+	norm_check_write.write("normMat.shape: shape of the "+basis_type+" <JM|JM> basis: " + str(normMat.shape)+" \n")
+	norm_check_write.write("\n")
+	norm_check_write.write("\n")
+
+	for s1 in range(njm):
+		for s2 in range(njm):
+			if (np.abs(normMat[s1,s2]) > tol):
+				norm_check_write.write("L vec Rotor1: "+str(njmQuantumNumList[s1,0])+" "+str(njmQuantumNumList[s1,1])+"\n")
+				norm_check_write.write("R vec Rotor1: "+str(njmQuantumNumList[s2,0])+" "+str(njmQuantumNumList[s2,1])+"\n")
+				norm_check_write.write("Constant potential field - Re: "+str(np.real(normMat[s1,s2]))+"   Im: "+str(np.imag(normMat[s1,s2]))+"\n")
+				norm_check_write.write("\n")
+	norm_check_write.close()

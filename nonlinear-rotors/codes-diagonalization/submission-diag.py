@@ -29,8 +29,8 @@ export OMP_NUM_THREADS=1
 	return job_string
 
 #initial parameters for qmc.input
-spin_isomer = "spinless"
-status = 'A'
+spin_isomer = "para"
+status = 'S'
 jrot = 12
 
 # making grid points for the intermolecular distance, r
@@ -54,6 +54,7 @@ nz = int(((zmax-zmin)+dz*0.5)/dz)
 nz += 1
 print(nz)
 zList += [zmin+dz*i for i in range(nz)]
+zList = [20.0]
 
 NameOfServer = 'nlogn'
 dir_output = "/home/tapas/CodesForEigenValues/nonlinear-rotors/exact-energies-of-H2O"

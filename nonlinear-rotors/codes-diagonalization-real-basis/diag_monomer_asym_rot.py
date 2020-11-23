@@ -259,25 +259,22 @@ def get_njkmQuantumNumList(Jmax,njkm):
 			JKMQuantumNumList[jtempcounter,1]=K
 			JKMQuantumNumList[jtempcounter,2]=M
 			jtempcounter=jtempcounter+1
-
 			JKMQuantumNumList[jtempcounter,0]=J
 			JKMQuantumNumList[jtempcounter,1]=K
 			JKMQuantumNumList[jtempcounter,2]=M
 			jtempcounter=jtempcounter+1
-			
+
 		for K in range(1,J+1):
 			for M in range(-J,J+1,1):
 				JKMQuantumNumList[jtempcounter,0]=J
 				JKMQuantumNumList[jtempcounter,1]=K
 				JKMQuantumNumList[jtempcounter,2]=M
 				jtempcounter=jtempcounter+1
-
 				JKMQuantumNumList[jtempcounter,0]=J
 				JKMQuantumNumList[jtempcounter,1]=K
 				JKMQuantumNumList[jtempcounter,2]=M
 				jtempcounter=jtempcounter+1
-		
-	
+
 	return JKMQuantumNumList
 
 
@@ -407,7 +404,8 @@ if __name__ == '__main__':
 					JKoMQuantumNumList[jtempcounter,2]=M
 					jtempcounter+=1
 	njkm = JKM	
-	njkmQuantumNumList = JKMQuantumNumList#get_njkmQuantumNumList(Jmax,njkm)
+	#njkmQuantumNumList = JKMQuantumNumList#get_njkmQuantumNumList(Jmax,njkm)
+	njkmQuantumNumList = get_njkmQuantumNumList(Jmax,njkm)
 
 	eEEebasisuse = get_basisre(Jmax,njkm,size_theta,size_phi,xGL,wGL,phixiGridPts,dphixi)
 	if (norm_check == True):
