@@ -52,7 +52,7 @@ def littleD(ldJ,ldmp,ldm,ldtheta):
 			tempD = tempD + (((-1.0)**v)/(np.math.factorial(a)*np.math.factorial(b)*np.math.factorial(c)*np.math.factorial(v)))*((np.cos(ldtheta/2.))**(2.*ldJ+ldm-ldmp-2.*v))*((-np.sin(ldtheta/2.))**(ldmp-ldm+2.*v))
 	return dval*tempD
 
-def wigner_basis(njkm,size_theta,size_phi,njkmQuantumNumList,littleD,xGL,wGL,phixiGridPts,dphixi):
+def wigner_basis(njkm,size_theta,size_phi,njkmQuantumNumList,xGL,wGL,phixiGridPts,dphixi):
 
 	'''
 	construnction of wigner basis
@@ -404,13 +404,40 @@ if __name__ == '__main__':
 					JKoMQuantumNumList[jtempcounter,2]=M
 					jtempcounter+=1
 	njkm = JKM	
-	#njkmQuantumNumList = JKMQuantumNumList#get_njkmQuantumNumList(Jmax,njkm)
 	njkmQuantumNumList = get_njkmQuantumNumList(Jmax,njkm)
 
 	eEEebasisuse = get_basisre(Jmax,njkm,size_theta,size_phi,xGL,wGL,phixiGridPts,dphixi)
 	if (norm_check == True):
 		normMat = np.tensordot(eEEebasisuse, eEEebasisuse, axes=([1],[1]))
 		get_normbasisre(prefile,strFile,basis_type,eEEebasisuse,normMat,njkm,tol)
+
+
+	njkmQuantumNumList1 = JKMQuantumNumList
+	dJKM, KJKM, MJKM = wigner_basis(njkm,size_theta,size_phi,njkmQuantumNumList1,xGL,wGL,phixiGridPts,dphixi)
+
+	#block for construction of |J1K1M1,J2K2M2> basis begins 
+	eEEbasisuse = KJKM[:,np.newaxis,np.newaxis,:]*MJKM[:,np.newaxis,:,np.newaxis]*dJKM[:,:,np.newaxis,np.newaxis]
+	eEEebasisuse1 = np.reshape(eEEbasisuse,(njkm,size_theta*size_phi*size_phi),order='C')
+	#block for construction of |J1K1M1,J2K2M2> basis ends
+	normMat1 = np.tensordot(eEEebasisuse, eEEebasisuse1, axes=([1],[1]))
+
+	Hrot1 = np.zeros((njkm,njkm),dtype=float)
+    
+	for jkm in range(njkm):
+		for jkmp in range(njkm):
+			sum=0.0
+			for s in range(njkm):
+				for s1 in range(njkm):
+					if ((njkmQuantumNumList1[s,0]==njkmQuantumNumList1[s1,0]) and (njkmQuantumNumList1[s,2]==njkmQuantumNumList1[s1,2])):
+						if (njkmQuantumNumList1[s,1]==(njkmQuantumNumList1[s1,1]-2)):
+							sum += np.real(normMat1[jkm,s]*np.conjugate(normMat1[jkmp,s1]))*0.25*(Ah2o-Ch2o)*off_diag(njkmQuantumNumList1[s,0],njkmQuantumNumList1[s,1])*off_diag(njkmQuantumNumList1[s,0],njkmQuantumNumList1[s,1]+1)
+						elif (njkmQuantumNumList1[s,1]==(njkmQuantumNumList1[s1,1]+2)):
+							sum += np.real(normMat1[jkm,s]*np.conjugate(normMat1[jkmp,s1]))*0.25*(Ah2o-Ch2o)*off_diag(njkmQuantumNumList1[s,0],njkmQuantumNumList1[s,1]-1)*off_diag(njkmQuantumNumList1[s,0],njkmQuantumNumList1[s,1]-2)
+						elif (njkmQuantumNumList1[s,1]==(njkmQuantumNumList1[s1,1])):
+							sum += np.real(normMat1[jkm,s]*np.conjugate(normMat1[jkmp,s1]))*(0.5*(Ah2o + Ch2o)*(njkmQuantumNumList1[s,0]*(njkmQuantumNumList1[s,0]+1)) + (Bh2o - 0.5*(Ah2o+Ch2o)) * ((njkmQuantumNumList1[s,1])**2))
+					
+			Hrot1[jkm,jkmp]=sum
+
 
 	v1d = get_pot(size_theta,size_phi,zCOM,xGL,phixiGridPts)
 
@@ -422,7 +449,7 @@ if __name__ == '__main__':
 
 	Hrot = get_rot(njkm,njkmQuantumNumList,Ah2o,Bh2o,Ch2o,off_diag)
     
-	Htot = Hrot + Hpot
+	Htot = Hrot1# + Hpot
 
 	#Estimation of eigenvalues and eigenvectors begins here
 	eigVal, eigVec = LA.eigh(Htot)

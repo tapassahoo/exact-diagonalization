@@ -45,8 +45,8 @@ if __name__ == '__main__':
 
 	strFile = "of-2"+isomer+"H2O-one-rotor-fixed-cost-1-jmax"+str(Jmax)+"-Rpt"+str(zCOM)+"Angstrom-grids-"+str(size_theta)+"-"+str(size_phi)+"-diag.txt"
 	#strFile = "of-1"+isomer+"H2O-jmax"+str(Jmax)+"-Rpt"+str(zCOM)+"Angstrom-grids-"+str(size_theta)+"-"+str(size_phi)+"-diag.txt"
-	prefile = "../exact-energies-of-H2O/"
-	#prefile = ""
+	#prefile = "../exact-energies-of-H2O/"
+	prefile = ""
 
 	#The rotational A, B, C constants are indicated by Ah2o, Bh2o and Ch2o, respectively. The unit is cm^-1. 
 	Ah2o= 27.877 #cm-1 
@@ -56,10 +56,6 @@ if __name__ == '__main__':
 	Ah2o=Ah2o*CMRECIP2KL
 	Bh2o=Bh2o*CMRECIP2KL
 	Ch2o=Ch2o*CMRECIP2KL
-	print(Ah2o)
-	print(Bh2o)
-	print(Ch2o)
-	exit()
 
 	xGL,wGL=np.polynomial.legendre.leggauss(size_theta)              
 	phixiGridPts=np.linspace(0,2*np.pi,size_phi,endpoint=False)  
@@ -126,7 +122,7 @@ if __name__ == '__main__':
 
 	Hrot = dg.get_rotmat(njkm,njkmQuantumNumList,Ah2o,Bh2o,Ch2o)
     
-	Htot = Hrot + Hpot
+	Htot = Hrot# + Hpot
 	if (np.all(np.abs(Htot-Htot.T) < tol) == False):
 		print("The Hamiltonian matrx Htot is not hermitian.")
 		exit()
