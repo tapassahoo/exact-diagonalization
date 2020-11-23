@@ -97,11 +97,21 @@ if __name__ == '__main__':
 
 	basisfun=dg.spherical_harmonicsReal(njm,size_theta,size_phi,njmQuantumNumList,xGL,wGL,phixiGridPts,dphixi)
 
-
 	if (norm_check == True):
 		normMat = np.tensordot(basisfun, np.conjugate(basisfun), axes=([0],[0]))
 		dg.normalization_checkLinear(prefile,strFile,basis_type,basisfun,normMat,njm,njmQuantumNumList,tol)
-	exit()
+
+	basisfun1=dg.spherical_harmonicsComp(njm,size_theta,size_phi,njmQuantumNumList,xGL,wGL,phixiGridPts,dphixi)
+	normMat1 = np.tensordot(basisfun, basisfun1, axes=([0],[0]))
+
+	Hrot1=np.zeros((njm,njm),float)
+	for jm in range(njm):
+		for jmp in range(njm):
+			sum=0.0
+			for s in range(njm):
+				sum+=np.real(normMat1[jm,s]*np.conjugate(normMat1[jmp,s]))*Bconst*njmQuantumNumList[s,0]*(njmQuantumNumList[s,0]+1.0)
+			Hrot1[jm,jmp]=sum
+
 
 	v1d=np.zeros((size_theta*size_phi),float)
 	for th in range(size_theta):
