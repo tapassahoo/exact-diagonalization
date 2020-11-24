@@ -4,6 +4,9 @@
 #   - compute the eigenvalues and wavefunctions for the full 6D problen
 #	- consider only even K 
 #
+# See the Ref: Rep. Prog. Phys. 77 (2014) 046601 ---> Appendix: Real basis of non-linear rotor
+#
+#
 import sys
 import math
 import numpy as np
@@ -437,6 +440,19 @@ if __name__ == '__main__':
 							sum += np.real(normMat1[jkm,s]*np.conjugate(normMat1[jkmp,s1]))*(0.5*(Ah2o + Ch2o)*(njkmQuantumNumList1[s,0]*(njkmQuantumNumList1[s,0]+1)) + (Bh2o - 0.5*(Ah2o+Ch2o)) * ((njkmQuantumNumList1[s,1])**2))
 					
 			Hrot1[jkm,jkmp]=sum
+	'''
+	for jkm in range(njkm):
+		for jkmp in range(njkm):
+			sum=0.0
+			for s in range(njkm):
+				sum += np.real(normMat1[jkm,s]*np.conjugate(normMat1[jkmp,s]))*(0.5*(Ah2o + Ch2o)*(njkmQuantumNumList1[s,0]*(njkmQuantumNumList1[s,0]+1)) + (Bh2o - 0.5*(Ah2o+Ch2o)) * ((njkmQuantumNumList1[s,1])**2))
+				if ((njkmQuantumNumList1[s,1]-2) >= 0):
+					sum += np.real(normMat1[jkm,s]*np.conjugate(normMat1[jkmp,s]))*0.25*(Ah2o-Ch2o)*off_diag(njkmQuantumNumList1[s,0],njkmQuantumNumList1[s,1])*off_diag(njkmQuantumNumList1[s,0],njkmQuantumNumList1[s,1]+1)
+				if ((njkmQuantumNumList1[s,1]+2) <= njkmQuantumNumList1[-1,1]):
+					sum += np.real(normMat1[jkm,s]*np.conjugate(normMat1[jkmp,s]))*0.25*(Ah2o-Ch2o)*off_diag(njkmQuantumNumList1[s,0],njkmQuantumNumList1[s,1]-1)*off_diag(njkmQuantumNumList1[s,0],njkmQuantumNumList1[s,1]-2)
+					
+			Hrot1[jkm,jkmp]=sum
+	'''
 
 
 	v1d = get_pot(size_theta,size_phi,zCOM,xGL,phixiGridPts)
@@ -447,9 +463,9 @@ if __name__ == '__main__':
 	#if (pot_write == True):
 	#	get_norm(prefile,strFile,basis_type,v1d,eEEebasisuse,Hpot,njkm,njkmQuantumNumList,tol)
 
-	Hrot = get_rot(njkm,njkmQuantumNumList,Ah2o,Bh2o,Ch2o,off_diag)
+	#Hrot = get_rot(njkm,njkmQuantumNumList,Ah2o,Bh2o,Ch2o,off_diag)
     
-	Htot = Hrot1# + Hpot
+	Htot = Hrot1 + Hpot
 
 	#Estimation of eigenvalues and eigenvectors begins here
 	eigVal, eigVec = LA.eigh(Htot)
