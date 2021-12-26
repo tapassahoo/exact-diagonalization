@@ -1,38 +1,84 @@
-#Final version of diagonalizing H2O-H2O
-#
-#  Features:
-#   - compute the eigenvalues and wavefunctions for the full 6D problen
-#	- consider only even K 
-#
+#******************************************************************************
+#                                                                             | 
+# Diagonalization code for linear rotor system  with real spherical harmonics |
+#                                                                             |
+# Developed by Dr. Tapas Sahoo                                                |
+#                                                                             |
+#                                                                             |
+# Important note: Add argparse                                                |
+#                                                                             |
+#---------------------------------------------------------------------------- |
+#                                                                             |
+# Command for running the code:                                               |
+#                                                                             |
+#                                                                             |
+#       Example:                                                              |
+#       python diag_monomer_linear_rot_real_basis.py 10.0 2 0                 |
+#                                                                             |
+#---------------------------------------------------------------------------- |
+#                                                                             |
+# Inputs: See first few lines of the code                                     |
+#                                                                             |
+#       a) Potential strength = strength                                      |
+#       b) Highest value of Angular quantum number = Jmax                     |
+#       c) Specification of spin isomer = spin_isomer#                        |
+#                                                                             |
+#-----------------------------------------------------------------------------|
+#                                                                             |
+# Outputs: Eigenvalues and eigenfunctions                                     |
+#                                                                             |
+#*****************************************************************************
+
+import argparse
 import sys
 import math
 import numpy as np
 import scipy
 from scipy import linalg as LA
-import qpot
 from scipy.sparse.linalg import eigs, eigsh
 import cmath
-import pkgdiag_linear.diaglinear as dg
+
+# Imports basis functions of rotors (linear and nonlinear rotors)
+import pkg_basis_func_rotors.basis_func_rotors as bfunc 
+
+# 'qpot' imports qTIP4P/Fw water model potential function                                 
+import pkg_potential as qpot 
+
 
 if __name__ == '__main__':    
-	strength=float(sys.argv[1])
-	Jmax=int(sys.argv[2])
-	spin_isomer = sys.argv[3]
 
+	parser = argparse.ArgumentParser(prog="diag_monomer_linear_rot_real_basis.py",description="Diagonalization code for linear rotor system  with real spherical harmonics.",epilog="Enjoy the program! :)")
+	parser.add_argument("strength", help="It determines interaction strength of the potential form A*cos(theta). It is a real number.")
+	parser.add_argument("jmax", help="Truncated angular quantum number for this computation. It must be a non-negative integer number.")
+	parser.add_argument("spin", help="It includes nuclear spin isomerism. It is a string.", choices=["para", "ortho", "spinless"])
+	args = parser.parse_args()
+
+    # Potentail strength A: A*cos(theta)
+	strength=args.strength 
+	Jmax=int(args.jmax)
+
+    # spin isomers: 
+    # For para, ortho and spinless systems set it 0, 1, -1, separately.
+	spin_isomer = args.spin
+    # No. of grid points along theta and phi
 	size_theta = int(2*Jmax+5)
 	size_phi = int(2*(2*Jmax+5))
 
+    # Tolerance limit for a harmitian matrix
 	tol = 10e-8
+
 	#print the normalization 
 	io_write = False
 	norm_check = False
 	pot_write = False
+
 	if (io_write == True):
 		print("Jmax = ", Jmax, flush=True)
 		print(" Number of theta grids = ", size_theta, flush=True)
 		print(" Number of phi and chi grids = ", size_phi, flush=True)
 		sys.stdout.flush()
 
+    # Below are specified for naming the output files
 	if (spin_isomer == "spinless"):
 		isomer = "-" 
 		basis_type = ""
@@ -47,13 +93,14 @@ if __name__ == '__main__':
 	#prefile = "../exact-energies-of-H2O/"
 	prefile = ""
 
-	Bconst = 60.853 #cm-1 Taken from NIST data https://webbook.nist.gov/cgi/cbook.cgi?ID=C1333740&Mask=1000
+	Bconst = 60.853                 #cm-1 Taken from NIST data https://webbook.nist.gov/cgi/cbook.cgi?ID=C1333740&Mask=1000
 	CMRECIP2KL = 1.4387672;       	# cm^-1 to Kelvin conversion factor
 	Bconst = Bconst*CMRECIP2KL
 	
 	xGL,wGL=np.polynomial.legendre.leggauss(size_theta)              
 	phixiGridPts=np.linspace(0,2*np.pi,size_phi,endpoint=False)  
 	dphixi=2.*np.pi/size_phi
+
 	if (io_write == True):
 		print("|------------------------------------------------")
 		print("| A list of Gaussian quadrature points of Legendre polynomials - ")
@@ -93,17 +140,24 @@ if __name__ == '__main__':
 	if (spin_isomer == "ortho"):
 		njm = JoM	
 
-	njmQuantumNumList = dg.get_numbbasisLinear(njm,Jmax,spin_isomer)
+    # Total number of lm basis
+    # Its a 2-dim matrix
+	njmQuantumNumList = bfunc.get_numbbasisLinear(njm,Jmax,spin_isomer)
 
-	basisfun=dg.spherical_harmonicsReal(njm,size_theta,size_phi,njmQuantumNumList,xGL,wGL,phixiGridPts,dphixi)
+    # Real spherical harmonics < cos(theta), phi | lm>
+    # basisfun is a 2-dim matrix (size_theta*size_phi, njm)
+	basisfun=bfunc.spherical_harmonicsReal(njm,size_theta,size_phi,njmQuantumNumList,xGL,wGL,phixiGridPts,dphixi)
 
 	if (norm_check == True):
+        # Dimension of normMat is (njm, njm)
 		normMat = np.tensordot(basisfun, np.conjugate(basisfun), axes=([0],[0]))
-		dg.normalization_checkLinear(prefile,strFile,basis_type,basisfun,normMat,njm,njmQuantumNumList,tol)
+        # Below the function checks normalization condition <lm|l'm'>=delta_ll'mm'
+		bfunc.normalization_checkLinear(prefile,strFile,basis_type,basisfun,normMat,njm,njmQuantumNumList,tol)
 
-	basisfun1=dg.spherical_harmonicsComp(njm,size_theta,size_phi,njmQuantumNumList,xGL,wGL,phixiGridPts,dphixi)
+	basisfun1=bfunc.spherical_harmonicsComp(njm,size_theta,size_phi,njmQuantumNumList,xGL,wGL,phixiGridPts,dphixi)
 	normMat1 = np.tensordot(basisfun, basisfun1, axes=([0],[0]))
 
+    # Computation of rotational kinetic energy operator in (lm) basis: H(lm,lm)
 	Hrot1=np.zeros((njm,njm),float)
 	for jm in range(njm):
 		for jmp in range(njm):
@@ -113,6 +167,7 @@ if __name__ == '__main__':
 			Hrot1[jm,jmp]=sum
 
 
+    # Computation of potential energy operator in (lm) basis: H(lm,lm)
 	v1d=np.zeros((size_theta*size_phi),float)
 	for th in range(size_theta):
 		for ph in range(size_phi):
@@ -122,7 +177,7 @@ if __name__ == '__main__':
 	Hpot = np.tensordot(np.conjugate(basisfun), tempa, axes=([0],[0]))
 
 	if (pot_write == True):
-		dg.normalization_checkLinear(prefile,strFile,basis_type,v1d,Hpot,njm,njmQuantumNumList,tol)
+		bfunc.normalization_checkLinear(prefile,strFile,basis_type,v1d,Hpot,njm,njmQuantumNumList,tol)
 
 	Hrot=np.zeros((njm,njm),float)
 	for jm in range(njm):

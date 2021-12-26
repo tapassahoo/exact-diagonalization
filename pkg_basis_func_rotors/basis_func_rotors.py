@@ -1,4 +1,12 @@
-#Final version of diagonalizing H2O-H2O
+#************************************************************|
+#                                                            |
+# This module is used for calling various basis functions    |
+# for a linear and nonlinear top systems.                    |
+#                                                            |
+# It gives us complex spherical harmonics, real spherical    |
+# harmonics and Wigner basis function.                       |
+#                                                            |
+#************************************************************|
 #
 #  Features:
 #   - compute the eigenvalues and wavefunctions for the full 6D problen
@@ -9,7 +17,7 @@ import math
 import numpy as np
 from scipy import special as sp
 from scipy import linalg as LA
-import qpot
+import pkg_potential as qpot
 from scipy.sparse.linalg import eigs, eigsh
 import cmath
 
@@ -212,7 +220,11 @@ def normalization_check(prefile,strFile,basis_type,eEEbasisuse,eEEebasisuse,norm
 	norm_check_write.close()
 
 def get_numbbasisLinear(njm,Jmax,spin_isomer):
-
+	"""
+	Division of ortho, para and spinless systems
+	by using odd, even and all angular quantum 
+	numbers.
+	"""
 	if (spin_isomer == "spinless"):
 		JM=njm
 		JMQuantumNumList = np.zeros((JM,2),int)
@@ -228,7 +240,7 @@ def get_numbbasisLinear(njm,Jmax,spin_isomer):
 	if (spin_isomer == "para"):
 		JeM=njm
 		JeMQuantumNumList = np.zeros((JeM,2),int)
-		#even
+		#even J
 		jtempcounter = 0
 		for J in range(0,Jmax+1,2):
 			for M in range(-J,J+1):
@@ -240,7 +252,7 @@ def get_numbbasisLinear(njm,Jmax,spin_isomer):
 	if (spin_isomer == "ortho"):
 		JoM=njm
 		JoMQuantumNumList = np.zeros((JoM,2),int)
-		#odd
+		#odd J
 		jtempcounter = 0
 		for J in range(1,Jmax+1,2):
 			for M in range(-J,J+1):
@@ -251,6 +263,9 @@ def get_numbbasisLinear(njm,Jmax,spin_isomer):
 		return JoMQuantumNumList
 
 def normalization_checkLinear(prefile,strFile,basis_type,eEEbasisuse,normMat,njm,njmQuantumNumList,tol):
+	"""
+	Check normalization condition: <lm|l'm'>=delta_ll'mm'
+	"""
 	norm_check_file = prefile+"norm-check-"+strFile
 	norm_check_write = open(norm_check_file,'w')
 	norm_check_write.write("eEEbasisuse.shape: shape of the "+basis_type+" |JM> basis: " + str(eEEbasisuse.shape)+" \n")
@@ -269,9 +284,11 @@ def normalization_checkLinear(prefile,strFile,basis_type,eEEbasisuse,normMat,njm
 
 def spherical_harmonicsReal(njm,size_theta,size_phi,njmQuantumNumList,xGL,wGL,phixiGridPts,dphixi):
 
-	'''
-	construnction of real spherical harmonics
-	'''
+	"""
+	It constructs real spherical harmonics in terms of complex spherical harmonics.
+
+    For the reference see spherical harmonics wikipedia page
+	"""
 	basisfun = np.zeros((size_theta*size_phi,njm),float)
 	#basisfun = np.zeros((size_theta*size_phi,njm),complex)
 
@@ -330,6 +347,9 @@ def spherical_harmonicsReal(njm,size_theta,size_phi,njmQuantumNumList,xGL,wGL,ph
 
 
 def spherical_harmonicsComp(njm,size_theta,size_phi,njmQuantumNumList,xGL,wGL,phixiGridPts,dphixi):
+	"""
+	This function constructs commplex spherical harmonics for linear rotors, <theta, phi|lm>. 
+	"""
 	basisfun=np.zeros((size_theta*size_phi,njm),complex)
 	for jm in range(njm):
 		for th in range(size_theta):
