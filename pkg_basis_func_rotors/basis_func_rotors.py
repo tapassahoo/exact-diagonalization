@@ -7,11 +7,7 @@
 # harmonics and Wigner basis function.                       |
 #                                                            |
 #************************************************************|
-#
-#  Features:
-#   - compute the eigenvalues and wavefunctions for the full 6D problen
-#	- consider only even K 
-#
+
 import sys
 import math
 import numpy as np
@@ -23,31 +19,32 @@ import cmath
 
 def binom(n,k):
 	"""
-	calculate binomial coefficient
+	It computes binomial coefficient.
 	"""
 	minus = n-k
-	if minus < 0:
+	if (minus < 0):
 		return 0
 	else:
-		return (np.math.factorial(n)/ (np.math.factorial(k) * np.math.factorial(minus)))
+		return (np.math.factorial(n)/(np.math.factorial(k)*np.math.factorial(minus)))
 
 def off_diag (j,k):                        
 	"""
-	off diagonal <JKM|H|J'K'M'> #
+	It computes off diagonal <JKM|H|J'K'M'> 
 	"""
 	f = np.sqrt((j*(j+1)) - (k*(k+1)))     
 	return f                               
 
 def littleD(ldJ,ldmp,ldm,ldtheta):
 	"""
-	Compute d(m',m, theta) ie. little d-rotation matrix 
+	It Computes d(J, M', M, theta) ie. little d-rotation matrix 
+	See the page no 86 of "Angular momentum - written by R N Zare"
 	"""
 	teza =(np.math.factorial(ldJ+ldm)*np.math.factorial(ldJ-ldm)*np.math.factorial(ldJ+ldmp)*np.math.factorial(ldJ-ldmp))*1.0
 	dval = np.sqrt(teza) 
 	tempD = 0.
 
 	#determine max v that will begin to give negative factorial arguments
-	if ldJ - ldmp > ldJ + ldm:
+	if ((ldJ-ldmp) > (ldJ+ldm)):
 		upper = ldJ-ldmp
 	else:
 		upper = ldJ+ldm
@@ -57,26 +54,26 @@ def littleD(ldJ,ldmp,ldm,ldtheta):
 		a = ldJ - ldmp - v
 		b = ldJ + ldm - v
 		c = v + ldmp - ldm
-		if (a>=0) and (b>=0) and (c>=0):
-			tempD = tempD + (((-1.0)**v)/(np.math.factorial(a)*np.math.factorial(b)*np.math.factorial(c)*np.math.factorial(v)))*((np.cos(ldtheta/2.))**(2.*ldJ+ldm-ldmp-2.*v))*((-np.sin(ldtheta/2.))**(ldmp-ldm+2.*v))
+		if ((a>=0) and (b>=0) and (c>=0)):
+			tempD=tempD+(((-1.0)**v)/(np.math.factorial(a)*np.math.factorial(b)*np.math.factorial(c)*np.math.factorial(v)))*((np.cos(ldtheta/2.))**(2.*ldJ+ldm-ldmp-2.*v))*((-np.sin(ldtheta/2.))**(ldmp-ldm+2.*v))
 	return dval*tempD
 
 def wigner_basis(njkm,size_theta,size_phi,njkmQuantumNumList,xGL,wGL,phixiGridPts,dphixi):
 
-	'''
-	construnction of wigner basis
-	'''
+	"""
+	It construncts Wigner basis
+	"""
 
 	dJKM = np.zeros((njkm,size_theta),float)
 	KJKM = np.zeros((njkm,size_phi),complex)
 	MJKM = np.zeros((njkm,size_phi),complex)
 
-	# Compute littleD(j,m,k,theta) and compare it with the date estimated by asymrho.f
-	'''
+	# Computation littleD(j,m,k,theta) and compare it with the date estimated by asymrho.f
+	"""
 	theta = 1.0 # in degree
 	for s in range(njkm):
 		print("j=",njkmQuantumNumList[s,0],"m=",njkmQuantumNumList[s,2],"k=",njkmQuantumNumList[s,1],littleD(njkmQuantumNumList[s,0],njkmQuantumNumList[s,2],njkmQuantumNumList[s,1],theta*np.pi/180.))
-	'''
+	"""
 
 	Nk = 1.0
 	for s in range(njkm):
@@ -89,58 +86,14 @@ def wigner_basis(njkm,size_theta,size_phi,njkmQuantumNumList,xGL,wGL,phixiGridPt
 
 	return dJKM, KJKM, MJKM
 
-def get_pot(size_theta,size_phi,val,xGL,phixiGridPts):
+def get_numbbasisNonLinear(njkm,Jmax,spin_isomer):
+	"""
+	Lists of (J,K,M) quantum number indices computed for nuclear spin isomers
 
-	'''
-	Construction of potential matrix begins
-	'''
-
-	'''
-	v1d = np.zeros(size_theta*size_phi*size_phi,float)
-	ii = 0
-	for th1 in range(size_theta):
-		for ph1 in range(size_phi):
-			for ch1 in range(size_phi):
-				v1d[ii]=-zCOM*xGL[th1]
-				v1d[ii]=0.0#-zCOM*xGL[th1]
-				ii = ii + 1
-	'''
-	com1=[0.0,0.0,0.0]
-	com2=[0.0,0.0,val]
-	#Eulang2=[0.0,0.0,0.0] 
-	Eulang2=[0.0, math.pi, 0.0]
-	v1d = np.zeros(size_theta*size_phi*size_phi,float)
-	ii = 0
-	for th1 in range(size_theta):
-		for ph1 in range(size_phi):
-			for ch1 in range(size_phi):
-				ii = ch1+(ph1+th1*size_phi)*size_phi
-				Eulang1=[phixiGridPts[ph1], math.acos(xGL[th1]), phixiGridPts[ch1]]
-				v1d[ii]=qpot.caleng(com1,com2,Eulang1,Eulang2)
-
-	return v1d
-
-def get_rotmat(njkm,njkmQuantumNumList,Ah2o,Bh2o,Ch2o):
-
-	'''
-	construction of kinetic energy matrix - BEGINS
-	'''
-
-	Hrot = np.zeros((njkm,njkm),dtype=float)
-    
-	for jkm in range(njkm):
-		for jkmp in range(njkm):
-			if ((njkmQuantumNumList[jkm,0]==njkmQuantumNumList[jkmp,0]) and (njkmQuantumNumList[jkm,2]==njkmQuantumNumList[jkmp,2])):
-				if (njkmQuantumNumList[jkm,1]==(njkmQuantumNumList[jkmp,1]-2)):
-					Hrot[jkm,jkmp] += 0.25*(Ah2o-Ch2o)*off_diag(njkmQuantumNumList[jkm,0],njkmQuantumNumList[jkm,1])*off_diag(njkmQuantumNumList[jkm,0],njkmQuantumNumList[jkm,1]+1)
-				elif (njkmQuantumNumList[jkm,1]==(njkmQuantumNumList[jkmp,1]+2)):
-					Hrot[jkm,jkmp] += 0.25*(Ah2o-Ch2o)*off_diag(njkmQuantumNumList[jkm,0],njkmQuantumNumList[jkm,1]-1)*off_diag(njkmQuantumNumList[jkm,0],njkmQuantumNumList[jkm,1]-2)
-				elif (njkmQuantumNumList[jkm,1]==(njkmQuantumNumList[jkmp,1])):
-					Hrot[jkm,jkmp] += (0.5*(Ah2o + Ch2o)*(njkmQuantumNumList[jkm,0]*(njkmQuantumNumList[jkm,0]+1)) + (Bh2o - 0.5*(Ah2o+Ch2o)) * ((njkmQuantumNumList[jkm,1])**2))
-
-	return Hrot
-
-def get_numbbasis(njkm,Jmax,spin_isomer):
+	Para isomer is obtained by summing over even K,
+	Ortho isomer is obtained by summing over odd K,
+	spinless is computed by summing over all K values.
+	"""
 
 	if (spin_isomer == "spinless"):
 		JKM=njkm
@@ -201,7 +154,56 @@ def get_numbbasis(njkm,Jmax,spin_isomer):
 
 		return JKoMQuantumNumList
 
-def normalization_check(prefile,strFile,basis_type,eEEbasisuse,eEEebasisuse,normMat,njkm,njkmQuantumNumList,tol):
+def get_pot(size_theta,size_phi,val,xGL,phixiGridPts):
+
+	"""
+	It computes potential matrix over the position basis.
+	"""
+
+	'''
+	v1d = np.zeros(size_theta*size_phi*size_phi,float)
+	ii = 0
+	for th1 in range(size_theta):
+		for ph1 in range(size_phi):
+			for ch1 in range(size_phi):
+				v1d[ii]=-zCOM*xGL[th1]
+				v1d[ii]=0.0#-zCOM*xGL[th1]
+				ii = ii + 1
+	'''
+	com1=[0.0,0.0,0.0]
+	com2=[0.0,0.0,val]
+	#Eulang2=[0.0,0.0,0.0] 
+	Eulang2=[0.0, math.pi, 0.0]
+	v1d = np.zeros(size_theta*size_phi*size_phi,float)
+	ii = 0
+	for th1 in range(size_theta):
+		for ph1 in range(size_phi):
+			for ch1 in range(size_phi):
+				ii = ch1+(ph1+th1*size_phi)*size_phi
+				Eulang1=[phixiGridPts[ph1], math.acos(xGL[th1]), phixiGridPts[ch1]]
+				v1d[ii]=qpot.caleng(com1,com2,Eulang1,Eulang2)
+
+	return v1d
+
+def get_rotmatNonLinear(njkm,njkmQuantumNumList,Ah2o,Bh2o,Ch2o):
+
+	"""
+	It constructs kinetic energy matrix.
+	"""
+
+	Hrot = np.zeros((njkm,njkm),dtype=float)
+    
+	for jkm in range(njkm):
+		for jkmp in range(njkm):
+			if ((njkmQuantumNumList[jkm,0]==njkmQuantumNumList[jkmp,0]) and (njkmQuantumNumList[jkm,2]==njkmQuantumNumList[jkmp,2])):
+				if (njkmQuantumNumList[jkm,1]==(njkmQuantumNumList[jkmp,1]-2)):
+					Hrot[jkm,jkmp] += 0.25*(Ah2o-Ch2o)*off_diag(njkmQuantumNumList[jkm,0],njkmQuantumNumList[jkm,1])*off_diag(njkmQuantumNumList[jkm,0],njkmQuantumNumList[jkm,1]+1)
+				elif (njkmQuantumNumList[jkm,1]==(njkmQuantumNumList[jkmp,1]+2)):
+					Hrot[jkm,jkmp] += 0.25*(Ah2o-Ch2o)*off_diag(njkmQuantumNumList[jkm,0],njkmQuantumNumList[jkm,1]-1)*off_diag(njkmQuantumNumList[jkm,0],njkmQuantumNumList[jkm,1]-2)
+				elif (njkmQuantumNumList[jkm,1]==(njkmQuantumNumList[jkmp,1])):
+					Hrot[jkm,jkmp] += (0.5*(Ah2o + Ch2o)*(njkmQuantumNumList[jkm,0]*(njkmQuantumNumList[jkm,0]+1)) + (Bh2o - 0.5*(Ah2o+Ch2o)) * ((njkmQuantumNumList[jkm,1])**2))
+
+	return Hrot
 	norm_check_file = prefile+"norm-check-"+strFile
 	norm_check_write = open(norm_check_file,'w')
 	norm_check_write.write("eEEbasisuse.shape: shape of the "+basis_type+" |JKM> basis: " + str(eEEbasisuse.shape)+" \n")

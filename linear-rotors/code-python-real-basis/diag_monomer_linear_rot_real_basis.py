@@ -4,9 +4,6 @@
 #                                                                             |
 # Developed by Dr. Tapas Sahoo                                                |
 #                                                                             |
-#                                                                             |
-# Important note: Add argparse                                                |
-#                                                                             |
 #---------------------------------------------------------------------------- |
 #                                                                             |
 # Command for running the code:                                               |
@@ -133,6 +130,10 @@ if __name__ == '__main__':
 		print("| ")
 		print("|------------------------------------------------")
 		
+	# Total number of |JM> basis are -
+	# for para, only even J values are considered,
+	# for ortho, only odd J are included
+	# and for spinless, all J values are added.
 	if (spin_isomer == "spinless"):
 		njm = JM	
 	if (spin_isomer == "para"):
@@ -140,11 +141,11 @@ if __name__ == '__main__':
 	if (spin_isomer == "ortho"):
 		njm = JoM	
 
-    # Total number of lm basis
+	# List of (J,M) indices computed for various nuclear spin isomers
     # Its a 2-dim matrix
 	njmQuantumNumList = bfunc.get_numbbasisLinear(njm,Jmax,spin_isomer)
 
-    # Real spherical harmonics < cos(theta), phi | lm>
+    # Real spherical harmonics < cos(theta), phi | JM>
     # basisfun is a 2-dim matrix (size_theta*size_phi, njm)
 	basisfun=bfunc.spherical_harmonicsReal(njm,size_theta,size_phi,njmQuantumNumList,xGL,wGL,phixiGridPts,dphixi)
 

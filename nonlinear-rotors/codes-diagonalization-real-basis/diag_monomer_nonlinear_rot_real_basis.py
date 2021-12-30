@@ -1,87 +1,49 @@
-#Final version of diagonalizing H2O-H2O
-#
-#  Features:
-#   - compute the eigenvalues and wavefunctions for the full 6D problen
-#	- consider only even K 
-#
-# See the Ref: Rep. Prog. Phys. 77 (2014) 046601 ---> Appendix: Real basis of non-linear rotor
-#
-#
+#********************************************************************************
+#                                                                               | 
+# Diagonalization code for a asymmetric top rotor system with real Wigner basis |
+# set. See the Appendix of Ref: Rep. Prog. Phys. 77 (2014) 046601.              |
+#                                                                               |
+# Developed by Dr. Tapas Sahoo                                                  |
+#                                                                               |
+#-------------------------------------------------------------------------------|
+#                                                                               |
+# Command for running the code:                                                 |
+#                                                                               |
+#       Example:                                                                |
+#       python diag_monomer_nonlinear_rot_real_basis.py 10.0 2 0                |
+#                                                                               |
+#----------------------------------------------------------------------------   |
+#                                                                               |
+# Inputs: See first few lines of the code                                       |
+#                                                                               |
+#       a) Distance between two COMs along z-axis = zcom                        |
+#       b) Highest value of Angular quantum number = Jmax                       |
+#       c) Specification of spin isomer = spin_isomer#                          |
+#                                                                               |
+#                              or                                               |
+#                                                                               |
+# Run "python diag_monomer_nonlinear_rot_real_basis.py --help" on the terminal  |
+#                                                                               |
+#-----------------------------------------------------------------------------  |
+#                                                                               |
+# Outputs: Eigenvalues and eigenfunctions                                       |
+#                                                                               |
+#********************************************************************************
+
+import argparse
 import sys
 import math
 import numpy as np
 from scipy import linalg as LA
-import qpot
 from scipy.sparse.linalg import eigs, eigsh
 import cmath
 
-def binom(n,k):
-	"""
-	calculate binomial coefficient
-	"""
-	minus = n-k
-	if minus < 0:
-		return 0
-	else:
-		return (np.math.factorial(n)/ (np.math.factorial(k) * np.math.factorial(minus)))
+# Imports basis functions of rotors (linear and nonlinear rotors)
+import pkg_basis_func_rotors.basis_func_rotors as bfunc 
 
-def off_diag (j,k):                        
-	"""
-	off diagonal <JKM|H|J'K'M'> #
-	"""
-	f = np.sqrt((j*(j+1)) - (k*(k+1)))     
-	return f                               
+# 'qpot' imports qTIP4P/Fw water model potential function
+import pkg_potential as qpot 
 
-def littleD(ldJ,ldmp,ldm,ldtheta):
-	"""
-	Compute d(m',m, theta) ie. little d-rotation matrix 
-	"""
-	teza =(np.math.factorial(ldJ+ldm)*np.math.factorial(ldJ-ldm)*np.math.factorial(ldJ+ldmp)*np.math.factorial(ldJ-ldmp))*1.0
-	dval = np.sqrt(teza) 
-	tempD = 0.
-
-	#determine max v that will begin to give negative factorial arguments
-	if ldJ - ldmp > ldJ + ldm:
-		upper = ldJ-ldmp
-	else:
-		upper = ldJ+ldm
-
-	#iterate over intergers that provide non-negative factorial arguments
-	for v in range(upper+1):
-		a = ldJ - ldmp - v
-		b = ldJ + ldm - v
-		c = v + ldmp - ldm
-		if (a>=0) and (b>=0) and (c>=0):
-			tempD = tempD + (((-1.0)**v)/(np.math.factorial(a)*np.math.factorial(b)*np.math.factorial(c)*np.math.factorial(v)))*((np.cos(ldtheta/2.))**(2.*ldJ+ldm-ldmp-2.*v))*((-np.sin(ldtheta/2.))**(ldmp-ldm+2.*v))
-	return dval*tempD
-
-def wigner_basis(njkm,size_theta,size_phi,njkmQuantumNumList,xGL,wGL,phixiGridPts,dphixi):
-
-	'''
-	construnction of wigner basis
-	'''
-
-	dJKM = np.zeros((njkm,size_theta),float)
-	KJKM = np.zeros((njkm,size_phi),complex)
-	MJKM = np.zeros((njkm,size_phi),complex)
-
-	# Compute littleD(j,m,k,theta) and compare it with the date estimated by asymrho.f
-	'''
-	theta = 1.0 # in degree
-	for s in range(njkm):
-		print("j=",njkmQuantumNumList[s,0],"m=",njkmQuantumNumList[s,2],"k=",njkmQuantumNumList[s,1],littleD(njkmQuantumNumList[s,0],njkmQuantumNumList[s,2],njkmQuantumNumList[s,1],theta*np.pi/180.))
-	'''
-
-	Nk = 1.0
-	for s in range(njkm):
-		for th in range(size_theta):
-			dJKM[s,th] = np.sqrt((2.*njkmQuantumNumList[s,0]+1)/(8.*np.pi**2))*littleD(njkmQuantumNumList[s,0],njkmQuantumNumList[s,2],njkmQuantumNumList[s,1],np.arccos(xGL[th]))*np.sqrt(wGL[th])
-
-		for ph in range(size_phi):
-			KJKM[s,ph] = np.exp(1j*phixiGridPts[ph]*njkmQuantumNumList[s,1])*np.sqrt(dphixi)*Nk
-			MJKM[s,ph] = np.exp(1j*phixiGridPts[ph]*njkmQuantumNumList[s,2])*np.sqrt(dphixi)*Nk
-
-	return dJKM, KJKM, MJKM
 
 def norm_wigner(prefile,strFile,basis_type,eEEbasisuse,eEEebasisuse,normMat,njkm,njkmQuantumNumList,tol):
 	norm_check_file = prefile+"norm-check-"+strFile
@@ -153,7 +115,7 @@ def get_norm(prefile,strFile,basis_type,v1d,eEEebasisuse,Hpot,njkm,njkmQuantumNu
 				pot_check_write.write("\n")
 	pot_check_write.close()
 
-def get_rot(njkm,njkmQuantumNumList,Ah2o,Bh2o,Ch2o,off_diag):
+def get_rot(njkm,njkmQuantumNumList,Ah2o,Bh2o,Ch2o,bfunc):
 
 	'''
 	construction of kinetic energy matrix - BEGINS
@@ -165,9 +127,9 @@ def get_rot(njkm,njkmQuantumNumList,Ah2o,Bh2o,Ch2o,off_diag):
 		for jkmp in range(njkm):
 			if ((njkmQuantumNumList[jkm,0]==njkmQuantumNumList[jkmp,0]) and (njkmQuantumNumList[jkm,2]==njkmQuantumNumList[jkmp,2])):
 				if (njkmQuantumNumList[jkm,1]==(njkmQuantumNumList[jkmp,1]-2)):
-					Hrot[jkm,jkmp] += 0.25*(Ah2o-Ch2o)*off_diag(njkmQuantumNumList[jkm,0],njkmQuantumNumList[jkm,1])*off_diag(njkmQuantumNumList[jkm,0],njkmQuantumNumList[jkm,1]+1)
+					Hrot[jkm,jkmp] += 0.25*(Ah2o-Ch2o)*bfunc.off_diag(njkmQuantumNumList[jkm,0],njkmQuantumNumList[jkm,1])*bfunc.off_diag(njkmQuantumNumList[jkm,0],njkmQuantumNumList[jkm,1]+1)
 				elif (njkmQuantumNumList[jkm,1]==(njkmQuantumNumList[jkmp,1]+2)):
-					Hrot[jkm,jkmp] += 0.25*(Ah2o-Ch2o)*off_diag(njkmQuantumNumList[jkm,0],njkmQuantumNumList[jkm,1]-1)*off_diag(njkmQuantumNumList[jkm,0],njkmQuantumNumList[jkm,1]-2)
+					Hrot[jkm,jkmp] += 0.25*(Ah2o-Ch2o)*bfunc.off_diag(njkmQuantumNumList[jkm,0],njkmQuantumNumList[jkm,1]-1)*bfunc.off_diag(njkmQuantumNumList[jkm,0],njkmQuantumNumList[jkm,1]-2)
 				elif (njkmQuantumNumList[jkm,1]==(njkmQuantumNumList[jkmp,1])):
 					Hrot[jkm,jkmp] += (0.5*(Ah2o + Ch2o)*(njkmQuantumNumList[jkm,0]*(njkmQuantumNumList[jkm,0]+1)) + (Bh2o - 0.5*(Ah2o+Ch2o)) * ((njkmQuantumNumList[jkm,1])**2))
 
@@ -175,8 +137,8 @@ def get_rot(njkm,njkmQuantumNumList,Ah2o,Bh2o,Ch2o,off_diag):
 
 def wigner_basisre(njkm_J,njkm_K,njkm_M,theta,wt,phi,wp,chi,wc):
 
-	theta0 = math.sqrt((2.*njkm_J+1)/(8.*math.pi**2))*littleD(njkm_J,0,0,np.arccos(theta))*math.sqrt(wt)*math.sqrt(wp)*math.sqrt(wc)
-	dd = math.sqrt((2.*njkm_J+1)/(4.*math.pi**2))*littleD(njkm_J,njkm_M,njkm_K,np.arccos(theta))*math.sqrt(wt)
+	theta0 = math.sqrt((2.*njkm_J+1)/(8.*math.pi**2))*bfunc.littleD(njkm_J,0,0,np.arccos(theta))*math.sqrt(wt)*math.sqrt(wp)*math.sqrt(wc)
+	dd = math.sqrt((2.*njkm_J+1)/(4.*math.pi**2))*bfunc.littleD(njkm_J,njkm_M,njkm_K,np.arccos(theta))*math.sqrt(wt)
 	thetac = dd*math.cos(phi*njkm_M+chi*njkm_K)*math.sqrt(wp)*math.sqrt(wc)
 	thetas = dd*math.sin(phi*njkm_M+chi*njkm_K)*math.sqrt(wp)*math.sqrt(wc)
 
@@ -242,7 +204,7 @@ def get_normbasisre(prefile,strFile,basis_type,eEEebasisuse,normMat,njkm,tol):
 				norm_check_write.write("\n")
 	norm_check_write.close()
 
-def get_njkmQuantumNumList(Jmax,njkm):
+def get_njkmQuantumNumListReBasis(Jmax,njkm):
 
 	JKMQuantumNumList = np.zeros((njkm,3),int)
 
@@ -282,20 +244,30 @@ def get_njkmQuantumNumList(Jmax,njkm):
 
 
 if __name__ == '__main__':    
-	zCOM=float(sys.argv[1])
-	Jmax=int(sys.argv[2])
-	spin_isomer = sys.argv[3]
+
+	parser = argparse.ArgumentParser(prog="diag_monomer_nonlinear_rot_real_basis.py",description="Diagonalization code for a nonlinear rotor system  with real basis. See the Appendix of Ref: Rep. Prog. Phys. 77 (2014) 046601.",epilog="Enjoy the program! :)")
+	parser.add_argument("zcom", help="Distance between two centre of masses along z-axix. It is a real number.")
+	parser.add_argument("jmax", help="Truncated angular quantum number for this computation. It must be a non-negative integer number.")
+	parser.add_argument("spin", help="It includes nuclear spin isomerism. It is a string.", choices=["para", "ortho", "spinless"])
+	args = parser.parse_args()
+
+
+	zCOM=float(args.zcom)             # Distance between two centre of masses along z-axis
+	Jmax=int(args.jmax)               # Truncated angular quantum number for this computation
+	spin_isomer=args.spin             # It includes nuclear spin isomerism
 
 	size_theta = int(2*Jmax+3)
 	size_phi = int(2*(2*Jmax+1))
 
-	tol = 10e-8
+	tol = 10e-8                # Tollerance for checking if the matrix is hermitian?
 	#print the normalization 
 	norm_check = True
 	io_write = True
 	pot_write = False
 	if (io_write == True):
-		print("Jmax = ", Jmax, flush=True)
+		print("")
+		print("")
+		print(" Jmax = ", Jmax, flush=True)
 		print(" Number of theta grids = ", size_theta, flush=True)
 		print(" Number of phi and chi grids = ", size_phi, flush=True)
 		sys.stdout.flush()
@@ -324,10 +296,14 @@ if __name__ == '__main__':
 	Bh2o=Bh2o*CMRECIP2KL
 	Ch2o=Ch2o*CMRECIP2KL
 
+
 	xGL,wGL=np.polynomial.legendre.leggauss(size_theta)              
 	phixiGridPts=np.linspace(0,2*np.pi,size_phi,endpoint=False)  
 	dphixi=2.*np.pi/size_phi
+
 	if (io_write == True):
+		print("")
+		print("")
 		print("|------------------------------------------------")
 		print("| A list of Gaussian quadrature points of Legendre polynomials - ")
 		print("")
@@ -347,65 +323,36 @@ if __name__ == '__main__':
 	else:
 		JKoM = int((JKM+Jmax+1)/2)
 		JKeM = int(JKM-JKoM)
-
+	
 	if (io_write == True):
+		print("")
+		print("")
 		print("|------------------------------------------------")
 		print("| Number of basis functions calculations ....")
 		print("| ")
-		print("| # of |JKM> basis = "+str(JKM))
+		print("| Number of |JKM> basis = "+str(JKM))
 		print("| ")
-		print("| # of even K in |JKM> = "+str(JKeM))
-		print("| # of odd  K in |JKM> = "+str(JKoM))
+		print("| Number of even K in |JKM> = "+str(JKeM))
+		print("| Number of odd  K in |JKM> = "+str(JKoM))
 		print("| ")
 		print("|------------------------------------------------")
-		
-	JKMQuantumNumList = np.zeros((JKM,3),int)
-	JKeMQuantumNumList = np.zeros((JKeM,3),int)
-	JKoMQuantumNumList = np.zeros((JKoM,3),int)
 
-	jtempcounter = 0
-	for J in range(Jmax+1):
-		for K in range(-J,J+1,1):
-			for M in range(-J,J+1):
-				JKMQuantumNumList[jtempcounter,0]=J
-				JKMQuantumNumList[jtempcounter,1]=K
-				JKMQuantumNumList[jtempcounter,2]=M
-				jtempcounter+=1
+	# Total number of |JKM> basis are -
+	# for para, only even K values are considered,
+	# for ortho, only odd K are included
+	# and for spinless, all K values are added.
+	if (spin_isomer == "spinless"):
+		njkm = JKM	
+	if (spin_isomer == "para"):
+		njkm = JKeM	
+	if (spin_isomer == "ortho"):
+		njkm = JKoM	
 
-	#even
-	jtempcounter = 0
-	for J in range(Jmax+1):
-		if ((J%2) == 0):
-			for K in range(-J,J+1,2):
-				for M in range(-J,J+1):
-					JKeMQuantumNumList[jtempcounter,0]=J
-					JKeMQuantumNumList[jtempcounter,1]=K
-					JKeMQuantumNumList[jtempcounter,2]=M
-					jtempcounter+=1
-		else:
-			for K in range(-J+1,J,2):
-				for M in range(-J,J+1):
-					JKeMQuantumNumList[jtempcounter,0]=J
-					JKeMQuantumNumList[jtempcounter,1]=K
-					JKeMQuantumNumList[jtempcounter,2]=M
-					jtempcounter+=1
-	#odd
-	jtempcounter = 0
-	for J in range(Jmax+1):
-		if ((J%2) == 0):
-			for K in range(-J+1,J,2):
-				for M in range(-J,J+1):
-					JKoMQuantumNumList[jtempcounter,0]=J
-					JKoMQuantumNumList[jtempcounter,1]=K
-					JKoMQuantumNumList[jtempcounter,2]=M
-					jtempcounter+=1
-		else:
-			for K in range(-J,J+1,2):
-				for M in range(-J,J+1):
-					JKoMQuantumNumList[jtempcounter,0]=J
-					JKoMQuantumNumList[jtempcounter,1]=K
-					JKoMQuantumNumList[jtempcounter,2]=M
-					jtempcounter+=1
+	# List of (J,K,M) indices computed for various nuclear spin isomers
+    # Its a 2-dim matrix
+	njkmQuantumNumList = bfunc.get_numbbasisNonLinear(njkm,Jmax,spin_isomer)
+	exit()
+
 	njkm = JKM	
 	njkmQuantumNumList = get_njkmQuantumNumList(Jmax,njkm)
 
@@ -433,9 +380,9 @@ if __name__ == '__main__':
 				for s1 in range(njkm):
 					if ((njkmQuantumNumList1[s,0]==njkmQuantumNumList1[s1,0]) and (njkmQuantumNumList1[s,2]==njkmQuantumNumList1[s1,2])):
 						if (njkmQuantumNumList1[s,1]==(njkmQuantumNumList1[s1,1]-2)):
-							sum += np.real(normMat1[jkm,s]*np.conjugate(normMat1[jkmp,s1]))*0.25*(Ah2o-Ch2o)*off_diag(njkmQuantumNumList1[s,0],njkmQuantumNumList1[s,1])*off_diag(njkmQuantumNumList1[s,0],njkmQuantumNumList1[s,1]+1)
+							sum += np.real(normMat1[jkm,s]*np.conjugate(normMat1[jkmp,s1]))*0.25*(Ah2o-Ch2o)*bfunc.off_diag(njkmQuantumNumList1[s,0],njkmQuantumNumList1[s,1])*bfunc.off_diag(njkmQuantumNumList1[s,0],njkmQuantumNumList1[s,1]+1)
 						elif (njkmQuantumNumList1[s,1]==(njkmQuantumNumList1[s1,1]+2)):
-							sum += np.real(normMat1[jkm,s]*np.conjugate(normMat1[jkmp,s1]))*0.25*(Ah2o-Ch2o)*off_diag(njkmQuantumNumList1[s,0],njkmQuantumNumList1[s,1]-1)*off_diag(njkmQuantumNumList1[s,0],njkmQuantumNumList1[s,1]-2)
+							sum += np.real(normMat1[jkm,s]*np.conjugate(normMat1[jkmp,s1]))*0.25*(Ah2o-Ch2o)*bfunc.off_diag(njkmQuantumNumList1[s,0],njkmQuantumNumList1[s,1]-1)*bfunc.off_diag(njkmQuantumNumList1[s,0],njkmQuantumNumList1[s,1]-2)
 						elif (njkmQuantumNumList1[s,1]==(njkmQuantumNumList1[s1,1])):
 							sum += np.real(normMat1[jkm,s]*np.conjugate(normMat1[jkmp,s1]))*(0.5*(Ah2o + Ch2o)*(njkmQuantumNumList1[s,0]*(njkmQuantumNumList1[s,0]+1)) + (Bh2o - 0.5*(Ah2o+Ch2o)) * ((njkmQuantumNumList1[s,1])**2))
 					
@@ -447,9 +394,9 @@ if __name__ == '__main__':
 			for s in range(njkm):
 				sum += np.real(normMat1[jkm,s]*np.conjugate(normMat1[jkmp,s]))*(0.5*(Ah2o + Ch2o)*(njkmQuantumNumList1[s,0]*(njkmQuantumNumList1[s,0]+1)) + (Bh2o - 0.5*(Ah2o+Ch2o)) * ((njkmQuantumNumList1[s,1])**2))
 				if ((njkmQuantumNumList1[s,1]-2) >= 0):
-					sum += np.real(normMat1[jkm,s]*np.conjugate(normMat1[jkmp,s]))*0.25*(Ah2o-Ch2o)*off_diag(njkmQuantumNumList1[s,0],njkmQuantumNumList1[s,1])*off_diag(njkmQuantumNumList1[s,0],njkmQuantumNumList1[s,1]+1)
+					sum += np.real(normMat1[jkm,s]*np.conjugate(normMat1[jkmp,s]))*0.25*(Ah2o-Ch2o)*bfunc.off_diag(njkmQuantumNumList1[s,0],njkmQuantumNumList1[s,1])*bfunc.off_diag(njkmQuantumNumList1[s,0],njkmQuantumNumList1[s,1]+1)
 				if ((njkmQuantumNumList1[s,1]+2) <= njkmQuantumNumList1[-1,1]):
-					sum += np.real(normMat1[jkm,s]*np.conjugate(normMat1[jkmp,s]))*0.25*(Ah2o-Ch2o)*off_diag(njkmQuantumNumList1[s,0],njkmQuantumNumList1[s,1]-1)*off_diag(njkmQuantumNumList1[s,0],njkmQuantumNumList1[s,1]-2)
+					sum += np.real(normMat1[jkm,s]*np.conjugate(normMat1[jkmp,s]))*0.25*(Ah2o-Ch2o)*bfunc.off_diag(njkmQuantumNumList1[s,0],njkmQuantumNumList1[s,1]-1)*bfunc.off_diag(njkmQuantumNumList1[s,0],njkmQuantumNumList1[s,1]-2)
 					
 			Hrot1[jkm,jkmp]=sum
 	'''
@@ -463,7 +410,7 @@ if __name__ == '__main__':
 	#if (pot_write == True):
 	#	get_norm(prefile,strFile,basis_type,v1d,eEEebasisuse,Hpot,njkm,njkmQuantumNumList,tol)
 
-	#Hrot = get_rot(njkm,njkmQuantumNumList,Ah2o,Bh2o,Ch2o,off_diag)
+	#Hrot = get_rot(njkm,njkmQuantumNumList,Ah2o,Bh2o,Ch2o,bfunc.off_diag)
     
 	Htot = Hrot1 + Hpot
 
