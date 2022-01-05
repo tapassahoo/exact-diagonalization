@@ -16,6 +16,7 @@ from scipy import linalg as LA
 import pkg_potential as qpot
 from scipy.sparse.linalg import eigs, eigsh
 import cmath
+import functools
 
 def binom(n,k):
 	"""
@@ -58,10 +59,10 @@ def littleD(ldJ,ldmp,ldm,ldtheta):
 			tempD=tempD+(((-1.0)**v)/(np.math.factorial(a)*np.math.factorial(b)*np.math.factorial(c)*np.math.factorial(v)))*((np.cos(ldtheta/2.))**(2.*ldJ+ldm-ldmp-2.*v))*((-np.sin(ldtheta/2.))**(ldmp-ldm+2.*v))
 	return dval*tempD
 
-def wigner_basis(njkm,size_theta,size_phi,njkmQuantumNumList,xGL,wGL,phixiGridPts,dphixi):
+def get_wigner_ComplexBasis(njkm,size_theta,size_phi,njkmQuantumNumList,xGL,wGL,phixiGridPts,dphixi):
 
 	"""
-	It construncts Wigner basis
+	It construncts Wigner basis <theta, phi, chi | JKM>
 	"""
 
 	dJKM = np.zeros((njkm,size_theta),float)
@@ -86,7 +87,7 @@ def wigner_basis(njkm,size_theta,size_phi,njkmQuantumNumList,xGL,wGL,phixiGridPt
 
 	return dJKM, KJKM, MJKM
 
-def get_numbbasisNonLinear(njkm,Jmax,spin_isomer):
+def get_njkmQuantumNumList_NonLinear_ComplexBasis(njkm,Jmax,spin_isomer):
 	"""
 	Lists of (J,K,M) quantum number indices computed for nuclear spin isomers
 
@@ -154,6 +155,43 @@ def get_numbbasisNonLinear(njkm,Jmax,spin_isomer):
 
 		return JKoMQuantumNumList
 
+def get_rotmat_NonLinear_ComplexBasis(njkm,njkmQuantumNumList,Ah2o,Bh2o,Ch2o,bfunc):
+
+	'''
+	construction of kinetic energy matrix - BEGINS
+	'''
+
+	Hrot = np.zeros((njkm,njkm),dtype=float)
+    
+	for jkm in range(njkm):
+		for jkmp in range(njkm):
+			if ((njkmQuantumNumList[jkm,0]==njkmQuantumNumList[jkmp,0]) and (njkmQuantumNumList[jkm,2]==njkmQuantumNumList[jkmp,2])):
+				if (njkmQuantumNumList[jkm,1]==(njkmQuantumNumList[jkmp,1]-2)):
+					Hrot[jkm,jkmp] += 0.25*(Ah2o-Ch2o)*bfunc.off_diag(njkmQuantumNumList[jkm,0],njkmQuantumNumList[jkm,1])*bfunc.off_diag(njkmQuantumNumList[jkm,0],njkmQuantumNumList[jkm,1]+1)
+				elif (njkmQuantumNumList[jkm,1]==(njkmQuantumNumList[jkmp,1]+2)):
+					Hrot[jkm,jkmp] += 0.25*(Ah2o-Ch2o)*bfunc.off_diag(njkmQuantumNumList[jkm,0],njkmQuantumNumList[jkm,1]-1)*bfunc.off_diag(njkmQuantumNumList[jkm,0],njkmQuantumNumList[jkm,1]-2)
+				elif (njkmQuantumNumList[jkm,1]==(njkmQuantumNumList[jkmp,1])):
+					Hrot[jkm,jkmp] += (0.5*(Ah2o + Ch2o)*(njkmQuantumNumList[jkm,0]*(njkmQuantumNumList[jkm,0]+1)) + (Bh2o - 0.5*(Ah2o+Ch2o)) * ((njkmQuantumNumList[jkm,1])**2))
+
+	return Hrot
+
+	norm_check_file = prefile+"norm-check-"+strFile
+	norm_check_write = open(norm_check_file,'w')
+	norm_check_write.write("eEEbasisuse.shape: shape of the "+basis_type+" |JKM> basis: " + str(eEEbasisuse.shape)+" \n")
+	norm_check_write.write("eEEebasisuse.shape: reduced shape of the "+basis_type+" |JKM> basis: " + str(eEEebasisuse.shape)+" \n")
+	norm_check_write.write("normMat.shape: shape of the "+basis_type+" <JKM|JKM> basis: " + str(normMat.shape)+" \n")
+	norm_check_write.write("\n")
+	norm_check_write.write("\n")
+
+	for s1 in range(njkm):
+		for s2 in range(njkm):
+			if (np.abs(normMat[s1,s2]) > tol):
+				norm_check_write.write("L vec Rotor1: "+str(njkmQuantumNumList[s1,0])+" "+str(njkmQuantumNumList[s1,1])+" "+str(njkmQuantumNumList[s1,2])+"\n")
+				norm_check_write.write("R vec Rotor1: "+str(njkmQuantumNumList[s2,0])+" "+str(njkmQuantumNumList[s2,1])+" "+str(njkmQuantumNumList[s2,2])+"\n")
+				norm_check_write.write("Constant potential field - Re: "+str(np.real(normMat[s1,s2]))+"   Im: "+str(np.imag(normMat[s1,s2]))+"\n")
+				norm_check_write.write("\n")
+	norm_check_write.close()
+
 def get_pot(size_theta,size_phi,val,xGL,phixiGridPts):
 
 	"""
@@ -185,42 +223,172 @@ def get_pot(size_theta,size_phi,val,xGL,phixiGridPts):
 
 	return v1d
 
-def get_rotmatNonLinear(njkm,njkmQuantumNumList,Ah2o,Bh2o,Ch2o):
-
+def get_wigner_RealBasis(njkm_J,njkm_K,njkm_M,theta,wt,phi,wp,chi,wc):
 	"""
-	It constructs kinetic energy matrix.
+	See ``Appendix: Real basis of non-linear rotor'' in Rep. Prog. Phys. vol. 77 page- 046601 (2014).
 	"""
 
-	Hrot = np.zeros((njkm,njkm),dtype=float)
-    
-	for jkm in range(njkm):
-		for jkmp in range(njkm):
-			if ((njkmQuantumNumList[jkm,0]==njkmQuantumNumList[jkmp,0]) and (njkmQuantumNumList[jkm,2]==njkmQuantumNumList[jkmp,2])):
-				if (njkmQuantumNumList[jkm,1]==(njkmQuantumNumList[jkmp,1]-2)):
-					Hrot[jkm,jkmp] += 0.25*(Ah2o-Ch2o)*off_diag(njkmQuantumNumList[jkm,0],njkmQuantumNumList[jkm,1])*off_diag(njkmQuantumNumList[jkm,0],njkmQuantumNumList[jkm,1]+1)
-				elif (njkmQuantumNumList[jkm,1]==(njkmQuantumNumList[jkmp,1]+2)):
-					Hrot[jkm,jkmp] += 0.25*(Ah2o-Ch2o)*off_diag(njkmQuantumNumList[jkm,0],njkmQuantumNumList[jkm,1]-1)*off_diag(njkmQuantumNumList[jkm,0],njkmQuantumNumList[jkm,1]-2)
-				elif (njkmQuantumNumList[jkm,1]==(njkmQuantumNumList[jkmp,1])):
-					Hrot[jkm,jkmp] += (0.5*(Ah2o + Ch2o)*(njkmQuantumNumList[jkm,0]*(njkmQuantumNumList[jkm,0]+1)) + (Bh2o - 0.5*(Ah2o+Ch2o)) * ((njkmQuantumNumList[jkm,1])**2))
+	theta0 = math.sqrt((2.*njkm_J+1)/(8.*math.pi**2))*littleD(njkm_J,0,0,np.arccos(theta))*math.sqrt(wt)*math.sqrt(wp)*math.sqrt(wc)
+	dd = math.sqrt((2.*njkm_J+1)/(4.*math.pi**2))*littleD(njkm_J,njkm_M,njkm_K,np.arccos(theta))*math.sqrt(wt)
+	thetac = dd*math.cos(phi*njkm_M+chi*njkm_K)*math.sqrt(wp)*math.sqrt(wc)
+	thetas = dd*math.sin(phi*njkm_M+chi*njkm_K)*math.sqrt(wp)*math.sqrt(wc)
 
-	return Hrot
-	norm_check_file = prefile+"norm-check-"+strFile
-	norm_check_write = open(norm_check_file,'w')
-	norm_check_write.write("eEEbasisuse.shape: shape of the "+basis_type+" |JKM> basis: " + str(eEEbasisuse.shape)+" \n")
-	norm_check_write.write("eEEebasisuse.shape: reduced shape of the "+basis_type+" |JKM> basis: " + str(eEEebasisuse.shape)+" \n")
-	norm_check_write.write("normMat.shape: shape of the "+basis_type+" <JKM|JKM> basis: " + str(normMat.shape)+" \n")
-	norm_check_write.write("\n")
-	norm_check_write.write("\n")
+	return theta0,thetac,thetas
+
+def get_NonLinear_RealBasis(Jmax,njkm,size_theta,size_phi,xGL,wGL,phixiGridPts,dphixi):
+	"""
+	See ``Appendix: Real basis of non-linear rotor'' in Rep. Prog. Phys. vol. 77 page- 046601 (2014).
+	"""
+
+	basisf = np.zeros((njkm,size_theta*size_phi*size_phi),dtype=float)
+			
+	for th in range(size_theta):
+		theta=xGL[th]
+		wt=wGL[th]
+		for ph in range(size_phi):
+			phi=phixiGridPts[ph]
+			wp=dphixi
+			itp=ph+th*size_phi
+			for ch in range(size_phi):
+				chi=phixiGridPts[ch]
+				wc=dphixi
+				itpc=ch+itp*size_phi
+
+				ib=0
+				for J in range(Jmax+1):
+					K=0
+
+					M=0
+					theta0,thetac,thetas = get_wigner_RealBasis(J,K,M,theta,wt,phi,wp,chi,wc)
+					basisf[ib,itpc]=theta0
+					ib=ib+1
+
+					for M in range(1,J+1,1):
+						theta0,thetac,thetas = get_wigner_RealBasis(J,K,M,theta,wt,phi,wp,chi,wc)
+						basisf[ib,itpc]=thetac
+						ib=ib+1
+						basisf[ib,itpc]=thetas
+						ib=ib+1
+						
+					for K in range(1,J+1):
+						for M in range(-J,J+1,1):
+							theta0,thetac,thetas = get_wigner_RealBasis(J,K,M,theta,wt,phi,wp,chi,wc)
+							basisf[ib,itpc]=thetac
+							ib=ib+1
+							basisf[ib,itpc]=thetas
+							ib=ib+1
+					
+	
+	return basisf
+
+def test_norm_NonLinear_RealBasis(prefile,strFile,basis_type,normMat,njkm,tol):
+	"""
+	It checks if the real wigner basis functions are normalized?
+	"""
+	fname = prefile+"norm-check-"+strFile
+	fwrite = open(fname,'w')
+	fwrite.write("normMat.shape: shape of the "+basis_type+" <JKM|JKM> basis: " + str(normMat.shape)+" \n")
+	fwrite.write("\n")
+	fwrite.write("\n")
 
 	for s1 in range(njkm):
 		for s2 in range(njkm):
 			if (np.abs(normMat[s1,s2]) > tol):
-				norm_check_write.write("L vec Rotor1: "+str(njkmQuantumNumList[s1,0])+" "+str(njkmQuantumNumList[s1,1])+" "+str(njkmQuantumNumList[s1,2])+"\n")
-				norm_check_write.write("R vec Rotor1: "+str(njkmQuantumNumList[s2,0])+" "+str(njkmQuantumNumList[s2,1])+" "+str(njkmQuantumNumList[s2,2])+"\n")
-				norm_check_write.write("Constant potential field - Re: "+str(np.real(normMat[s1,s2]))+"   Im: "+str(np.imag(normMat[s1,s2]))+"\n")
-				norm_check_write.write("\n")
-	norm_check_write.close()
+				fwrite.write("L vec Rotor1: "+str(s1)+"\n")
+				fwrite.write("R vec Rotor1: "+str(s2)+"\n")
+				fwrite.write("Norm: "+str(normMat[s1,s2])+"\n")
+				fwrite.write("\n")
+	fwrite.close()
 
+def get_njkmQuantumNumList_RealBasis(Jmax,njkm):
+	"""
+	See ``Appendix: Real basis of non-linear rotor'' in Rep. Prog. Phys. vol. 77 page- 046601 (2014).
+	"""
+	JKMQuantumNumList = np.zeros((njkm,3),int)
+
+	jtempcounter = 0
+	for J in range(Jmax+1):
+		K=0
+		M=0
+
+		JKMQuantumNumList[jtempcounter,0]=J
+		JKMQuantumNumList[jtempcounter,1]=K
+		JKMQuantumNumList[jtempcounter,2]=M
+		jtempcounter=jtempcounter+1
+
+		for M in range(1,J+1,1):
+
+			JKMQuantumNumList[jtempcounter,0]=J
+			JKMQuantumNumList[jtempcounter,1]=K
+			JKMQuantumNumList[jtempcounter,2]=M
+			jtempcounter=jtempcounter+1
+			JKMQuantumNumList[jtempcounter,0]=J
+			JKMQuantumNumList[jtempcounter,1]=K
+			JKMQuantumNumList[jtempcounter,2]=M
+			jtempcounter=jtempcounter+1
+
+		for K in range(1,J+1):
+			for M in range(-J,J+1,1):
+				JKMQuantumNumList[jtempcounter,0]=J
+				JKMQuantumNumList[jtempcounter,1]=K
+				JKMQuantumNumList[jtempcounter,2]=M
+				jtempcounter=jtempcounter+1
+				JKMQuantumNumList[jtempcounter,0]=J
+				JKMQuantumNumList[jtempcounter,1]=K
+				JKMQuantumNumList[jtempcounter,2]=M
+				jtempcounter=jtempcounter+1
+
+	return JKMQuantumNumList
+
+def test_norm_NonLinear_ComplexBasis(prefile,strFile,basis_type,normMat,njkm,njkmQuantumNumList,tol):
+	"""
+	It is used to check if normalization condition is satisfied? 
+
+	Here Dr. Sahoo use metaprogramming to modify the function output.
+	"""
+	fname = prefile+"norm-check-"+strFile
+	fwrite = open(fname,'w')
+	fwrite.write("normMat.shape: shape of the "+basis_type+" <JKM|JKM> basis: " + str(normMat.shape)+" \n")
+	fwrite.write("\n")
+	fwrite.write("\n")
+
+	for s1 in range(njkm):
+		for s2 in range(njkm):
+			if (np.abs(normMat[s1,s2]) > tol):
+				fwrite.write("L vec Rotor1: "+str(njkmQuantumNumList[s1,0])+" "+str(njkmQuantumNumList[s1,1])+" "+str(njkmQuantumNumList[s1,2])+"\n")
+				fwrite.write("R vec Rotor1: "+str(njkmQuantumNumList[s2,0])+" "+str(njkmQuantumNumList[s2,1])+" "+str(njkmQuantumNumList[s2,2])+"\n")
+				fwrite.write("Norm: "+str(normMat[s1,s2])+"\n")
+				fwrite.write("\n")
+	fwrite.close()
+
+def get_norm(prefile,strFile,basis_type,v1d,eEEebasisuse,Hpot,njkm,njkmQuantumNumList,tol):
+	"""
+	pot_check_file = prefile+"pot-check-"+strFile
+	pot_check_write = open(pot_check_file,'w')
+	pot_check_write.write("Printing of shapes and elements of potential matrix - "+"\n")
+	pot_check_write.write("\n")
+	pot_check_write.write("\n")
+	pot_check_write.write("shape of potential matrix over three Euler angles : " + str(v1d.shape)+" \n")
+	pot_check_write.write("eEEebasisuse.shape: reduced shape of the "+basis_type+" |JKM> basis: " + str(eEEebasisuse.shape)+" \n")
+	pot_check_write.write("shape of Hpot : " + str(Hpot.shape)+" \n")
+	pot_check_write.write("\n")
+	pot_check_write.write("\n")
+
+			if (np.abs(Hpot[s1,s2]) > tol):
+				pot_check_write.write("L vec Rotor1: "+str(njkmQuantumNumList[s1,0])+" "+str(njkmQuantumNumList[s1,1])+" "+str(njkmQuantumNumList[s1,2])+"\n")
+				pot_check_write.write("R vec Rotor1: "+str(njkmQuantumNumList[s2,0])+" "+str(njkmQuantumNumList[s2,1])+" "+str(njkmQuantumNumList[s2,2])+"\n")
+				pot_check_write.write("Constant potential field - Re: "+str(np.real(Hpot[s1,s2]))+"   Im: "+str(np.imag(Hpot[s1,s2]))+"\n")
+				pot_check_write.write("\n")
+	pot_check_write.close()
+	"""
+
+#******************************************************************************
+#                                                                             |
+#                                                                             |
+#                            For a linear molecule                            |
+#                                                                             |
+#                                                                             |
+#******************************************************************************
 def get_numbbasisLinear(njm,Jmax,spin_isomer):
 	"""
 	Division of ortho, para and spinless systems
@@ -266,7 +434,7 @@ def get_numbbasisLinear(njm,Jmax,spin_isomer):
 
 def normalization_checkLinear(prefile,strFile,basis_type,eEEbasisuse,normMat,njm,njmQuantumNumList,tol):
 	"""
-	Check normalization condition: <lm|l'm'>=delta_ll'mm'
+	Check normalization condition: <JM|J'M'>=delta_JJ'MM'
 	"""
 	norm_check_file = prefile+"norm-check-"+strFile
 	norm_check_write = open(norm_check_file,'w')
@@ -359,4 +527,3 @@ def spherical_harmonicsComp(njm,size_theta,size_phi,njmQuantumNumList,xGL,wGL,ph
 				ii = ph+th*size_phi
 				basisfun[ii,jm]=sp.sph_harm(njmQuantumNumList[jm,1],njmQuantumNumList[jm,0],phixiGridPts[ph],np.arccos(xGL[th]))*np.sqrt(wGL[th])*np.sqrt(dphixi)
 	return basisfun
-
