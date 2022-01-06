@@ -155,42 +155,26 @@ def get_njkmQuantumNumList_NonLinear_ComplexBasis(njkm,Jmax,spin_isomer):
 
 		return JKoMQuantumNumList
 
-def get_rotmat_NonLinear_ComplexBasis(njkm,njkmQuantumNumList,Ah2o,Bh2o,Ch2o,bfunc):
+def get_rotmat_NonLinear_ComplexBasis(njkm,njkmQuantumNumList,Ah2o,Bh2o,Ch2o):
 
-	'''
-	construction of kinetic energy matrix - BEGINS
-	'''
+	"""
+	Construction of kinetic energy matrix
+	The equations are taken from page 272 of the book ``Anular Momentum'' written by R. N. Zare
+	"""
 
 	Hrot = np.zeros((njkm,njkm),dtype=float)
     
 	for jkm in range(njkm):
 		for jkmp in range(njkm):
-			if ((njkmQuantumNumList[jkm,0]==njkmQuantumNumList[jkmp,0]) and (njkmQuantumNumList[jkm,2]==njkmQuantumNumList[jkmp,2])):
-				if (njkmQuantumNumList[jkm,1]==(njkmQuantumNumList[jkmp,1]-2)):
-					Hrot[jkm,jkmp] += 0.25*(Ah2o-Ch2o)*bfunc.off_diag(njkmQuantumNumList[jkm,0],njkmQuantumNumList[jkm,1])*bfunc.off_diag(njkmQuantumNumList[jkm,0],njkmQuantumNumList[jkm,1]+1)
-				elif (njkmQuantumNumList[jkm,1]==(njkmQuantumNumList[jkmp,1]+2)):
-					Hrot[jkm,jkmp] += 0.25*(Ah2o-Ch2o)*bfunc.off_diag(njkmQuantumNumList[jkm,0],njkmQuantumNumList[jkm,1]-1)*bfunc.off_diag(njkmQuantumNumList[jkm,0],njkmQuantumNumList[jkm,1]-2)
-				elif (njkmQuantumNumList[jkm,1]==(njkmQuantumNumList[jkmp,1])):
+			if ((njkmQuantumNumList[jkm,0] == njkmQuantumNumList[jkmp,0]) and (njkmQuantumNumList[jkm,2] == njkmQuantumNumList[jkmp,2])):
+				if (njkmQuantumNumList[jkm,1] == (njkmQuantumNumList[jkmp,1]-2)):
+					Hrot[jkm,jkmp] += 0.25*(Ah2o-Ch2o)*off_diag(njkmQuantumNumList[jkm,0],njkmQuantumNumList[jkm,1])*off_diag(njkmQuantumNumList[jkm,0],njkmQuantumNumList[jkm,1]+1)
+				elif (njkmQuantumNumList[jkm,1] == (njkmQuantumNumList[jkmp,1]+2)):
+					Hrot[jkm,jkmp] += 0.25*(Ah2o-Ch2o)*off_diag(njkmQuantumNumList[jkm,0],njkmQuantumNumList[jkm,1]-1)*off_diag(njkmQuantumNumList[jkm,0],njkmQuantumNumList[jkm,1]-2)
+				elif (njkmQuantumNumList[jkm,1] == (njkmQuantumNumList[jkmp,1])):
 					Hrot[jkm,jkmp] += (0.5*(Ah2o + Ch2o)*(njkmQuantumNumList[jkm,0]*(njkmQuantumNumList[jkm,0]+1)) + (Bh2o - 0.5*(Ah2o+Ch2o)) * ((njkmQuantumNumList[jkm,1])**2))
 
 	return Hrot
-
-	norm_check_file = prefile+"norm-check-"+strFile
-	norm_check_write = open(norm_check_file,'w')
-	norm_check_write.write("eEEbasisuse.shape: shape of the "+basis_type+" |JKM> basis: " + str(eEEbasisuse.shape)+" \n")
-	norm_check_write.write("eEEebasisuse.shape: reduced shape of the "+basis_type+" |JKM> basis: " + str(eEEebasisuse.shape)+" \n")
-	norm_check_write.write("normMat.shape: shape of the "+basis_type+" <JKM|JKM> basis: " + str(normMat.shape)+" \n")
-	norm_check_write.write("\n")
-	norm_check_write.write("\n")
-
-	for s1 in range(njkm):
-		for s2 in range(njkm):
-			if (np.abs(normMat[s1,s2]) > tol):
-				norm_check_write.write("L vec Rotor1: "+str(njkmQuantumNumList[s1,0])+" "+str(njkmQuantumNumList[s1,1])+" "+str(njkmQuantumNumList[s1,2])+"\n")
-				norm_check_write.write("R vec Rotor1: "+str(njkmQuantumNumList[s2,0])+" "+str(njkmQuantumNumList[s2,1])+" "+str(njkmQuantumNumList[s2,2])+"\n")
-				norm_check_write.write("Constant potential field - Re: "+str(np.real(normMat[s1,s2]))+"   Im: "+str(np.imag(normMat[s1,s2]))+"\n")
-				norm_check_write.write("\n")
-	norm_check_write.close()
 
 def get_pot(size_theta,size_phi,val,xGL,phixiGridPts):
 

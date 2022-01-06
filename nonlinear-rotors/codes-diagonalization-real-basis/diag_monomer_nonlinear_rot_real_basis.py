@@ -151,17 +151,14 @@ if __name__ == '__main__':
 
 	# List of (J,K,M) indices computed for various nuclear spin isomers
     # Its a 2-dim matrix
-	njkmQuantumNumList = bfunc.get_njkmQuantumNumList_RealBasis(Jmax,njkm)
-	#print(njkmQuantumNumList)
+	njkmQuantumNumList_Real = bfunc.get_njkmQuantumNumList_RealBasis(Jmax,njkm)
 
 	#Calling of real Wigner basis set <th, ph, ch | JKM> 
 	# Its shape - (njkm,size_theta*size_phi*size_phi) 
 	wigner_real = bfunc.get_NonLinear_RealBasis(Jmax,njkm,size_theta,size_phi,xGL,wGL,phixiGridPts,dphixi)
-	'''
 	if (norm_check == True):
-		normMat = np.tensordot(wigner_real, wigner_real, axes=([1],[1]))
-		bfunc.test_norm_NonLinear_RealBasis(prefile,strFile,basis_type,normMat,njkm,tol)
-	'''
+		normMat_real = np.tensordot(wigner_real, wigner_real, axes=([1],[1]))
+		bfunc.test_norm_NonLinear_RealBasis(prefile,strFile,basis_type,normMat_real,njkm,tol)
 
 
 	njkmQuantumNumList_Comp = bfunc.get_njkmQuantumNumList_NonLinear_ComplexBasis(njkm,Jmax,spin_isomer)
@@ -172,11 +169,13 @@ if __name__ == '__main__':
 	wigner_complex = np.reshape(wigner_complex1,(njkm,size_theta*size_phi*size_phi),order='C')
 	#block for construction of |JKM> basis ends
 
-	normMat_complex = np.tensordot(wigner_complex, wigner_complex, axes=([1],[1]))
+	normMat_complex = np.tensordot(np.conjugate(wigner_complex), wigner_complex, axes=([1],[1]))
 	if (norm_check == True):
 		bfunc.test_norm_NonLinear_ComplexBasis(prefile,strFile,basis_type,normMat_complex,njkm,njkmQuantumNumList_Comp,tol)
-	exit()
 
+	Hrot = bfunc.get_rotmat_NonLinear_ComplexBasis(njkm,njkmQuantumNumList_Real,Ah2o,Bh2o,Ch2o)
+	print(Hrot)
+	exit()
 	Hrot1 = np.zeros((njkm,njkm),dtype=float)
     
 	for jkm in range(njkm):
@@ -206,6 +205,7 @@ if __name__ == '__main__':
 					
 			Hrot1[jkm,jkmp]=sum
 	'''
+	exit()
 
 
 	v1d = get_pot(size_theta,size_phi,zCOM,xGL,phixiGridPts)
