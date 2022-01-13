@@ -232,9 +232,11 @@ if __name__ == '__main__':
 	gs_eng_write.write("\n")
 	gs_eng_write.close()
 	# printing block is closed
-	exit()
 
 	# computation of reduced density matrix
+	#
+	# See the APPENDIX: DERIVATION OF THE ANGULAR DISTRIBUTION FUNCTION of J. Chem. Phys. 154, 244305 (2021).
+	#
 	reduced_density=np.zeros((njkm,Jmax+1),dtype=complex)
 	for i in range(njkm):
 		for ip in range(njkm):
@@ -244,7 +246,7 @@ if __name__ == '__main__':
 	gs_ang_file = prefile+"ground-state-theta-distribution-"+strFile
 	gs_ang_write = open(gs_ang_file,'w')
 	gs_ang_write.write("#Printing of ground state theta distribution - "+"\n")
-	gs_ang_write.write('{0:1} {1:^19} {2:^20}'.format("#","cos(theta)", "reduced density"))
+	gs_ang_write.write('{0:1} {1:^19} {2:^20}'.format("#","cos(theta)", "Reduced density"))
 	gs_ang_write.write("\n")
 	
 	sum3=complex(0.0,0.0)
@@ -260,4 +262,8 @@ if __name__ == '__main__':
 	gs_ang_write.close()
 	# printing block is closed
  	
-	print("Normalization: reduced density matrix = ",sum3)
+	print("")
+	print("")
+	print("#***************************************************************************************")
+	print("")
+	print("Normalization of the wavefunction that is used to compute reduced density matrix = ",sum3)
