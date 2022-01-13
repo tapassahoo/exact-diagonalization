@@ -1,22 +1,29 @@
 .SUFFIXES: .o .c .f .cxx
 
-options= -O3 -DLINUX -DBLAS -fopenmp
-CC=/usr/bin/g++ #/opt/openmpi/bin/mpic++
-cc=/usr/bin/gcc #/opt/openmpi/bin/mpicc
-f77=gfortran #/opt/openmpi/bin/mpif90
 
-#objects= matvec.o ran1.o four1.o prod.o \
-#plgndr.o inter.o  gauleg.o genran.o scalar.o cmdstuff.o 
+CXX     = g++
+CC      = gcc
+F77      = gfortran
+
+CFLAGS  = -O3 -DLINUX -DBLAS -fopenmp -lstdc++ #-I /additional/include/dir
+CXXFLAGS = -O3 -DLINUX -DBLAS -fopenmp -lstdc++ 
+LDFLAGS= -lcblas -llapack -lm -lgfortran 
+
 objects=ran1.o four1.o prod.o gaulegf.o \
 plgndr.o inter.o  gauleg.o sturmi.o inverr.o inverm.o isoev.o \
 lancbis.o bisec.o genran.o scalar.o trivec.o caleng_qtip4p_rigid.o rotden.o rotpro_sub.o
+
 all: run
 run: dimer-lanc-mem-parallel.o  $(objects) matvec.o BF.h
-	$(CC) $(options) -o run dimer-lanc-mem-parallel.o matvec.o $(objects) \
--lblas -llapack -L/usr/local/lib -lgfortran
+	$(CXX) $(CXXFLAGS) -o run dimer-lanc-mem-parallel.o matvec.o $(objects) $(LDFLAGS)
+
 .cxx.o: 
-	$(CC) -c  $(options) $<
+	$(CXX) -c  $(CXXFLAGS)  $<
 .c.o:
-	$(cc) -c $(options) $<
+	$(CC) -c $(CFLAGS) $<
+.f.o:
+	$(F77) -c $<
+
+.PHONY: clean
 clean:
-	rm *.o run
+	rm -f *.o run

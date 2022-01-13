@@ -13,7 +13,7 @@ import math
 import numpy as np
 from scipy import special as sp
 from scipy import linalg as LA
-import pkg_potential as qpot
+import pkg_potential.qpot as qpot
 from scipy.sparse.linalg import eigs, eigsh
 import cmath
 import functools
@@ -160,6 +160,10 @@ def get_rotmat_NonLinear_ComplexBasis(njkm,njkmQuantumNumList,Ah2o,Bh2o,Ch2o):
 	"""
 	Construction of kinetic energy matrix
 	The equations are taken from page 272 of the book ``Anular Momentum'' written by R. N. Zare
+
+	The expression given in the book is for prolate top limit. Here we have used the 
+	expressions for the intermediate situation (See the (Table 6.2 of Angular Momentum
+	by zare)).
 	"""
 
 	Hrot = np.zeros((njkm,njkm),dtype=float)
@@ -196,16 +200,16 @@ def get_pot(size_theta,size_phi,val,xGL,phixiGridPts):
 	com2=[0.0,0.0,val]
 	#Eulang2=[0.0,0.0,0.0] 
 	Eulang2=[0.0, math.pi, 0.0]
-	v1d = np.zeros(size_theta*size_phi*size_phi,float)
+	pot_func = np.zeros(size_theta*size_phi*size_phi,float)
 	ii = 0
 	for th1 in range(size_theta):
 		for ph1 in range(size_phi):
 			for ch1 in range(size_phi):
 				ii = ch1+(ph1+th1*size_phi)*size_phi
 				Eulang1=[phixiGridPts[ph1], math.acos(xGL[th1]), phixiGridPts[ch1]]
-				v1d[ii]=qpot.caleng(com1,com2,Eulang1,Eulang2)
+				pot_func[ii]=qpot.caleng(com1,com2,Eulang1,Eulang2)
 
-	return v1d
+	return pot_func
 
 def get_wigner_RealBasis(njkm_J,njkm_K,njkm_M,theta,wt,phi,wp,chi,wc):
 	"""

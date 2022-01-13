@@ -1,6 +1,6 @@
 #include "cmdstuff.h"
 #include <stdio.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <cmath>
 #include <time.h>
 #include <sstream>

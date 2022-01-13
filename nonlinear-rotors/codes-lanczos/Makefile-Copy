@@ -1,0 +1,21 @@
+.SUFFIXES: .o .c .f .cxx
+
+options= -O3 -DLINUX -DBLAS -fopenmp  -lstdc++
+GCC=g++#/usr/bin/g++ #/opt/openmpi/bin/mpic++
+CC=gcc#/usr/bin/gcc #/opt/openmpi/bin/mpicc
+FC=gfortran #/opt/openmpi/bin/mpif90
+
+#objects= matvec.o ran1.o four1.o prod.o \
+#plgndr.o inter.o  gauleg.o genran.o scalar.o cmdstuff.o 
+objects=ran1.o four1.o prod.o gaulegf.o \
+plgndr.o inter.o  gauleg.o sturmi.o inverr.o inverm.o isoev.o \
+lancbis.o bisec.o genran.o scalar.o trivec.o caleng_qtip4p_rigid.o rotden.o rotpro_sub.o
+all: run
+run: dimer-lanc-mem-parallel.o  $(objects) matvec.o BF.h
+	$(GCC) $(options) -o run dimer-lanc-mem-parallel.o matvec.o $(objects) -framework Accelerate
+.cxx.o: 
+	$(GCC) -c  $(options) $<
+.c.o:
+	$(CC) -c $(options) $<
+clean:
+	rm *.o run
