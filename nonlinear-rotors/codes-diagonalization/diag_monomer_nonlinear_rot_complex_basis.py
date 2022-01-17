@@ -21,7 +21,7 @@
 #                                                                               |
 #                              or                                               |
 #                                                                               |
-# Run "python diag_monomer_nonlinear_rot_real_basis.py --help" on the terminal  |
+# Run "python diag_monomer_nonlinear_rot_complex_basis.py --help" on the terminal  |
 #                                                                               |
 #-----------------------------------------------------------------------------  |
 #                                                                               |
@@ -42,9 +42,6 @@ import cmath
 # Imports basis functions of rotors (linear and nonlinear rotors)
 import pkg_basis_func_rotors.basis_func_rotors as bfunc 
 
-# 'qpot' imports qTIP4P/Fw water model potential function
-#import pkg_potential as qpot 
-
 if __name__ == '__main__':    
 
 	parser = argparse.ArgumentParser(prog="diag_monomer_nonlinear_rot_complex_basis.py",description="Diagonalization code for a nonlinear rotor system  with Wigner basis. See the book ``Angular Momentum'' written by R. N. Zare.",epilog="Enjoy the program! :)")
@@ -61,12 +58,14 @@ if __name__ == '__main__':
 	size_theta = int(2*Jmax+3)
 	size_phi = int(2*(2*Jmax+1))
 
-	tol = 10e-8                       # Tollerance for checking if the matrix is hermitian?
+	small = 10e-8                       # Tollerance for checking if the matrix is hermitian?
 	#Printing conditions
 	norm_check = True
 	io_write = False
 	pot_write = False
 	if (io_write == True):
+		print("")
+		print("")
 		print("Jmax = ", Jmax)
 		print(" Number of theta grids = ", size_theta)
 		print(" Number of phi and chi grids = ", size_phi)
@@ -160,20 +159,22 @@ if __name__ == '__main__':
 
 	if (norm_check == True):
 		normMat = np.tensordot(np.conjugate(basis_func), basis_func, axes=([1],[1]))
-		bfunc.test_norm_NonLinear_ComplexBasis(prefile,strFile,basis_type,normMat,njkm,njkmQuantumNumList,tol)
+		bfunc.test_norm_NonLinear_ComplexBasis(prefile,strFile,basis_type,normMat,njkm,njkmQuantumNumList,small)
 
 	pot_func = bfunc.get_pot(size_theta,size_phi,zCOM,xGL,phixiGridPts)
 
 	tempa = pot_func[np.newaxis,:]*basis_func
 	Hpot = np.tensordot(np.conjugate(basis_func), tempa, axes=([1],[1]))
 
-	if (pot_write == True):
-		bfunc.test_norm_NonLinear_ComplexBasis(prefile,strFile,basis_type,v1d,njkm,njkmQuantumNumList,tol)
+	#if (pot_write == True):
+	#	bfunc.test_norm_NonLinear_ComplexBasis(prefile,strFile,basis_type,v1d,njkm,njkmQuantumNumList,small)
 
 	Hrot = bfunc.get_rotmat_NonLinear_ComplexBasis(njkm,njkmQuantumNumList,Ah2o,Bh2o,Ch2o)
     
-	Htot = Hrot# + Hpot
-	if (np.all(np.abs(Htot-Htot.T) < tol) == False):
+	Htot = Hrot + Hpot
+	if (np.all(np.abs(Htot-Htot.T) < small) == False):
+		print("Warning!!!!!!!")
+		print("")
 		print("The Hamiltonian matrx Htot is not hermitian.")
 		exit()
 

@@ -18,16 +18,6 @@ from scipy.sparse.linalg import eigs, eigsh
 import cmath
 import functools
 
-def binom(n,k):
-	"""
-	It computes binomial coefficient.
-	"""
-	minus = n-k
-	if (minus < 0):
-		return 0
-	else:
-		return (np.math.factorial(n)/(np.math.factorial(k)*np.math.factorial(minus)))
-
 def off_diag (j,k):                        
 	"""
 	It computes off diagonal <JKM|H|J'K'M'> 
