@@ -58,11 +58,7 @@ if __name__ == '__main__':
 	Jmax=int(args.jmax)               # Truncated angular quantum number for this computation
 	spin_isomer=args.spin             # It includes nuclear spin isomerism
 
-	if (spin_isomer != "spinless"):
-		print("Warning!!!!!")
-		print("")
-		print("It is implemented only for spinless system.")
-		exit()
+	assert ('spinless' in spin_isomer), "This code is implemented only for spinless system."
 
 	size_theta = int(2*Jmax+3)
 	size_phi = int(2*(2*Jmax+1))
@@ -163,12 +159,6 @@ if __name__ == '__main__':
 	# Its shape - (njkm,size_theta*size_phi*size_phi) 
 	wigner_real = bfunc.get_NonLinear_RealBasis(Jmax,njkm,size_theta,size_phi,xGL,wGL,phixiGridPts,dphixi)
 	if (norm_check == True):
-		print("")
-		print("")
-		print("|------------------------------------------------")
-		print("")
-		print("Normalization conditions for Real Wigner basis set.")
-		print("")
 		normMat_real = np.tensordot(wigner_real, wigner_real, axes=([1],[1]))
 		bfunc.test_norm_NonLinear_RealBasis(prefile,strFile,basis_type,normMat_real,njkm,small)
 
@@ -180,14 +170,8 @@ if __name__ == '__main__':
 	wigner_complex = np.reshape(wigner_complex1,(njkm,size_theta*size_phi*size_phi),order='C')
 	#block for construction of |JKM> basis ends
 
-	normMat_complex = np.tensordot(np.conjugate(wigner_complex), wigner_complex, axes=([1],[1]))
-	if (norm_check == True):
-		print("")
-		print("")
-		print("|------------------------------------------------")
-		print("")
-		print("Normalization conditions for Complex Wigner basis set.")
-		print("")
+	if (norm_check == False):
+		normMat_complex = np.tensordot(np.conjugate(wigner_complex), wigner_complex, axes=([1],[1]))
 		bfunc.test_norm_NonLinear_ComplexBasis(prefile,strFile,basis_type,normMat_complex,njkm,njkmQuantumNumList_Comp,small)
 
 
@@ -243,7 +227,7 @@ if __name__ == '__main__':
 	#if (pot_write == True):
 	#	get_norm(prefile,strFile,basis_type,v1d,eEEebasisuse,Hpot,njkm,njkmQuantumNumList,small)
 
-	Htot = uhu + Hpot
+	Htot = uhu.real + Hpot
 
 	#Estimation of eigenvalues and eigenvectors begins here
 	eigVal, eigVec = LA.eigh(Htot)
@@ -280,14 +264,15 @@ if __name__ == '__main__':
 	print("# {state:^10s} {eigval_re:^15s} {eigval_im:^15s}".format(state="states",eigval_re="<V>.Real", eigval_im="<V>.Imag"))
 	for idx in range(4):
 		avgHpotL = np.dot(Hpot,eigVec_sort[:,idx])
-		avgHpot = np.dot(np.conjugate(eigVec_sort[:,idx].T),avgHpotL)
+		avgHpot = np.dot(eigVec_sort[:,idx].T,avgHpotL)
 		print("# {state:^10d} {eigval_re:^15.6f} {eigval_im:^15.6e}".format(state=idx,eigval_re=avgHpot.real,eigval_im=avgHpot.imag))
 	# printing block is closed
+
 
 	# printing block is opened
 	idx=0
 	avgHpotL = np.dot(Hpot,eigVec_sort[:,idx])
-	avgHpot = np.dot(np.conjugate(eigVec_sort[:,idx].T),avgHpotL)
+	avgHpot = np.dot(eigVec_sort[:,idx].T,avgHpotL)
 
 	gs_eng_file = prefile+"ground-state-energy-"+strFile
 	gs_eng_write = open(gs_eng_file,'w')
@@ -298,17 +283,21 @@ if __name__ == '__main__':
 	gs_eng_write.write("\n")
 	gs_eng_write.close()
 	# printing block is closed
-	exit()
 
 	# computation of reduced density matrix
 	#
 	# See the APPENDIX: DERIVATION OF THE ANGULAR DISTRIBUTION FUNCTION of J. Chem. Phys. 154, 244305 (2021).
 	#
+	umat0 = eigVec_sort[:,0]
+	umat1 = umat0[np.newaxis,:]
+	umat2 = np.tensordot(umat1, np.conjugate(umat), axes=([1],[1]))
+	umat3 = umat2[0,:]
 	reduced_density=np.zeros((njkm,Jmax+1),dtype=complex)
 	for i in range(njkm):
 		for ip in range(njkm):
 			if ((njkmQuantumNumList_Comp[i,1]==njkmQuantumNumList_Comp[ip,1]) and (njkmQuantumNumList_Comp[i,2]==njkmQuantumNumList_Comp[ip,2])):
-				reduced_density[i,njkmQuantumNumList_Comp[ip,0]]=np.conjugate(eigVec_sort[i,0])*eigVec_sort[ip,0]
+				#reduced_density[i,njkmQuantumNumList_Comp[ip,0]]=eigVec_sort[i,0]*eigVec_sort[ip,0]
+				reduced_density[i,njkmQuantumNumList_Comp[ip,0]]=np.conjugate(umat3)[i]*umat3[ip]
 
 	gs_ang_file = prefile+"ground-state-theta-distribution-"+strFile
 	gs_ang_write = open(gs_ang_file,'w')

@@ -265,6 +265,11 @@ def test_norm_NonLinear_RealBasis(prefile,strFile,basis_type,normMat,njkm,tol):
 	"""
 	fname = prefile+"norm-check-"+strFile
 	fwrite = open(fname,'w')
+	fwrite.write("#*******************************************************")
+	fwrite.write("")
+	fwrite.write("# Normalization conditions for Real Wigner basis set.")
+	fwrite.write("")
+
 	fwrite.write("normMat.shape: shape of the "+basis_type+" <JKM|JKM> basis: " + str(normMat.shape)+" \n")
 	fwrite.write("\n")
 	fwrite.write("\n")
@@ -326,6 +331,10 @@ def test_norm_NonLinear_ComplexBasis(prefile,strFile,basis_type,normMat,njkm,njk
 	"""
 	fname = prefile+"norm-check-"+strFile
 	fwrite = open(fname,'w')
+	fwrite.write("#*******************************************************")
+	fwrite.write("")
+	fwrite.write("# Normalization conditions for Complex Wigner basis set.")
+	fwrite.write("")
 	fwrite.write("normMat.shape: shape of the "+basis_type+" <JKM|JKM> basis: " + str(normMat.shape)+" \n")
 	fwrite.write("\n")
 	fwrite.write("\n")
