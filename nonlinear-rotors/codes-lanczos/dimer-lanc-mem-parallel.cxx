@@ -45,6 +45,27 @@ EXTERN void FORTRAN(trivec)(double *lalpha,double *lbeta,double *lbeta2, double 
  
 int main(int argc,char **argv) 
 {
+	if (argc < 2) 
+	{
+		cout << endl;
+		cout << endl;
+		cerr << "Usage: " << argv[0] << " zCOM jmax niter emin emax " << endl;
+
+		cout << endl;
+		cout << endl;
+
+		cout << "zCOM  --> Distance between two centre of masses along z-axix. It is a real number."<<endl;
+		cout << endl;
+		cout << "jmax  --> Truncated angular quantum number for this computation. It must be a non-negative integer number. "<<endl;
+		cout << endl;
+		cout << "niter --> Number of Lanczos iteration. It must be non-negative integer. "<<endl;
+		cout << endl;
+		cout << "emin  --> Lower limit of energy required for Lanczos algorithm. "<<endl;
+		cout << endl;
+		cout << "emax  --> Upper limit of energy required for Lanczos algorithm. "<<endl;
+		return 1;
+	}
+
 	const int IO_OUTPUT_WIDTH=3;
 
     time_t totalstart,totalend,callpotstart,callpotend,diagstart,diagend;
@@ -61,6 +82,8 @@ int main(int argc,char **argv)
     double ah2o= 27.877;//cm-1
     double bh2o= 14.512;//cm-1
     double ch2o= 9.285; //cm-1
+
+	// All the units are transformed to inverse kelvin unit.
     ah2o=ah2o*CMRECIP2KL;
     bh2o=bh2o*CMRECIP2KL;
     ch2o=ch2o*CMRECIP2KL;
@@ -73,11 +96,9 @@ int main(int argc,char **argv)
 	else {
 		size_theta = 2*jmax+1;
 		size_phi   = 2*jmax+10;
-		//size_theta = 20;
-		//size_phi   = 20;
 	}
 
-// Generation of names of output file //
+	// Generation of names of output file 
 	stringstream rprefix, jprefix, iterprefix, thetaprefix, phiprefix;
 	rprefix<<fixed<<setprecision(2)<<zCOM;
 	jprefix<<jmax;
@@ -90,6 +111,7 @@ int main(int argc,char **argv)
 	string fname3="ground-state-energy-"+fname;
 	string fname4="ground-state-entropies-"+fname;
 	string fname5="ground-state-theta-distribution-"+fname;
+
 //
     ofstream logout(fname1.c_str());
 
@@ -130,6 +152,7 @@ int main(int argc,char **argv)
 
 	matrix Vpot(size_grid, size_grid);
 	get_pot(size_theta, size_phi, grid_theta, grid_phi, com1, com2, Vpot);
+	exit(1);
 
 	//Lanczos
 	Rand *randomseed = new Rand(1);
