@@ -234,37 +234,10 @@ if __name__ == '__main__':
 	gs_eng_write.close()
 	# printing block is closed
 
-	# computation of reduced density matrix
-	#
-	# See the APPENDIX: DERIVATION OF THE ANGULAR DISTRIBUTION FUNCTION of J. Chem. Phys. 154, 244305 (2021).
-	#
-	reduced_density=np.zeros((njkm,Jmax+1),dtype=complex)
-	for i in range(njkm):
-		for ip in range(njkm):
-			if ((njkmQuantumNumList[i,1]==njkmQuantumNumList[ip,1]) and (njkmQuantumNumList[i,2]==njkmQuantumNumList[ip,2])):
-				reduced_density[i,njkmQuantumNumList[ip,0]]=np.conjugate(eigVec_sort[i,0])*eigVec_sort[ip,0]
+	# Estimation of reduced density matrix
+	vec0_comp = eigVec_sort[:,0]          # <JKM (Complex basis) | 0>
+	bfunc.get_1dtheta_distribution(Jmax,njkm,njkmQuantumNumList,vec0_comp,size_theta,xGL,wGL,dJKM,prefile,strFile)
 
-	gs_ang_file = prefile+"ground-state-theta-distribution-"+strFile
-	gs_ang_write = open(gs_ang_file,'w')
-	gs_ang_write.write("#Printing of ground state theta distribution - "+"\n")
-	gs_ang_write.write('{0:1} {1:^19} {2:^20}'.format("#","cos(theta)", "Reduced density"))
-	gs_ang_write.write("\n")
-	
-	sum3=complex(0.0,0.0)
-	for th in range(size_theta):
-		sum1=complex(0.0,0.0)
-		for i in range(njkm):
-			for ip in range(njkm):
-				if ((njkmQuantumNumList[i,1]==njkmQuantumNumList[ip,1]) and (njkmQuantumNumList[i,2]==njkmQuantumNumList[ip,2])):
-					sum1+=4.0*math.pi*math.pi*reduced_density[i,njkmQuantumNumList[ip,0]]*dJKM[i,th]*dJKM[ip,th]
-		gs_ang_write.write('{0:^20.8f} {1:^20.8f}'.format(xGL[th],sum1.real/wGL[th]))
-		gs_ang_write.write("\n")
-		sum3+=sum1
-	gs_ang_write.close()
-	# printing block is closed
- 	
 	print("")
 	print("")
-	print("#***************************************************************************************")
-	print("")
-	print("Normalization of the wavefunction that is used to compute reduced density matrix = ",sum3)
+	print("Successful execution!")

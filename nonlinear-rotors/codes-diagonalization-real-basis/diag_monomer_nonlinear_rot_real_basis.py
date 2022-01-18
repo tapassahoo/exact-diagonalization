@@ -64,10 +64,13 @@ if __name__ == '__main__':
 	size_phi = int(2*(2*Jmax+1))
 
 	small = 10e-8                   # Tollerance to be considered a matrix hermitian of unitary
+
 	#Printing conditions
-	norm_check = True
+	norm_check_real = True
+	norm_check_complex = False
 	io_write = True
 	pot_write = False
+
 	if (io_write == True):
 		print("")
 		print("")
@@ -158,7 +161,7 @@ if __name__ == '__main__':
 	#Calling of real Wigner basis set <th, ph, ch | JKM> 
 	# Its shape - (njkm,size_theta*size_phi*size_phi) 
 	wigner_real = bfunc.get_NonLinear_RealBasis(Jmax,njkm,size_theta,size_phi,xGL,wGL,phixiGridPts,dphixi)
-	if (norm_check == True):
+	if (norm_check_real == True):
 		normMat_real = np.tensordot(wigner_real, wigner_real, axes=([1],[1]))
 		bfunc.test_norm_NonLinear_RealBasis(prefile,strFile,basis_type,normMat_real,njkm,small)
 
@@ -170,7 +173,7 @@ if __name__ == '__main__':
 	wigner_complex = np.reshape(wigner_complex1,(njkm,size_theta*size_phi*size_phi),order='C')
 	#block for construction of |JKM> basis ends
 
-	if (norm_check == False):
+	if (norm_check_complex == True):
 		normMat_complex = np.tensordot(np.conjugate(wigner_complex), wigner_complex, axes=([1],[1]))
 		bfunc.test_norm_NonLinear_ComplexBasis(prefile,strFile,basis_type,normMat_complex,njkm,njkmQuantumNumList_Comp,small)
 
@@ -231,7 +234,7 @@ if __name__ == '__main__':
 
 	#Estimation of eigenvalues and eigenvectors begins here
 	eigVal, eigVec = LA.eigh(Htot)
-	sortIndex_eigVal = eigVal.argsort()     # prints out eigenvalues for pure asymmetric top rotor (z_ORTHOz)
+	sortIndex_eigVal = eigVal.argsort()    
 	eigVal_sort = eigVal[sortIndex_eigVal]       
 	eigVec_sort = eigVec[:,sortIndex_eigVal]       
 	#Estimation of eigenvalues and eigenvectors ends here
@@ -284,42 +287,14 @@ if __name__ == '__main__':
 	gs_eng_write.close()
 	# printing block is closed
 
-	# computation of reduced density matrix
-	#
-	# See the APPENDIX: DERIVATION OF THE ANGULAR DISTRIBUTION FUNCTION of J. Chem. Phys. 154, 244305 (2021).
-	#
-	umat0 = eigVec_sort[:,0]
-	umat1 = umat0[np.newaxis,:]
-	umat2 = np.tensordot(umat1, np.conjugate(umat), axes=([1],[1]))
-	umat3 = umat2[0,:]
-	reduced_density=np.zeros((njkm,Jmax+1),dtype=complex)
-	for i in range(njkm):
-		for ip in range(njkm):
-			if ((njkmQuantumNumList_Comp[i,1]==njkmQuantumNumList_Comp[ip,1]) and (njkmQuantumNumList_Comp[i,2]==njkmQuantumNumList_Comp[ip,2])):
-				#reduced_density[i,njkmQuantumNumList_Comp[ip,0]]=eigVec_sort[i,0]*eigVec_sort[ip,0]
-				reduced_density[i,njkmQuantumNumList_Comp[ip,0]]=np.conjugate(umat3)[i]*umat3[ip]
+	# Computation of <JKM (complex basis) | JKM (Real basis)> for the estimation of reduced density matrix
+	vec0_real = eigVec_sort[:,0]          # <JKM (Real basis) | 0>
+	temp0     = vec0_real[np.newaxis,:]   # represent in the matrix form
+	# <0|nc> = sum_nr <0|nr><nr|nc> ; nr ---> |JKM (Real basis)> & nc---> |JKM (Complex basis)>
+	temp1     = np.tensordot(temp0, np.conjugate(umat), axes=([1],[1])) 
+	vec0_comp = temp1[0,:]
+	bfunc.get_1dtheta_distribution(Jmax,njkm,njkmQuantumNumList_Comp,vec0_comp,size_theta,xGL,wGL,dJKM,prefile,strFile)
 
-	gs_ang_file = prefile+"ground-state-theta-distribution-"+strFile
-	gs_ang_write = open(gs_ang_file,'w')
-	gs_ang_write.write("#Printing of ground state theta distribution - "+"\n")
-	gs_ang_write.write('{0:1} {1:^19} {2:^20}'.format("#","cos(theta)", "Reduced density"))
-	gs_ang_write.write("\n")
-	
-	sum3=complex(0.0,0.0)
-	for th in range(size_theta):
-		sum1=complex(0.0,0.0)
-		for i in range(njkm):
-			for ip in range(njkm):
-				if ((njkmQuantumNumList_Comp[i,1]==njkmQuantumNumList_Comp[ip,1]) and (njkmQuantumNumList_Comp[i,2]==njkmQuantumNumList_Comp[ip,2])):
-					sum1+=4.0*math.pi*math.pi*reduced_density[i,njkmQuantumNumList_Comp[ip,0]]*dJKM[i,th]*dJKM[ip,th]
-		gs_ang_write.write('{0:^20.8f} {1:^20.8f}'.format(xGL[th],sum1.real/wGL[th]))
-		gs_ang_write.write("\n")
-		sum3+=sum1
-	gs_ang_write.close()
-	# printing block is closed
- 	
 	print("")
 	print("")
-	print("#***************************************************************************************")
-	print("")
-	print("Normalization of the wavefunction that is used to compute reduced density matrix = ",sum3)
+	print("Successful execution!")

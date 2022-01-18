@@ -265,12 +265,12 @@ def test_norm_NonLinear_RealBasis(prefile,strFile,basis_type,normMat,njkm,tol):
 	"""
 	fname = prefile+"norm-check-"+strFile
 	fwrite = open(fname,'w')
-	fwrite.write("#*******************************************************")
-	fwrite.write("")
-	fwrite.write("# Normalization conditions for Real Wigner basis set.")
-	fwrite.write("")
+	fwrite.write("#*******************************************************\n")
+	fwrite.write("\n")
+	fwrite.write("# Normalization conditions for Real Wigner basis set.\n")
+	fwrite.write("\n")
 
-	fwrite.write("normMat.shape: shape of the "+basis_type+" <JKM|JKM> basis: " + str(normMat.shape)+" \n")
+	fwrite.write("# normMat.shape: shape of the "+basis_type+" <JKM|JKM> basis: " + str(normMat.shape)+" \n")
 	fwrite.write("\n")
 	fwrite.write("\n")
 
@@ -331,11 +331,11 @@ def test_norm_NonLinear_ComplexBasis(prefile,strFile,basis_type,normMat,njkm,njk
 	"""
 	fname = prefile+"norm-check-"+strFile
 	fwrite = open(fname,'w')
-	fwrite.write("#*******************************************************")
-	fwrite.write("")
-	fwrite.write("# Normalization conditions for Complex Wigner basis set.")
-	fwrite.write("")
-	fwrite.write("normMat.shape: shape of the "+basis_type+" <JKM|JKM> basis: " + str(normMat.shape)+" \n")
+	fwrite.write("#*******************************************************"+" \n")
+	fwrite.write("\n")
+	fwrite.write("# Normalization conditions for Complex Wigner basis set.\n")
+	fwrite.write("\n")
+	fwrite.write("# normMat.shape: shape of the "+basis_type+" <JKM|JKM> basis: " + str(normMat.shape)+" \n")
 	fwrite.write("\n")
 	fwrite.write("\n")
 
@@ -514,3 +514,39 @@ def spherical_harmonicsComp(njm,size_theta,size_phi,njmQuantumNumList,xGL,wGL,ph
 				ii = ph+th*size_phi
 				basisfun[ii,jm]=sp.sph_harm(njmQuantumNumList[jm,1],njmQuantumNumList[jm,0],phixiGridPts[ph],np.arccos(xGL[th]))*np.sqrt(wGL[th])*np.sqrt(dphixi)
 	return basisfun
+
+
+def get_1dtheta_distribution(Jmax,njkm,njkmQuantumNumList,vec0,size_theta,xGL,wGL,dJKM,prefile,strFile):
+	"""
+	See the APPENDIX: DERIVATION OF THE ANGULAR DISTRIBUTION FUNCTION of J. Chem. Phys. 154, 244305 (2021).
+	"""
+	reduced_density=np.zeros((njkm,Jmax+1),dtype=complex)
+	for i in range(njkm):
+		for ip in range(njkm):
+			if ((njkmQuantumNumList[i,1]==njkmQuantumNumList[ip,1]) and (njkmQuantumNumList[i,2]==njkmQuantumNumList[ip,2])):
+				reduced_density[i,njkmQuantumNumList[ip,0]]=np.conjugate(vec0)[i]*vec0[ip]
+
+	gs_ang_file = prefile+"ground-state-theta-distribution-"+strFile
+	gs_ang_write = open(gs_ang_file,'w')
+	gs_ang_write.write("#Printing of ground state theta distribution - "+"\n")
+	gs_ang_write.write('{0:1} {1:^19} {2:^20}'.format("#","cos(theta)", "Reduced density"))
+	gs_ang_write.write("\n")
+	
+	sum3=complex(0.0,0.0)
+	for th in range(size_theta):
+		sum1=complex(0.0,0.0)
+		for i in range(njkm):
+			for ip in range(njkm):
+				if ((njkmQuantumNumList[i,1]==njkmQuantumNumList[ip,1]) and (njkmQuantumNumList[i,2]==njkmQuantumNumList[ip,2])):
+					sum1+=4.0*math.pi*math.pi*reduced_density[i,njkmQuantumNumList[ip,0]]*dJKM[i,th]*dJKM[ip,th]
+		gs_ang_write.write('{0:^20.8f} {1:^20.8f}'.format(xGL[th],sum1.real/wGL[th]))
+		gs_ang_write.write("\n")
+		sum3+=sum1
+	gs_ang_write.close()
+	# printing block is closed
+ 	
+	print("")
+	print("")
+	print("#***************************************************************************************")
+	print("")
+	print("Normalization of the wavefunction that is used to compute reduced density matrix = ",sum3)
