@@ -348,27 +348,6 @@ def test_norm_NonLinear_ComplexBasis(prefile,strFile,basis_type,normMat,njkm,njk
 				fwrite.write("\n")
 	fwrite.close()
 
-def get_norm(prefile,strFile,basis_type,v1d,eEEebasisuse,Hpot,njkm,njkmQuantumNumList,tol):
-	"""
-	pot_check_file = prefile+"pot-check-"+strFile
-	pot_check_write = open(pot_check_file,'w')
-	pot_check_write.write("Printing of shapes and elements of potential matrix - "+"\n")
-	pot_check_write.write("\n")
-	pot_check_write.write("\n")
-	pot_check_write.write("shape of potential matrix over three Euler angles : " + str(v1d.shape)+" \n")
-	pot_check_write.write("eEEebasisuse.shape: reduced shape of the "+basis_type+" |JKM> basis: " + str(eEEebasisuse.shape)+" \n")
-	pot_check_write.write("shape of Hpot : " + str(Hpot.shape)+" \n")
-	pot_check_write.write("\n")
-	pot_check_write.write("\n")
-
-			if (np.abs(Hpot[s1,s2]) > tol):
-				pot_check_write.write("L vec Rotor1: "+str(njkmQuantumNumList[s1,0])+" "+str(njkmQuantumNumList[s1,1])+" "+str(njkmQuantumNumList[s1,2])+"\n")
-				pot_check_write.write("R vec Rotor1: "+str(njkmQuantumNumList[s2,0])+" "+str(njkmQuantumNumList[s2,1])+" "+str(njkmQuantumNumList[s2,2])+"\n")
-				pot_check_write.write("Constant potential field - Re: "+str(np.real(Hpot[s1,s2]))+"   Im: "+str(np.imag(Hpot[s1,s2]))+"\n")
-				pot_check_write.write("\n")
-	pot_check_write.close()
-	"""
-
 #******************************************************************************
 #                                                                             |
 #                                                                             |

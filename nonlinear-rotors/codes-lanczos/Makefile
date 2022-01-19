@@ -14,8 +14,8 @@ plgndr.o inter.o  gauleg.o sturmi.o inverr.o inverm.o isoev.o \
 lancbis.o bisec.o genran.o scalar.o trivec.o caleng_qtip4p_rigid.o rotden.o rotpro_sub.o
 
 all: run
-run: dimer-lanc-mem-parallel.o  $(objects) matvec.o BF.h
-	$(CXX) $(CXXFLAGS) -o run dimer-lanc-mem-parallel.o matvec.o $(objects) $(LDFLAGS)
+run: code-real-basis-lanc-dimer.o  $(objects) matvec.o BF.h
+	$(CXX) $(CXXFLAGS) -o run code-real-basis-lanc-dimer.o matvec.o $(objects) $(LDFLAGS)
 
 .cxx.o: 
 	$(CXX) -c  $(CXXFLAGS)  $<
