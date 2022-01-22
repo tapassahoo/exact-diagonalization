@@ -259,7 +259,7 @@ def get_NonLinear_RealBasis(Jmax,njkm,size_theta,size_phi,xGL,wGL,phixiGridPts,d
 	
 	return basisf
 
-def test_norm_NonLinear_RealBasis(prefile,strFile,basis_type,normMat,njkm,tol):
+def test_norm_NonLinear_RealBasis(prefile,strFile,basis_type,normMat,njkm,small):
 	"""
 	It checks if the real wigner basis functions are normalized?
 	"""
@@ -276,7 +276,7 @@ def test_norm_NonLinear_RealBasis(prefile,strFile,basis_type,normMat,njkm,tol):
 
 	for s1 in range(njkm):
 		for s2 in range(njkm):
-			if (np.abs(normMat[s1,s2]) > tol):
+			if (np.abs(normMat[s1,s2]) > small):
 				fwrite.write("L vec Rotor1: "+str(s1)+"\n")
 				fwrite.write("R vec Rotor1: "+str(s2)+"\n")
 				fwrite.write("Norm: "+str(normMat[s1,s2])+"\n")
@@ -323,7 +323,7 @@ def get_njkmQuantumNumList_RealBasis(Jmax,njkm):
 
 	return JKMQuantumNumList
 
-def test_norm_NonLinear_ComplexBasis(prefile,strFile,basis_type,normMat,njkm,njkmQuantumNumList,tol):
+def test_norm_NonLinear_ComplexBasis(prefile,strFile,basis_type,normMat,njkm,njkmQuantumNumList,small):
 	"""
 	It is used to check if normalization condition is satisfied? 
 
@@ -341,7 +341,7 @@ def test_norm_NonLinear_ComplexBasis(prefile,strFile,basis_type,normMat,njkm,njk
 
 	for s1 in range(njkm):
 		for s2 in range(njkm):
-			if (np.abs(normMat[s1,s2]) > tol):
+			if (np.abs(normMat[s1,s2]) > small):
 				fwrite.write("L vec Rotor1: "+str(njkmQuantumNumList[s1,0])+" "+str(njkmQuantumNumList[s1,1])+" "+str(njkmQuantumNumList[s1,2])+"\n")
 				fwrite.write("R vec Rotor1: "+str(njkmQuantumNumList[s2,0])+" "+str(njkmQuantumNumList[s2,1])+" "+str(njkmQuantumNumList[s2,2])+"\n")
 				fwrite.write("Norm: "+str(normMat[s1,s2])+"\n")
@@ -398,7 +398,7 @@ def get_numbbasisLinear(njm,Jmax,spin_isomer):
 
 		return JoMQuantumNumList
 
-def normalization_checkLinear(prefile,strFile,basis_type,eEEbasisuse,normMat,njm,njmQuantumNumList,tol):
+def normalization_checkLinear(prefile,strFile,basis_type,eEEbasisuse,normMat,njm,njmQuantumNumList,small):
 	"""
 	Check normalization condition: <JM|J'M'>=delta_JJ'MM'
 	"""
@@ -411,7 +411,7 @@ def normalization_checkLinear(prefile,strFile,basis_type,eEEbasisuse,normMat,njm
 
 	for s1 in range(njm):
 		for s2 in range(njm):
-			if (np.abs(normMat[s1,s2]) > tol):
+			if (np.abs(normMat[s1,s2]) > small):
 				norm_check_write.write("L vec Rotor1: "+str(njmQuantumNumList[s1,0])+" "+str(njmQuantumNumList[s1,1])+"\n")
 				norm_check_write.write("R vec Rotor1: "+str(njmQuantumNumList[s2,0])+" "+str(njmQuantumNumList[s2,1])+"\n")
 				norm_check_write.write("Constant potential field - Re: "+str(np.real(normMat[s1,s2]))+"   Im: "+str(np.imag(normMat[s1,s2]))+"\n")

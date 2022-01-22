@@ -17,25 +17,34 @@ static const double AuToCmInverse = 219474.63137;
 static const double AuToKelvin    = 315777.0;
 static const double CMRECIP2KL    = 1.4387672;
 static const double pi=3.141592653589793;
+static const double small = 10.e-10;
 
 void lancbis(int niter,vector &eval,vector &evalerr,double elmin, double elmax,int &ngood,const vector& alpha,const vector& beta, const vector& beta2);
+
 EXTERNC void gauleg(double x1,double x2,double *x,double *w,int n);
 EXTERNC double plgndr(int j,int m,double x);
 vector thetagrid(int nsize,vector &weights);
 vector phigrid(int nsize,vector &weights);
-void get_sizes(int jmax, int *sizes);
+void get_sizes(int jmax, int *sizes, string fname1);
 void get_QuantumNumList_NonLinear_ComplexBasis(int jmax, matrix &jkmList_complex,matrix &jkemList_complex, matrix &jkomList_complex);
 double off_diag(int j, int k);
 double littleD(int ldJ, int ldmp, int ldm, double ldtheta);
-void get_HrotN2(double ah2o, double bh2o, double ch2o, int njkm, matrix &jkemQuantumNumList, matrix &HrotKee);
-void get_Hrot(double ah2o, double bh2o, double ch2o, int njkm, matrix &jkemQuantumNumList, vector &Hrot);
 void get_indvbasis(int njkm, int size_theta, vector &grid_theta, vector &weights_theta, int size_phi, vector &grid_phi, vector &weights_phi, matrix &jkemQuantumNumList, matrix &dJKM, matrix &KJKMRe, matrix &KJKMIm, matrix &MJKeMRe, matrix &MJKeMIm);
+void get_JKMbasis(int njkm, int size_theta, int size_phi, matrix &dJKM, matrix &KJKMRe, matrix &KJKMIm, matrix &MJKeMRe, matrix &MJKeMIm, cmatrix &wf_complex);
+void check_norm_ComplexBasis(string fname1, int njkm, int size_grid, cmatrix &wf_complex, matrix &njkmList_complex, double small);
+void get_Hrot(double ah2o, double bh2o, double ch2o, int njkm, matrix &jkemQuantumNumList, matrix &Hrot);
+
+void get_QuantumNumList_NonLinear_RealBasis(int jmax, matrix &jkmList_real,matrix &jkemList_real, matrix &jkomList_real);
+void get_wigner_RealBasis(int njkm_J,int njkm_K,int njkm_M,double theta,double wt,double phi,double wp,double chi,double wc, double *theta0, double *thetac, double *thetas);
+void get_NonLinear_RealBasis(int jmax,int njkm,int size_theta,int size_phi,vector &grid_theta,vector &weights_theta,vector &grid_phi,vector &weights_phi,matrix &wf_realbasis);
+void check_norm_RealBasis(string fname,matrix &wf_realbasis,int njkm,double small);
+
+void get_HrotN2(double ah2o, double bh2o, double ch2o, int njkm, matrix &jkemQuantumNumList, matrix &HrotKee);
 void check_norm(string fname, int njkm, int size_theta, int size_phi, matrix &dJKM, matrix &KJKMRe, matrix &KJKMIm, matrix &MJKeMRe, matrix &MJKeMIm, matrix &jkemQuantumNumList);
-void get_JKMbasis(int njkm, int size_theta, int size_phi, matrix &dJKM, matrix &KJKMRe, matrix &KJKMIm, matrix &MJKeMRe, matrix &MJKeMIm, vector &basisJKMRe, vector &basisJKMIm);
-void check_norm_ComplexBasis(string fname, int njkm, int size_grid, vector &basisJKMRe, vector &basisJKMIm, matrix &njkmList_complex);
+
 void get_pot(int size_theta, int size_phi, vector &grid_theta, vector &grid_phi, double *com1, double *com2, matrix &Vpot);
 extern "C" void caleng_(double *com1, double *com2, double *E_2H2O, double *Eulang1, double *Eulang2);
-cvector Hv(int njkm, int size_grid, vector &Hrot, matrix &Vpot, vector &basisJKMRe, vector &basisJKMIm, cvector &v0);
+vector Hv(int njkm, int size_grid, matrix &Hrot, matrix &Vpot, matrix &wf_real, vector &v0);
 void printIndex(int njkm);
 
 void lanczosvectors(vector &alpha,vector &beta,vector &beta2,int niter, vector &eval,int ngood,matrix &evtr);
@@ -57,6 +66,7 @@ int main(int argc,char **argv)
     time (&totalstart);
     char timemsg[100];
 	
+	// Reading command-line inputs
     double zCOM = atof(argv[1]);
     int jmax = atoi(argv[2]);
 	int niter = atoi(argv[3]);
@@ -64,7 +74,7 @@ int main(int argc,char **argv)
     double emax = atof(argv[5]);
     string spin_isomer = argv[6];
 
-	//The rotational A, B, C constants are indicated by ah2o, bh2o and ch2o, respectively. The unit is cm^-1.
+	// The rotational A, B, C constants are indicated by ah2o, bh2o and ch2o, respectively. The unit is cm^-1.
     double ah2o= 27.877;//cm-1
     double bh2o= 14.512;//cm-1
     double ch2o= 9.285; //cm-1
@@ -98,26 +108,28 @@ int main(int argc,char **argv)
 	string fname4="ground-state-entropies-"+fname;
 	string fname5="ground-state-theta-distribution-"+fname;
 
-//
-    ofstream logout(fname1.c_str());
-
-	if( ! logout )	{
-		cout << "Error opening file for output" << endl ;
-		return -1 ;
+	// File opening for printing some system informations
+    ofstream logout(fname1.c_str(),ios::app);
+	if (!logout)
+	{
+		cout << "Error opening file for logout.." << endl ;
+		exit(1);
 	}
 
+	// Grid points and the corresponding weights in DVR 
     vector weights_theta(size_theta);
     vector weights_phi(size_phi); 
     vector grid_theta = thetagrid(size_theta, weights_theta);
     vector grid_phi   = phigrid(size_phi, weights_phi);
 
-    // evaluate basis fxns on grid points
+    // Evaluation of number of basis functions due to coupling to nuchear spin
     int sizes[3];
-    get_sizes(jmax, sizes);
+    get_sizes(jmax, sizes, fname1);
 	int jkm=sizes[0];
 	int jkem=sizes[1];
 	int jkom=sizes[2];
 
+	// Estimations of quantum numbers associated with COMPLEX Wigner basis functions for various nuclear spin coupling
 	matrix jkmList_complex(jkm,3);
 	matrix jkemList_complex(jkem,3);
 	matrix jkomList_complex(jkom,3);
@@ -152,27 +164,116 @@ int main(int argc,char **argv)
 		njkmList_complex = jkomList_complex;
 	}
 
-	vector Hrot(njkm*njkm);
-	get_Hrot(ah2o, bh2o, ch2o, njkm, njkmList_complex, Hrot);
-	
+	// Calling functions for individual and total wavefunctions 
 	matrix dJKM(njkm,size_theta);
 	matrix KJKMRe(njkm,size_phi);
 	matrix KJKMIm(njkm,size_phi);
 	matrix MJKMRe(njkm,size_phi);
 	matrix MJKMIm(njkm,size_phi);
+
+	// Individual wavefunctions as functions of theta, phi and chi
 	get_indvbasis(njkm, size_theta, grid_theta, weights_theta, size_phi, grid_phi, weights_phi, njkmList_complex, dJKM, KJKMRe, KJKMIm, MJKMRe, MJKMIm);
 	//check_norm(njkm, size_theta, size_phi, dJKM, KJKMRe, KJKMIm, MJKeMRe, MJKeMIm, jkemQuantumNumList);
+	
+	// Toal system wavefunction (Complex Wigner) - |JKM>
 	int size_grid = size_theta*size_phi*size_phi;
-	vector basisJKMRe(njkm*size_grid);
-	vector basisJKMIm(njkm*size_grid);
-	get_JKMbasis(njkm, size_theta, size_phi, dJKM, KJKMRe, KJKMIm, MJKMRe, MJKMIm, basisJKMRe, basisJKMIm);
-	check_norm_ComplexBasis(fname, njkm, size_grid, basisJKMRe, basisJKMIm, njkmList_complex); 
+	matrix basisJKMRe(njkm,size_grid);
+	matrix basisJKMIm(njkm,size_grid);
+	cmatrix wf_complex(njkm,size_grid);
+	get_JKMbasis(njkm, size_theta, size_phi, dJKM, KJKMRe, KJKMIm, MJKMRe, MJKMIm, wf_complex);
 
+	// Calling a function to test <JKM|J'K'M'> = delta_(JJ'KK'MM')
+	check_norm_ComplexBasis(fname1, njkm, size_grid, wf_complex, njkmList_complex, small); 
+
+	// Calling of rotational kinetic energy operator - <i|K|j>
+	matrix Hrot(njkm,njkm);
+	get_Hrot(ah2o, bh2o, ch2o, njkm, njkmList_complex, Hrot);
+	
+	// Set parameters for potential function
 	double com1[3]={0.0, 0.0, 0.0};
 	double com2[3]={0.0, 0.0, zCOM};
 
 	matrix Vpot(size_grid, size_grid);
 	get_pot(size_theta, size_phi, grid_theta, grid_phi, com1, com2, Vpot);
+
+	// Estimations of quantum numbers associated with REAL Wigner basis functions for various nuclear spin coupling
+	matrix jkmList_real(jkm,3);
+	matrix jkemList_real(jkem,3);
+	matrix jkomList_real(jkom,3);
+	get_QuantumNumList_NonLinear_RealBasis(jmax, jkmList_real,jkemList_real, jkomList_real);
+
+	matrix njkmList_real(njkm,3);
+	if (spin_isomer == "spinless") 
+	{
+		njkmList_real = jkmList_real;
+	}
+	else if (spin_isomer == "para")
+	{
+		njkmList_real = jkemList_real;
+	}
+	else if (spin_isomer == "ortho")
+	{
+		njkmList_real = jkomList_real;
+	}
+
+	// Real wigner basis implemented here
+	matrix wf_real(njkm,size_grid);
+	get_NonLinear_RealBasis(jmax, njkm, size_theta, size_phi,grid_theta,weights_theta,grid_phi,weights_phi,wf_real);
+	check_norm_RealBasis(fname1,wf_real,njkm,small);
+
+	// Evaluation of umat = <x_j|t_i>
+	cmatrix umat(njkm,njkm);
+	umat = wf_complex*transpose(complexm(wf_real));	
+
+	logout<<""<<endl;
+	logout<<"#*******************************************************"<<endl;
+	logout<<""<<endl;
+	logout<<"# Printing of diagoanl U'U(i,j)=delta_<ij> for testing the properties of Unitary matix "<<endl;
+	logout<<""<<endl;
+	logout<<"#*******************************************************"<<endl;
+
+	cmatrix uumat=umat*transpose(umat);
+	for (int i=0; i<njkm; i++)
+	{
+		for (int j=0; j<njkm; j++)
+		{
+			if (abs(uumat(i,j))>small)
+			{
+				logout<<setw(IO_OUTPUT_WIDTH)<<i<<setw(IO_OUTPUT_WIDTH)<<j<<"   "<<uumat(i,j)<<endl;
+			}
+		}
+	}
+
+	logout<<""<<endl;
+	logout<<"#*******************************************************"<<endl;
+	logout<<""<<endl;
+	cmatrix Hrot1 = transpose(umat)*complexm(Hrot)*umat;
+	for (int i=0; i<njkm; i++)
+	{
+		for (int j=0; j<njkm; j++)
+		{
+			if (abs(imag(Hrot1(i,j)))>small)
+			{
+            	cout<<"Warning, non-real for rot matrix in real basis"<<endl;
+				cout<<i<<"      " <<j<<"       "<<Hrot1(i,j)<<endl;
+            	exit(111);
+			}
+		}
+	}
+	Hrot = realm(Hrot1);
+
+	// Checking hermiticity of <i|Hrot|j>
+
+	for (int i=0; i<njkm; i++)
+	{
+		for (int j=0; j<njkm; j++)
+		{
+			if (abs(Hrot(i,j)-Hrot(j,i))>small)
+			{
+				logout<<i<<"Warning non-hermit Hrot"<<IO_OUTPUT_WIDTH<<i<<IO_OUTPUT_WIDTH<<"    "<<Hrot(i,j)<<"    "<<Hrot(j,i)<<endl;
+			}
+		}
+	}
 
 	//Lanczos
 	Rand *randomseed = new Rand(1);
@@ -187,9 +288,14 @@ int main(int argc,char **argv)
 	vector beta(niter+1);
 	vector beta2(niter+1);
 
+	logout<<""<<endl;
+	logout<<"#*******************************************************"<<endl;
+	logout<<""<<endl;
 	int size_basis = njkm*njkm;
 	logout<<"size of basis = "<<size_basis<<endl;
 	logout<<"size of grids = "<<size_grid<<endl;
+	logout<<"#*******************************************************"<<endl;
+	logout<<""<<endl;
 
 	vector v0(size_basis);
 	for (int i=0; i<njkm; i++) {
@@ -201,13 +307,12 @@ int main(int argc,char **argv)
 
 	vector v0keep=v0;
 	for (int i=0;i<size_basis;i++) r(i)=0.0;
-	exit(1);
 
 	vector u=v0;
 	logout<<"start iterations"<<endl;
 	for (int i=1;i<=niter;i++) {
 
-		//u=Hv(njkm, size_grid, Hrot, Vpot, basisJKMRe, basisJKMIm, v0);
+		u=Hv(njkm, size_grid, Hrot, Vpot, wf_real, v0);
 
 		r=r+u;
 
@@ -235,14 +340,14 @@ int main(int argc,char **argv)
 	ofstream lancout2(fname2.c_str());
 
 	if( ! lancout2 )	{
-		cout << "Error opening file for output" << endl ;
+		cout << "Error opening file for output:" <<fname2<< endl ;
 		return -1 ;
 	}
 
 	ofstream lancout3(fname3.c_str());
 
 	if( ! lancout3 )	{
-		cout << "Error opening file for output" << endl ;
+		cout << "Error opening file for output" << fname3<<endl ;
 		return -1 ;
 	}
 
@@ -252,10 +357,8 @@ int main(int argc,char **argv)
 	lancout2.close();
 	lancout3.flush();
 	lancout3.close();
-	exit(111);
 
 	//computation of eigenvectors begins
-	/*
 	matrix evtr(niter,ngood);
 	lanczosvectors(alpha,beta,beta2,niter,eval,ngood,evtr);
     
@@ -268,10 +371,10 @@ int main(int argc,char **argv)
 	}
     
 	v0=v0keep;
-	cvector ARvL(size_basis*ngood);
+	vector ARvL(size_basis*ngood);
 	vector testv(size_basis);
 
-	for (int i=0;i<size_basis;i++) r(i)=complex(0.,0.);
+	for (int i=0;i<size_basis;i++) r(i)=0.;
 
 	// lanczos vector coefficent matrix
 	for (int n=0;n<ngood;n++) cumulnorm(n)=0.;
@@ -281,27 +384,21 @@ int main(int argc,char **argv)
 			double treshold=pow(evtr(j-1,n),2.);
 			cumulnorm(n)+=treshold;
 			for (int row=0;row<size_basis;row++) {
-				//double coeff=evtr(j-1,n)*v0(row);	  
-				complex coeff=complex(evtr(j-1,n),0.0)*v0(row);	  
+				double coeff=evtr(j-1,n)*v0(row);	  
 				if (cumulnorm(n) <(1.-1.e-16))
 					ARvL(row+size_basis*n)+=coeff;	
 			}
 		}
 		
-		u=Hv(njkm, size_grid, Hrot, Vpot, basisJKMRe, basisJKMIm, v0);
+		u=Hv(njkm, size_grid, Hrot, Vpot, wf_real, v0);
 
 		r=r+u;       
-		//alpha(j-1)=v0*r;
-		alpha(j-1)=real(v0*r);
-		//r=r-(alpha(j-1)*v0);
-		r=r-(complex(alpha(j-1),0)*v0);
-		//beta2(j)=r*r;
-		beta2(j)=real(r*r);
+		alpha(j-1)=v0*r;
+		r=r-(alpha(j-1)*v0);
+		beta2(j)=r*r;
 		beta(j)=sqrt(beta2(j));
-		//r=(1./beta(j))*r; // to get v
-		r=complex((1./beta(j)),0)*r; // to get v
-		//v0=(-beta(j))*v0; // prepare r check minus sign!!!  
-		v0=complex((-beta(j)),0)*v0; // prepare r check minus sign!!!
+		r=(1./beta(j))*r; // to get v
+		v0=(-beta(j))*v0; // prepare r check minus sign!!!  
 
 		u=v0;     // swapping
 		v0 =r;
@@ -309,10 +406,8 @@ int main(int argc,char **argv)
 		
 		if (j%1 == 0) logout<<"iteration "<<j<<endl;
     }         
-	*/
 	
-	/*
-	cvector psi0(size_basis);
+	vector psi0(size_basis);
     // purification step of all eigenvectors
     for (int n=0;n<ngood;n++) {
 		for (int row=0;row<size_basis;row++)
@@ -323,13 +418,13 @@ int main(int argc,char **argv)
 	
 	logout<<psi0*psi0<<endl;
 
-	cmatrix psi0_mat(njkm,njkm);
+	matrix psi0_mat(njkm,njkm);
 	for (int i=0; i<njkm; i++) {
 		for (int j=0; j<njkm; j++) {
 			psi0_mat(i,j)=psi0(j+i*njkm);
 		}
 	}
-	vector svd_alpha=copsvd(psi0_mat);
+	vector svd_alpha=resvd(psi0_mat);
 	double sums2=0.0;
 	double sumsvn=0.0;
     for (int i = 0; i<njkm; i++) {
@@ -343,10 +438,9 @@ int main(int argc,char **argv)
     lancout4<<S_vN<<endl;
     lancout4<<S_2<<endl;
 	lancout4.close();
-	*/
+	exit(111);
 
 	/* computation of reduced density matrix */
-	/*
 	cmatrix reduced_density(njkm,jmax+1);
 	for (int i=0; i<njkm; i++) {
 		for (int ip=0; ip<njkm; ip++) {
@@ -380,7 +474,6 @@ int main(int argc,char **argv)
 
 	logout.close();
 	exit(1);
-	*/
 }
 
 vector thetagrid(int nsize,vector &weights)
@@ -414,7 +507,7 @@ vector phigrid(int nsize,vector &weights)
 	return grid;
 }
 
-void get_sizes(int jmax, int *sizes)
+void get_sizes(int jmax, int *sizes, string fname1)
 {
 	int jkm=int(((2*jmax+1)*(2*jmax+2)*(2*jmax+3)/6)); //JKM = "Sum[(2J+1)**2,{J,0,Jmax}]" is computed in mathematica
 
@@ -441,12 +534,13 @@ void get_sizes(int jmax, int *sizes)
 	int chkjkm = jkeem+jkeom+jkoem+jkoom;
 	int jkm2 = jkm*jkm;
 
-    ofstream logout("log");
+    ofstream logout(fname1.c_str());
 	if (chkjkm != jkm2) {
 		logout<<"Wrong index estimation ..."<<endl;
 		exit(1);
 	}
     
+	logout<<""<<endl;
 	logout<<"#************************************************"<<endl;
 	logout<<"# Number of basis functions calculations ...."<<endl;
 	logout<<"# "<<endl;
@@ -464,6 +558,7 @@ void get_sizes(int jmax, int *sizes)
 	logout<<"# Number of |J1K1M1;J2K2M2> basis = "<<jkm2<<endl;
 	logout<<"# Number of ChkJKM = "<<chkjkm<<endl;
 	logout<<"#************************************************"<<endl;
+	logout<<""<<endl;
 	logout.close();
 }
 
@@ -592,27 +687,26 @@ double littleD(int ldJ, int ldmp, int ldm, double ldtheta)
 	return dval*tempD;
 }
 
-void get_Hrot(double ah2o, double bh2o, double ch2o, int njkm, matrix &jkemQuantumNumList, vector &Hrot)
+void get_Hrot(double ah2o, double bh2o, double ch2o, int njkm, matrix &jkemQuantumNumList, matrix &Hrot)
 {
     //Computation of Hrot (Asymmetric Top Hamiltonian in Symmetric Top Basis)
-	int jkm1, jkmp1, ij;
+	int jkm1, jkmp1;
 	for (jkm1=0; jkm1<njkm; jkm1++) {
 		for (jkmp1=0; jkmp1<njkm; jkmp1++) {
-			ij = jkmp1+jkm1*njkm;
 
 			if ((jkemQuantumNumList(jkm1,0)==jkemQuantumNumList(jkmp1,0)) && (jkemQuantumNumList(jkm1,2)==jkemQuantumNumList(jkmp1,2)))
 			{
 				if (jkemQuantumNumList(jkm1,1)==(jkemQuantumNumList(jkmp1,1)-2))
 				{
-					Hrot(ij) += 0.25*(ah2o-ch2o)*off_diag(jkemQuantumNumList(jkm1,0),jkemQuantumNumList(jkm1,1))*off_diag(jkemQuantumNumList(jkm1,0),jkemQuantumNumList(jkm1,1)+1);
+					Hrot(jkm1,jkmp1) += 0.25*(ah2o-ch2o)*off_diag(jkemQuantumNumList(jkm1,0),jkemQuantumNumList(jkm1,1))*off_diag(jkemQuantumNumList(jkm1,0),jkemQuantumNumList(jkm1,1)+1);
 				}
 				else if (jkemQuantumNumList(jkm1,1)==(jkemQuantumNumList(jkmp1,1)+2))
 				{
-					Hrot(ij) += 0.25*(ah2o-ch2o)*off_diag(jkemQuantumNumList(jkm1,0),jkemQuantumNumList(jkm1,1)-1)*off_diag(jkemQuantumNumList(jkm1,0),jkemQuantumNumList(jkm1,1)-2);
+					Hrot(jkm1,jkmp1) += 0.25*(ah2o-ch2o)*off_diag(jkemQuantumNumList(jkm1,0),jkemQuantumNumList(jkm1,1)-1)*off_diag(jkemQuantumNumList(jkm1,0),jkemQuantumNumList(jkm1,1)-2);
 				}
 				else if (jkemQuantumNumList(jkm1,1)==(jkemQuantumNumList(jkmp1,1)))
 				{
-					Hrot(ij) += (0.5*(ah2o + ch2o)*(jkemQuantumNumList(jkm1,0)*(jkemQuantumNumList(jkm1,0)+1)) + (bh2o - 0.5*(ah2o+ch2o)) * pow(jkemQuantumNumList(jkm1,1),2));
+					Hrot(jkmp1,jkmp1) += (0.5*(ah2o + ch2o)*(jkemQuantumNumList(jkm1,0)*(jkemQuantumNumList(jkm1,0)+1)) + (bh2o - 0.5*(ah2o+ch2o)) * pow(jkemQuantumNumList(jkm1,1),2));
 				}
 			}
 		}
@@ -679,42 +773,49 @@ void get_HrotN2(double ah2o, double bh2o, double ch2o, int njkm, matrix &jkemQua
 	}
 }
 
-void get_indvbasis(int njkm, int size_theta, vector &grid_theta, vector &weights_theta, int size_phi, vector &grid_phi, vector &weights_phi, matrix &jkemQuantumNumList, matrix &dJKM, matrix &KJKMRe, matrix &KJKMIm, matrix &MJKeMRe, matrix &MJKeMIm)
+void get_indvbasis(int njkm, int size_theta, vector &grid_theta, vector &weights_theta, int size_phi, vector &grid_phi, vector &weights_phi, matrix &njkmList_complex, matrix &dJKM, matrix &KJKMRe, matrix &KJKMIm, matrix &MJKMRe, matrix &MJKMIm)
 {
-	//block for construction of individual basis begins 
+	/*
+	Constructions of individual wavefunctions, dJKM, KJKMRe, KJKMIm, MJKMRe, MJKMIm 
+	See page 86 and 105 in the book ``Anglar Momentum'' written by R. N. Zare.
+	*/
+	  
 	double nk=1.0;
 	for (int s=0; s<njkm; s++)
 	{
 		for (int th=0; th<size_theta; th++)
 		{
-			dJKM(s,th) = sqrt((2.0*jkemQuantumNumList(s,0)+1.0)/(8.0*pow(pi,2)))*littleD(jkemQuantumNumList(s,0),jkemQuantumNumList(s,2),jkemQuantumNumList(s,1),grid_theta(th))*sqrt(weights_theta(th));
+			dJKM(s,th) = sqrt((2.0*njkmList_complex(s,0)+1.0)/(8.0*pow(pi,2)))*littleD(njkmList_complex(s,0),njkmList_complex(s,2),njkmList_complex(s,1),grid_theta(th))*sqrt(weights_theta(th));
 		}
 
 		for (int ph=0; ph<size_phi; ph++)
 		{
-			KJKMRe(s,ph) = cos(grid_phi(ph)*jkemQuantumNumList(s,1))*sqrt(weights_phi(ph))*nk;
-			KJKMIm(s,ph) = sin(grid_phi(ph)*jkemQuantumNumList(s,1))*sqrt(weights_phi(ph))*nk;
-			MJKeMRe(s,ph) = cos(grid_phi(ph)*jkemQuantumNumList(s,2))*sqrt(weights_phi(ph))*nk;
-			MJKeMIm(s,ph) = sin(grid_phi(ph)*jkemQuantumNumList(s,2))*sqrt(weights_phi(ph))*nk;
+			KJKMRe(s,ph) = cos(grid_phi(ph)*njkmList_complex(s,1))*sqrt(weights_phi(ph))*nk;
+			KJKMIm(s,ph) = sin(grid_phi(ph)*njkmList_complex(s,1))*sqrt(weights_phi(ph))*nk;
+			MJKMRe(s,ph) = cos(grid_phi(ph)*njkmList_complex(s,2))*sqrt(weights_phi(ph))*nk;
+			MJKMIm(s,ph) = sin(grid_phi(ph)*njkmList_complex(s,2))*sqrt(weights_phi(ph))*nk;
 		}
 	}
 }
 
-void get_JKMbasis(int njkm, int size_theta, int size_phi, matrix &dJKM, matrix &KJKMRe, matrix &KJKMIm, matrix &MJKeMRe, matrix &MJKeMIm, vector &basisJKMRe, vector &basisJKMIm) 
+void get_JKMbasis(int njkm, int size_theta, int size_phi, matrix &dJKM, matrix &KJKMRe, matrix &KJKMIm, matrix &MJKMRe, matrix &MJKMIm, cmatrix &wf_complex) 
 {
+	int size_grid = size_theta*size_phi*size_phi;
+	matrix basisJKMRe(njkm,size_grid);
+	matrix basisJKMIm(njkm,size_grid);
+
 	double valdJ, valKC, valKS, valMC, valMS, fac1, fac2;
-	int i, it, ip, ic, iit, itp, itpc; 
+	int i, it, ip, ic, itp, itpc; 
 
 	for (i=0; i<njkm; i++) {
 
 		for (it=0; it<size_theta; it++) {
-			iit = it+i*size_theta;
 			valdJ=dJKM(i,it);
 
 			for (ip=0; ip<size_phi; ip++) {
-				itp = ip+iit*size_phi;
-				valMC=MJKeMRe(i,ip);
-				valMS=MJKeMIm(i,ip);
+				itp = ip+it*size_phi;
+				valMC=MJKMRe(i,ip);
+				valMS=MJKMIm(i,ip);
 
 				for (ic=0; ic<size_phi; ic++) {
 					itpc = ic+itp*size_phi;
@@ -722,15 +823,16 @@ void get_JKMbasis(int njkm, int size_theta, int size_phi, matrix &dJKM, matrix &
 					valKC=KJKMRe(i,ic);
 					valKS=KJKMIm(i,ic);
 
-					basisJKMRe(itpc)=valdJ*(valMC*valKC-valMS*valKS);//(c1+i*s1)*(c2+i*s2)
-					basisJKMIm(itpc)=valdJ*(valMC*valKS+valMS*valKC);
+					basisJKMRe(i,itpc)=valdJ*(valMC*valKC-valMS*valKS);//(c1+i*s1)*(c2+i*s2)
+					basisJKMIm(i,itpc)=valdJ*(valMC*valKS+valMS*valKC);
 				}
 			}
 		}
 	}
+	wf_complex = complexm(basisJKMRe,basisJKMIm);
 }
 
-void check_norm(string fname, int njkm, int size_theta, int size_phi, matrix &dJKM, matrix &KJKMRe, matrix &KJKMIm, matrix &MJKeMRe, matrix &MJKeMIm, matrix &jkemQuantumNumList) 
+void check_norm_indiv_ComplexBasis(string fname, int njkm, int size_theta, int size_phi, matrix &dJKM, matrix &KJKMRe, matrix &KJKMIm, matrix &MJKMRe, matrix &MJKMIm, matrix &njkmList_complex) 
 {
 	matrix normJKMRe(njkm,njkm);
 	matrix normJKMIm(njkm,njkm);
@@ -746,8 +848,8 @@ void check_norm(string fname, int njkm, int size_theta, int size_phi, matrix &dJ
 				for (i=0; i<njkm; i++) {
 					lvec1dJ=dJKM(i,it);
 
-					lvecMC1=MJKeMRe(i,ip);
-					lvecMS1=MJKeMIm(i,ip);
+					lvecMC1=MJKMRe(i,ip);
+					lvecMS1=MJKMIm(i,ip);
 
 					lvecKC1=KJKMRe(i,ic);
 					lvecKS1=KJKMIm(i,ic);
@@ -758,8 +860,8 @@ void check_norm(string fname, int njkm, int size_theta, int size_phi, matrix &dJ
 					for (int j=0; j<njkm; j++) {
 						rvec1dJ=dJKM(j,it);
 
-						rvecMC1=MJKeMRe(j,ip);
-						rvecMS1=MJKeMIm(j,ip);
+						rvecMC1=MJKMRe(j,ip);
+						rvecMS1=MJKMIm(j,ip);
 
 						rvecKC1=KJKMRe(j,ic);
 						rvecKS1=KJKMIm(j,ic);
@@ -777,14 +879,14 @@ void check_norm(string fname, int njkm, int size_theta, int size_phi, matrix &dJ
 
 	string fname1 = "norm-"+fname;
     ofstream checknorm(fname1.c_str());
-    checknorm<<"# Checking of orthonormality of |JKM> basis"<<endl;
+    checknorm<<"# Checking of orthonormality ---> <JKM|JKM> = delta_JJ'KK'MM' "<<endl;
 	checknorm<<endl;
     for (i=0; i<njkm; i++)
     {
 		for (j=0; j<njkm; j++)
 		{
-			checknorm<<" "<<jkemQuantumNumList(i,0)<<" "<<jkemQuantumNumList(i,1)<<" "<<jkemQuantumNumList(j,2)<<endl;
-			checknorm<<" "<<jkemQuantumNumList(j,0)<<" "<<jkemQuantumNumList(j,1)<<" "<<jkemQuantumNumList(j,2)<<endl;
+			checknorm<<" "<<njkmList_complex(i,0)<<" "<<njkmList_complex(i,1)<<" "<<njkmList_complex(j,2)<<endl;
+			checknorm<<" "<<njkmList_complex(j,0)<<" "<<njkmList_complex(j,1)<<" "<<njkmList_complex(j,2)<<endl;
 			checknorm<<" Norm Re: "<<normJKMRe(i,j)<<"    Im: "<<normJKMIm(i,j)<<endl;
 			checknorm<<endl;
 		}
@@ -794,36 +896,27 @@ void check_norm(string fname, int njkm, int size_theta, int size_phi, matrix &dJ
 	checknorm.close();
 }
 
-void check_norm_ComplexBasis(string fname, int njkm, int size_grid, vector &basisJKMRe, vector &basisJKMIm, matrix &njkmList_complex) 
+void check_norm_ComplexBasis(string fname1, int njkm, int size_grid, cmatrix &wf_complex, matrix &njkmList_complex, double small) 
 {
-	matrix normRe(njkm,njkm);
-	matrix normIm(njkm,njkm);
+	cmatrix normJKM = wf_complex*transpose(wf_complex);
 
-	int ig, i, j;
-
-	for (ig=0; ig<size_grid; ig++) {
-		for (i=0; i<njkm; i++) {
-			for (j=0; j<njkm; j++) {
-				normRe(i,j)+=basisJKMRe(ig+i*size_grid)*basisJKMRe(ig+j*size_grid)+basisJKMIm(ig+i*size_grid)*basisJKMIm(ig+j*size_grid);
-				normIm(i,j)+=basisJKMRe(ig+i*size_grid)*basisJKMIm(ig+j*size_grid)-basisJKMIm(ig+i*size_grid)*basisJKMRe(ig+j*size_grid);
-			}
-		}
-	}
-
-	string fname1 = "norm-"+fname;
     ofstream checknorm(fname1.c_str(), ios::app);
-    checknorm<<"# Final checking of orthonormality of |JKM> basis in check_normJKeM "<<endl;
-	checknorm<<endl;
+	checknorm<<"#************************************************"<<endl;
+    checknorm<<""<<endl;
+    checknorm<<"# Final checking of orthonormality of complex |JKM> basis functions --> <JKM|JKM> = delta_JJ'KK'MM' "<<endl;
+    checknorm<<""<<endl;
+
     for (int i=0; i<njkm; i++)
     {
 		for (int j=0; j<njkm; j++)
 		{
-			checknorm<<" "<<njkmList_complex(i,0)<<" "<<njkmList_complex(i,1)<<" "<<njkmList_complex(j,2)<<endl;
-			checknorm<<" "<<njkmList_complex(j,0)<<" "<<njkmList_complex(j,1)<<" "<<njkmList_complex(j,2)<<endl;
-			checknorm<<" Norm Re: "<<normRe(i,j)<<"    Im: "<<normIm(i,j)<<endl;
-			checknorm<<endl;
+			if (abs(normJKM(i,j)) > small)
+			{
+				checknorm<<" "<<njkmList_complex(i,0)<<" "<<njkmList_complex(i,1)<<" "<<njkmList_complex(j,2)<<endl;
+				checknorm<<" "<<njkmList_complex(j,0)<<" "<<njkmList_complex(j,1)<<" "<<njkmList_complex(j,2)<<endl;
+				checknorm<<" Norm Re: "<<realm(normJKM)(i,j)<<"    Im: "<<imagm(normJKM)(i,j)<<endl;
+			}
 		}
-		checknorm<<endl;
 		checknorm<<endl;
 	}
 	checknorm.close();
@@ -861,16 +954,16 @@ void get_pot(int size_theta, int size_phi, vector &grid_theta, vector &grid_phi,
     }
 }
 
-cvector Hv(int njkm, int size_grid, vector &Hrot, matrix &Vpot, vector &basisJKMRe, vector &basisJKMIm, cvector &v)
+vector Hv(int njkm, int size_grid, matrix &Hrot, matrix &Vpot, matrix &wf_real, vector &v)
 {
-	cvector u(njkm*njkm);
+	vector u(njkm*njkm);
   
 	// oprate with K1
 #pragma omp parallel for 
 	for (int i2=0;i2<njkm;i2++) {
 		for (int i1=0;i1<njkm;i1++) {
 			for (int i1p=0;i1p<njkm;i1p++) {
-				u(i1*njkm+i2)+=complex(Hrot(i1p+i1*njkm)*real(v(i1p*njkm+i2)),0.0);
+				u(i1*njkm+i2)+=Hrot(i1,i1p)*v(i1p*njkm+i2);
 			}
 		}
 	}
@@ -880,23 +973,20 @@ cvector Hv(int njkm, int size_grid, vector &Hrot, matrix &Vpot, vector &basisJKM
 	for (int i1=0;i1<njkm;i1++) {
 		for (int i2=0;i2<njkm;i2++) {
 			for (int i2p=0;i2p<njkm;i2p++) {
-				u(i1*njkm+i2)+=complex(Hrot(i2p+i2*njkm)*real(v(i1*njkm+i2p)),0.0);
+				u(i1*njkm+i2)+=Hrot(i2,i2p)*v(i1*njkm+i2p);
 			}
 		}
 	}
 
     // potential term
-	vector temp1re(njkm*size_grid);
-	vector temp1im(njkm*size_grid);
-	vector temp2re(size_grid*size_grid);
-	vector temp2im(size_grid*size_grid);
+	vector temp1(njkm*size_grid);
+	vector temp2(size_grid*size_grid);
 
 #pragma omp parallel for 
 	for (int i1=0;i1<njkm;i1++) {
 		for (int ig2=0;ig2<size_grid;ig2++) {
 			for (int i2=0;i2<njkm;i2++) {
-				temp1re(ig2+i1*size_grid)+=(basisJKMRe(ig2+i2*size_grid)*real(v(i2+i1*njkm))-basisJKMIm(ig2+i2*size_grid)*imag(v(i2+i1*njkm)));
-				temp1im(ig2+i1*size_grid)+=(basisJKMIm(ig2+i2*size_grid)*real(v(i2+i1*njkm))+basisJKMRe(ig2+i2*size_grid)*imag(v(i2+i1*njkm)));
+				temp1(ig2+i1*size_grid)+=wf_real(i2,ig2)*v(i2+i1*njkm);
 			}
 		}
 	}
@@ -905,42 +995,28 @@ cvector Hv(int njkm, int size_grid, vector &Hrot, matrix &Vpot, vector &basisJKM
 	for (int ig2=0;ig2<size_grid;ig2++) {
 		for (int ig1=0;ig1<size_grid;ig1++) {
 			for (int i1=0;i1<njkm;i1++) {
-				temp2re(ig2+ig1*size_grid)+=(basisJKMRe(ig1+i1*size_grid)*temp1re(ig2+i1*size_grid)-basisJKMIm(ig1+i1*size_grid)*temp1im(ig2+i1*size_grid));
-				temp2im(ig2+ig1*size_grid)+=(basisJKMRe(ig1+i1*size_grid)*temp1im(ig2+i1*size_grid)+basisJKMIm(ig1+i1*size_grid)*temp1re(ig2+i1*size_grid));
+				temp2(ig2+ig1*size_grid)+=wf_real(i1,ig1)*temp1(ig2+i1*size_grid);
 			}
-			temp2re(ig2+ig1*size_grid)=Vpot(ig1,ig2)*temp2re(ig2+ig1*size_grid);
-			temp2im(ig2+ig1*size_grid)=Vpot(ig1,ig2)*temp2im(ig2+ig1*size_grid);
+			temp2(ig2+ig1*size_grid)=Vpot(ig1,ig2)*temp2(ig2+ig1*size_grid);
 		}
 	}
-
-/*
-#pragma omp parallel for 
-	for (int ig1=0; ig1<size_grid; ig1++) {
-		for (int ig2=0; ig2<size_grid; ig2++) {
-			temp2re(ig2+ig1*size_grid)=Vpot(ig1,ig2)*temp2re(ig2+ig1*size_grid);
-			temp2im(ig2+ig1*size_grid)=Vpot(ig1,ig2)*temp2im(ig2+ig1*size_grid);
-		}
-	}
-*/
 
 #pragma omp parallel for 
 	for (int i2=0; i2<njkm; i2++) {
 		for (int ig1=0; ig1<size_grid; ig1++) {
-			temp1re(ig1+i2*size_grid)=0.0;
-			temp1im(ig1+i2*size_grid)=0.0;
+			temp1(ig1+i2*size_grid)=0.0;
 			for (int ig2=0; ig2<size_grid; ig2++) {
-				temp1re(ig1+i2*size_grid)+=(temp2re(ig2+ig1*size_grid)*basisJKMRe(ig2+i2*size_grid)+temp2im(ig2+ig1*size_grid)*basisJKMIm(ig2+i2*size_grid));
-				temp1im(ig1+i2*size_grid)+=(temp2im(ig2+ig1*size_grid)*basisJKMRe(ig2+i2*size_grid)-temp2re(ig2+ig1*size_grid)*basisJKMIm(ig2+i2*size_grid));
+				temp1(ig1+i2*size_grid)+=temp2(ig2+ig1*size_grid)*wf_real(i2,ig2);
 			}
 		}
 	}
 
-	cvector vec(njkm*njkm);
+	vector vec(njkm*njkm);
 #pragma omp parallel for 
 	for (int i2=0; i2<njkm; i2++) {
 		for (int i1=0; i1<njkm; i1++) {
 			for (int ig1=0; ig1<size_grid; ig1++) {
-				vec(i2+i1*njkm)+=complex((temp1re(ig1+i2*size_grid)*basisJKMRe(ig1+i1*size_grid)+temp1im(ig1+i2*size_grid)*basisJKMIm(ig1+i1*size_grid)), (temp1im(ig1+i2*size_grid)*basisJKMRe(ig1+i1*size_grid)-temp1re(ig1+i2*size_grid)*basisJKMIm(ig1+i1*size_grid)));
+				vec(i2+i1*njkm)+=temp1(ig1+i2*size_grid)*wf_real(i1,ig1);
 			}
 		}
 	}
@@ -1086,4 +1162,156 @@ void EVanalysis(vector &grid,int size,int nconv,vector &ARv,double Ri,double Rf,
 		cout<<(countscalene(nc)+countisoceles(nc)+countlinear(nc)+countequilateral(nc))*100.<<endl;
 	}
 	return;
+}
+
+void get_wigner_RealBasis(int njkm_J,int njkm_K,int njkm_M,double theta,double wt,double phi,double wp,double chi,double wc, double *theta0, double *thetac, double *thetas)
+{
+
+	/* See ``Appendix: Real basis of non-linear rotor'' in Rep. Prog. Phys. vol. 77 page- 046601 (2014). */
+
+	*theta0 = sqrt((2.*njkm_J+1)/(8.*M_PI*M_PI))*littleD(njkm_J,0,0,theta)*sqrt(wt*wp*wc);
+	double dd = sqrt((2.*njkm_J+1)/(4.*M_PI*M_PI))*littleD(njkm_J,njkm_M,njkm_K,theta)*sqrt(wt);
+	*thetac = dd*cos(phi*njkm_M+chi*njkm_K)*sqrt(wp)*sqrt(wc);
+	*thetas = dd*sin(phi*njkm_M+chi*njkm_K)*sqrt(wp)*sqrt(wc);
+}
+
+void get_NonLinear_RealBasis(int jmax,int njkm,int size_theta,int size_phi,vector &grid_theta,vector &weights_theta,vector &grid_phi,vector &weights_phi,matrix &basisf)
+{
+
+	/* See ``Appendix: Real basis of non-linear rotor'' in Rep. Prog. Phys. vol. 77 page- 046601 (2014).  */
+
+	int th, ph, ch, itp, itpc, ib, j, k, m;
+	double theta, wt, phi, wp, chi, wc;
+	double theta0, thetac, thetas;
+
+	for (th=0; th<size_theta; th++)
+	{
+		theta=grid_theta(th);
+		wt=weights_theta(th);
+
+		for (ph=0; ph<size_phi; ph++)
+		{
+			phi=grid_phi(ph);
+			wp=weights_phi(ph);
+			itp=ph+th*size_phi;
+
+			for (ch=0; ch<size_phi; ch++)
+			{
+				chi=grid_phi(ch);
+				wc=weights_phi(ch);
+				itpc=ch+itp*size_phi;
+
+				ib=0;
+				for (j=0; j<(jmax+1); j++)
+				{
+					k=0;
+
+					m=0;
+					theta0 = 0.0; thetac = 0.0; thetas = 0.0;
+					get_wigner_RealBasis(j,k,m,theta,wt,phi,wp,chi,wc,&theta0,&thetac,&thetas);
+					basisf(ib,itpc)=theta0;
+					ib=ib+1;
+
+					for (m=1; m<(j+1); m++)
+					{
+						theta0 = 0.0; thetac = 0.0; thetas = 0.0;
+						get_wigner_RealBasis(j,k,m,theta,wt,phi,wp,chi,wc,&theta0,&thetac,&thetas);
+						basisf(ib,itpc)=thetac;
+						ib=ib+1;
+						basisf(ib,itpc)=thetas;
+						ib=ib+1;
+					}
+						
+					for (k=1; k<(j+1); k++)
+					{
+						for (m=-j; m<(j+1); m++)
+						{
+							theta0 = 0.0; thetac = 0.0; thetas = 0.0;
+							get_wigner_RealBasis(j,k,m,theta,wt,phi,wp,chi,wc,&theta0,&thetac,&thetas);
+							basisf(ib,itpc)=thetac;
+							ib=ib+1;
+							basisf(ib,itpc)=thetas;
+							ib=ib+1;
+						}
+					}
+				}
+			}
+		}
+	}	
+}
+
+void check_norm_RealBasis(string fname1,matrix &wf_realbasis,int njkm,double small)
+{
+	// It checks if the real wigner basis functions are normalized? 
+
+	matrix normJKM = wf_realbasis*transpose(wf_realbasis);
+
+    ofstream checknorm(fname1.c_str(),ios::app);
+	checknorm <<""<< endl;
+	checknorm <<"#*******************************************************"<<endl;
+	checknorm <<""<< endl;
+	checknorm <<"# Normalization conditions for Real Wigner basis set."<<endl;
+	checknorm <<""<< endl;
+	checknorm <<"#*******************************************************"<<endl;
+	checknorm <<""<< endl;
+
+	for (int s1=0; s1<njkm; s1++)
+	{
+		for (int s2=0; s2<njkm; s2++)
+		{
+			if (abs(normJKM(s1,s2)) > small)
+			{
+				checknorm << "# <JKM| : "    << s1 << endl;
+				checknorm << "# |J'K'M'> : " << s2 << endl;
+				checknorm << "# Norm: "      << normJKM(s1,s2) << endl;
+				checknorm <<""<< endl;
+			}
+		}
+	}
+	checknorm.close();
+}
+
+void get_QuantumNumList_NonLinear_RealBasis(int jmax, matrix &jkmList_real,matrix &jkemList_real,matrix &jkomList_real)
+{
+	/* See ``Appendix: Real basis of non-linear rotor'' in Rep. Prog. Phys. vol. 77 page- 046601 (2014). */
+
+	int j, k, m;
+	int jtempcounter = 0;
+	for (int j=0; j<(jmax+1); j++)
+	{
+		k=0; m=0;
+
+		jkmList_real(jtempcounter,0)=j;
+		jkmList_real(jtempcounter,1)=k;
+		jkmList_real(jtempcounter,2)=m;
+		jtempcounter=jtempcounter+1;
+
+		for (m=1; m<(j+1); m++)
+		{
+
+			jkmList_real(jtempcounter,0)=j;
+			jkmList_real(jtempcounter,1)=k;
+			jkmList_real(jtempcounter,2)=m;
+			jtempcounter=jtempcounter+1;
+			jkmList_real(jtempcounter,0)=j;
+			jkmList_real(jtempcounter,1)=k;
+			jkmList_real(jtempcounter,2)=m;
+			jtempcounter=jtempcounter+1;
+		}
+
+		for (k=1; k<(j+1); k++)
+		{
+			for (m=-j; m<(j+1); m++)
+			{
+				jkmList_real(jtempcounter,0)=j;
+				jkmList_real(jtempcounter,1)=k;
+				jkmList_real(jtempcounter,2)=m;
+				jtempcounter=jtempcounter+1;
+				jkmList_real(jtempcounter,0)=j;
+				jkmList_real(jtempcounter,1)=k;
+				jkmList_real(jtempcounter,2)=m;
+				jtempcounter=jtempcounter+1;
+			}
+		}
+	}
 }

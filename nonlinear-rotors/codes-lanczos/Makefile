@@ -1,13 +1,13 @@
 .SUFFIXES: .o .c .f .cxx
 
 
-CXX     = g++
+CXX     = g++-11
 CC      = gcc
 F77      = gfortran
 
-CFLAGS  = -O3 -DLINUX -DBLAS -fopenmp -lstdc++ #-I /additional/include/dir
-CXXFLAGS = -O3 -DLINUX -DBLAS -fopenmp -lstdc++ 
-LDFLAGS= -lcblas -llapack -lm -lgfortran 
+CFLAGS  = -O3 -DLINUX -DBLAS -fopenmp 
+CXXFLAGS = -O3 -DLINUX -DBLAS -fopenmp -std=c++11
+LDFLAGS= -lblas -llapack -lm -lgfortran 
 
 objects=ran1.o four1.o prod.o gaulegf.o \
 plgndr.o inter.o  gauleg.o sturmi.o inverr.o inverm.o isoev.o \
@@ -26,4 +26,4 @@ run: code-real-basis-lanc-dimer.o  $(objects) matvec.o BF.h
 
 .PHONY: clean
 clean:
-	rm -f *.o run
+	rm -f *.o *.txt run log

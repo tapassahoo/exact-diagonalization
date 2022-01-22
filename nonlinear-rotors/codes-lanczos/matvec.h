@@ -128,6 +128,7 @@ class vector {
 	friend void normalise(vector& arg1);
 	friend vector hermdl(cmatrix& a);
 	friend vector copsvd(cmatrix& a);
+	friend vector resvd(matrix& a);
 	friend vector compgene(cmatrix& A,cmatrix& B);
 	friend vector realpart(const cvector& arg1);
 	friend vector imagpart(const cvector& arg1);
@@ -240,6 +241,7 @@ public:
 	friend vector compdiag(const matrix& PRe,const matrix& PIm);
 	friend vector hermdiag(matrix& PRe,matrix& PIm);
 	friend vector diag(matrix& a);
+	friend vector resvd(matrix& a);
 	friend vector Hpsifort(matrix &TR,matrix &Ttheta1,matrix &Ttheta2,
 			       diagmat &I1,diagmat &I2,matrix &Tphi,
 			       diagmat &pot4d,vector &v,int Rpoints, 
@@ -621,6 +623,10 @@ EXTERN void FORTRAN(zgesvd)(char *JOBU,char *JOBVT,int *M,int *N,
 				complex *A,int *LDA,double *S,complex *U,
 				int *LDU,complex *VT,int *LDVT,complex *WORK,
 	            int *LWORK,double *RWORK,int *INFO);
+EXTERN void FORTRAN(dgesvd)(char *JOBU,char *JOBVT,int *M,int *N,
+				double *A,int *LDA,double *S,double *U,
+				int *LDU,double *VT,int *LDVT,double *WORK,
+	            int *LWORK,int *INFO);
 EXTERN void FORTRAN(dpotri)(char *UPLO,int *N,double *a,int *LDA,int *INFO);
 EXTERN void FORTRAN(dpotrf)(char *UPLO,int *N,double *a,int *LDA,int *INFO);
 EXTERN void FORTRAN(dgeev)(char *JOBVL,char *JOBVR,int *N,double *a,int *LDA,

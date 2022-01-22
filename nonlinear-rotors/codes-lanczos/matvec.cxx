@@ -913,6 +913,27 @@ vector copsvd(cmatrix& a)
 	if (INFO != 0) std::cerr<<"svd failed"<<std::endl;
 	return S;
 }
+vector resvd(matrix& a)
+{
+	// returns eigenvalues in a vector and transforms the matrix argument
+	// for symmetric matrices
+	char JOBU='N';
+	char JOBVT='N';
+	int M=a.Rows;
+	int N=a.Columns;
+	int LDA=M;
+	int LDU=M;
+	int LDVT=M;
+	vector S(M);
+	matrix U(LDU,N);
+	matrix VT(LDVT,N);
+	int LWORK=5*N;
+	vector WORK(LWORK);
+	int INFO=0;
+	FORTRAN(dgesvd)(&JOBU,&JOBVT,&M,&N,a.TheMatrix,&LDA,S.TheVector,U.TheMatrix,&LDU,VT.TheMatrix,&LDVT,WORK.TheVector,&LWORK,&INFO);
+	if (INFO != 0) std::cerr<<"svd failed"<<std::endl;
+	return S;
+}
 cvector diag(cmatrix& a,cmatrix &VL,cmatrix &VR)
   // returns eigenvalues in a vector and transforms the matrix argument
   // for symmetric matrices
