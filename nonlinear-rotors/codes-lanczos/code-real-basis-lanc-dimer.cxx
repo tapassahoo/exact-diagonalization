@@ -435,10 +435,14 @@ int main(int argc,char **argv)
 	double S_vN = -sumsvn;
 	
 	ofstream lancout4(fname4.c_str());
+	if ( !lancout4 ){
+		cout << "Error opening file for output:" <<fname4<< endl ;
+		return -1 ;
+	}
+
     lancout4<<S_vN<<endl;
     lancout4<<S_2<<endl;
 	lancout4.close();
-	exit(111);
 
 	/* computation of reduced density matrix */
 	cmatrix reduced_density(njkm,jmax+1);
@@ -1314,4 +1318,32 @@ void get_QuantumNumList_NonLinear_RealBasis(int jmax, matrix &jkmList_real,matri
 			}
 		}
 	}
+}
+
+cmatrix get_umat(int njkm, matrix &wf_complex, matrix &wf_real)
+{
+	int size_basis = njkm*njkm;
+	cmatrix u(size_basis,size_basis);
+  
+	// oprate with first rotor
+#pragma omp parallel for 
+	for (int i2=0;i2<njkm;i2++) {
+		for (int i1=0;i1<njkm;i1++) {
+			for (int i1p=0;i1p<njkm;i1p++) {
+				u(i1*njkm+i2)+=wf_complex(i1,i1p)*wf_real(i1p,i2);
+			}
+		}
+	}
+
+	// oprate with second rotor
+#pragma omp parallel for 
+	for (int i1=0;i1<njkm;i1++) {
+		for (int i2=0;i2<njkm;i2++) {
+			for (int i2p=0;i2p<njkm;i2p++) {
+				u(i1*njkm+i2)+=wf_complex(i2,i2p)*wf_real(i2p,i1);
+			}
+		}
+	}
+
+	return u;
 }
