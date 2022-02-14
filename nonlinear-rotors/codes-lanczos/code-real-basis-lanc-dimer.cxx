@@ -1320,6 +1320,7 @@ void get_QuantumNumList_NonLinear_RealBasis(int jmax, matrix &jkmList_real,matri
 	}
 }
 
+/*
 cmatrix get_umat(int njkm, matrix &wf_complex, matrix &wf_real)
 {
 	int size_basis = njkm*njkm;
@@ -1347,3 +1348,4 @@ cmatrix get_umat(int njkm, matrix &wf_complex, matrix &wf_real)
 
 	return u;
 }
+*/
