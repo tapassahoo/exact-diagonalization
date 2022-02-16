@@ -46,12 +46,14 @@ void get_pot(int size_theta, int size_phi, vector &grid_theta, vector &grid_phi,
 extern "C" void caleng_(double *com1, double *com2, double *E_2H2O, double *Eulang1, double *Eulang2);
 vector Hv(int njkm, int size_grid, matrix &Hrot, matrix &Vpot, matrix &wf_real, vector &v0);
 void printIndex(int njkm);
+cvector get_basis_complex(int njkm, cmatrix &umat, vector &psi0);
 
 void lanczosvectors(vector &alpha,vector &beta,vector &beta2,int niter, vector &eval,int ngood,matrix &evtr);
 void EVanalysis(vector &grid,int size,int nconv,vector &ARv,double Ri,double Rf, int basistype,int size3d, diagmat &Rfunc,diagmat &rfunc, diagmat &R2func,diagmat &r2func,diagmat &sqrtweight);
 
 EXTERN void FORTRAN(trivec)(double *lalpha,double *lbeta,double *lbeta2, double *wrk1,double *wrk2,int *niter, double *eval,int *ngood,double *evtr,double *mamin);
  
+
 int main(int argc,char **argv) 
 {
 	if (argc < 2) 
@@ -137,30 +139,24 @@ int main(int argc,char **argv)
 
 	int njkm;
 
-	if (spin_isomer == "spinless") 
-	{
+	if (spin_isomer == "spinless") {
 		njkm = jkm;
 	}
-	else if (spin_isomer == "para")
-	{
+	else if (spin_isomer == "para") {
 		njkm = jkem;
 	}
-	else if (spin_isomer == "ortho")
-	{
+	else if (spin_isomer == "ortho") {
 		njkm = jkom;
 	}
 
 	matrix njkmList_complex(njkm,3);
-	if (spin_isomer == "spinless") 
-	{
+	if (spin_isomer == "spinless") {
 		njkmList_complex = jkmList_complex;
 	}
-	else if (spin_isomer == "para")
-	{
+	else if (spin_isomer == "para") {
 		njkmList_complex = jkemList_complex;
 	}
-	else if (spin_isomer == "ortho")
-	{
+	else if (spin_isomer == "ortho") {
 		njkmList_complex = jkomList_complex;
 	}
 
@@ -203,16 +199,13 @@ int main(int argc,char **argv)
 	get_QuantumNumList_NonLinear_RealBasis(jmax, jkmList_real,jkemList_real, jkomList_real);
 
 	matrix njkmList_real(njkm,3);
-	if (spin_isomer == "spinless") 
-	{
+	if (spin_isomer == "spinless") {
 		njkmList_real = jkmList_real;
 	}
-	else if (spin_isomer == "para")
-	{
+	else if (spin_isomer == "para") {
 		njkmList_real = jkemList_real;
 	}
-	else if (spin_isomer == "ortho")
-	{
+	else if (spin_isomer == "ortho") {
 		njkmList_real = jkomList_real;
 	}
 
@@ -222,6 +215,8 @@ int main(int argc,char **argv)
 	check_norm_RealBasis(fname1,wf_real,njkm,small);
 
 	// Evaluation of umat = <x_j|t_i>
+	// <x_j| ---> complex basis, row vector;
+	// |t_i> ---> real basis, colomn vector
 	cmatrix umat(njkm,njkm);
 	umat = wf_complex*transpose(complexm(wf_real));	
 
@@ -233,12 +228,9 @@ int main(int argc,char **argv)
 	logout<<"#*******************************************************"<<endl;
 
 	cmatrix uumat=umat*transpose(umat);
-	for (int i=0; i<njkm; i++)
-	{
-		for (int j=0; j<njkm; j++)
-		{
-			if (abs(uumat(i,j))>small)
-			{
+	for (int i=0; i<njkm; i++) {
+		for (int j=0; j<njkm; j++) {
+			if (abs(uumat(i,j))>small) {
 				logout<<setw(IO_OUTPUT_WIDTH)<<i<<setw(IO_OUTPUT_WIDTH)<<j<<"   "<<uumat(i,j)<<endl;
 			}
 		}
@@ -248,12 +240,9 @@ int main(int argc,char **argv)
 	logout<<"#*******************************************************"<<endl;
 	logout<<""<<endl;
 	cmatrix Hrot1 = transpose(umat)*complexm(Hrot)*umat;
-	for (int i=0; i<njkm; i++)
-	{
-		for (int j=0; j<njkm; j++)
-		{
-			if (abs(imag(Hrot1(i,j)))>small)
-			{
+	for (int i=0; i<njkm; i++) {
+		for (int j=0; j<njkm; j++) {
+			if (abs(imag(Hrot1(i,j)))>small) {
             	cout<<"Warning, non-real for rot matrix in real basis"<<endl;
 				cout<<i<<"      " <<j<<"       "<<Hrot1(i,j)<<endl;
             	exit(111);
@@ -264,12 +253,9 @@ int main(int argc,char **argv)
 
 	// Checking hermiticity of <i|Hrot|j>
 
-	for (int i=0; i<njkm; i++)
-	{
-		for (int j=0; j<njkm; j++)
-		{
-			if (abs(Hrot(i,j)-Hrot(j,i))>small)
-			{
+	for (int i=0; i<njkm; i++) {
+		for (int j=0; j<njkm; j++) {
+			if (abs(Hrot(i,j)-Hrot(j,i))>small) {
 				logout<<i<<"Warning non-hermit Hrot"<<IO_OUTPUT_WIDTH<<i<<IO_OUTPUT_WIDTH<<"    "<<Hrot(i,j)<<"    "<<Hrot(j,i)<<endl;
 			}
 		}
@@ -339,14 +325,14 @@ int main(int argc,char **argv)
 	// lanczos report:
 	ofstream lancout2(fname2.c_str());
 
-	if( ! lancout2 )	{
+	if( ! lancout2 ){
 		cout << "Error opening file for output:" <<fname2<< endl ;
 		return -1 ;
 	}
 
 	ofstream lancout3(fname3.c_str());
 
-	if( ! lancout3 )	{
+	if( ! lancout3 ){
 		cout << "Error opening file for output" << fname3<<endl ;
 		return -1 ;
 	}
@@ -444,6 +430,10 @@ int main(int argc,char **argv)
     lancout4<<S_2<<endl;
 	lancout4.close();
 
+	// Conversion of real basis to complex basis for ground state
+	cvector psi0_final(size_basis);
+	psi0_final = get_basis_complex(njkm, umat, psi0);
+
 	/* computation of reduced density matrix */
 	cmatrix reduced_density(njkm,jmax+1);
 	for (int i=0; i<njkm; i++) {
@@ -451,7 +441,7 @@ int main(int argc,char **argv)
 			if ((njkmList_complex(i,1)==njkmList_complex(ip,1)) and (njkmList_complex(i,2)==njkmList_complex(ip,2))) {
 				complex sum2=(0.0,0.0);
 				for (int j=0; j<njkm; j++) {
-					sum2+=conj(psi0(j+i*njkm))*psi0(j+ip*njkm);
+					sum2+=conj(psi0_final(j+i*njkm))*psi0_final(j+ip*njkm);
 				}
 				reduced_density(i,njkmList_complex(ip,0))=sum2;
 			}
@@ -1320,32 +1310,30 @@ void get_QuantumNumList_NonLinear_RealBasis(int jmax, matrix &jkmList_real,matri
 	}
 }
 
-/*
-cmatrix get_umat(int njkm, matrix &wf_complex, matrix &wf_real)
+cvector get_basis_complex(int njkm, cmatrix &umat, vector &psi0)
 {
 	int size_basis = njkm*njkm;
-	cmatrix u(size_basis,size_basis);
+	cvector u(size_basis);
   
 	// oprate with first rotor
-#pragma omp parallel for 
+//#pragma omp parallel for 
 	for (int i2=0;i2<njkm;i2++) {
 		for (int i1=0;i1<njkm;i1++) {
 			for (int i1p=0;i1p<njkm;i1p++) {
-				u(i1*njkm+i2)+=wf_complex(i1,i1p)*wf_real(i1p,i2);
+				u(i1*njkm+i2)+=umat(i1,i1p)*psi0(i1p*njkm+i2);
 			}
 		}
 	}
 
 	// oprate with second rotor
-#pragma omp parallel for 
+//#pragma omp parallel for 
 	for (int i1=0;i1<njkm;i1++) {
 		for (int i2=0;i2<njkm;i2++) {
 			for (int i2p=0;i2p<njkm;i2p++) {
-				u(i1*njkm+i2)+=wf_complex(i2,i2p)*wf_real(i2p,i1);
+				u(i1*njkm+i2)+=umat(i2,i2p)*psi0(i2p+i1*njkm);
 			}
 		}
 	}
 
 	return u;
 }
-*/
