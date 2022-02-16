@@ -402,6 +402,8 @@ int main(int argc,char **argv)
         if (n==0) psi0=r;
     }
 	
+	logout<<""<<endl;
+	logout<<"Normalization checking of ground state"<<endl;
 	logout<<psi0*psi0<<endl;
 
 	matrix psi0_mat(njkm,njkm);
