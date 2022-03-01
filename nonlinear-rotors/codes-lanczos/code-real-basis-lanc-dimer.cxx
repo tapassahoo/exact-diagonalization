@@ -47,6 +47,8 @@ extern "C" void caleng_(double *com1, double *com2, double *E_2H2O, double *Eula
 vector Hv(int njkm, int size_grid, matrix &Hrot, matrix &Vpot, matrix &wf_real, vector &v0);
 void printIndex(int njkm);
 cvector get_basis_complex(int njkm, cmatrix &umat, vector &psi0);
+cmatrix get_fullbasis_complex(int njkm, int size_grid, cmatrix &wf_complex);
+matrix get_fullbasis_real(int njkm, int size_grid, matrix &wf_real);
 
 void lanczosvectors(vector &alpha,vector &beta,vector &beta2,int niter, vector &eval,int ngood,matrix &evtr);
 void EVanalysis(vector &grid,int size,int nconv,vector &ARv,double Ri,double Rf, int basistype,int size3d, diagmat &Rfunc,diagmat &rfunc, diagmat &R2func,diagmat &r2func,diagmat &sqrtweight);
@@ -181,6 +183,11 @@ int main(int argc,char **argv)
 	// Calling a function to test <JKM|J'K'M'> = delta_(JJ'KK'MM')
 	check_norm_ComplexBasis(fname1, njkm, size_grid, wf_complex, njkmList_complex, small); 
 
+
+	int size_basis = njkm*njkm;
+	cmatrix psi_comp(size_basis,size_grid);
+	psi_comp = get_fullbasis_complex(njkm, size_grid, wf_complex);
+
 	// Calling of rotational kinetic energy operator - <i|K|j>
 	matrix Hrot(njkm,njkm);
 	get_Hrot(ah2o, bh2o, ch2o, njkm, njkmList_complex, Hrot);
@@ -213,6 +220,10 @@ int main(int argc,char **argv)
 	matrix wf_real(njkm,size_grid);
 	get_NonLinear_RealBasis(jmax, njkm, size_theta, size_phi,grid_theta,weights_theta,grid_phi,weights_phi,wf_real);
 	check_norm_RealBasis(fname1,wf_real,njkm,small);
+
+	matrix psi_real(size_basis,size_grid);
+	psi_real = get_fullbasis_real(njkm, size_grid, wf_real);
+	exit(11);
 
 	// Evaluation of umat = <x_j|t_i>
 	// <x_j| ---> complex basis, row vector;
@@ -277,7 +288,7 @@ int main(int argc,char **argv)
 	logout<<""<<endl;
 	logout<<"#*******************************************************"<<endl;
 	logout<<""<<endl;
-	int size_basis = njkm*njkm;
+	//int size_basis = njkm*njkm;
 	logout<<"size of basis = "<<size_basis<<endl;
 	logout<<"size of grids = "<<size_grid<<endl;
 	logout<<"#*******************************************************"<<endl;
@@ -1338,4 +1349,39 @@ cvector get_basis_complex(int njkm, cmatrix &umat, vector &psi0)
 	}
 
 	return u;
+}
+
+cmatrix get_fullbasis_complex(int njkm, int size_grid, cmatrix &wf_complex)
+{
+	int size_basis = njkm*njkm;
+	cmatrix ucomp(size_basis,size_grid);
+  
+	for (int ig=0;ig<size_grid;ig++) {
+		for (int i1=0;i1<njkm;i1++) {
+			for (int i2=0;i2<njkm;i2++) {
+				ucomp(i1*njkm+i2,ig)=wf_complex(i1,ig)*wf_complex(i2,ig);
+			}
+		}
+	}
+
+	return ucomp;
+}
+
+matrix get_fullbasis_real(int njkm, int size_grid, matrix &wf_real)
+{
+	int size_basis = njkm*njkm;
+	matrix ureal(size_basis,size_grid);
+  
+	for (int ig=0;ig<size_grid;ig++) {
+		for (int i1=0;i1<njkm;i1++) {
+			double sum=0.0;
+			for (int i2=0;i2<njkm;i2++) {
+				ureal(i1*njkm+i2,ig)=wf_real(i1,ig)*wf_real(i2,ig);
+				sum+=ureal(i1*njkm+i2,ig)*ureal(i1*njkm+i2,ig);
+			}
+			cout<<sum<<endl;
+		}
+	}
+
+	return ureal;
 }

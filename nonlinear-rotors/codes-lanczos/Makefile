@@ -1,13 +1,13 @@
 .SUFFIXES: .o .c .f .cxx
 
 
-CXX     = g++-11
-CC      = gcc
+CXX      = g++-11
+CC       = gcc
 F77      = gfortran
 
-CFLAGS  = -O3 -DLINUX -DBLAS -fopenmp 
+CFLAGS   = -O3 -DLINUX -DBLAS 
 CXXFLAGS = -O3 -DLINUX -DBLAS -fopenmp -std=c++11
-LDFLAGS= -lblas -llapack -lm -lgfortran 
+LDFLAGS  = -lblas -llapack -lm -lgfortran 
 
 objects=ran1.o four1.o prod.o gaulegf.o \
 plgndr.o inter.o  gauleg.o sturmi.o inverr.o inverm.o isoev.o \
