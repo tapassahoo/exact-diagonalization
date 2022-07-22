@@ -1,7 +1,6 @@
 .SUFFIXES: .o .c .f .cxx
 
-
-CXX      = g++-11
+CXX      = g++
 CC       = gcc
 F77      = gfortran
 
