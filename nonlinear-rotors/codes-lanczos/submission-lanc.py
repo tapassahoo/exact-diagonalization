@@ -16,6 +16,7 @@ def jobstring(NameOfServer,Rpt,jmax,dir_output,niter,emin,emax):
 
 	command_execution="time ./run  "+str(Rpt)+"  "+str(jmax)+"  "+str(niter)+"  "+str(emin)+"  "+str(emax)
 
+        ystem_name = os.getenv('HOSTNAME')
 	if (NameOfServer=="graham"):
 		account="#SBATCH --account=rrg-pnroy"
 	else:
@@ -32,6 +33,7 @@ export OMP_NUM_THREADS=16
 %s
 """ % (jobname,logfile,account,command_execution)
 	return job_string
+
 
 #initial parameters for qmc.input
 status = 'S'
