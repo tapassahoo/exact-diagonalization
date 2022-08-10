@@ -1,13 +1,12 @@
 .SUFFIXES: .o .c .f .cxx
 
+CXX      = icpc
+CC       = icc
+F77      = ifort
 
-CXX     = g++-11
-CC      = gcc
-F77      = gfortran
-
-CFLAGS  = -O3 -DLINUX -DBLAS -fopenmp 
-CXXFLAGS = -O3 -DLINUX -DBLAS -fopenmp -std=c++11
-LDFLAGS= -lcblas -llapack -lm -lgfortran 
+CFLAGS   = -O3 -DLINUX -DBLAS 
+CXXFLAGS = -O3 -DLINUX -DBLAS -qopenmp 
+LDFLAGS  = -qmkl=sequential -lifcore -lc
 
 objects=ran1.o four1.o prod.o gaulegf.o \
 plgndr.o inter.o  gauleg.o sturmi.o inverr.o inverm.o isoev.o \
@@ -26,4 +25,4 @@ run: code-real-basis-lanc-dimer.o  $(objects) matvec.o BF.h
 
 .PHONY: clean
 clean:
-	rm -f *.o run
+	rm -f *.o *.txt run log
