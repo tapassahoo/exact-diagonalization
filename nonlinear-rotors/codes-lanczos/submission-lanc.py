@@ -29,7 +29,7 @@ def jobstring(NameOfServer,Rpt,jmax,dir_output,niter,emin,emax):
 #SBATCH --output=%s
 #SBATCH --time=00-00:30
 %s
-#SBATCH --mem-per-cpu=128MB
+#SBATCH --mem-per-cpu=2GB
 #SBATCH --cpus-per-task=1
 export OMP_NUM_THREADS=1
 %s
@@ -52,12 +52,23 @@ numb_jobs = zList.size
 print("The number of jobs that will be running is ", numb_jobs)
 
 # Determination of the output directory based on server
-server_name = os.getenv('HOSTNAME').split('.')[2]
+server_name = "computecanada"#os.getenv('HOSTNAME').split('.')[2]
 if (server_name == "computecanada"):
-	dir_output="/scratch/tapas/exact-results"
+	dir_output="/scratch/tapas/exact-results/"
 else:
 	home=os.path.expanduser("~")
-	dir_output=home+"outputs/exact-results"
+	dir_output=home+"outputs/exact-results/"
+
+if not os.path.isdir(dir_output):
+	os.mkdir(dir_output)
+
+
+if (os.path.exists(dir_output) == True):
+	str_out_dir = "The output files are stored in "+dir_output
+else:
+	str_out_dir = "First make "+dir_output+" directory."
+
+print(str_out_dir)
 
 if (status == "S"):
 	src_dir=os.getcwd()
@@ -67,7 +78,7 @@ if (status == "S"):
 	#read the pigsdata.txt
 	#rpt_pigs,eng_pigs,err_pigs=np.loadtxt('pigsdata.txt', usecols=(0,1,2), unpack=True)
 
-if (status=='A'):
+if (status=="A"):
 	numb_states=1
 	eigval=np.zeros(len(zList),dtype=float)
 	err=np.zeros(len(zList),dtype=float)
