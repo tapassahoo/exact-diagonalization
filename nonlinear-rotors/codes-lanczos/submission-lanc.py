@@ -11,13 +11,15 @@ def dropzeros(number):
 	return mynum.__trunc__() if not mynum % 1 else float(mynum) 
 
 def jobstring(NameOfServer,Rpt,jmax,dir_output,niter,emin,emax):
+	'''
+	The function generates a script file based on SLURM scheduler for running the jobs on computecanada server.
+	'''
 	logfile=dir_output+"/lanc-submit-p-H2O-Rpt"+str(Rpt)+"ang-j"+str(jmax)+"-niter"+str(niter)+".txt"
 	jobname="lcR"+str(Rpt)
 
 	command_execution="time ./run  "+str(Rpt)+"  "+str(jmax)+"  "+str(niter)+"  "+str(emin)+"  "+str(emax)
 
-        ystem_name = os.getenv('HOSTNAME')
-	if (NameOfServer=="graham"):
+	if (NameOfServer=="computecanada"):
 		account="#SBATCH --account=rrg-pnroy"
 	else:
 		account=""
@@ -25,63 +27,45 @@ def jobstring(NameOfServer,Rpt,jmax,dir_output,niter,emin,emax):
 	job_string="""#!/bin/bash
 #SBATCH --job-name=%s
 #SBATCH --output=%s
-#SBATCH --time=14-00:00
+#SBATCH --time=00-00:30
 %s
-#SBATCH --mem-per-cpu=6GB
-#SBATCH --cpus-per-task=16
-export OMP_NUM_THREADS=16
+#SBATCH --mem-per-cpu=128MB
+#SBATCH --cpus-per-task=1
+export OMP_NUM_THREADS=1
 %s
 """ % (jobname,logfile,account,command_execution)
 	return job_string
 
+# Critical parameters to execute the script
+status = "S"
+niter = 100
+jrot = 2
 
-#initial parameters for qmc.input
-status = 'S'
-niter = 10
-jrot = 10
+# Grid points for the intermolecular distance are
+zList1 = np.arange(2.5, 2.7001, 0.02)
+zList1 = np.append(zList1, [2.75])
+zList2 = np.arange(2.8, 4.01, 0.1)
+zList2 = np.append(zList1, zList2)
+zList3 = np.arange(4.2, 10.01, 0.2)
+zList = np.append(zList2, zList3)
+numb_jobs = zList.size
+print("The number of jobs that will be running is ", numb_jobs)
 
-# making grid points for the intermolecular distance, r
-'''
-zmin = 2.5
-zmax = 2.7
-dz = 0.02
-nz = int(((zmax-zmin)+dz*0.5)/dz)
-nz += 1
-zList = [zmin+dz*i for i in range(nz)]
-zList += [2.75]
-zmin = 2.8
-zmax = 4.0
-dz = 0.1
-nz = int(((zmax-zmin)+dz*0.5)/dz)
-nz += 1
-zList += [zmin+dz*i for i in range(nz)]
-zmin = 5.2
-zmax = 10.0
-dz = 0.2
-nz = int(((zmax-zmin)+dz*0.5)/dz)
-nz += 1
-zList += [zmin+dz*i for i in range(nz)]
-print(nz)
-'''
-zmin = 10.0
-zmax = 10.0
-dz = 1.0
-nz = int(((zmax-zmin)+dz*0.5)/dz)
-nz += 1
-zList = [zmin+dz*i for i in range(nz)]
-print(nz)
+# Determination of the output directory based on server
+server_name = os.getenv('HOSTNAME').split('.')[2]
+if (server_name == "computecanada"):
+	dir_output="/scratch/tapas/exact-results"
+else:
+	home=os.path.expanduser("~")
+	dir_output=home+"outputs/exact-results"
 
-NameOfServer='nlogn'
-dir_output="/home/tapas/CodesForEigenValues/nonlinear-rotors/exact-energies-of-H2O"
-
-if (status=='S'):
+if (status == "S"):
 	src_dir=os.getcwd()
 	src_code="/run"
 	run_command=src_dir + src_code
 	call(["cp", run_command, dir_output])
-	print(run_command)
 	#read the pigsdata.txt
-	rpt_pigs,eng_pigs,err_pigs=np.loadtxt('pigsdata.txt', usecols=(0,1,2), unpack=True)
+	#rpt_pigs,eng_pigs,err_pigs=np.loadtxt('pigsdata.txt', usecols=(0,1,2), unpack=True)
 
 if (status=='A'):
 	numb_states=1
@@ -91,13 +75,12 @@ if (status=='A'):
 	#SvNvsRpt=np.zeros(len(zList),dtype=float)
 	#S2vsRpt=np.zeros(len(zList),dtype=float)
 
-# Loop over your jobs
 index_end=0
 for r in zList: 
 
 	Rpt="{:3.2f}".format(r)
 
-	if (status=='S'):
+	if (status == "S"):
 		os.chdir(dir_output)
 
 		#job submission
@@ -109,15 +92,15 @@ for r in zList:
 			exit()
 		else:
 			#find the emin and emax vaule at the Rpt 
-			get_index=np.where(rpt_pigs==float(Rpt))[0][0]
-			emin=eng_pigs[get_index]-3.0*err_pigs[get_index]
+			#get_index=np.where(rpt_pigs==float(Rpt))[0][0]
+			emin=-10.0#eng_pigs[get_index]-3.0*err_pigs[get_index]
 			emax=0.0#eng_pigs[get_index]+3.0*err_pigs[get_index]
 			fwrite=open(fname, 'w')
-			fwrite.write(jobstring(NameOfServer,Rpt,jrot,dir_output,niter,emin,emax))
+			fwrite.write(jobstring(server_name,Rpt,jrot,dir_output,niter,emin,emax))
 			fwrite.close()
 			#call(["sbatch", "-p", "highmem", fname])
-			#call(["sbatch", fname])
-			call(["sbatch", "-C", "faster", fname])
+			call(["sbatch", fname])
+			#call(["sbatch", "-C", "faster", fname])
 
 		os.chdir(src_dir)
 
