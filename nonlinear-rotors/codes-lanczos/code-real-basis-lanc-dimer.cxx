@@ -223,7 +223,6 @@ int main(int argc,char **argv)
 
 	matrix psi_real(size_basis,size_grid);
 	psi_real = get_fullbasis_real(njkm, size_grid, wf_real);
-	exit(11);
 
 	// Evaluation of umat = <x_j|t_i>
 	// <x_j| ---> complex basis, row vector;

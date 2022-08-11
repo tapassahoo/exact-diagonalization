@@ -14,10 +14,10 @@ def jobstring(NameOfServer,Rpt,jmax,dir_output,niter,emin,emax):
 	'''
 	The function generates a script file based on SLURM scheduler for running the jobs on computecanada server.
 	'''
-	logfile=dir_output+"/lanc-submit-p-H2O-Rpt"+str(Rpt)+"ang-j"+str(jmax)+"-niter"+str(niter)+".txt"
+	logfile=dir_output+"lanc-submit-p-H2O-Rpt"+str(Rpt)+"ang-j"+str(jmax)+"-niter"+str(niter)+".txt"
 	jobname="lcR"+str(Rpt)
 
-	command_execution="time ./run  "+str(Rpt)+"  "+str(jmax)+"  "+str(niter)+"  "+str(emin)+"  "+str(emax)
+	command_execution="time ./run  "+str(Rpt)+"  "+str(jmax)+"  "+str(niter)+"  "+str(emin)+"  "+str(emax)+"  0"
 
 	if (NameOfServer=="computecanada"):
 		account="#SBATCH --account=rrg-pnroy"
@@ -38,7 +38,7 @@ export OMP_NUM_THREADS=1
 
 # Critical parameters to execute the script
 status = "S"
-niter = 100
+niter = 200
 jrot = 2
 
 # Grid points for the intermolecular distance are
@@ -104,7 +104,7 @@ for r in zList:
 		else:
 			#find the emin and emax vaule at the Rpt 
 			#get_index=np.where(rpt_pigs==float(Rpt))[0][0]
-			emin=-10.0#eng_pigs[get_index]-3.0*err_pigs[get_index]
+			emin=-50.0#eng_pigs[get_index]-3.0*err_pigs[get_index]
 			emax=0.0#eng_pigs[get_index]+3.0*err_pigs[get_index]
 			fwrite=open(fname, 'w')
 			fwrite.write(jobstring(server_name,Rpt,jrot,dir_output,niter,emin,emax))

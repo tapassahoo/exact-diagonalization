@@ -18,15 +18,15 @@ C
 CMD
 C library routines SRAND and RAND on SG
       CALL SRAND(ISEED)
-      DO 1 I=1,N
+      DO I=1,N
        R(I)=RAND()
-1     CONTINUE
+      ENDDO
 C
 C library routine DRAND on FPS
 C     X=DRAND(ISEED)
 C     DO 2 I=1,N
 C      R(I)=DRAND(0)
-2     CONTINUE
+C2     CONTINUE
 C
       RETURN
       END
