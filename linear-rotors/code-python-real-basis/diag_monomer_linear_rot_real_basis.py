@@ -26,14 +26,14 @@
 #                                                                             |
 #*****************************************************************************
 
-import argparse
-import sys
-import math
+import argparse, sys, math, termcolor 
 import numpy as np
 import scipy
 from scipy import linalg as LA
 from scipy.sparse.linalg import eigs, eigsh
 import cmath
+from datetime import datetime
+from termcolor import colored
 
 # Imports basis functions of rotors (linear and nonlinear rotors)
 import pkg_basis_func_rotors.basis_func_rotors as bfunc 
@@ -63,6 +63,21 @@ if __name__ == '__main__':
 
     # Tolerance limit for a harmitian matrix
 	tol = 10e-8
+
+	print("*"*80 + "\n")
+	print(colored("Developer:".ljust(30),"blue") + colored("Dr. Tapas Sahoo", "yellow") + "\n")
+	now = datetime.now() # current date and time
+	date_time = now.strftime("%d/%m/%Y, %H:%M:%S")
+	print("date and time:".capitalize().ljust(29), date_time, "\n")
+	print("*"*80 + "\n")
+	exit()
+
+	debugging=False
+	if debugging:
+		print(colored("File systems are given below:", "blue") + "\n")
+		print("user_name: ".ljust(30) + user_name)
+		print("home: ".ljust(30) + home)
+		print("input_dir_path: ".ljust(30) + input_dir_path)
 
 	#print the normalization 
 	io_write = False

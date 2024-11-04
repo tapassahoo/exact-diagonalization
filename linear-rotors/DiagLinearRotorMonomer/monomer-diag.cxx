@@ -31,6 +31,7 @@ int main(int argc, char **argv) {
 
     int sizej           = 10;
     int jmax            = sizej; //2*(sizej-1);
+	cout<<"Tapas"<<endl;
 
     int size_theta     = 4.*jmax;
     vector weights_theta(size_theta);
