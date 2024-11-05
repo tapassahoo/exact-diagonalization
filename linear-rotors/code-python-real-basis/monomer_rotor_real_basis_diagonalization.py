@@ -301,13 +301,12 @@ def main():
 	basis_functions_info = get_number_of_basis_functions_by_spin_isomers(jmax, spin_isomer)
 
 
-	# List of (J,M) indices computed for various nuclear spin isomers
-	# Its a 2-dim matrix
+	# Generate (J, M) matrices for each nuclear spin isomer type
 	num_basis_functions = basis_functions_info["njm"]
 	max_angular_quantum_number = jmax
 	spin_isomer_type = spin_isomer
 	quantum_numbers_updated = bfunc.generate_linear_rotor_quantum_numbers(num_basis_functions, max_angular_quantum_number, spin_isomer_type)
-	print(quantum_numbers_updated)
+	#print(quantum_numbers_updated)
 
 	# Real spherical harmonics < cos(theta), phi | JM>
 	# basisfun is a 2-dim matrix (size_theta*size_phi, njm)
