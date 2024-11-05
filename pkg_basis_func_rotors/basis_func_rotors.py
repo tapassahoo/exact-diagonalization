@@ -348,55 +348,54 @@ def test_norm_NonLinear_ComplexBasis(prefile,strFile,basis_type,normMat,njkm,njk
 				fwrite.write("\n")
 	fwrite.close()
 
-#******************************************************************************
-#                                                                             |
-#                                                                             |
-#                            For a linear molecule                            |
-#                                                                             |
-#                                                                             |
-#******************************************************************************
-def get_numbbasisLinear(njm,Jmax,spin_isomer):
+def generate_linear_rotor_quantum_numbers(num_basis_functions, max_angular_quantum_number, spin_isomer_type):
 	"""
-	Division of ortho, para and spinless systems
-	by using odd, even and all angular quantum 
-	numbers.
+	Generates quantum numbers for a linear rotor system based on the spin isomer type:
+	'spinless', 'para', or 'ortho'.
+	
+	Parameters:
+	- num_basis_functions (int): Total number of basis functions.
+	- max_angular_quantum_number (int): Maximum angular quantum number, Jmax.
+	- spin_isomer_type (str): Type of spin isomer ('spinless' for all J values, 
+							   'para' for even J values, 'ortho' for odd J values).
+	
+	Returns:
+	- np.ndarray: A 2D array of quantum numbers with columns [J, M], 
+				  limited by num_basis_functions if necessary.
 	"""
-	if (spin_isomer == "spinless"):
-		JM=njm
-		JMQuantumNumList = np.zeros((JM,2),int)
-		#all J
-		jtempcounter = 0
-		for J in range(Jmax+1):
-			for M in range(-J,J+1):
-				JMQuantumNumList[jtempcounter,0]=J
-				JMQuantumNumList[jtempcounter,1]=M
-				jtempcounter+=1
-		return JMQuantumNumList
+	
+	quantum_numbers = []
+	counter = 0
 
-	if (spin_isomer == "para"):
-		JeM=njm
-		JeMQuantumNumList = np.zeros((JeM,2),int)
-		#even J
-		jtempcounter = 0
-		for J in range(0,Jmax+1,2):
-			for M in range(-J,J+1):
-				JeMQuantumNumList[jtempcounter,0]=J
-				JeMQuantumNumList[jtempcounter,1]=M
-				jtempcounter+=1
-		return JeMQuantumNumList
+	if spin_isomer_type == "spinless":
+		for J in range(max_angular_quantum_number + 1):
+			for M in range(-J, J + 1):
+				quantum_numbers.append([J, M])
+				counter += 1
+				if counter >= num_basis_functions:
+					return np.array(quantum_numbers)
 
-	if (spin_isomer == "ortho"):
-		JoM=njm
-		JoMQuantumNumList = np.zeros((JoM,2),int)
-		#odd J
-		jtempcounter = 0
-		for J in range(1,Jmax+1,2):
-			for M in range(-J,J+1):
-				JoMQuantumNumList[jtempcounter,0]=J
-				JoMQuantumNumList[jtempcounter,1]=M
-				jtempcounter+=1
+	elif spin_isomer_type == "para":
+		for J in range(0, max_angular_quantum_number + 1, 2):
+			for M in range(-J, J + 1):
+				quantum_numbers.append([J, M])
+				counter += 1
+				if counter >= num_basis_functions:
+					return np.array(quantum_numbers)
 
-		return JoMQuantumNumList
+	elif spin_isomer_type == "ortho":
+		for J in range(1, max_angular_quantum_number + 1, 2):
+			for M in range(-J, J + 1):
+				quantum_numbers.append([J, M])
+				counter += 1
+				if counter >= num_basis_functions:
+					return np.array(quantum_numbers)
+
+	else:
+		raise ValueError("Invalid spin isomer type. Choose 'spinless', 'para', or 'ortho'.")
+
+	return np.array(quantum_numbers)
+
 
 def normalization_checkLinear(prefile,strFile,basis_type,eEEbasisuse,normMat,njm,njmQuantumNumList,small):
 	"""

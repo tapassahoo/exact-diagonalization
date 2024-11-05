@@ -303,22 +303,24 @@ def main():
 
 	# List of (J,M) indices computed for various nuclear spin isomers
 	# Its a 2-dim matrix
-	njm = basis_functions_info["njm"]
-	njmQuantumNumList = bfunc.get_numbbasisLinear(njm, jmax, spin_isomer)
-	#print(njmQuantumNumList)
+	num_basis_functions = basis_functions_info["njm"]
+	max_angular_quantum_number = jmax
+	spin_isomer_type = spin_isomer
+	quantum_numbers_updated = bfunc.generate_linear_rotor_quantum_numbers(num_basis_functions, max_angular_quantum_number, spin_isomer_type)
+	print(quantum_numbers_updated)
 
 	# Real spherical harmonics < cos(theta), phi | JM>
 	# basisfun is a 2-dim matrix (size_theta*size_phi, njm)
-	basisfun = bfunc.spherical_harmonicsReal(njm, size_theta, size_phi, njmQuantumNumList, xGL, wGL, phixiGridPts, dphixi)
+	basisfun = bfunc.spherical_harmonicsReal(num_basis_functions, size_theta, size_phi, quantum_numbers_updated, xGL, wGL, phixiGridPts, dphixi)
 
 	if (norm_check):
-		# Dimension of normMat is (njm, njm)
+		# Dimension of normMat is (num_basis_functions, num_basis_functions)
 		normMat = np.tensordot( basisfun, np.conjugate(basisfun), axes=([0], [0]))
 		# Below the function checks normalization condition
 		# <lm|l'm'>=delta_ll'mm'
-		bfunc.normalization_checkLinear(prefile, strFile, basis_type, basisfun, normMat, njm, njmQuantumNumList, tol)
+		bfunc.normalization_checkLinear(prefile, strFile, basis_type, basisfun, normMat, num_basis_functions, quantum_numbers_updated, tol)
 
-		basisfun1 = bfunc.spherical_harmonicsComp(njm, size_theta, size_phi, njmQuantumNumList, xGL, wGL, phixiGridPts, dphixi)
+		basisfun1 = bfunc.spherical_harmonicsComp(num_basis_functions, size_theta, size_phi, quantum_numbers_updated, xGL, wGL, phixiGridPts, dphixi)
 		normMat1 = np.tensordot(basisfun, basisfun1, axes=([0], [0]))
 		print(normMat1[0])
 	whoami()
@@ -332,8 +334,8 @@ def main():
 				for s in range(njm):
 					sum += np.real(normMat1[jm,
 											s] * np.conjugate(normMat1[jmp,
-																	   s])) * Bconst * njmQuantumNumList[s,
-																										 0] * (njmQuantumNumList[s,
+																	   s])) * Bconst * quantum_numbers_updated[s,
+																										 0] * (quantum_numbers_updated[s,
 																																 0] + 1.0)
 				Hrot1[jm, jmp] = sum
 
@@ -354,15 +356,15 @@ def main():
 				v1d,
 				Hpot,
 				njm,
-				njmQuantumNumList,
+				quantum_numbers_updated,
 				tol)
 
 		Hrot = np.zeros((njm, njm), float)
 		for jm in range(njm):
 			for jmp in range(njm):
 				if (jm == jmp):
-					Hrot[jm, jm] = Bconst * njmQuantumNumList[jm, 0] * \
-						(njmQuantumNumList[jm, 0] + 1.0)
+					Hrot[jm, jm] = Bconst * quantum_numbers_updated[jm, 0] * \
+						(quantum_numbers_updated[jm, 0] + 1.0)
 
 		Htot = Hrot1 + Hpot
 		if (np.all(np.abs(Htot - Htot.T) < tol) == False):
