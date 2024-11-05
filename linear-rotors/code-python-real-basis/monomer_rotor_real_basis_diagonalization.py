@@ -39,9 +39,6 @@ from typing import Optional
 # Imports basis functions of rotors (linear and nonlinear rotors)
 import pkg_basis_func_rotors.basis_func_rotors as bfunc
 
-# 'qpot' imports qTIP4P/Fw water model potential function
-import pkg_potential as qpot
-
 # Define color schemes
 HEADER_COLOR = 'cyan'
 LABEL_COLOR = 'green'
@@ -120,6 +117,7 @@ def display_parameters(strength, jmax, spin_isomer, size_theta, size_phi):
 	print(colored("user_name:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(user_name.ljust(VALUE_WIDTH), VALUE_COLOR))
 	print(colored("home:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(home.ljust(VALUE_WIDTH), VALUE_COLOR))
 	print(colored("input_dir_path:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(input_dir_path.ljust(VALUE_WIDTH), VALUE_COLOR))
+	print(colored("Location of pkg_basis_func_rotors.basis_func_rotors as bfunc:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(bfunc.__file__.ljust(VALUE_WIDTH), VALUE_COLOR))
 	print("\n**")
 
 	# Input parameters section
@@ -307,6 +305,7 @@ def main():
 	# Its a 2-dim matrix
 	njm = basis_functions_info["njm"]
 	njmQuantumNumList = bfunc.get_numbbasisLinear(njm, jmax, spin_isomer)
+	#print(njmQuantumNumList)
 
 	# Real spherical harmonics < cos(theta), phi | JM>
 	# basisfun is a 2-dim matrix (size_theta*size_phi, njm)
