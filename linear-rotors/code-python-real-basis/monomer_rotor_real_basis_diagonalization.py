@@ -308,8 +308,8 @@ def main():
 	quantum_numbers_updated = bfunc.generate_linear_rotor_quantum_numbers(num_basis_functions, max_angular_quantum_number, spin_isomer_type)
 	#print(quantum_numbers_updated)
 
-	# Real spherical harmonics < cos(theta), phi | JM>
-	# basisfun is a 2-dim matrix (size_theta*size_phi, njm)
+	# Real spherical harmonics < cos(theta), phi | num_basis_functions>
+	# basisfun is a 2-dim matrix (size_theta*size_phi, num_basis_functions)
 	basisfun = bfunc.spherical_harmonicsReal(num_basis_functions, size_theta, size_phi, quantum_numbers_updated, xGL, wGL, phixiGridPts, dphixi)
 
 	if (norm_check):
