@@ -1,11 +1,11 @@
 #************************************************************|
-#                                                            |
-# This module is used for calling various basis functions    |
-# for a linear and nonlinear top systems.                    |
-#                                                            |
-# It gives us complex spherical harmonics, real spherical    |
-# harmonics and Wigner basis function.                       |
-#                                                            |
+#															|
+# This module is used for calling various basis functions	|
+# for a linear and nonlinear top systems.					|
+#															|
+# It gives us complex spherical harmonics, real spherical	|
+# harmonics and Wigner basis function.					   |
+#															|
 #************************************************************|
 
 import sys
@@ -18,12 +18,12 @@ from scipy.sparse.linalg import eigs, eigsh
 import cmath
 import functools
 
-def off_diag (j,k):                        
+def off_diag (j,k):						
 	"""
 	It computes off diagonal <JKM|H|J'K'M'> 
 	"""
-	f = np.sqrt((j*(j+1)) - (k*(k+1)))     
-	return f                               
+	f = np.sqrt((j*(j+1)) - (k*(k+1)))	 
+	return f							   
 
 def littleD(ldJ,ldmp,ldm,ldtheta):
 	"""
@@ -157,7 +157,7 @@ def get_rotmat_NonLinear_ComplexBasis(njkm,njkmQuantumNumList,Ah2o,Bh2o,Ch2o):
 	"""
 
 	Hrot = np.zeros((njkm,njkm),dtype=float)
-    
+	
 	for jkm in range(njkm):
 		for jkmp in range(njkm):
 			if ((njkmQuantumNumList[jkm,0] == njkmQuantumNumList[jkmp,0]) and (njkmQuantumNumList[jkm,2] == njkmQuantumNumList[jkmp,2])):
@@ -397,7 +397,49 @@ def generate_linear_rotor_quantum_numbers(num_basis_functions, max_angular_quant
 	return np.array(quantum_numbers)
 
 
-def normalization_checkLinear(prefile,strFile,basis_type,eEEbasisuse,normMat,njm,njmQuantumNumList,small):
+def check_basis_normalization(output_filename, basis_label, basis_matrix, normalization_matrix, num_quantum_states, quantum_numbers, tolerance):
+	"""
+	Validates the orthonormality condition for basis functions by checking if <JM|J'M'> = δ_JJ' δ_MM'.
+	
+	Parameters:
+	- output_filename (str): Base filename for saving the normalization check results.
+	- basis_label (str): Descriptive label for the basis type (e.g., "rotor" or "spherical harmonics").
+	- basis_matrix (np.ndarray): Matrix of basis functions with shape (num_grid_points, num_basis_functions).
+	- normalization_matrix (np.ndarray): Matrix (num_basis_functions, num_basis_functions) expected to be close to identity.
+	- num_quantum_states (int): Number of unique (J, M) quantum states (basis functions).
+	- quantum_numbers (np.ndarray): Array of quantum numbers with columns [J, M] corresponding to each basis function.
+	- tolerance (float): Threshold for numerical error; values below this are considered zero.
+	"""
+	
+	# Construct full output file path for normalization check results
+	normalization_output_file = output_filename + f"_normalization_check_{basis_label}.txt"
+	
+	# Open file for writing results
+	with open(normalization_output_file, 'w') as file:
+		# Record the shapes of basis and normalization matrices
+		file.write(f"Basis matrix shape for {basis_label} |JM>: {basis_matrix.shape}\n")
+		file.write(f"Normalization matrix shape for {basis_label} <JM|JM>: {normalization_matrix.shape}\n\n")
+		
+		# Verify orthonormality condition for each pair of basis states
+		for row_idx in range(num_quantum_states):
+			for col_idx in range(num_quantum_states):
+				# Check if off-diagonal terms are within the acceptable tolerance
+				if np.abs(normalization_matrix[row_idx, col_idx]) > tolerance:
+					# Retrieve quantum numbers for each state pair
+					J_row, M_row = quantum_numbers[row_idx]
+					J_col, M_col = quantum_numbers[col_idx]
+					
+					# Extract real and imaginary parts for easier reading
+					real_part = np.real(normalization_matrix[row_idx, col_idx])
+					imag_part = np.imag(normalization_matrix[row_idx, col_idx])
+					
+					# Write any deviations from orthonormality to the file
+					file.write(f"Left State (J, M): ({J_row}, {M_row})\n")
+					file.write(f"Right State (J, M): ({J_col}, {M_col})\n")
+					file.write(f"Deviation in normalization - Real part: {real_part:.5f}, Imaginary part: {imag_part:.5f}\n\n")
+
+
+def normalization_checkLinear(file_name_normalization,basis_type,eEEbasisuse,normMat,njm,njmQuantumNumList,small):
 	"""
 	Check normalization condition: <JM|J'M'>=delta_JJ'MM'
 	"""
@@ -422,7 +464,7 @@ def spherical_harmonicsReal(njm,size_theta,size_phi,njmQuantumNumList,xGL,wGL,ph
 	"""
 	It constructs real spherical harmonics in terms of complex spherical harmonics.
 
-    For the reference see spherical harmonics wikipedia page
+	For the reference see spherical harmonics wikipedia page
 	"""
 	basisfun = np.zeros((size_theta*size_phi,njm),float)
 	#basisfun = np.zeros((size_theta*size_phi,njm),complex)

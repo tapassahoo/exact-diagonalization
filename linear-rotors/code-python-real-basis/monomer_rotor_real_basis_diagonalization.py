@@ -175,7 +175,7 @@ def generate_filename(
 		f"grids_theta{size_theta}_phi{size_phi}_diag.txt"
 	)
 	
-	return filename
+	return basis_type, filename
 
 
 def compute_legendre_quadrature(size_theta, size_phi, io_write):
@@ -280,7 +280,7 @@ def main():
 
 	# print the normalization
 	io_write = False
-	norm_check = False
+	norm_check = True
 	pot_write = False
 	debugging = True
 
@@ -292,8 +292,11 @@ def main():
 	display_parameters(strength, jmax, spin_isomer, size_theta, size_phi)
 
 	# Example usage
-	file_name = generate_filename(spin_isomer, jmax, strength, size_theta, size_phi, prefix="")
-	#print("Generated filename:", file_name)
+	prefix="output_file_for_normalization"
+	basis_type, file_name = generate_filename(spin_isomer, jmax, strength, size_theta, size_phi, prefix)
+	print(f"basis_type is {basis_type}") 
+	print("Generated filename:", file_name)
+	whoami()
 
 	xGL, wGL, phixiGridPts, dphixi = compute_legendre_quadrature(size_theta, size_phi, io_write)
 
@@ -308,8 +311,10 @@ def main():
 	quantum_numbers_updated = bfunc.generate_linear_rotor_quantum_numbers(num_basis_functions, max_angular_quantum_number, spin_isomer_type)
 	#print(quantum_numbers_updated)
 
-	# Real spherical harmonics < cos(theta), phi | num_basis_functions>
-	# basisfun is a 2-dim matrix (size_theta*size_phi, num_basis_functions)
+    # Real spherical harmonics basis <cos(θ), φ | JM> as a 2D matrix 'basisfun' 
+    # with shape (size_theta * size_phi, num_basis_functions), where each column 
+    # corresponds to a unique (J, M) quantum number pair and rows map to grid points 
+    # across θ and φ angles.
 	basisfun = bfunc.spherical_harmonicsReal(num_basis_functions, size_theta, size_phi, quantum_numbers_updated, xGL, wGL, phixiGridPts, dphixi)
 
 	if (norm_check):
@@ -317,7 +322,9 @@ def main():
 		normMat = np.tensordot( basisfun, np.conjugate(basisfun), axes=([0], [0]))
 		# Below the function checks normalization condition
 		# <lm|l'm'>=delta_ll'mm'
-		bfunc.normalization_checkLinear(prefile, strFile, basis_type, basisfun, normMat, num_basis_functions, quantum_numbers_updated, tol)
+		print(normMat)
+		whoami()
+		bfunc.normalization_checkLinear(file_name_normalization, basis_type, basisfun, normMat, num_basis_functions, quantum_numbers_updated, tol)
 
 		basisfun1 = bfunc.spherical_harmonicsComp(num_basis_functions, size_theta, size_phi, quantum_numbers_updated, xGL, wGL, phixiGridPts, dphixi)
 		normMat1 = np.tensordot(basisfun, basisfun1, axes=([0], [0]))
