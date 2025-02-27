@@ -17,6 +17,9 @@ import pkg_potential.qpot as qpot
 from scipy.sparse.linalg import eigs, eigsh
 import cmath
 import functools
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 
 def off_diag (j,k):						
 	"""
@@ -443,8 +446,7 @@ def normalization_checkLinear(file_name_normalization,basis_type,eEEbasisuse,nor
 	"""
 	Check normalization condition: <JM|J'M'>=delta_JJ'MM'
 	"""
-	norm_check_file = prefile+"norm-check-"+strFile
-	norm_check_write = open(norm_check_file,'w')
+	norm_check_write = open(file_name_normalization,'w')
 	norm_check_write.write("eEEbasisuse.shape: shape of the "+basis_type+" |JM> basis: " + str(eEEbasisuse.shape)+" \n")
 	norm_check_write.write("normMat.shape: shape of the "+basis_type+" <JM|JM> basis: " + str(normMat.shape)+" \n")
 	norm_check_write.write("\n")
@@ -458,6 +460,8 @@ def normalization_checkLinear(file_name_normalization,basis_type,eEEbasisuse,nor
 				norm_check_write.write("Constant potential field - Re: "+str(np.real(normMat[s1,s2]))+"   Im: "+str(np.imag(normMat[s1,s2]))+"\n")
 				norm_check_write.write("\n")
 	norm_check_write.close()
+
+
 
 def spherical_harmonicsReal(njm,size_theta,size_phi,njmQuantumNumList,xGL,wGL,phixiGridPts,dphixi):
 

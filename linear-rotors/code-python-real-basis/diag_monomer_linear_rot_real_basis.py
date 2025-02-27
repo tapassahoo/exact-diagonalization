@@ -125,7 +125,7 @@ if __name__ == '__main__':
 		print("|------------------------------------------------")
 		sys.stdout.flush()
 
-	JM = int((Jmax+1)**2) #JKM = "Sum[(2J+1)**2,{J,0,Jmax}]" is computed in mathematica
+	JM = int((Jmax+1)**2) #JKM = "Sum[(2J+1),{J,0,Jmax}]" -- Derivation is given in lecture-notes-on-exact-diagonalization.pdf or you can derive it on ChatGPT
 
 	if ((Jmax%2) ==0):
 		JeM = int((JM+Jmax+1)/2)
