@@ -471,7 +471,8 @@ def compute_rotational_kinetic_energy_loop(umat, quantum_numbers_data_list, Bcon
 				sum_value += umat[s, jm].conj() * umat[s, jmp] * rotational_energies[s]
 			T_rot[jm, jmp] = sum_value
 
-	return np.real(T_rot)
+	#return np.real(T_rot)
+	return T_rot
 
 
 def compute_rotational_kinetic_energy_matrix(umat, quantum_numbers_data_list, Bconst):
@@ -508,7 +509,8 @@ def compute_rotational_kinetic_energy_matrix(umat, quantum_numbers_data_list, Bc
 	# Compute T_rot using matrix multiplication
 	T_rot = umat.conj().T @ E_diag @ umat
 
-	return np.real(T_rot)  # Return the real part of the resulting matrix
+	#return np.real(T_rot)  # Return the real part of the resulting matrix
+	return T_rot  # Return the real part of the resulting matrix
 
 
 def compute_rotational_kinetic_energy_einsum(umat, quantum_numbers_data_list, Bconst):
@@ -545,7 +547,117 @@ def compute_rotational_kinetic_energy_einsum(umat, quantum_numbers_data_list, Bc
 	# Compute T_rot using Einstein summation notation for efficient matrix multiplication
 	T_rot = np.einsum('ji, jk, kl -> il', umat.conj(), E_diag, umat)
 
-	return np.real(T_rot)  # Return the real part of the resulting matrix
+	#return np.real(T_rot)  # Return the real part of the resulting matrix
+	return T_rot  # Return the real part of the resulting matrix
+
+
+def compute_potential_operator(basisfun_complex, umat, xGL, phi_grid_count, potential_strength):
+	"""
+	Computes the potential energy operator in the rotational eigenbasis.
+
+	Parameters:
+	- basisfun_complex: Complex spherical harmonics basis functions.
+	- umat: Unitary transformation matrix from (l, m) to (J, M) basis.
+	- xGL: Gauss-Legendre quadrature nodes (cos(theta)).
+	- phi_grid_count: Number of azimuthal grid points.
+	- potential_strength: Scaling factor A in V(theta) = -A cos(theta).
+
+	Returns:
+	- V_rot: Potential energy operator matrix in the |J, M⟩ basis.
+	"""
+	# Compute potential function on the grid
+	pot_func_grid = -potential_strength * np.repeat(xGL, phi_grid_count)
+
+	# Compute potential matrix in (l, m) basis
+	H_pot = np.einsum("gi,g,gj->ij", basisfun_complex.conj(), pot_func_grid, basisfun_complex)
+
+	# Transform to rotational basis
+	V_rot = umat.conj().T @ H_pot @ umat
+
+	return V_rot
+
+
+def check_hermiticity(H, tol=1e-10, debug=True, visualize=False):
+	"""
+	Checks if a given matrix H is Hermitian and identifies discrepancies.
+
+	Parameters:
+	- H (np.ndarray): Input complex matrix.
+	- tol (float): Tolerance for detecting non-Hermitian elements.
+	- debug (bool): If True, prints debugging information.
+	- visualize (bool): If True, generates heatmap plots.
+
+	Returns:
+	- bool: True if H is Hermitian, False otherwise.
+	- list: List of (row, col, discrepancy value) for non-Hermitian elements.
+	"""
+
+	if not isinstance(H, np.ndarray):
+		raise TypeError("Input matrix H must be a NumPy array.")
+
+	if H.shape[0] != H.shape[1]:
+		raise ValueError("Matrix H must be square.")
+
+	H_dagger = H.conj().T  # Compute Hermitian conjugate (H†)
+	diff = np.abs(H - H_dagger)  # Absolute difference |H - H†|
+
+	max_diff = np.max(diff).item()  # Extract scalar value
+	norm_diff = np.linalg.norm(diff)  # Frobenius norm of difference
+	mean_diff = np.mean(diff)  # Mean deviation in Hermiticity
+
+	discrepancy_indices = np.argwhere(diff > tol)  # Find discrepancies
+	discrepancies = [(i, j, diff[i, j]) for i, j in discrepancy_indices]
+
+	is_hermitian = len(discrepancies) == 0  # True if no discrepancies exist
+
+	if debug:
+		print("\n===== Hermiticity Check =====")
+		print(f"✅ Matrix shape: {H.shape}")
+		print(f"✅ Max deviation: {max_diff:.2e}")
+		print(f"✅ Frobenius norm: {norm_diff:.2e}")
+		print(f"✅ Mean deviation: {mean_diff:.2e}")
+
+		if discrepancies:
+			print(f"\n❌ {len(discrepancies)} discrepancies found (threshold = {tol}):")
+			print("   Index (Row, Col)  | Deviation |")
+			print("   --------------------------------")
+			for i, j, value in discrepancies[:10]:  # Show first 10 discrepancies
+				print(f"   ({i:3d}, {j:3d})	  | {value:.2e}")
+			if len(discrepancies) > 10:
+				print("   ... (truncated)")
+
+		else:
+			print("✅ No discrepancies found. Matrix is Hermitian.")
+
+	if visualize:
+		# First Frame
+		fig, axes = plt.subplots(1, 2, figsize=(18, 5))
+		sns.heatmap(H.real, cmap="coolwarm", annot=False, ax=axes[0])
+		axes[0].set_title("Original Matrix (Re[H])")
+		
+		sns.heatmap(H_dagger.real, cmap="coolwarm", annot=False, ax=axes[1])
+		axes[1].set_title("Hermitian Conjugate (Re[H†])")
+		
+		#sns.heatmap(diff, cmap="viridis", annot=True, fmt=".2e", ax=axes[2])
+		#axes[2].set_title(f"Difference |H - H†| (Max: {max_diff:.2e})")
+
+		plt.tight_layout()
+		plt.show()
+			
+		# Second Frame
+		fig, ax = plt.subplots(figsize=(12, 7))
+
+		sns.heatmap(diff, cmap="viridis", annot=True, fmt=".2e", ax=ax)
+		ax.set_title(f"Difference |H - H†| (Max: {max_diff:.2e})")
+
+		# Label the x and y axes
+		ax.set_xlabel("Basis Index")
+		ax.set_ylabel("Basis Index")
+	
+		plt.tight_layout()
+		plt.show()
+
+	return is_hermitian, discrepancies
 
 
 def main():
@@ -658,7 +770,7 @@ def main():
 		check_unitarity(file_name, basis_type, umat, mode="append")
 		# Compute UU†
 		# umat_unitarity = np.einsum('ia,ja->ij', umat, np.conjugate(umat))
-		umat_unitarity = umat @ umat.conj().T
+		umat_unitarity = umat.conj().T @ umat
 		title = f"Heatmap of UU† matrix for {spin_state} spin state"
 		plot_heatmap(umat_unitarity, title)
 
@@ -687,31 +799,74 @@ def main():
 	# Check if they are close
 	# print("\nAre the results close? ", are_close)
 
+	# Example Usage
+	#H_given = np.array([[2, 1j], [-1j, 3]])  # Example Hermitian matrix
 
-	# Computation of potential energy operator in (lm) basis: H(lm,lm)
-	# Compute the potential energy values efficiently using broadcasting
-	pot_func_grid = -potential_strength * np.repeat(xGL, phi_grid_count)
-	print(f"shape of pot_func_grid is {pot_func_grid.shape}")
-	print(f"shape of theta_grid_count*phi_grid_count {theta_grid_count*phi_grid_count}")
+	#is_Hermitian, max_diff = plot_hermiticity_analysis(T_rot_matrix, tol=1e-10, debug=True, plot_type="three")
+	#print(f"Is the matrix Hermitian? {is_Hermitian}")
+	#is_Hermitian, max_diff = plot_hermiticity_analysis(T_rot_matrix, tol=1e-10, debug=True, plot_type="one")
+	#print(f"Maximum difference |H - H†|: {max_diff:.2e}")
+	is_Hermitian, max_diff = check_hermiticity(T_rot_matrix, tol=1e-10, debug=True, visualize=True)
+	print(f"Is the matrix Hermitian? {is_Hermitian}")
+	whoami()
 
-	tempa = pot_func_grid[:, np.newaxis] * basisfun_complex
-	print(f"tempa.shape is {tempa.shape}")
-	Hpot = np.tensordot(np.conjugate(basisfun_complex), tempa, axes=([0], [0]))
-	print(f"Hpot.shape is {Hpot.shape}") 
+	# Compute potential function on the grid
+	#pot_func_grid = -potential_strength * np.repeat(xGL, phi_grid_count)
+	pot_func_grid = np.repeat(1.0, theta_grid_count*phi_grid_count)
+	print(pot_func_grid)
+	print(pot_func_grid.shape)
+	H_pot = np.einsum("gi,g,gj->ij", basisfun_complex.conj(), pot_func_grid, basisfun_complex)
+	# Transform to rotational basis
+	#V_rot = umat.conj().T @ H_pot @ umat
+	V_rot = umat.conj().T @ umat
+	print(V_rot)
+	df = pd.DataFrame(V_rot)
+	print(df)
+	is_Hermitian, max_diff = plot_hermiticity_analysis(V_pot, tol=1e-10, debug=True, plot_type="three")
+	is_Hermitian, max_diff = plot_hermiticity_analysis(V_pot, tol=1e-10, debug=True, plot_type="one")
+	print(f"Is the matrix Hermitian? {is_Hermitian}")
+	print(f"Maximum difference |H - H†|: {max_diff:.2e}")
+	whoami()
 
-	# Compute potential energy operator matrix efficiently
-	H_pot = basisfun_complex.T.conj() @ (pot_func_grid[:, np.newaxis] * basisfun_complex)
-	print(f"H_pot.shape is {H_pot.shape}") 
+	# Example Usage
+	#H_test = np.array([
+	#	[2, 1j, 0.00000000001], 
+	#	[-1j, 3, 0], 
+	#	[0, 0, 4]
+	#])  # Slight numerical error
 
-	# Compute potential energy operator matrix efficiently using einsum
-	H_pot_einsum = np.einsum("gi,g,gj->ij", basisfun_complex.conj(), pot_func_grid, basisfun_complex)
+	umat_unitarity = umat.conj().T @ umat
+	is_Hermitian, discrepancy_list = check_hermiticity(umat_unitarity)
+
+	if not is_Hermitian:
+		print("\n🔴 Hermiticity Check Failed!")
+	else:
+		print("\n🟢 Matrix is Hermitian.")
+
+	# Example Usage
+	H_test = np.array([
+		[2, 1j, 0.00000000001], 
+		[-1j, 3, 0], 
+		[0, 0, 4]
+	])  # Slight numerical error
+
+	is_Hermitian, discrepancy_list = check_hermiticity(H_test)
+
+	if not is_Hermitian:
+		print("\n🔴 Hermiticity Check Failed!")
+	else:
+		print("\n🟢 Matrix is Hermitian.")
 
 
-	are_close = np.allclose(Hpot, H_pot, H_pot_einsum) 
+	whoami()
 
-	# Check if they are close
-	print("\nAre the results close? ", are_close)
 
+	V_rot_matrix = compute_potential_operator(basisfun_complex, umat, xGL, phi_grid_count, potential_strength)
+	#df=pd.DataFrame(V_rot_matrix)
+	#is_Hermitian, max_diff = check_hermiticity_visual(V_rot_matrix)
+	#print(f"Is the matrix Hermitian? {is_Hermitian}")
+	#print(f"Maximum difference |H - H†|: {max_diff:.2e}")
+	#print(df)
 
 	whoami()
 
