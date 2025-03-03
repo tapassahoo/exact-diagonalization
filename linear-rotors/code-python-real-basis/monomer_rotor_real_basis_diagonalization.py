@@ -668,15 +668,15 @@ def main():
 	spin_state = args.spin
 
 	# No. of grid points along theta and phi
-	theta_grid_count = int(2 * max_angular_momentum + 5)
-	phi_grid_count = int(2 * theta_grid_count)
+	theta_grid_count = int(2 * max_angular_momentum + 11)
+	phi_grid_count = int(2 * theta_grid_count + 1)
 
 	# Tolerance limit for a harmitian matrix
 	deviation_tolerance_value = 10e-12
 
 	# print the normalization
 	io_write = True
-	normalization_check = False
+	normalization_check = True
 	unitarity_check = False
 	pot_write = False
 	debugging = True
@@ -740,6 +740,9 @@ def main():
 		)
 		title = f"Heatmap of normalization matrix \n Real basis for {spin_state} spin state"
 		plot_heatmap(normalization_matrix_data_real, title)
+
+		is_Hermitian, max_diff = check_hermiticity(normalization_matrix_data_real, tol=1e-10, debug=True, visualize=True)
+		print(f"Is the matrix Hermitian? {is_Hermitian}")
 
 
 	# Construction of complex basis functions 
