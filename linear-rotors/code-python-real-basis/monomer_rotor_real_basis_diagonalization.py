@@ -668,8 +668,8 @@ def main():
 	spin_state = args.spin
 
 	# No. of grid points along theta and phi
-	theta_grid_count = int(2 * max_angular_momentum + 11)
-	phi_grid_count = int(2 * theta_grid_count + 1)
+	theta_grid_count = int(2 * max_angular_momentum + 7)
+	phi_grid_count = int(2 * theta_grid_count + 5)
 
 	# Tolerance limit for a harmitian matrix
 	deviation_tolerance_value = 10e-12
@@ -696,23 +696,29 @@ def main():
 	print(colored("basis_type".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{basis_type}".ljust(VALUE_WIDTH), VALUE_COLOR))
 
 	# Gauss-Quadrature points
-	xGL, wGL, phixiGridPts, dphixi = compute_legendre_quadrature( theta_grid_count, phi_grid_count, io_write)
+	xGL, wGL, phixiGridPts, dphixi = compute_legendre_quadrature(theta_grid_count, phi_grid_count, io_write)
 
 	# njm, JM, JeM, JoM = compute_basis_functions(max_angular_momentum, spin_state)
-	basis_functions_info = get_number_of_basis_functions_by_spin_states( max_angular_momentum, spin_state)
+	basis_functions_info = get_number_of_basis_functions_by_spin_states(max_angular_momentum, spin_state)
 
 	# Generate (J, M) matrices for each nuclear spin isomer type
-	n_basis = basis_functions_info["njm"]
-	spin_state_type = spin_state
-	quantum_numbers_data_list = bfunc.generate_linear_rotor_quantum_numbers(n_basis, max_angular_momentum, spin_state_type)
+	jm_index_arg = "JM"
+	quantum_numbers_data_list = bfunc.generate_linear_rotor_quantum_numbers(basis_functions_info[jm_index_arg], max_angular_momentum, spin_state)
+	
+	df = pd.DataFrame(quantum_numbers_data_list, columns=["J", "M"])
+	# Separator line
+	print("\n**")
+	print(colored(f"Quantum numbers for spin isomer type: {spin_state}\n".ljust(LABEL_WIDTH), LABEL_COLOR))
+	print(df)
+	whoami()
 
 	# Real spherical harmonics basis <cos(θ), φ | JM> as a 2D matrix 'basisfun_real' with shape (theta_grid_count * phi_grid_count, n_basis), 
 	# where each column corresponds to a unique (J, M) quantum number pair and rows map to grid points across θ and φ angles.
-	basisfun_real = bfunc.spherical_harmonicsReal(n_basis, theta_grid_count, phi_grid_count, quantum_numbers_data_list, xGL, wGL, phixiGridPts, dphixi)
+	basisfun_real = bfunc.spherical_harmonicsReal(basis_functions_info[jm_index_arg], theta_grid_count, phi_grid_count, quantum_numbers_data_list, xGL, wGL, phixiGridPts, dphixi)
 	# Separator line
 	print("\n**")
 	print(colored("shape of ", INFO_COLOR) + colored("spherical_harmonicsReal or basisfun_real: ".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{basisfun_real.shape}".ljust(VALUE_WIDTH), VALUE_COLOR))
-
+	whoami()
 	if (normalization_check):
 		# Compute the overlap (normalization) matrix to check if the basis functions are orthonormal.  
 		# The resulting normalization_matrix_data_real is of size (n_basis, n_basis), where n_basis is the number of basis functions.  

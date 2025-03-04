@@ -351,53 +351,89 @@ def test_norm_NonLinear_ComplexBasis(prefile,strFile,basis_type,normMat,njkm,njk
 				fwrite.write("\n")
 	fwrite.close()
 
+if False:
+	def generate_linear_rotor_quantum_numbers(num_basis_functions, max_angular_quantum_number, spin_isomer_type):
+		"""
+		Generates quantum numbers for a linear rotor system based on the spin isomer type:
+		'spinless', 'para', or 'ortho'.
+		
+		Parameters:
+		- num_basis_functions (int): Total number of basis functions.
+		- max_angular_quantum_number (int): Maximum angular quantum number, Jmax.
+		- spin_isomer_type (str): Type of spin isomer ('spinless' for all J values, 
+								   'para' for even J values, 'ortho' for odd J values).
+		
+		Returns:
+		- np.ndarray: A 2D array of quantum numbers with columns [J, M], 
+					  limited by num_basis_functions if necessary.
+		"""
+		
+		quantum_numbers = []
+		counter = 0
+
+		if spin_isomer_type == "spinless":
+			for J in range(max_angular_quantum_number + 1):
+				for M in range(-J, J + 1):
+					quantum_numbers.append([J, M])
+					counter += 1
+					if counter >= num_basis_functions:
+						return np.array(quantum_numbers)
+
+		elif spin_isomer_type == "para":
+			for J in range(0, max_angular_quantum_number + 1, 2):
+				for M in range(-J, J + 1):
+					quantum_numbers.append([J, M])
+					counter += 1
+					if counter >= num_basis_functions:
+						return np.array(quantum_numbers)
+
+		elif spin_isomer_type == "ortho":
+			for J in range(1, max_angular_quantum_number + 1, 2):
+				for M in range(-J, J + 1):
+					quantum_numbers.append([J, M])
+					counter += 1
+					if counter >= num_basis_functions:
+						return np.array(quantum_numbers)
+
+		else:
+			raise ValueError("Invalid spin isomer type. Choose 'spinless', 'para', or 'ortho'.")
+
+		return np.array(quantum_numbers)
+
+
 def generate_linear_rotor_quantum_numbers(num_basis_functions, max_angular_quantum_number, spin_isomer_type):
 	"""
-	Generates quantum numbers for a linear rotor system based on the spin isomer type:
+	Generates quantum numbers [J, M] for a linear rotor system based on the spin isomer type: 
 	'spinless', 'para', or 'ortho'.
 	
 	Parameters:
-	- num_basis_functions (int): Total number of basis functions.
-	- max_angular_quantum_number (int): Maximum angular quantum number, Jmax.
-	- spin_isomer_type (str): Type of spin isomer ('spinless' for all J values, 
-							   'para' for even J values, 'ortho' for odd J values).
-	
+	- num_basis_functions (int): Maximum number of basis functions.
+	- max_angular_quantum_number (int): Maximum angular quantum number (Jmax).
+	- spin_isomer_type (str): Spin isomer type ('spinless', 'para', or 'ortho').
+
 	Returns:
 	- np.ndarray: A 2D array of quantum numbers with columns [J, M], 
-				  limited by num_basis_functions if necessary.
+				  limited by num_basis_functions.
 	"""
-	
-	quantum_numbers = []
-	counter = 0
 
+	if spin_isomer_type not in {"spinless", "para", "ortho"}:
+		raise ValueError("Invalid spin isomer type. Choose from 'spinless', 'para', or 'ortho'.")
+
+	# Determine allowed J values based on spin isomer type
 	if spin_isomer_type == "spinless":
-		for J in range(max_angular_quantum_number + 1):
-			for M in range(-J, J + 1):
-				quantum_numbers.append([J, M])
-				counter += 1
-				if counter >= num_basis_functions:
-					return np.array(quantum_numbers)
-
+		J_values = range(0, max_angular_quantum_number + 1)
 	elif spin_isomer_type == "para":
-		for J in range(0, max_angular_quantum_number + 1, 2):
-			for M in range(-J, J + 1):
-				quantum_numbers.append([J, M])
-				counter += 1
-				if counter >= num_basis_functions:
-					return np.array(quantum_numbers)
+		J_values = range(0, max_angular_quantum_number + 1, 2)  # Even J values
+	else:  # "ortho"
+		J_values = range(1, max_angular_quantum_number + 1, 2)  # Odd J values
 
-	elif spin_isomer_type == "ortho":
-		for J in range(1, max_angular_quantum_number + 1, 2):
-			for M in range(-J, J + 1):
-				quantum_numbers.append([J, M])
-				counter += 1
-				if counter >= num_basis_functions:
-					return np.array(quantum_numbers)
+	# Generate quantum numbers [(J, M) pairs]
+	quantum_numbers = np.array(
+		[[J, M] for J in J_values for M in range(-J, J + 1)]
+	)
 
-	else:
-		raise ValueError("Invalid spin isomer type. Choose 'spinless', 'para', or 'ortho'.")
-
-	return np.array(quantum_numbers)
+	# Limit the number of basis functions if necessary
+	return quantum_numbers[:num_basis_functions]
 
 
 def check_basis_normalization(output_filename, basis_label, basis_matrix, normalization_matrix, num_quantum_states, quantum_numbers, tolerance):
