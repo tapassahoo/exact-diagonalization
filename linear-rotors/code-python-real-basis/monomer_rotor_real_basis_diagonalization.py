@@ -346,7 +346,7 @@ def check_normalization_condition_linear_rotor(output_file_path, basis_descripti
 		maximum_eigenvalue_deviation_value = np.max(deviation_of_eigenvalues_from_unity)
 		mean_eigenvalue_deviation_value = np.mean(deviation_of_eigenvalues_from_unity)
 
-		output_file.write("Eigenvalue Analysis of Normalization Matrix:\n")
+		output_file.write("  Eigenvalue Analysis of Normalization Matrix:\n")
 		output_file.write("  Computed Eigenvalues: " + " ".join([f"{computed_eigenvalue:.5f}" for computed_eigenvalue in eigenvalues_of_normalization_matrix]) + "\n")
 		output_file.write(f"  Maximum Eigenvalue Deviation Observed: {maximum_eigenvalue_deviation_value:.3e}\n")
 		output_file.write(f"  Mean Eigenvalue Deviation Observed: {mean_eigenvalue_deviation_value:.3e}\n")
@@ -763,6 +763,10 @@ def main():
 		)
 		title = f"Heatmap of normalization matrix \n Complex basis for {spin_state} spin state"
 		plot_heatmap(normalization_matrix_data_complex, title)
+
+		is_Hermitian, max_diff = check_hermiticity(normalization_matrix_data_complex, tol=1e-10, debug=True, visualize=True)
+		print(f"Is the matrix Hermitian? {is_Hermitian}")
+
 	#
 	# Construction of Unitary Matrix 
 	# umat = np.tensordot(np.conjugate(basisfun_complex), basisfunc_real, axes=([0], [0]))
@@ -777,6 +781,7 @@ def main():
 		title = f"Heatmap of UU† matrix for {spin_state} spin state"
 		plot_heatmap(umat_unitarity, title)
 
+	whoami()
 	# Calculate T_rot using both methods
 	# T_rot_loop = compute_rotational_kinetic_energy_loop(umat, quantum_numbers_data_list, Bconst)
 
