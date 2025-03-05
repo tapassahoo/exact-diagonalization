@@ -577,12 +577,13 @@ def compute_potential_operator(basisfun_complex, umat, xGL, phi_grid_count, pote
 	return V_rot
 
 
-def check_hermiticity(H, matrix_name, tol=1e-10, debug=True, visualize=False):
+def check_hermiticity(H, matrix_name="H", tol=1e-10, debug=True, visualize=False):
 	"""
 	Checks if a given matrix H is Hermitian and identifies discrepancies.
 
 	Parameters:
 	- H (np.ndarray): Input complex matrix.
+	- matrix_name (str): Name of the matrix for debugging/visualization.
 	- tol (float): Tolerance for detecting non-Hermitian elements.
 	- debug (bool): If True, prints debugging information.
 	- visualize (bool): If True, generates heatmap plots.
@@ -595,18 +596,23 @@ def check_hermiticity(H, matrix_name, tol=1e-10, debug=True, visualize=False):
 	if not isinstance(H, np.ndarray):
 		raise TypeError("Input matrix H must be a NumPy array.")
 
+	if H.size == 0:
+		raise ValueError("Matrix H cannot be empty.")
+
 	if H.shape[0] != H.shape[1]:
 		raise ValueError("Matrix H must be square.")
 
 	H_dagger = H.conj().T  # Compute Hermitian conjugate (H†)
 	diff = np.abs(H - H_dagger)  # Absolute difference |H - H†|
 
-	max_diff = np.max(diff).item()  # Extract scalar value
-	norm_diff = np.linalg.norm(diff)  # Frobenius norm of difference
-	mean_diff = np.mean(diff)  # Mean deviation in Hermiticity
+	# Handle case where diff is empty
+	max_diff = np.max(diff) if diff.size > 0 else 0.0
+	norm_diff = np.linalg.norm(diff) if diff.size > 0 else 0.0
+	mean_diff = np.mean(diff) if diff.size > 0 else 0.0
 
-	discrepancy_indices = np.argwhere(diff > tol)  # Find discrepancies
-	discrepancies = [(i, j, diff[i, j]) for i, j in discrepancy_indices]
+	# Find discrepancies
+	discrepancy_indices = np.argwhere(diff > tol)
+	discrepancies = [(int(i), int(j), float(diff[i, j])) for i, j in discrepancy_indices]
 
 	is_hermitian = len(discrepancies) == 0  # True if no discrepancies exist
 
@@ -622,7 +628,7 @@ def check_hermiticity(H, matrix_name, tol=1e-10, debug=True, visualize=False):
 			print("   Index (Row, Col)  | Deviation |")
 			print("   --------------------------------")
 			for i, j, value in discrepancies[:10]:  # Show first 10 discrepancies
-				print(f"   ({i:3d}, {j:3d})	  | {value:.2e}")
+				print(f"   ({i:3d}, {j:3d})   | {value:.2e}")
 			if len(discrepancies) > 10:
 				print("   ... (truncated)")
 
@@ -630,30 +636,20 @@ def check_hermiticity(H, matrix_name, tol=1e-10, debug=True, visualize=False):
 			print("✅ No discrepancies found. Matrix is Hermitian.")
 
 	if visualize:
-		# First Frame
 		fig, axes = plt.subplots(1, 2, figsize=(18, 5))
 		sns.heatmap(H.real, cmap="coolwarm", annot=False, ax=axes[0])
 		axes[0].set_title(f"Original Matrix (Re[{matrix_name}])")
-		
+
 		sns.heatmap(H_dagger.real, cmap="coolwarm", annot=False, ax=axes[1])
 		axes[1].set_title(f"Hermitian Conjugate (Re[{matrix_name}†])")
-		
-		#sns.heatmap(diff, cmap="viridis", annot=True, fmt=".2e", ax=axes[2])
-		#axes[2].set_title(f"Difference |H - H†| (Max: {max_diff:.2e})")
 
 		plt.tight_layout()
 		plt.show()
-			
-		# Second Frame
-		fig, ax = plt.subplots(figsize=(12, 7))
 
+		fig, ax = plt.subplots(figsize=(12, 7))
 		sns.heatmap(diff, cmap="viridis", annot=True, fmt=".2e", ax=ax)
 		ax.set_title(f"Difference |{matrix_name} - {matrix_name}†| (Max: {max_diff:.2e})")
 
-		# Label the x and y axes
-		ax.set_xlabel("Basis Index")
-		ax.set_ylabel("Basis Index")
-	
 		plt.tight_layout()
 		plt.show()
 
