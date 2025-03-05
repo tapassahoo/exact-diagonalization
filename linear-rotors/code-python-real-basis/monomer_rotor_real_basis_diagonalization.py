@@ -577,7 +577,7 @@ def compute_potential_operator(basisfun_complex, umat, xGL, phi_grid_count, pote
 	return V_rot
 
 
-def check_hermiticity(H, tol=1e-10, debug=True, visualize=False):
+def check_hermiticity(H, matrix_name, tol=1e-10, debug=True, visualize=False):
 	"""
 	Checks if a given matrix H is Hermitian and identifies discrepancies.
 
@@ -633,10 +633,10 @@ def check_hermiticity(H, tol=1e-10, debug=True, visualize=False):
 		# First Frame
 		fig, axes = plt.subplots(1, 2, figsize=(18, 5))
 		sns.heatmap(H.real, cmap="coolwarm", annot=False, ax=axes[0])
-		axes[0].set_title("Original Matrix (Re[H])")
+		axes[0].set_title(f"Original Matrix (Re[{matrix_name}])")
 		
 		sns.heatmap(H_dagger.real, cmap="coolwarm", annot=False, ax=axes[1])
-		axes[1].set_title("Hermitian Conjugate (Re[H†])")
+		axes[1].set_title(f"Hermitian Conjugate (Re[{matrix_name}†])")
 		
 		#sns.heatmap(diff, cmap="viridis", annot=True, fmt=".2e", ax=axes[2])
 		#axes[2].set_title(f"Difference |H - H†| (Max: {max_diff:.2e})")
@@ -648,7 +648,7 @@ def check_hermiticity(H, tol=1e-10, debug=True, visualize=False):
 		fig, ax = plt.subplots(figsize=(12, 7))
 
 		sns.heatmap(diff, cmap="viridis", annot=True, fmt=".2e", ax=ax)
-		ax.set_title(f"Difference |H - H†| (Max: {max_diff:.2e})")
+		ax.set_title(f"Difference |{matrix_name} - {matrix_name}†| (Max: {max_diff:.2e})")
 
 		# Label the x and y axes
 		ax.set_xlabel("Basis Index")
@@ -677,7 +677,7 @@ def main():
 	# print the normalization
 	io_write = True
 	normalization_check = True
-	unitarity_check = False
+	unitarity_check = True
 	pot_write = False
 	debugging = True
 
@@ -698,27 +698,37 @@ def main():
 	# Gauss-Quadrature points
 	xGL, wGL, phixiGridPts, dphixi = compute_legendre_quadrature(theta_grid_count, phi_grid_count, io_write)
 
-	# njm, JM, JeM, JoM = compute_basis_functions(max_angular_momentum, spin_state)
-	basis_functions_info = get_number_of_basis_functions_by_spin_states(max_angular_momentum, spin_state)
-
 	# Generate (J, M) matrices for each nuclear spin isomer type
-	jm_index_arg = "JM"
-	quantum_numbers_data_list = bfunc.generate_linear_rotor_quantum_numbers(basis_functions_info[jm_index_arg], max_angular_momentum, spin_state)
+	quantum_numbers_data_list = bfunc.generate_linear_rotor_quantum_numbers(max_angular_momentum, "spinless")
 	
 	df = pd.DataFrame(quantum_numbers_data_list, columns=["J", "M"])
 	# Separator line
 	print("\n**")
-	print(colored(f"Quantum numbers for spin isomer type: {spin_state}\n".ljust(LABEL_WIDTH), LABEL_COLOR))
+	print(colored(f"All quantum numbers\n".ljust(LABEL_WIDTH), LABEL_COLOR))
 	print(df)
-	whoami()
 
+	# Generate (J, M) matrices for each nuclear spin isomer type
+	quantum_numbers_data_list_for_spin_state = bfunc.generate_linear_rotor_quantum_numbers(max_angular_momentum, spin_state)
+	
+	df = pd.DataFrame(quantum_numbers_data_list_for_spin_state, columns=["J", "M"])
+	# Separator line
+	print("\n**")
+	print(colored(f"Quantum numbers for {spin_state} isomer.\n".ljust(LABEL_WIDTH), LABEL_COLOR))
+	print(df)
+
+	# njm, JM, JeM, JoM = compute_basis_functions(max_angular_momentum, spin_state)
+	basis_functions_info = get_number_of_basis_functions_by_spin_states(max_angular_momentum, spin_state)
+	total_number_of_states = basis_functions_info["JM"]
+	total_number_of_spin_states = basis_functions_info["njm"]
+	
 	# Real spherical harmonics basis <cos(θ), φ | JM> as a 2D matrix 'basisfun_real' with shape (theta_grid_count * phi_grid_count, n_basis), 
 	# where each column corresponds to a unique (J, M) quantum number pair and rows map to grid points across θ and φ angles.
-	basisfun_real = bfunc.spherical_harmonicsReal(basis_functions_info[jm_index_arg], theta_grid_count, phi_grid_count, quantum_numbers_data_list, xGL, wGL, phixiGridPts, dphixi)
+	n_basis_real = total_number_of_states
+	basisfun_real = bfunc.spherical_harmonicsReal(n_basis_real, theta_grid_count, phi_grid_count, quantum_numbers_data_list, xGL, wGL, phixiGridPts, dphixi)
 	# Separator line
 	print("\n**")
 	print(colored("shape of ", INFO_COLOR) + colored("spherical_harmonicsReal or basisfun_real: ".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{basisfun_real.shape}".ljust(VALUE_WIDTH), VALUE_COLOR))
-	whoami()
+
 	if (normalization_check):
 		# Compute the overlap (normalization) matrix to check if the basis functions are orthonormal.  
 		# The resulting normalization_matrix_data_real is of size (n_basis, n_basis), where n_basis is the number of basis functions.  
@@ -739,20 +749,21 @@ def main():
 			basis_description_text,
 			basisfun_real,
 			normalization_matrix_data_real,
-			n_basis,
+			n_basis_real,
 			quantum_numbers_data_list,
 			deviation_tolerance_value,
 			file_write_mode="new"
 		)
-		title = f"Heatmap of normalization matrix \n Real basis for {spin_state} spin state"
+		title = f"Heatmap of normalization matrix \n Real basis"
 		plot_heatmap(normalization_matrix_data_real, title)
 
-		is_Hermitian, max_diff = check_hermiticity(normalization_matrix_data_real, tol=1e-10, debug=True, visualize=True)
+		is_Hermitian, max_diff = check_hermiticity(normalization_matrix_data_real, "S", tol=1e-10, debug=True, visualize=True)
 		print(f"Is the matrix Hermitian? {is_Hermitian}")
 
 
+	n_basis_complex = total_number_of_states
 	# Construction of complex basis functions 
-	basisfun_complex = bfunc.spherical_harmonicsComp(n_basis, theta_grid_count, phi_grid_count, quantum_numbers_data_list, xGL, wGL, phixiGridPts, dphixi)
+	basisfun_complex = bfunc.spherical_harmonicsComp(n_basis_complex, theta_grid_count, phi_grid_count, quantum_numbers_data_list, xGL, wGL, phixiGridPts, dphixi)
 	if (normalization_check):
 		# Orthonormality test for "complex basis"
 		normalization_matrix_data_complex = np.einsum('ij,ik->jk', np.conjugate(basisfun_complex), basisfun_complex)  # (n_points, n_basis) x (n_points, n_basis) → (n_basis, n_basis)
@@ -762,15 +773,15 @@ def main():
 			basis_description_text,
 			basisfun_complex,
 			normalization_matrix_data_complex,
-			n_basis,
+			n_basis_complex,
 			quantum_numbers_data_list,
 			deviation_tolerance_value,
 			file_write_mode="append"
 		)
-		title = f"Heatmap of normalization matrix \n Complex basis for {spin_state} spin state"
+		title = f"Heatmap of normalization matrix \n Complex basis"
 		plot_heatmap(normalization_matrix_data_complex, title)
 
-		is_Hermitian, max_diff = check_hermiticity(normalization_matrix_data_complex, tol=1e-10, debug=True, visualize=True)
+		is_Hermitian, max_diff = check_hermiticity(normalization_matrix_data_complex, "S", tol=1e-10, debug=True, visualize=True)
 		print(f"Is the matrix Hermitian? {is_Hermitian}")
 
 	#
@@ -786,6 +797,10 @@ def main():
 		umat_unitarity = umat.conj().T @ umat
 		title = f"Heatmap of UU† matrix for {spin_state} spin state"
 		plot_heatmap(umat_unitarity, title)
+
+		is_Hermitian, max_diff = check_hermiticity(umat_unitarity, "UU", tol=1e-40, debug=True, visualize=True)
+		print(f"Is the matrix Hermitian? {is_Hermitian}")
+
 
 	whoami()
 	# Calculate T_rot using both methods
