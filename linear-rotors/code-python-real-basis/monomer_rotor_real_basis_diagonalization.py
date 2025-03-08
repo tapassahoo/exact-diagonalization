@@ -388,9 +388,10 @@ def plot_heatmap(normalization_matrix_data, title):
 
 	sns.heatmap(
 		np.abs(normalization_matrix_data),
-		annot=False,
-		cmap="Greys",  # Monochrome grayscale
-		linewidths=0.3,
+		annot=True,
+		#cmap="Greys",  # Monochrome grayscale
+		cmap="viridis",  # Monochrome grayscale
+		linewidths=0.1,
 		cbar=True
 	)
 
@@ -623,11 +624,11 @@ def check_hermiticity(H, matrix_name="H", tol=1e-10, debug=True, visualize=False
 	if visualize:
 		fig, axes = plt.subplots(1, 2, figsize=(18, 5))
 		#sns.heatmap(H.real, cmap="coolwarm", annot=False, ax=axes[0])
-		sns.heatmap(H.real, cmap="Greys", linewidths=0.3, annot=True, ax=axes[0])
+		sns.heatmap(H.real, cmap="viridis", linewidths=0.1, annot=True, ax=axes[0])
 		axes[0].set_title(f"Original Matrix (Re[{matrix_name}])")
 
 		#sns.heatmap(H_dagger.real, cmap="coolwarm", annot=False, ax=axes[1])
-		sns.heatmap(H_dagger.real, cmap="Greys", linewidths=0.3, annot=True, ax=axes[1])
+		sns.heatmap(H_dagger.real, cmap="viridis", linewidths=0.1, annot=True, ax=axes[1])
 		axes[1].set_title(f"Hermitian Conjugate (Re[{matrix_name}†])")
 
 		plt.tight_layout()
@@ -635,7 +636,7 @@ def check_hermiticity(H, matrix_name="H", tol=1e-10, debug=True, visualize=False
 
 		fig, ax = plt.subplots(figsize=(12, 7))
 		#sns.heatmap(diff, cmap="viridis", annot=True, fmt=".2e", ax=ax)
-		sns.heatmap(diff, cmap="Greys", linewidths=0.3, annot=True, fmt=".2e", ax=ax)
+		sns.heatmap(diff, cmap="viridis", linewidths=0.1, annot=True, fmt=".2e", ax=ax)
 		ax.set_title(f"Difference |{matrix_name} - {matrix_name}†| (Max: {max_diff:.2e})")
 
 		plt.tight_layout()
@@ -980,8 +981,8 @@ def main():
 
 	# print the normalization
 	io_write = True
-	normalization_check = False
-	unitarity_check = False
+	normalization_check = True
+	unitarity_check = True
 	pot_write = False
 	kinetic_energy_operator_hermiticity_test = False
 
