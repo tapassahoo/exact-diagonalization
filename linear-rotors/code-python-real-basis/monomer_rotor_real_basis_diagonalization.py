@@ -391,7 +391,7 @@ def plot_heatmap(normalization_matrix_data, title):
 		annot=True,
 		#cmap="Greys",  # Monochrome grayscale
 		cmap="viridis",  # Monochrome grayscale
-		linewidths=0.1,
+		linewidths=0.01,
 		cbar=True
 	)
 
