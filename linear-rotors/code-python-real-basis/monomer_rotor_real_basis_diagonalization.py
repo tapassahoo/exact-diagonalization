@@ -28,6 +28,7 @@ import sys
 import getpass
 import math
 import numpy as np
+from numpy.linalg import eigh
 import scipy
 from scipy import linalg as LA
 from scipy.sparse.linalg import eigs, eigsh
@@ -38,6 +39,7 @@ from typing import Optional
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+from netCDF4 import Dataset
 
 # Imports basis functions of rotors (linear and nonlinear rotors)
 import pkg_basis_func_rotors.basis_func_rotors as bfunc
@@ -513,7 +515,7 @@ def compute_rotational_kinetic_energy_matrix(umat, quantum_numbers_data_list, Bc
 	return T_rot  # Return the real part of the resulting matrix
 
 
-def compute_rotational_kinetic_energy_einsum(umat, quantum_numbers_data_list, Bconst):
+def compute_rotational_kinetic_energy_einsum(umat, quantum_numbers_data_list, Bconst, debug=False):
 	"""
 	Computes the rotational kinetic energy operator T_rot using efficient Einstein summation.
 
@@ -524,11 +526,14 @@ def compute_rotational_kinetic_energy_einsum(umat, quantum_numbers_data_list, Bc
 		Array of quantum numbers where column 0 contains J values.
 	Bconst : float
 		Rotational constant.
+	debug : bool, optional
+		If True, runs a debug check to verify that U^dagger * U = I (unitary property).
 
 	Returns:
 	numpy.ndarray
 		Rotational kinetic energy operator matrix T_rot.
 	"""
+	# Number of basis functions (n_basis)
 	n_basis = umat.shape[0]
 
 	# Validate Inputs
@@ -537,44 +542,24 @@ def compute_rotational_kinetic_energy_einsum(umat, quantum_numbers_data_list, Bc
 	if len(quantum_numbers_data_list) != n_basis:
 		raise ValueError("Length of quantum numbers must match the dimensions of U.")
 
-	# Compute rotational energy levels B * J(J+1)
+	# Extract J values (rotational quantum numbers)
 	J_values = quantum_numbers_data_list[:, 0]
-	rotational_energies = Bconst * J_values * (J_values + 1)
 
-	# Create a diagonal matrix from rotational energies
+	# Compute the rotational energy levels B * J(J+1)
+	rotational_energies = Bconst * J_values * (J_values + 1.0)
+
+	# Create a diagonal matrix from the rotational energy levels
 	E_diag = np.diag(rotational_energies)
 
-	# Compute T_rot using Einstein summation notation for efficient matrix multiplication
-	T_rot = np.einsum('ji, jk, kl -> il', umat.conj(), E_diag, umat)
+	# Debugging check for unitary matrix property: U^dagger * U = I
+	if debug:
+		identity_matrix = np.eye(n_basis)
+		T_rot = np.einsum('ji, jk, kl -> il', umat.conj(), identity_matrix, umat)
+	else:
+		# Compute T_rot using Einstein summation notation for efficient matrix multiplication
+		T_rot = np.einsum('ji, jk, kl -> il', umat.conj(), E_diag, umat)
 
-	#return np.real(T_rot)  # Return the real part of the resulting matrix
 	return T_rot  # Return the real part of the resulting matrix
-
-
-def compute_potential_operator(basisfun_complex, umat, xGL, phi_grid_count, potential_strength):
-	"""
-	Computes the potential energy operator in the rotational eigenbasis.
-
-	Parameters:
-	- basisfun_complex: Complex spherical harmonics basis functions.
-	- umat: Unitary transformation matrix from (l, m) to (J, M) basis.
-	- xGL: Gauss-Legendre quadrature nodes (cos(theta)).
-	- phi_grid_count: Number of azimuthal grid points.
-	- potential_strength: Scaling factor A in V(theta) = -A cos(theta).
-
-	Returns:
-	- V_rot: Potential energy operator matrix in the |J, M⟩ basis.
-	"""
-	# Compute potential function on the grid
-	pot_func_grid = -potential_strength * np.repeat(xGL, phi_grid_count)
-
-	# Compute potential matrix in (l, m) basis
-	H_pot = np.einsum("gi,g,gj->ij", basisfun_complex.conj(), pot_func_grid, basisfun_complex)
-
-	# Transform to rotational basis
-	V_rot = umat.conj().T @ H_pot @ umat
-
-	return V_rot
 
 
 def check_hermiticity(H, matrix_name="H", tol=1e-10, debug=True, visualize=False):
@@ -637,23 +622,346 @@ def check_hermiticity(H, matrix_name="H", tol=1e-10, debug=True, visualize=False
 
 	if visualize:
 		fig, axes = plt.subplots(1, 2, figsize=(18, 5))
-		sns.heatmap(H.real, cmap="coolwarm", annot=False, ax=axes[0])
+		#sns.heatmap(H.real, cmap="coolwarm", annot=False, ax=axes[0])
+		sns.heatmap(H.real, cmap="Greys", linewidths=0.3, annot=True, ax=axes[0])
 		axes[0].set_title(f"Original Matrix (Re[{matrix_name}])")
 
-		sns.heatmap(H_dagger.real, cmap="coolwarm", annot=False, ax=axes[1])
+		#sns.heatmap(H_dagger.real, cmap="coolwarm", annot=False, ax=axes[1])
+		sns.heatmap(H_dagger.real, cmap="Greys", linewidths=0.3, annot=True, ax=axes[1])
 		axes[1].set_title(f"Hermitian Conjugate (Re[{matrix_name}†])")
 
 		plt.tight_layout()
 		plt.show()
 
 		fig, ax = plt.subplots(figsize=(12, 7))
-		sns.heatmap(diff, cmap="viridis", annot=True, fmt=".2e", ax=ax)
+		#sns.heatmap(diff, cmap="viridis", annot=True, fmt=".2e", ax=ax)
+		sns.heatmap(diff, cmap="Greys", linewidths=0.3, annot=True, fmt=".2e", ax=ax)
 		ax.set_title(f"Difference |{matrix_name} - {matrix_name}†| (Max: {max_diff:.2e})")
 
 		plt.tight_layout()
 		plt.show()
 
 	return is_hermitian, discrepancies
+
+
+def rotational_energy_levels(B, J_max=10):
+	"""
+	Computes and displays the rotational energy levels of a rigid rotor.
+	
+	Parameters:
+	- B (float): Rotational constant in cm⁻¹.
+	- J_max (int): Maximum rotational quantum number to compute.
+	
+	Returns:
+	- energies (dict): Dictionary with J values as keys and energy in cm⁻¹ as values.
+	"""
+	J_values = np.arange(0, J_max + 1)  # Rotational quantum numbers J = 0, 1, 2, ...
+	energies = {J: B * J * (J + 1) for J in J_values}  # Energy formula E_J = B * J * (J + 1)
+	
+	# Display results
+	print(f"\n{'J':<5}{'Energy (Kelvin)':>15}")
+	print("=" * 20)
+	for J, E in energies.items():
+		print(f"{J:<5}{E:>15.2f}")
+	
+	return energies
+
+def plot_rotational_levels(energies):
+	"""
+	Plots the rotational energy levels.
+	
+	Parameters:
+	- energies (dict): Dictionary with J values as keys and energy values.
+	"""
+	J_values = list(energies.keys())
+	energy_values = list(energies.values())
+	
+	plt.figure(figsize=(8, 5))
+	plt.scatter(J_values, energy_values, color='b', label="Rotational Levels")
+	plt.plot(J_values, energy_values, linestyle="dashed", color="gray")
+	
+	# Annotate energy values
+	for J, E in energies.items():
+		plt.text(J, E + 10, f"{E:.1f}", ha='center', fontsize=10)
+
+	plt.xlabel("Rotational Quantum Number (J)")
+	plt.ylabel("Energy (Kelvin)")
+	plt.title("Rotational Energy Levels of a Rigid Rotor")
+	plt.grid(True, linestyle="--", alpha=0.6)
+	plt.legend()
+	plt.show()
+
+def extract_diagonal(matrix):
+	"""
+	Extracts the diagonal elements from a given matrix.
+
+	Parameters:
+	- matrix (np.ndarray): Input square or rectangular matrix.
+
+	Returns:
+	- np.ndarray: Array containing the diagonal elements.
+	"""
+	if not isinstance(matrix, np.ndarray):
+		raise TypeError("Input must be a NumPy array.")
+	
+	return np.diagonal(matrix)  # Extract diagonal elements
+
+def display_rotational_energies(diagonal_elements, quantum_numbers_data_list, Bconst):
+	"""
+	Displays the extracted diagonal elements as rotational energy levels.
+
+	Parameters:
+	- diagonal_elements (np.ndarray): Extracted diagonal elements representing energy levels.
+	- quantum_numbers_data_list (np.ndarray): Array of quantum numbers, where each row represents a state
+											  and the first column contains the J values (rotational quantum numbers).
+	- Bconst (float): The rotational constant (cm⁻¹), used to compute rotational energy levels.
+
+	Returns:
+	None
+	"""
+	print("\nRotational Energy Levels")
+	print("=" * 80)
+	print(f"{'Quantum State (J)':^25} {'BJ(J+1) (Kelvin)':^25} {'<JM|T|JM> (Kelvin)':^25}")
+	print("=" * 80)
+
+	# Extracting J values from the quantum numbers data
+	J_values = quantum_numbers_data_list[:, 0]
+
+	# Compute the rotational energy levels B * J(J+1)
+	for J, energy in zip(J_values, diagonal_elements):
+		# Calculate the theoretical energy level based on the B constant
+		theoretical_energy = Bconst * J * (J + 1)
+		
+		
+		# Display the results
+		print(f"{int(J):>12} {theoretical_energy:>32.6f} {energy:>26.6f}")
+
+	print("=" * 80)
+
+
+def compute_potential_energy_einsum(basisfun_complex, umat, xGL, theta_grid_count, phi_grid_count, potential_strength, debug=False):
+	"""
+	Computes the potential energy operator in the rotational eigenbasis.
+
+	Parameters:
+	- basisfun_complex: Complex spherical harmonics basis functions.
+	- umat: Unitary transformation matrix from (l, m) to (J, M) basis.
+	- xGL: Gauss-Legendre quadrature nodes (cos(theta)).
+	- theta_grid_count: Number of polar grid points.
+	- phi_grid_count: Number of azimuthal grid points.
+	- potential_strength: Scaling factor A in V(theta) = -A cos(theta).
+	- debug: Flag to enable debugging (use constant potential if True).
+
+	Returns:
+	- V_rot: Potential energy operator matrix in the |J, M⟩ basis.
+	"""
+	
+	# Compute the potential function on the grid (constant potential for now)
+	if debug:
+		# Using a constant potential (debug mode)
+		pot_func_grid = np.ones(theta_grid_count * phi_grid_count)
+	else:
+		# Using the potential function based on xGL (cos(theta))
+		pot_func_grid = np.repeat(xGL, phi_grid_count)
+
+	# Scale the potential function by the potential strength
+	pot_func_grid *= -potential_strength
+
+	# Compute the potential matrix in the (l, m) basis using Einstein summation
+	potential_matrix_complex_basis_function = np.einsum("gi,g,gj->ij", basisfun_complex.conj(), pot_func_grid, basisfun_complex)
+
+	# Perform the transformation to the rotational basis using Einstein summation
+	V_rot = np.einsum('ji,jk,kl->il', umat.conj(), potential_matrix_complex_basis_function, umat)
+
+	return V_rot
+
+def save_eigenvalues_eigenvectors_netcdf(H_rot, scaling_factor, filename="eigen_data.nc"):
+	"""
+	Computes, sorts, and saves eigenvalues and eigenvectors to a compressed NetCDF file.
+
+	Parameters:
+	- H_rot (ndarray): Rotational Hamiltonian matrix (NxN).
+	- scaling_factor (float): Scaling factor for eigenvalues (unit conversion).
+	- filename (str): Output NetCDF file name (default: "eigen_data.nc").
+
+	Saves:
+	- Eigenvalues (sorted) and their scaled versions as a 2-column variable.
+	- Corresponding eigenvectors in sorted order.
+	"""
+	# Compute eigenvalues and eigenvectors efficiently
+	eigenvalues, eigenvectors = eigh(H_rot)
+
+	# Sort eigenvalues and rearrange eigenvectors accordingly
+	sorted_indices = np.argsort(eigenvalues)
+	sorted_eigenvalues = eigenvalues[sorted_indices]
+	sorted_eigenvectors = eigenvectors[:, sorted_indices]
+
+	# Stack eigenvalues and their scaled versions into a 2D array
+	eigenvalue_matrix = np.column_stack((sorted_eigenvalues, sorted_eigenvalues / scaling_factor))
+
+	# Create and write to NetCDF file
+	with Dataset(filename, "w", format="NETCDF4") as ncfile:
+		# Define dimensions
+		N = H_rot.shape[0]
+		ncfile.createDimension("N", N)
+		ncfile.createDimension("eigen_components", 2)  # For eigenvalues and scaled values
+
+		# Create variables with compression
+		ev_var = ncfile.createVariable("eigenvalues", "f8", ("N", "eigen_components"), zlib=True)
+		eigvec_var = ncfile.createVariable("eigenvectors", "f8", ("N", "N"), zlib=True)
+
+		# Store data
+		ev_var[:, :] = eigenvalue_matrix
+		eigvec_var[:, :] = sorted_eigenvectors
+
+	print(f"Eigenvalues and eigenvectors saved in {filename} (compressed NetCDF4)")
+
+
+def compute_sorted_eigenvalues_and_eigenvectors(H_rot, scaling_factor):
+	"""
+	Computes and sorts the eigenvalues and eigenvectors of the rotational Hamiltonian matrix.
+
+	Parameters:
+	- H_rot (ndarray): Rotational Hamiltonian matrix (NxN).
+	- scaling_factor (float): Scaling factor for eigenvalues (unit conversion).
+
+	Returns:
+	- eigenvalue_matrix (ndarray): Nx2 matrix with sorted eigenvalues and their scaled versions.
+	- sorted_eigenvectors (ndarray): NxN matrix of sorted eigenvectors.
+	"""
+	# Compute eigenvalues and eigenvectors
+	eigenvalues, eigenvectors = eigh(H_rot)
+
+	# Sort eigenvalues and eigenvectors
+	sorted_indices = np.argsort(eigenvalues)
+	sorted_eigenvalues = eigenvalues[sorted_indices]
+	sorted_eigenvectors = eigenvectors[:, sorted_indices]
+
+	# Create a matrix with eigenvalues and their scaled versions
+	eigenvalue_matrix = np.column_stack((sorted_eigenvalues, sorted_eigenvalues / scaling_factor))
+
+	return eigenvalue_matrix, sorted_eigenvectors
+
+
+def save_eigenvalues_eigenvectors_netcdf(eigenvalue_matrix, sorted_eigenvectors, filename="eigen_data.nc"):
+	"""
+	Saves sorted eigenvalues and eigenvectors (real & imaginary) to a compressed NetCDF file.
+
+	Parameters:
+	- eigenvalue_matrix (ndarray): Nx2 matrix with sorted eigenvalues and their scaled versions.
+	- sorted_eigenvectors (ndarray): NxN matrix of sorted eigenvectors (complex).
+	- filename (str): Output NetCDF file name (default: "eigen_data.nc").
+	"""
+	N = sorted_eigenvectors.shape[0]  # Matrix size
+
+	with Dataset(filename, "w", format="NETCDF4") as ncfile:
+		# Define dimensions
+		ncfile.createDimension("N", N)
+		ncfile.createDimension("eigen_components", 2)  # For eigenvalues and scaled values
+
+		# Create variables
+		ev_var = ncfile.createVariable("eigenvalues", "f8", ("N", "eigen_components"), zlib=True)
+		eigvec_real_var = ncfile.createVariable("eigenvectors_real", "f8", ("N", "N"), zlib=True)
+		eigvec_imag_var = ncfile.createVariable("eigenvectors_imag", "f8", ("N", "N"), zlib=True)
+
+		# Store real and imaginary parts separately
+		ev_var[:, :] = eigenvalue_matrix
+		eigvec_real_var[:, :] = sorted_eigenvectors.real
+		eigvec_imag_var[:, :] = sorted_eigenvectors.imag
+
+	print(f"✅ Eigenvalues and eigenvectors saved in {filename} (compressed NetCDF4)")
+
+
+def load_eigenvalues_eigenvectors_netcdf(filename="eigen_data.nc"):
+	"""
+	Reads eigenvalues and eigenvectors from a NetCDF file.
+
+	Parameters:
+	- filename (str): Name of the NetCDF file (default: "eigen_data.nc").
+
+	Returns:
+	- eigenvalues (ndarray): Sorted eigenvalues (1D array).
+	- scaled_eigenvalues (ndarray): Scaled eigenvalues (1D array).
+	- eigenvectors (ndarray): Corresponding sorted eigenvectors (NxN matrix).
+	"""
+	try:
+		with Dataset(filename, "r") as ncfile:
+			# Check if the expected variables exist in the file
+			if "eigenvalues" not in ncfile.variables:
+				raise KeyError("Missing 'eigenvalues' variable in NetCDF file.")
+			
+			eigenvalue_matrix = ncfile.variables["eigenvalues"][:]
+			eigenvalues = eigenvalue_matrix[:, 0]  # First column: original eigenvalues
+			scaled_eigenvalues = eigenvalue_matrix[:, 1]  # Second column: scaled values
+			
+			# Handling complex eigenvectors if stored separately
+			if "eigenvectors_real" in ncfile.variables and "eigenvectors_imag" in ncfile.variables:
+				eigvec_real = ncfile.variables["eigenvectors_real"][:]
+				eigvec_imag = ncfile.variables["eigenvectors_imag"][:]
+				eigenvectors = eigvec_real + 1j * eigvec_imag  # Reconstruct complex matrix
+			elif "eigenvectors" in ncfile.variables:
+				eigenvectors = ncfile.variables["eigenvectors"][:]
+			else:
+				raise KeyError("Missing eigenvectors in NetCDF file.")
+
+		return eigenvalues, scaled_eigenvalues, eigenvectors
+
+	except FileNotFoundError:
+		print(f"❌ Error: File '{filename}' not found.")
+		return None, None, None
+	except Exception as e:
+		print(f"❌ Error: {e}")
+		return None, None, None
+
+def debug_eigenvalues_eigenvectors(H_rot, sorted_eigenvalues, sorted_eigenvectors):
+	"""
+	Debugs and verifies the correctness of computed eigenvalues and eigenvectors.
+
+	Parameters:
+	- H_rot (ndarray): The original rotational Hamiltonian matrix.
+	- sorted_eigenvalues (ndarray): The computed sorted eigenvalues.
+	- sorted_eigenvectors (ndarray): The computed sorted eigenvectors.
+
+	Returns:
+	- None: Prints debugging information and raises assertion errors if checks fail.
+	"""
+
+	print("\n🔍 DEBUGGING EIGENVALUES & EIGENVECTORS 🔍")
+
+	# 1️⃣ Check if H_rot is Hermitian (Symmetric for Real Case)
+	assert np.allclose(H_rot, H_rot.T.conj()), "❌ H_rot is not Hermitian (symmetric for real case)."
+	print("✅ H_rot is Hermitian.")
+
+	# 2️⃣ Verify Eigenvalue Computation
+	print("\n🔹 Computed Eigenvalues:\n", sorted_eigenvalues)
+	assert np.all(sorted_eigenvalues[:-1] <= sorted_eigenvalues[1:]), "❌ Eigenvalues are not properly sorted!"
+	print("✅ Eigenvalues are sorted correctly.")
+
+	# 3️⃣ Check the Eigenvectors' Orthogonality (Eigenvectors should be orthonormal)
+	identity_check = np.dot(sorted_eigenvectors.T.conj(), sorted_eigenvectors)
+	print("\n🔹 Orthogonality Check (Should be Identity Matrix):\n", identity_check)
+	assert np.allclose(identity_check, np.eye(identity_check.shape[0])), "❌ Eigenvectors are not orthonormal!"
+	print("✅ Eigenvectors are orthonormal.")
+
+	"""
+	# 4️⃣ Validate Eigenvalue Equation (HΨ = EΨ)
+	reconstructed_H = sorted_eigenvectors @ np.diag(sorted_eigenvalues) @ sorted_eigenvectors.T.conj()
+	print("\n🔹 Reconstructed H_rot from Eigenvalues and Eigenvectors:\n", reconstructed_H)
+	assert np.allclose(reconstructed_H, H_rot), "❌ Eigenvalue equation validation failed!"
+	print("✅ Eigenvalue equation holds (HΨ = EΨ).")
+	"""
+
+	# 5️⃣ Debugging the NetCDF Storage Issue
+	if np.iscomplexobj(sorted_eigenvectors):
+		print("⚠️ Warning: Eigenvectors contain complex numbers!")
+		sorted_eigenvectors = sorted_eigenvectors.real  # Store only the real part if justified
+		print("🔹 Only real part of eigenvectors will be stored in NetCDF.")
+
+	print("\n🎯 ✅ All checks passed! Eigenvalues and eigenvectors are computed correctly. 🎯")
+
+# eigenvalues_matrix, sorted_eigenvectors = compute_sorted_eigenvalues_and_eigenvectors(H_rot, 1.0)
+# sorted_eigenvalues = eigenvalues_matrix[:, 0]  # Extract original eigenvalues
+# debug_eigenvalues_eigenvectors(H_rot, sorted_eigenvalues, sorted_eigenvectors)
 
 
 def main():
@@ -664,7 +972,7 @@ def main():
 	spin_state = args.spin
 
 	# No. of grid points along theta and phi
-	theta_grid_count = int(2 * max_angular_momentum + 7)
+	theta_grid_count = int(2 * max_angular_momentum + 17)
 	phi_grid_count = int(2 * theta_grid_count + 5)
 
 	# Tolerance limit for a harmitian matrix
@@ -672,14 +980,17 @@ def main():
 
 	# print the normalization
 	io_write = True
-	normalization_check = True
-	unitarity_check = True
+	normalization_check = False
+	unitarity_check = False
 	pot_write = False
-	debugging = True
+	kinetic_energy_operator_hermiticity_test = False
 
 	Bconst = 60.853  # cm-1 Taken from NIST data https://webbook.nist.gov/cgi/cbook.cgi?ID=C1333740&Mask=1000
 	CMRECIP2KL = 1.4387672	   	# cm^-1 to Kelvin conversion factor
 	Bconst = Bconst * CMRECIP2KL
+
+	#energies = rotational_energy_levels(Bconst, 10)
+	#plot_rotational_levels(energies)
 
 	# Display input parameters
 	show_simulation_details(potential_strength, max_angular_momentum, spin_state, theta_grid_count, phi_grid_count)
@@ -782,125 +1093,67 @@ def main():
 
 	#
 	# Construction of Unitary Matrix 
-	# umat = np.tensordot(np.conjugate(basisfun_complex), basisfunc_real, axes=([0], [0]))
-	# umat = np.einsum('ij,ik->jk', np.conjugate(basisfun_complex), basisfun_real)
-	umat = basisfun_complex.conj().T @ basisfun_real
+	# umat = np.tensordot(np.conjugate(basisfun_complex), basisfun_real, axes=([0], [0]))
+	umat = np.einsum('ij,ik->jk', np.conjugate(basisfun_complex), basisfun_real)
+	#umat = basisfun_complex.conj().T @ basisfun_real
 
 	if (unitarity_check):
 		check_unitarity(file_name, basis_type, umat, mode="append")
 		# Compute UU†
-		# umat_unitarity = np.einsum('ia,ja->ij', umat, np.conjugate(umat))
-		umat_unitarity = umat.conj().T @ umat
+		umat_unitarity = np.einsum('ia,ja->ij', umat, np.conjugate(umat))
+		#umat_unitarity = np.einsum('ia,ja->ij', umat, umat.conj())
+		#umat_unitarity = np.einsum('ia,ib->ab', umat, umat.conj())
+		#umat_unitarity = umat.conj().T @ umat
 		title = f"Heatmap of UU† matrix for {spin_state} spin state"
 		plot_heatmap(umat_unitarity, title)
 
-		is_Hermitian, max_diff = check_hermiticity(umat_unitarity, "UU", tol=1e-40, debug=True, visualize=True)
+		is_Hermitian, max_diff = check_hermiticity(umat_unitarity, "(UU†)", tol=1e-40, debug=True, visualize=True)
 		print(f"Is the matrix Hermitian? {is_Hermitian}")
 
-
-	whoami()
-	# Calculate T_rot using both methods
-	# T_rot_loop = compute_rotational_kinetic_energy_loop(umat, quantum_numbers_data_list, Bconst)
-
-	# print("Rotational Kinetic Energy Operator T_rot (for loop):")
-	# print(T_rot_loop)
-	
 	# Call the function to compute the rotational kinetic energy operator
-	T_rot_matrix = compute_rotational_kinetic_energy_matrix(umat, quantum_numbers_data_list, Bconst)
+	#T_rot_einsum = compute_rotational_kinetic_energy_einsum(umat, quantum_numbers_data_list, Bconst)
+	T_rot_einsum = compute_rotational_kinetic_energy_einsum(umat, quantum_numbers_data_list, Bconst, debug=False)
+	# Extract and display rotational energies
+	diagonal_energies = extract_diagonal(T_rot_einsum.real)
+	display_rotational_energies(diagonal_energies, quantum_numbers_data_list, Bconst)
 
-	# Display the result
-	# print("Rotational Kinetic Energy Operator T_rot (matrix):")
-	# print(T_rot_matrix)
+	if kinetic_energy_operator_hermiticity_test: 
+		is_Hermitian, max_diff = check_hermiticity(T_rot_einsum, "T", tol=1e-10, debug=True, visualize=True)
+		print(f"Is the matrix Hermitian? {is_Hermitian}")
 
-	# Call the function to compute the rotational kinetic energy operator
-	# T_rot_einsum = compute_rotational_kinetic_energy_einsum(umat, quantum_numbers_data_list, Bconst)
+	if False:
+		V_rot_1 = np.einsum('ia,ja->ij', umat, umat.conj())
+		V_rot_2 = np.einsum('ia,ib->ab', umat, umat.conj())
 
-	# Display the result
-	# print("Rotational Kinetic Energy Operator T_rot (einsum):")
-	# print(T_rot_einsum)
-
-	# are_close = np.allclose(T_rot_loop, T_rot_matrix, T_rot_einsum) 
-
-	# Check if they are close
-	# print("\nAre the results close? ", are_close)
-
-	# Example Usage
-	#H_given = np.array([[2, 1j], [-1j, 3]])  # Example Hermitian matrix
-
-	#is_Hermitian, max_diff = plot_hermiticity_analysis(T_rot_matrix, tol=1e-10, debug=True, plot_type="three")
-	#print(f"Is the matrix Hermitian? {is_Hermitian}")
-	#is_Hermitian, max_diff = plot_hermiticity_analysis(T_rot_matrix, tol=1e-10, debug=True, plot_type="one")
-	#print(f"Maximum difference |H - H†|: {max_diff:.2e}")
-	is_Hermitian, max_diff = check_hermiticity(T_rot_matrix, tol=1e-10, debug=True, visualize=True)
+		is_Hermitian, max_diff = check_hermiticity(V_rot, "V", tol=1e-10, debug=True, visualize=False)
+	V_rot_einsum = compute_potential_energy_einsum(basisfun_complex, umat, xGL, theta_grid_count, phi_grid_count, potential_strength, debug=False)
+	is_Hermitian, max_diff = check_hermiticity(V_rot_einsum, "V", tol=1e-10, debug=True, visualize=False)
 	print(f"Is the matrix Hermitian? {is_Hermitian}")
-	whoami()
 
-	# Compute potential function on the grid
-	#pot_func_grid = -potential_strength * np.repeat(xGL, phi_grid_count)
-	pot_func_grid = np.repeat(1.0, theta_grid_count*phi_grid_count)
-	print(pot_func_grid)
-	print(pot_func_grid.shape)
-	H_pot = np.einsum("gi,g,gj->ij", basisfun_complex.conj(), pot_func_grid, basisfun_complex)
-	# Transform to rotational basis
-	#V_rot = umat.conj().T @ H_pot @ umat
-	V_rot = umat.conj().T @ umat
-	print(V_rot)
-	df = pd.DataFrame(V_rot)
-	print(df)
-	is_Hermitian, max_diff = plot_hermiticity_analysis(V_pot, tol=1e-10, debug=True, plot_type="three")
-	is_Hermitian, max_diff = plot_hermiticity_analysis(V_pot, tol=1e-10, debug=True, plot_type="one")
+	H_rot = T_rot_einsum + V_rot_einsum
+
+	is_Hermitian, max_diff = check_hermiticity(H_rot, "H", tol=1e-10, debug=True, visualize=False)
 	print(f"Is the matrix Hermitian? {is_Hermitian}")
-	print(f"Maximum difference |H - H†|: {max_diff:.2e}")
+
+	# Compute eigenvalues and eigenvectors
+	eigenvalues_matrix, sorted_eigenvectors = compute_sorted_eigenvalues_and_eigenvectors(H_rot, CMRECIP2KL)
+
+	# Debugging function call
+	debug_eigenvalues_eigenvectors(H_rot, eigenvalues_matrix, sorted_eigenvectors)
 	whoami()
+
+	# Print the results (example)
+	print("Sorted Eigenvalues and their scaled versions:\n", eigenvalues_matrix)
+
+	#print("Corresponding Sorted Eigenvectors:\n", sorted_eigenvectors)
+	save_eigenvalues_eigenvectors_netcdf(eigenvalues_matrix, sorted_eigenvectors)
 
 	# Example Usage
-	#H_test = np.array([
-	#	[2, 1j, 0.00000000001], 
-	#	[-1j, 3, 0], 
-	#	[0, 0, 4]
-	#])  # Slight numerical error
-
-	umat_unitarity = umat.conj().T @ umat
-	is_Hermitian, discrepancy_list = check_hermiticity(umat_unitarity)
-
-	if not is_Hermitian:
-		print("\n🔴 Hermiticity Check Failed!")
-	else:
-		print("\n🟢 Matrix is Hermitian.")
-
-	# Example Usage
-	H_test = np.array([
-		[2, 1j, 0.00000000001], 
-		[-1j, 3, 0], 
-		[0, 0, 4]
-	])  # Slight numerical error
-
-	is_Hermitian, discrepancy_list = check_hermiticity(H_test)
-
-	if not is_Hermitian:
-		print("\n🔴 Hermiticity Check Failed!")
-	else:
-		print("\n🟢 Matrix is Hermitian.")
+	eigenvalues, scaled_eigenvalues, eigenvectors = load_eigenvalues_eigenvectors_netcdf("eigen_data.nc")
 
 
-	whoami()
-
-
-	V_rot_matrix = compute_potential_operator(basisfun_complex, umat, xGL, phi_grid_count, potential_strength)
-	#df=pd.DataFrame(V_rot_matrix)
-	#is_Hermitian, max_diff = check_hermiticity_visual(V_rot_matrix)
-	#print(f"Is the matrix Hermitian? {is_Hermitian}")
-	#print(f"Maximum difference |H - H†|: {max_diff:.2e}")
-	#print(df)
-
-	whoami()
 
 """
-	Htot = Hrot1 + Hpot
-	if (np.all(np.abs(Htot - Htot.T) < deviation_tolerance_value) == False):
-		print("The Hamiltonian matrx Htot is not hermitian.")
-		exit()
-
 	# Estimation of eigenvalues and eigenvectors begins here
 	eigVal, eigVec = LA.eigh(Htot)
 	# prints out eigenvalues for pure asymmetric top rotor (z_ORTHOz)
