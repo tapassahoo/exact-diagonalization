@@ -1154,26 +1154,6 @@ def main():
 
 
 """
-	# Estimation of eigenvalues and eigenvectors begins here
-	eigVal, eigVec = LA.eigh(Htot)
-	# prints out eigenvalues for pure asymmetric top rotor (z_ORTHOz)
-	sortIndex_eigVal = eigVal.argsort()
-	eigVal_sort = eigVal[sortIndex_eigVal]
-	eigVec_sort = eigVec[:, sortIndex_eigVal]
-	# Estimation of eigenvalues and eigenvectors ends here
-
-	# printing block is opened
-	eigVal_comb = np.array([eigVal_sort, eigVal_sort / CMRECIP2KL])
-
-	eigVal_file = prefile + "eigen-values-" + strFile
-	np.savetxt(
-		eigVal_file,
-		eigVal_comb.T,
-		fmt='%20.8f',
-		delimiter=' ',
-		header='Energy levels of a aymmetric top - Units associated with the first and second columns are Kelvin and wavenumber, respectively. ')
-	exit()
-
 	for idx in range(4):
 		eigVecRe = np.real(np.dot(np.conjugate(
 			eigVec_sort[:, idx].T), eigVec_sort[:, idx]))
