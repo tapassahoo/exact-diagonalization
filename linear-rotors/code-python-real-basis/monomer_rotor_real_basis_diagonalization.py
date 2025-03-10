@@ -1097,6 +1097,7 @@ def main():
 	# umat = np.tensordot(np.conjugate(basisfun_complex), basisfun_real, axes=([0], [0]))
 	umat = np.einsum('ij,ik->jk', np.conjugate(basisfun_complex), basisfun_real)
 	#umat = basisfun_complex.conj().T @ basisfun_real
+	whoami()
 
 	if (unitarity_check):
 		check_unitarity(file_name, basis_type, umat, mode="append")
