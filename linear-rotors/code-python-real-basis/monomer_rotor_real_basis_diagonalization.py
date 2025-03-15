@@ -30,6 +30,7 @@ import math
 import numpy as np
 from numpy.linalg import eigh
 import scipy
+import scipy.constants as const
 from scipy import linalg as LA
 from scipy.sparse.linalg import eigs, eigsh
 import cmath
@@ -986,15 +987,29 @@ def main():
 	pot_write = False
 	kinetic_energy_operator_hermiticity_test = False
 
-	Bconst = 60.853  # cm-1 Taken from NIST data https://webbook.nist.gov/cgi/cbook.cgi?ID=C1333740&Mask=1000
-	CMRECIP2KL = 1.4387672	   	# cm^-1 to Kelvin conversion factor
-	Bconst = Bconst * CMRECIP2KL
+	# Display input parameters
+	show_simulation_details(potential_strength, max_angular_momentum, spin_state, theta_grid_count, phi_grid_count)
+
+	# Spectroscopic constant (B) in cm⁻¹ taken from NIST data
+	B_const_cm_inv = 60.853  
+
+	# Retrieve the inverse meter-Kelvin relationship from physical constants
+	m_inv_to_K, unit, uncertainty = const.physical_constants["inverse meter-kelvin relationship"]
+
+	# Convert from inverse meters (m⁻¹) to inverse centimeters (cm⁻¹) using the relation: 1 m⁻¹ = 100 cm⁻¹
+	cm_inv_to_K = m_inv_to_K / const.centi  
+
+	# Compute the corresponding value in Kelvin
+	B_const_K = B_const_cm_inv * cm_inv_to_K  
+
+	# Display results with clear labels and scientific precision
+	print(f"Inverse meter-Kelvin relationship: {m_inv_to_K:.8f} {unit} (± {uncertainty:.6e})")
+	print(f"Conversion factor from cm⁻¹ to Kelvin: {cm_inv_to_K:.6f} K/cm⁻¹")
+	print(f"Rotational constant in Kelvin: {B_const_K:.6f} K")
 
 	#energies = rotational_energy_levels(Bconst, 10)
 	#plot_rotational_levels(energies)
-
-	# Display input parameters
-	show_simulation_details(potential_strength, max_angular_momentum, spin_state, theta_grid_count, phi_grid_count)
+	whoami()
 
 	prefix = "output_file_for_checking_orthonormality_condition"
 	basis_type, file_name = generate_filename(spin_state, max_angular_momentum, potential_strength, theta_grid_count, phi_grid_count, prefix)
