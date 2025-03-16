@@ -1009,7 +1009,6 @@ def main():
 
 	#energies = rotational_energy_levels(Bconst, 10)
 	#plot_rotational_levels(energies)
-	whoami()
 
 	prefix = "output_file_for_checking_orthonormality_condition"
 	basis_type, file_name = generate_filename(spin_state, max_angular_momentum, potential_strength, theta_grid_count, phi_grid_count, prefix)
