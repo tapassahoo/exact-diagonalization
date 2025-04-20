@@ -41,6 +41,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from netCDF4 import Dataset
+from contextlib import redirect_stdout
+import io
+
 
 # Imports basis functions of rotors (linear and nonlinear rotors)
 import pkg_basis_func_rotors.basis_func_rotors as bfunc
@@ -286,7 +289,7 @@ def get_number_of_basis_functions_by_spin_states(max_angular_momentum, spin_stat
 	}
 
 
-def check_normalization_condition_linear_rotor(output_file_path, basis_description_text, basis_function_matrix_data, normalization_matrix_data, total_number_of_basis_functions, quantum_numbers_data_list, deviation_tolerance_value, file_write_mode="new"):
+def check_normalization_condition_linear_rotor(output_file_path, basis_description_text, basis_function_matrix_data, normalization_matrix_data, total_number_of_basis_functions, all_quantum_numbers, deviation_tolerance_value, file_write_mode="new"):
 	"""
 	Checks whether the normalization condition <JM|J'M'> ≈ δ_JJ'MM' holds.
 	
@@ -301,7 +304,7 @@ def check_normalization_condition_linear_rotor(output_file_path, basis_descripti
 		basis_function_matrix_data (numpy.ndarray): The numerical matrix representing the basis functions.
 		normalization_matrix_data (numpy.ndarray): The numerical matrix <JM|J'M'> representing normalization.
 		total_number_of_basis_functions (int): The total number of basis functions used in the system.
-		quantum_numbers_data_list (numpy.ndarray): The array containing quantum number pairs for each basis function.
+		all_quantum_numbers (numpy.ndarray): The array containing quantum number pairs for each basis function.
 		deviation_tolerance_value (float): The threshold value for detecting deviations from the expected identity matrix.
 		file_write_mode (str): Either "new" to overwrite the file or "append" to add data to an existing file.
 	"""
@@ -446,14 +449,14 @@ def check_unitarity(file_name, basis_type, umat, small=1e-10, mode="new"):
 	return deviation < small  # Returns True if unitarity holds, False otherwise
 
 
-def compute_rotational_kinetic_energy_loop(umat, quantum_numbers_data_list, Bconst):
+def compute_rotational_kinetic_energy_loop(umat, all_quantum_numbers, Bconst):
 	"""
 	Computes the rotational kinetic energy operator T_rot using a loop.
 
 	Parameters:
 	umat : numpy.ndarray
 		Unitary normalization matrix (n_basis, n_basis).
-	quantum_numbers_data_list : numpy.ndarray
+	all_quantum_numbers : numpy.ndarray
 		Array of quantum numbers where column 0 contains J values.
 	Bconst : float
 		Rotational constant.
@@ -466,7 +469,7 @@ def compute_rotational_kinetic_energy_loop(umat, quantum_numbers_data_list, Bcon
 	T_rot = np.zeros((n_basis, n_basis), dtype=complex)  # Ensure the matrix can hold complex values
 
 	# Compute rotational energy levels B * J(J+1)
-	rotational_energies = Bconst * quantum_numbers_data_list[:, 0] * (quantum_numbers_data_list[:, 0] + 1)
+	rotational_energies = Bconst * all_quantum_numbers[:, 0] * (all_quantum_numbers[:, 0] + 1)
 
 	for jm in range(n_basis):
 		for jmp in range(n_basis):
@@ -479,14 +482,14 @@ def compute_rotational_kinetic_energy_loop(umat, quantum_numbers_data_list, Bcon
 	return T_rot
 
 
-def compute_rotational_kinetic_energy_matrix(umat, quantum_numbers_data_list, Bconst):
+def compute_rotational_kinetic_energy_matrix(umat, all_quantum_numbers, Bconst):
 	"""
 	Computes the rotational kinetic energy operator T_rot using efficient matrix operations.
 
 	Parameters:
 	umat : numpy.ndarray
 		Unitary normalization matrix (n_basis, n_basis).
-	quantum_numbers_data_list : numpy.ndarray
+	all_quantum_numbers : numpy.ndarray
 		Array of quantum numbers where column 0 contains J values.
 	Bconst : float
 		Rotational constant.
@@ -500,11 +503,11 @@ def compute_rotational_kinetic_energy_matrix(umat, quantum_numbers_data_list, Bc
 	# Validate Inputs
 	if umat.shape[0] != umat.shape[1]:
 		raise ValueError("Unitary normalization matrix U must be square.")
-	if len(quantum_numbers_data_list) != n_basis:
+	if len(all_quantum_numbers) != n_basis:
 		raise ValueError("Length of quantum numbers must match the dimensions of U.")
 
 	# Compute rotational energy levels B * J(J+1)
-	J_values = quantum_numbers_data_list[:, 0]
+	J_values = all_quantum_numbers[:, 0]
 	rotational_energies = Bconst * J_values * (J_values + 1)
 
 	# Create a diagonal matrix from rotational energies
@@ -517,14 +520,14 @@ def compute_rotational_kinetic_energy_matrix(umat, quantum_numbers_data_list, Bc
 	return T_rot  # Return the real part of the resulting matrix
 
 
-def compute_rotational_kinetic_energy_einsum(umat, quantum_numbers_data_list, Bconst, debug=False):
+def compute_rotational_kinetic_energy_einsum(umat, all_quantum_numbers, Bconst, debug=False):
 	"""
 	Computes the rotational kinetic energy operator T_rot using efficient Einstein summation.
 
 	Parameters:
 	umat : numpy.ndarray
 		Unitary normalization matrix (n_basis, n_basis).
-	quantum_numbers_data_list : numpy.ndarray
+	all_quantum_numbers : numpy.ndarray
 		Array of quantum numbers where column 0 contains J values.
 	Bconst : float
 		Rotational constant.
@@ -541,11 +544,11 @@ def compute_rotational_kinetic_energy_einsum(umat, quantum_numbers_data_list, Bc
 	# Validate Inputs
 	if umat.shape[0] != umat.shape[1]:
 		raise ValueError("Unitary normalization matrix U must be square.")
-	if len(quantum_numbers_data_list) != n_basis:
+	if len(all_quantum_numbers) != n_basis:
 		raise ValueError("Length of quantum numbers must match the dimensions of U.")
 
 	# Extract J values (rotational quantum numbers)
-	J_values = quantum_numbers_data_list[:, 0]
+	J_values = all_quantum_numbers[:, 0]
 
 	# Compute the rotational energy levels B * J(J+1)
 	rotational_energies = Bconst * J_values * (J_values + 1.0)
@@ -752,13 +755,13 @@ def extract_diagonal(matrix):
 	
 	return np.diagonal(matrix)  # Extract diagonal elements
 
-def display_rotational_energies(diagonal_elements, quantum_numbers_data_list, Bconst):
+def display_rotational_energies(diagonal_elements, all_quantum_numbers, Bconst):
 	"""
 	Displays the extracted diagonal elements as rotational energy levels.
 
 	Parameters:
 	- diagonal_elements (np.ndarray): Extracted diagonal elements representing energy levels.
-	- quantum_numbers_data_list (np.ndarray): Array of quantum numbers, where each row represents a state
+	- all_quantum_numbers (np.ndarray): Array of quantum numbers, where each row represents a state
 											  and the first column contains the J values (rotational quantum numbers).
 	- Bconst (float): The rotational constant (cm⁻¹), used to compute rotational energy levels.
 
@@ -771,7 +774,7 @@ def display_rotational_energies(diagonal_elements, quantum_numbers_data_list, Bc
 	print("=" * 80)
 
 	# Extracting J values from the quantum numbers data
-	J_values = quantum_numbers_data_list[:, 0]
+	J_values = all_quantum_numbers[:, 0]
 
 	# Compute the rotational energy levels B * J(J+1)
 	for J, energy in zip(J_values, diagonal_elements):
@@ -1009,17 +1012,121 @@ def debug_eigenvalues_eigenvectors(H_rot, sorted_eigenvalues, sorted_eigenvector
 # sorted_eigenvalues = eigenvalues_matrix[:, 0]  # Extract original eigenvalues
 # debug_eigenvalues_eigenvectors(H_rot, sorted_eigenvalues, sorted_eigenvectors)
 
+def save_quantum_numbers_to_netcdf(
+	all_quantum_numbers,
+	spin_state_name,
+	spin_state_qn_array,
+	filename
+):
+	all_qn = np.array(all_quantum_numbers, dtype=np.int32)
+	spin_qn = np.array(spin_state_qn_array, dtype=np.int32)
+
+	with Dataset(filename, "w", format="NETCDF4") as ncfile:
+		# Metadata
+		ncfile.title = "Quantum Quantum Numbers and Eigen Data"
+		ncfile.description = f"Includes all quantum numbers and spin-resolved values for {spin_state_name}"
+		ncfile.history = f"Created on {datetime.now().isoformat()} by {getpass.getuser()}"
+		ncfile.source = "Generated by quantum number analysis script"
+
+		# Dimensions for all quantum numbers
+		ncfile.createDimension("all_entries", all_qn.shape[0])
+		ncfile.createDimension("components", all_qn.shape[1])  # Usually 2
+
+		# Create variable for all quantum numbers
+		all_var = ncfile.createVariable("all_quantum_numbers", "i4", ("all_entries", "components"))
+		all_var[:, :] = all_qn
+
+		# Dimensions and variable for spin-resolved quantum numbers
+		ncfile.createDimension("spin_count", spin_qn.shape[0])
+		spin_var = ncfile.createVariable(f"{spin_state_name}_quantum_numbers", "i4", ("spin_count", "components"))
+		spin_var[:, :] = spin_qn
+
+	max_J = np.max(all_qn[:, 0])
+	if (max_J <= 4):
+		print("\n**")
+
+		# Convert the data to a pandas DataFrame for better display
+		all_qn_df = pd.DataFrame(all_qn, columns=["J", "M"])
+
+		# Display the total quantum numbers with labels using pandas DataFrame
+		print(colored("All Quantum Numbers (J, M)\n", HEADER_COLOR, attrs=['bold', 'underline']))
+		print(all_qn_df)
+
+		# Convert to DataFrame for better visualization
+		spin_qn_df = pd.DataFrame(spin_qn, columns=["J", "M"])
+
+		# Display spin-specific quantum numbers
+		print(colored(f"\nSpin State: {spin_state_name}\n", HEADER_COLOR, attrs=['bold', 'underline']))
+		print(spin_qn_df)
+
+	print("\n**")
+	print(colored(f"Quantum numbers saved in".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{filename}".ljust(VALUE_WIDTH), VALUE_COLOR))
+
+
+def append_eigen_data_to_netcdf(
+	filename,
+	eigenvalue_matrix,
+	sorted_eigenvectors
+):
+	eigenval = np.array(eigenvalue_matrix, dtype=np.float64)
+	eigvec_real = np.real(sorted_eigenvectors)
+	eigvec_imag = np.imag(sorted_eigenvectors)
+
+	with Dataset(filename, "a") as ncfile:
+		# Dimensions
+		ncfile.createDimension("num_eigenstates", eigenval.shape[0])
+		ncfile.createDimension("eigenval_components", eigenval.shape[1])
+		ncfile.createDimension("matrix_size", sorted_eigenvectors.shape[0])
+
+		# Eigenvalues
+		eigenval_var = ncfile.createVariable("eigenvalues", "f8", ("num_eigenstates", "eigenval_components"))
+		eigenval_var[:, :] = eigenval
+
+		# Eigenvectors (real and imaginary parts)
+		eigvec_real_var = ncfile.createVariable("eigenvectors_real", "f8", ("matrix_size", "matrix_size"))
+		eigvec_real_var[:, :] = eigvec_real
+
+		eigvec_imag_var = ncfile.createVariable("eigenvectors_imag", "f8", ("matrix_size", "matrix_size"))
+		eigvec_imag_var[:, :] = eigvec_imag
+
+
+def read_quantum_numbers_from_netcdf(filename):
+	with Dataset(filename, "r") as ncfile:
+		# Read all quantum numbers (J, M) pairs
+		all_qn = ncfile.variables["all_quantum_numbers"][:, :]
+		
+		# Convert the data to a pandas DataFrame for better display
+		all_qn_df = pd.DataFrame(all_qn, columns=["J", "M"])
+
+		# Display the total quantum numbers with labels using pandas DataFrame
+		print("\n**")
+		print(colored("All Quantum Numbers (J, M)\n", HEADER_COLOR, attrs=['bold', 'underline']))
+		print(all_qn_df)
+
+		# Read the spin-resolved quantum numbers (J, M) for each spin state
+		for var_name in ncfile.variables:
+			if "quantum_numbers" in var_name and var_name != "all_quantum_numbers":
+				spin_qn = ncfile.variables[var_name][:, :]
+				# Convert to DataFrame for better visualization
+				spin_qn_df = pd.DataFrame(spin_qn, columns=["J", "M"])
+				spin_state_name = var_name.replace('_quantum_numbers', '').capitalize()
+
+				# Display spin-specific quantum numbers
+				print(colored(f"\nSpin State: {spin_state_name}\n", HEADER_COLOR, attrs=['bold', 'underline']))
+				print(spin_qn_df)
+
+		print("\n**")
 
 def main():
 	# Parse command-line arguments
 	args = parse_arguments()
 	potential_strength   = args.potential_strength
 	max_angular_momentum = args.max_angular_momentum
-	spin_state           = args.spin
+	spin_state			 = args.spin
 
 	# No. of grid points along theta and phi
-	theta_grid_count     = int(2 * max_angular_momentum + 5)
-	phi_grid_count       = int(2 * theta_grid_count + 5)
+	theta_grid_count	 = int(2 * max_angular_momentum + 5)
+	phi_grid_count		 = int(2 * theta_grid_count + 5)
 
 	# Tolerance limit for a harmitian matrix
 	deviation_tolerance_value = 10e-12
@@ -1027,10 +1134,12 @@ def main():
 	# print the normalization
 	display_legendre_quadrature = False
 	compute_rigid_rotor_energy  = False
-	normalization_check         = True
-	unitarity_check             = True
-	pot_write                   = False
+	normalization_check		    = True
+	unitarity_check			    = True
+	pot_write				    = False
 	kinetic_energy_operator_hermiticity_test = False
+	#
+	read_data                   = False
 
 	# Display input parameters
 	show_simulation_details(potential_strength, max_angular_momentum, spin_state, theta_grid_count, phi_grid_count)
@@ -1069,24 +1178,27 @@ def main():
 	# Gauss-Quadrature points
 	xGL, wGL, phixiGridPts, dphixi = compute_legendre_quadrature(theta_grid_count, phi_grid_count, display_legendre_quadrature)
 
-	# Generate (J, M) matrices for each nuclear spin isomer type
-	quantum_numbers_data_list = bfunc.generate_linear_rotor_quantum_numbers(max_angular_momentum, "spinless")
-	
-	df = pd.DataFrame(quantum_numbers_data_list, columns=["J", "M"])
-	# Separator line
-	print("\n**")
-	print(colored("All Quantum Numbers", HEADER_COLOR, attrs=['bold', 'underline']))
-	print(df)
-	whoami()
+	# All quantum numbers: (J, M)
+	all_quantum_numbers = bfunc.generate_linear_rotor_quantum_numbers(max_angular_momentum, "spinless")
 
-	# Generate (J, M) matrices for each nuclear spin isomer type
-	quantum_numbers_data_list_for_spin_state = bfunc.generate_linear_rotor_quantum_numbers(max_angular_momentum, spin_state)
+	# Spin-state-specific quantum numbers
+	quantum_numbers_for_spin_state = bfunc.generate_linear_rotor_quantum_numbers(max_angular_momentum, spin_state)
 	
-	df = pd.DataFrame(quantum_numbers_data_list_for_spin_state, columns=["J", "M"])
-	# Separator line
-	print("\n**")
-	print(colored(f"Quantum numbers for {spin_state} isomer.\n".ljust(LABEL_WIDTH), LABEL_COLOR))
-	print(df)
+	filename = f"quantum_data_of_{spin_state}_isomer.nc"
+
+	# Step 1: Save quantum numbers
+	save_quantum_numbers_to_netcdf(all_quantum_numbers, spin_state, quantum_numbers_for_spin_state, filename)
+
+	# Step 2: Append eigenvalues and eigenvectors
+	#append_eigen_data_to_netcdf(filename, eigenvalue_matrix, sorted_eigenvectors)
+
+
+	if read_data:
+		# Read the data back
+		read_quantum_numbers_from_netcdf(filename)
+
+
+	whoami()
 
 	# njm, JM, JeM, JoM = compute_basis_functions(max_angular_momentum, spin_state)
 	basis_functions_info = get_number_of_basis_functions_by_spin_states(max_angular_momentum, spin_state)
@@ -1096,7 +1208,7 @@ def main():
 	# Real spherical harmonics basis <cos(θ), φ | JM> as a 2D matrix 'basisfun_real' with shape (theta_grid_count * phi_grid_count, n_basis), 
 	# where each column corresponds to a unique (J, M) quantum number pair and rows map to grid points across θ and φ angles.
 	n_basis_real = total_number_of_states
-	basisfun_real = bfunc.spherical_harmonicsReal(n_basis_real, theta_grid_count, phi_grid_count, quantum_numbers_data_list, xGL, wGL, phixiGridPts, dphixi)
+	basisfun_real = bfunc.spherical_harmonicsReal(n_basis_real, theta_grid_count, phi_grid_count, all_quantum_numbers, xGL, wGL, phixiGridPts, dphixi)
 	# Separator line
 	print("\n**")
 	print(colored("shape of ", INFO_COLOR) + colored("spherical_harmonicsReal or basisfun_real: ".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{basisfun_real.shape}".ljust(VALUE_WIDTH), VALUE_COLOR))
@@ -1122,7 +1234,7 @@ def main():
 			basisfun_real,
 			normalization_matrix_data_real,
 			n_basis_real,
-			quantum_numbers_data_list,
+			all_quantum_numbers,
 			deviation_tolerance_value,
 			file_write_mode="new"
 		)
@@ -1135,7 +1247,7 @@ def main():
 
 	n_basis_complex = total_number_of_states
 	# Construction of complex basis functions 
-	basisfun_complex = bfunc.spherical_harmonicsComp(n_basis_complex, theta_grid_count, phi_grid_count, quantum_numbers_data_list, xGL, wGL, phixiGridPts, dphixi)
+	basisfun_complex = bfunc.spherical_harmonicsComp(n_basis_complex, theta_grid_count, phi_grid_count, all_quantum_numbers, xGL, wGL, phixiGridPts, dphixi)
 	if (normalization_check):
 		# Orthonormality test for "complex basis"
 		normalization_matrix_data_complex = np.einsum('ij,ik->jk', np.conjugate(basisfun_complex), basisfun_complex)  # (n_points, n_basis) x (n_points, n_basis) → (n_basis, n_basis)
@@ -1146,7 +1258,7 @@ def main():
 			basisfun_complex,
 			normalization_matrix_data_complex,
 			n_basis_complex,
-			quantum_numbers_data_list,
+			all_quantum_numbers,
 			deviation_tolerance_value,
 			file_write_mode="append"
 		)
@@ -1177,11 +1289,11 @@ def main():
 		print(f"Is the matrix Hermitian? {is_Hermitian}")
 
 	# Call the function to compute the rotational kinetic energy operator
-	#T_rot_einsum = compute_rotational_kinetic_energy_einsum(umat, quantum_numbers_data_list, Bconst)
-	T_rot_einsum = compute_rotational_kinetic_energy_einsum(umat, quantum_numbers_data_list, Bconst, debug=False)
+	#T_rot_einsum = compute_rotational_kinetic_energy_einsum(umat, all_quantum_numbers, Bconst)
+	T_rot_einsum = compute_rotational_kinetic_energy_einsum(umat, all_quantum_numbers, Bconst, debug=False)
 	# Extract and display rotational energies
 	diagonal_energies = extract_diagonal(T_rot_einsum.real)
-	display_rotational_energies(diagonal_energies, quantum_numbers_data_list, Bconst)
+	display_rotational_energies(diagonal_energies, all_quantum_numbers, Bconst)
 
 	if kinetic_energy_operator_hermiticity_test: 
 		is_Hermitian, max_diff = check_hermiticity(T_rot_einsum, "T", tol=1e-10, debug=True, visualize=True)
