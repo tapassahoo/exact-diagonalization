@@ -181,7 +181,7 @@ def generate_filename(
 	filename = (
 		f"{prefix}_for_H2_{isomer}_isomer_max_angular_momentum{max_angular_momentum}_"
 		f"potential_strength{potential_strength}K_"
-		f"grids_theta{theta_grid_count}_phi{phi_grid_count}.txt"
+		f"grids_theta{theta_grid_count}_phi{phi_grid_count}"
 	)
 
 	return basis_type, filename
@@ -285,11 +285,11 @@ def get_number_of_basis_functions_by_spin_states(max_angular_momentum, spin_stat
 		"JM": JM,
 		"JeM": JeM,
 		"JoM": JoM,
-		"njm": njm
+		"JM_spin_specific": njm
 	}
 
 
-def check_normalization_condition_linear_rotor(output_file_path, basis_description_text, basis_function_matrix_data, normalization_matrix_data, total_number_of_basis_functions, all_quantum_numbers, deviation_tolerance_value, file_write_mode="new"):
+def check_normalization_condition_linear_rotor(log_file, basis_description_text, basis_function_matrix_data, normalization_matrix_data, total_number_of_basis_functions, all_quantum_numbers, deviation_tolerance_value, file_write_mode="new"):
 	"""
 	Checks whether the normalization condition <JM|J'M'> ≈ δ_JJ'MM' holds.
 	
@@ -299,7 +299,7 @@ def check_normalization_condition_linear_rotor(output_file_path, basis_descripti
 	- Computes eigenvalues for numerical stability analysis.
 	
 	Arguments:
-		output_file_path (str): The path to save the normalization check log file.
+		log_file (str): The path to save the normalization check log file.
 		basis_description_text (str): A textual description of the basis used.
 		basis_function_matrix_data (numpy.ndarray): The numerical matrix representing the basis functions.
 		normalization_matrix_data (numpy.ndarray): The numerical matrix <JM|J'M'> representing normalization.
@@ -316,7 +316,7 @@ def check_normalization_condition_linear_rotor(output_file_path, basis_descripti
 	deviation_from_identity_matrix = np.abs(normalization_matrix_data - identity_matrix_reference)
 	maximum_deviation_value = np.max(deviation_from_identity_matrix)
 
-	with open(output_file_path, file_open_mode) as output_file:
+	with open(log_file, file_open_mode) as output_file:
 		# Write section header
 		output_file.write("=" * 80 + "\n")
 		output_file.write(f"Normalization Condition Check for {basis_description_text} \n")
@@ -449,7 +449,7 @@ def check_unitarity(file_name, basis_type, umat, small=1e-10, mode="new"):
 	return deviation < small  # Returns True if unitarity holds, False otherwise
 
 
-def compute_rotational_kinetic_energy_loop(umat, all_quantum_numbers, Bconst):
+def compute_rotational_kinetic_energy_loop(umat, all_quantum_numbers, B_const_K):
 	"""
 	Computes the rotational kinetic energy operator T_rot using a loop.
 
@@ -458,7 +458,7 @@ def compute_rotational_kinetic_energy_loop(umat, all_quantum_numbers, Bconst):
 		Unitary normalization matrix (n_basis, n_basis).
 	all_quantum_numbers : numpy.ndarray
 		Array of quantum numbers where column 0 contains J values.
-	Bconst : float
+	B_const_K : float
 		Rotational constant.
 
 	Returns:
@@ -469,7 +469,7 @@ def compute_rotational_kinetic_energy_loop(umat, all_quantum_numbers, Bconst):
 	T_rot = np.zeros((n_basis, n_basis), dtype=complex)  # Ensure the matrix can hold complex values
 
 	# Compute rotational energy levels B * J(J+1)
-	rotational_energies = Bconst * all_quantum_numbers[:, 0] * (all_quantum_numbers[:, 0] + 1)
+	rotational_energies = B_const_K * all_quantum_numbers[:, 0] * (all_quantum_numbers[:, 0] + 1)
 
 	for jm in range(n_basis):
 		for jmp in range(n_basis):
@@ -482,7 +482,7 @@ def compute_rotational_kinetic_energy_loop(umat, all_quantum_numbers, Bconst):
 	return T_rot
 
 
-def compute_rotational_kinetic_energy_matrix(umat, all_quantum_numbers, Bconst):
+def compute_rotational_kinetic_energy_matrix(umat, all_quantum_numbers, B_const_K):
 	"""
 	Computes the rotational kinetic energy operator T_rot using efficient matrix operations.
 
@@ -491,7 +491,7 @@ def compute_rotational_kinetic_energy_matrix(umat, all_quantum_numbers, Bconst):
 		Unitary normalization matrix (n_basis, n_basis).
 	all_quantum_numbers : numpy.ndarray
 		Array of quantum numbers where column 0 contains J values.
-	Bconst : float
+	B_const_K : float
 		Rotational constant.
 
 	Returns:
@@ -508,7 +508,7 @@ def compute_rotational_kinetic_energy_matrix(umat, all_quantum_numbers, Bconst):
 
 	# Compute rotational energy levels B * J(J+1)
 	J_values = all_quantum_numbers[:, 0]
-	rotational_energies = Bconst * J_values * (J_values + 1)
+	rotational_energies = B_const_K * J_values * (J_values + 1)
 
 	# Create a diagonal matrix from rotational energies
 	E_diag = np.diag(rotational_energies)
@@ -520,7 +520,7 @@ def compute_rotational_kinetic_energy_matrix(umat, all_quantum_numbers, Bconst):
 	return T_rot  # Return the real part of the resulting matrix
 
 
-def compute_rotational_kinetic_energy_einsum(umat, all_quantum_numbers, Bconst, debug=False):
+def compute_rotational_kinetic_energy_einsum(umat, all_quantum_numbers, B_const_K, debug=False):
 	"""
 	Computes the rotational kinetic energy operator T_rot using efficient Einstein summation.
 
@@ -529,7 +529,7 @@ def compute_rotational_kinetic_energy_einsum(umat, all_quantum_numbers, Bconst, 
 		Unitary normalization matrix (n_basis, n_basis).
 	all_quantum_numbers : numpy.ndarray
 		Array of quantum numbers where column 0 contains J values.
-	Bconst : float
+	B_const_K : float
 		Rotational constant.
 	debug : bool, optional
 		If True, runs a debug check to verify that U^dagger * U = I (unitary property).
@@ -551,7 +551,7 @@ def compute_rotational_kinetic_energy_einsum(umat, all_quantum_numbers, Bconst, 
 	J_values = all_quantum_numbers[:, 0]
 
 	# Compute the rotational energy levels B * J(J+1)
-	rotational_energies = Bconst * J_values * (J_values + 1.0)
+	rotational_energies = B_const_K * J_values * (J_values + 1.0)
 
 	# Create a diagonal matrix from the rotational energy levels
 	E_diag = np.diag(rotational_energies)
@@ -567,7 +567,7 @@ def compute_rotational_kinetic_energy_einsum(umat, all_quantum_numbers, Bconst, 
 	return T_rot  # Return the real part of the resulting matrix
 
 
-def check_hermiticity(H, matrix_name="H", tol=1e-10, debug=True, visualize=False):
+def check_hermiticity(H, matrix_name="H", description="", tol=1e-10, debug=True, visualize=False):
 	"""
 	Checks if a given matrix H is Hermitian and identifies discrepancies.
 
@@ -607,7 +607,8 @@ def check_hermiticity(H, matrix_name="H", tol=1e-10, debug=True, visualize=False
 	is_hermitian = len(discrepancies) == 0  # True if no discrepancies exist
 
 	if debug:
-		print("\n===== Hermiticity Check =====")
+		print("\n**")
+		print(colored(f"Hermiticity Check: {description}", HEADER_COLOR, attrs=['bold', 'underline']))
 		print(f"✅ Matrix shape: {H.shape}")
 		print(f"✅ Max deviation: {max_diff:.2e}")
 		print(f"✅ Frobenius norm: {norm_diff:.2e}")
@@ -755,7 +756,7 @@ def extract_diagonal(matrix):
 	
 	return np.diagonal(matrix)  # Extract diagonal elements
 
-def display_rotational_energies(diagonal_elements, all_quantum_numbers, Bconst):
+def display_rotational_energies(diagonal_elements, all_quantum_numbers, B_const_K):
 	"""
 	Displays the extracted diagonal elements as rotational energy levels.
 
@@ -763,7 +764,7 @@ def display_rotational_energies(diagonal_elements, all_quantum_numbers, Bconst):
 	- diagonal_elements (np.ndarray): Extracted diagonal elements representing energy levels.
 	- all_quantum_numbers (np.ndarray): Array of quantum numbers, where each row represents a state
 											  and the first column contains the J values (rotational quantum numbers).
-	- Bconst (float): The rotational constant (cm⁻¹), used to compute rotational energy levels.
+	- B_const_K (float): The rotational constant (cm⁻¹), used to compute rotational energy levels.
 
 	Returns:
 	None
@@ -779,7 +780,7 @@ def display_rotational_energies(diagonal_elements, all_quantum_numbers, Bconst):
 	# Compute the rotational energy levels B * J(J+1)
 	for J, energy in zip(J_values, diagonal_elements):
 		# Calculate the theoretical energy level based on the B constant
-		theoretical_energy = Bconst * J * (J + 1)
+		theoretical_energy = B_const_K * J * (J + 1)
 		
 		
 		# Display the results
@@ -1134,10 +1135,10 @@ def main():
 	# print the normalization
 	display_legendre_quadrature = False
 	compute_rigid_rotor_energy  = False
-	normalization_check		    = True
-	unitarity_check			    = True
+	orthonormality_check        = False
+	hermiticity_check           = False
+	unitarity_check			    = False
 	pot_write				    = False
-	kinetic_energy_operator_hermiticity_test = False
 	#
 	read_data                   = False
 
@@ -1168,8 +1169,8 @@ def main():
 		energies = rotational_energy_levels(B_const_K, 10)
 		plot_rotational_levels(energies)
 
+	basis_type, base_file_name = generate_filename(spin_state, max_angular_momentum, potential_strength, theta_grid_count, phi_grid_count)
 	prefix = "output_file_for_checking_orthonormality_condition"
-	basis_type, file_name = generate_filename(spin_state, max_angular_momentum, potential_strength, theta_grid_count, phi_grid_count, prefix)
 
 	# Separator line
 	print("\n**")
@@ -1180,30 +1181,23 @@ def main():
 
 	# All quantum numbers: (J, M)
 	all_quantum_numbers = bfunc.generate_linear_rotor_quantum_numbers(max_angular_momentum, "spinless")
-
 	# Spin-state-specific quantum numbers
 	quantum_numbers_for_spin_state = bfunc.generate_linear_rotor_quantum_numbers(max_angular_momentum, spin_state)
-	
-	filename = f"quantum_data_of_{spin_state}_isomer.nc"
 
 	# Step 1: Save quantum numbers
-	save_quantum_numbers_to_netcdf(all_quantum_numbers, spin_state, quantum_numbers_for_spin_state, filename)
-
-	# Step 2: Append eigenvalues and eigenvectors
-	#append_eigen_data_to_netcdf(filename, eigenvalue_matrix, sorted_eigenvectors)
-
-
+	file_name_netcdf = f"output" + base_file_name + ".nc"
+	save_quantum_numbers_to_netcdf(all_quantum_numbers, spin_state, quantum_numbers_for_spin_state, file_name_netcdf)
 	if read_data:
 		# Read the data back
 		read_quantum_numbers_from_netcdf(filename)
 
-
-	whoami()
+	# Step 2: Append eigenvalues and eigenvectors
+	#append_eigen_data_to_netcdf(filename, eigenvalue_matrix, sorted_eigenvectors)
 
 	# njm, JM, JeM, JoM = compute_basis_functions(max_angular_momentum, spin_state)
 	basis_functions_info = get_number_of_basis_functions_by_spin_states(max_angular_momentum, spin_state)
 	total_number_of_states = basis_functions_info["JM"]
-	total_number_of_spin_states = basis_functions_info["njm"]
+	total_number_of_spin_states = basis_functions_info["JM_spin_specific"]
 	
 	# Real spherical harmonics basis <cos(θ), φ | JM> as a 2D matrix 'basisfun_real' with shape (theta_grid_count * phi_grid_count, n_basis), 
 	# where each column corresponds to a unique (J, M) quantum number pair and rows map to grid points across θ and φ angles.
@@ -1213,59 +1207,59 @@ def main():
 	print("\n**")
 	print(colored("shape of ", INFO_COLOR) + colored("spherical_harmonicsReal or basisfun_real: ".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{basisfun_real.shape}".ljust(VALUE_WIDTH), VALUE_COLOR))
 
-	if (normalization_check):
+	if (orthonormality_check):
 		# Compute the overlap (normalization) matrix to check if the basis functions are orthonormal.  
-		# The resulting normalization_matrix_data_real is of size (n_basis, n_basis), where n_basis is the number of basis functions.  
-		# If the basis functions are perfectly normalized and orthogonal, normalization_matrix_data_real should be close to the identity matrix.  
-		normalization_matrix_data_real = np.einsum('ij,ik->jk', np.conjugate(basisfun_real), basisfun_real)  # (n_points, n_basis) x (n_points, n_basis) → (n_basis, n_basis)
-		#normalization_matrix_data_real = np.tensordot(basisfun_real, np.conjugate(basisfun_real), axes=([0], [0]))
-		#df = pd.DataFrame(normalization_matrix_data_real)
+		# The resulting real_basis_normalization_matrix is of size (n_basis, n_basis), where n_basis is the number of basis functions.  
+		# If the basis functions are perfectly normalized and orthogonal, real_basis_normalization_matrix should be close to the identity matrix.  
+		real_basis_normalization_matrix = np.einsum('ij,ik->jk', basisfun_real, basisfun_real)  # (n_points, n_basis) x (n_points, n_basis) → (n_basis, n_basis)
+		#real_basis_normalization_matrix = np.tensordot(basisfun_real, np.conjugate(basisfun_real), axes=([0], [0]))
+		#df = pd.DataFrame(real_basis_normalization_matrix)
 		#print(df)
 		
 		#
-		print(colored("shape of ", INFO_COLOR) + colored("normalization_matrix_data_real: ".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{normalization_matrix_data_real.shape}".ljust(VALUE_WIDTH), VALUE_COLOR) + "\n")
-		print(colored("**\nFile name for checking orthonormality condition: ".ljust(LABEL_WIDTH), LABEL_COLOR) + f"{file_name}" + "\n")
+		print(colored("shape of ", INFO_COLOR) + colored("real_basis_normalization_matrix: ".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{real_basis_normalization_matrix.shape}".ljust(VALUE_WIDTH), VALUE_COLOR) + "\n")
+		log_file = f"validation_fundamental_QM_properties" + base_file_name + ".log"
+		print(colored("**\nFile name for checking orthonormality condition: ".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{log_file}".ljust(VALUE_WIDTH), VALUE_COLOR) + "\n")
 
-		output_file_path = file_name 
-		basis_description_text = "Real Spherical Harmonics Basis |JM> For A Linear Rotor"
+		basis_description_text = "Real Spherical Harmonics Basis |JM> for a linear rigid rotor"
 		check_normalization_condition_linear_rotor(
-			output_file_path,
+			log_file,
 			basis_description_text,
 			basisfun_real,
-			normalization_matrix_data_real,
+			real_basis_normalization_matrix,
 			n_basis_real,
 			all_quantum_numbers,
 			deviation_tolerance_value,
 			file_write_mode="new"
 		)
 		title = f"Heatmap of normalization matrix \n Real basis"
-		plot_heatmap(normalization_matrix_data_real, title)
+		plot_heatmap(real_basis_normalization_matrix, title)
 
-		is_Hermitian, max_diff = check_hermiticity(normalization_matrix_data_real, "S", tol=1e-10, debug=True, visualize=True)
+		is_Hermitian, max_diff = check_hermiticity(real_basis_normalization_matrix, "S", "Real Normalization Matrix", tol=1e-10, debug=True, visualize=True)
 		print(f"Is the matrix Hermitian? {is_Hermitian}")
 
 
 	n_basis_complex = total_number_of_states
 	# Construction of complex basis functions 
 	basisfun_complex = bfunc.spherical_harmonicsComp(n_basis_complex, theta_grid_count, phi_grid_count, all_quantum_numbers, xGL, wGL, phixiGridPts, dphixi)
-	if (normalization_check):
+	if (orthonormality_check):
 		# Orthonormality test for "complex basis"
-		normalization_matrix_data_complex = np.einsum('ij,ik->jk', np.conjugate(basisfun_complex), basisfun_complex)  # (n_points, n_basis) x (n_points, n_basis) → (n_basis, n_basis)
-		basis_description_text = "Complex Spherical Harmonics Basis |JM> For A Linear Rotor"
+		complex_basis_normalization_matrix = np.einsum('ij,ik->jk', np.conjugate(basisfun_complex), basisfun_complex)  # (n_points, n_basis) x (n_points, n_basis) → (n_basis, n_basis)
+		basis_description_text = "Complex Spherical Harmonics Basis |JM> for a linear rigid rotor"
 		check_normalization_condition_linear_rotor(
-			output_file_path,
+			log_file,
 			basis_description_text,
 			basisfun_complex,
-			normalization_matrix_data_complex,
+			complex_basis_normalization_matrix,
 			n_basis_complex,
 			all_quantum_numbers,
 			deviation_tolerance_value,
 			file_write_mode="append"
 		)
 		title = f"Heatmap of normalization matrix \n Complex basis"
-		plot_heatmap(normalization_matrix_data_complex, title)
+		plot_heatmap(complex_basis_normalization_matrix, title)
 
-		is_Hermitian, max_diff = check_hermiticity(normalization_matrix_data_complex, "S", tol=1e-10, debug=True, visualize=True)
+		is_Hermitian, max_diff = check_hermiticity(complex_basis_normalization_matrix, "S", "Complex Normalization Matrix", tol=1e-10, debug=True, visualize=True)
 		print(f"Is the matrix Hermitian? {is_Hermitian}")
 
 	#
@@ -1273,10 +1267,9 @@ def main():
 	# umat = np.tensordot(np.conjugate(basisfun_complex), basisfun_real, axes=([0], [0]))
 	umat = np.einsum('ij,ik->jk', np.conjugate(basisfun_complex), basisfun_real)
 	#umat = basisfun_complex.conj().T @ basisfun_real
-	whoami()
 
 	if (unitarity_check):
-		check_unitarity(file_name, basis_type, umat, mode="append")
+		check_unitarity(log_file, basis_type, umat, mode="append")
 		# Compute UU†
 		umat_unitarity = np.einsum('ia,ja->ij', umat, np.conjugate(umat))
 		#umat_unitarity = np.einsum('ia,ja->ij', umat, umat.conj())
@@ -1285,18 +1278,18 @@ def main():
 		title = f"Heatmap of UU† matrix for {spin_state} spin state"
 		plot_heatmap(umat_unitarity, title)
 
-		is_Hermitian, max_diff = check_hermiticity(umat_unitarity, "(UU†)", tol=1e-40, debug=True, visualize=True)
+		is_Hermitian, max_diff = check_hermiticity(umat_unitarity, "(UU†)", "Complex UU† Matrix", tol=1e-40, debug=True, visualize=True)
 		print(f"Is the matrix Hermitian? {is_Hermitian}")
 
 	# Call the function to compute the rotational kinetic energy operator
-	#T_rot_einsum = compute_rotational_kinetic_energy_einsum(umat, all_quantum_numbers, Bconst)
-	T_rot_einsum = compute_rotational_kinetic_energy_einsum(umat, all_quantum_numbers, Bconst, debug=False)
+	#T_rot_einsum = compute_rotational_kinetic_energy_einsum(umat, all_quantum_numbers, B_const_K)
+	T_rot_einsum = compute_rotational_kinetic_energy_einsum(umat, all_quantum_numbers, B_const_K, debug=False)
 	# Extract and display rotational energies
 	diagonal_energies = extract_diagonal(T_rot_einsum.real)
-	display_rotational_energies(diagonal_energies, all_quantum_numbers, Bconst)
+	display_rotational_energies(diagonal_energies, all_quantum_numbers, B_const_K)
 
-	if kinetic_energy_operator_hermiticity_test: 
-		is_Hermitian, max_diff = check_hermiticity(T_rot_einsum, "T", tol=1e-10, debug=True, visualize=True)
+	if hermiticity_check: 
+		is_Hermitian, max_diff = check_hermiticity(T_rot_einsum, "T", "Rotational Kinetic Energy Matrix", tol=1e-10, debug=True, visualize=True)
 		print(f"Is the matrix Hermitian? {is_Hermitian}")
 
 	if False:
@@ -1305,20 +1298,20 @@ def main():
 
 		is_Hermitian, max_diff = check_hermiticity(V_rot, "V", tol=1e-10, debug=True, visualize=False)
 	V_rot_einsum = compute_potential_energy_einsum(basisfun_complex, umat, xGL, theta_grid_count, phi_grid_count, potential_strength, debug=False)
-	is_Hermitian, max_diff = check_hermiticity(V_rot_einsum, "V", tol=1e-10, debug=True, visualize=False)
-	print(f"Is the matrix Hermitian? {is_Hermitian}")
+	if hermiticity_check: 
+		is_Hermitian, max_diff = check_hermiticity(V_rot_einsum, "V", "Potential Energy Matrix", tol=1e-10, debug=True, visualize=False)
+		print(f"Is the matrix Hermitian? {is_Hermitian}")
 
 	H_rot = T_rot_einsum + V_rot_einsum
 
-	is_Hermitian, max_diff = check_hermiticity(H_rot, "H", tol=1e-10, debug=True, visualize=False)
+	is_Hermitian, max_diff = check_hermiticity(H_rot, "H", "Hamiltonian Matrix", tol=1e-10, debug=True, visualize=False)
 	print(f"Is the matrix Hermitian? {is_Hermitian}")
 
 	# Compute eigenvalues and eigenvectors
-	eigenvalues_matrix, sorted_eigenvectors = compute_sorted_eigenvalues_and_eigenvectors(H_rot, CMRECIP2KL)
+	eigenvalues_matrix, sorted_eigenvectors = compute_sorted_eigenvalues_and_eigenvectors(H_rot, cm_inv_to_K)
 
 	# Debugging function call
 	debug_eigenvalues_eigenvectors(H_rot, eigenvalues_matrix, sorted_eigenvectors)
-	whoami()
 
 	# Print the results (example)
 	print("Sorted Eigenvalues and their scaled versions:\n", eigenvalues_matrix)
