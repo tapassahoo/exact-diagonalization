@@ -34,22 +34,58 @@ def inspect_netcdf_file(filename):
 
 
 def read_quantum_data(filename, spin_state_name):
-    """Read quantum numbers, eigenvalues, and eigenvectors from a NetCDF file."""
-    with Dataset(filename, "r") as ncfile:
-        # Read quantum numbers and eigen data
-        all_quantum_numbers = ncfile.variables["all_quantum_numbers"][:]
-        
-        # Access the correct variable for spin state quantum numbers
-        spin_state_qn_array = ncfile.variables[f"{spin_state_name}_quantum_numbers"][:]
-        
-        eigenvalues = ncfile.variables["eigenvalues"][:]
-        eigenvectors_real = ncfile.variables["eigenvectors_real"][:]
-        eigenvectors_imag = ncfile.variables["eigenvectors_imag"][:]
-        
-        # Reconstruct complex eigenvectors
-        eigenvectors = eigenvectors_real + 1j * eigenvectors_imag
+	"""Read quantum numbers, eigenvalues, and eigenvectors from a NetCDF file."""
+	with Dataset(filename, "r") as ncfile:
+		# Read quantum numbers and eigen data
+		all_quantum_numbers = ncfile.variables["all_quantum_numbers"][:]
+		
+		# Access the correct variable for spin state quantum numbers
+		spin_state_qn_array = ncfile.variables[f"{spin_state_name}_quantum_numbers"][:]
+		
+		eigenvalues = ncfile.variables["eigenvalues"][:]
+		eigenvectors_real = ncfile.variables["eigenvectors_real"][:]
+		eigenvectors_imag = ncfile.variables["eigenvectors_imag"][:]
+		
+		# Reconstruct complex eigenvectors
+		eigenvectors = eigenvectors_real + 1j * eigenvectors_imag
 
-    return all_quantum_numbers, spin_state_qn_array, eigenvalues, eigenvectors_real, eigenvectors_imag, eigenvectors
+	return all_quantum_numbers, spin_state_qn_array, eigenvalues, eigenvectors_real, eigenvectors_imag, eigenvectors
+
+
+def read_scalar_parameters_with_units(filename):
+	"""
+	Read scalar simulation parameters and their units from a NetCDF file.
+
+	Parameters:
+	- filename (str): Path to the NetCDF file.
+
+	Returns:
+	- dict: A dictionary with parameter names as keys and tuples (value, unit) as values.
+	"""
+	param_names = [
+		"potential_strength",
+		"max_angular_momentum_quantum_number",
+		"theta_grid_count",
+		"phi_grid_count",
+		"B_const_cm_inv"
+	]
+
+	parameters_with_units = {}
+
+	with Dataset(filename, "r") as ncfile:
+		for param in param_names:
+			#value = ncfile.variables[param][0]
+			unit = ncfile.variables[param].getncattr("units") if "units" in ncfile.variables[param].ncattrs() else "unknown"
+			parameters_with_units[param] = (value, unit)
+
+	return parameters_with_units
+
+params = read_scalar_parameters_with_units("quantum_data.nc")
+#
+for name, (value, unit) in params.items():
+	print(f"{name}: {value} [{unit}]")
+exit()
+
 
 # Example usage
 filename = 'quantum_data.nc'

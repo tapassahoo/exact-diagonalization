@@ -15,7 +15,7 @@
 #																								 #
 # Inputs:																						  #
 # a) Potential potential_strength = potential_strength																  #
-# b) Highest value of Angular quantum number = max_angular_momentum												  #
+# b) Highest value of Angular quantum number = max_angular_momentum_quantum_number												  #
 # c) Specification of spin isomer = spin_state													  #
 #																								 #
 # Outputs: Eigenvalues and eigenfunctions														  #
@@ -62,7 +62,7 @@ VALUE_WIDTH = 45
 
 
 def parse_arguments():
-	"""Parse command-line arguments for potential potential_strength, max_angular_momentum, and spin isomer."""
+	"""Parse command-line arguments for potential potential_strength, max_angular_momentum_quantum_number, and spin isomer."""
 
 	# Initialize parser for command-line arguments
 	parser = argparse.ArgumentParser(
@@ -78,7 +78,7 @@ def parse_arguments():
 	)
 
 	parser.add_argument(
-		"max_angular_momentum",
+		"max_angular_momentum_quantum_number",
 		type=int,
 		help="Truncated angular quantum number for the computation. Must be a non-negative integer."
 	)
@@ -103,7 +103,7 @@ def whoami():
 	exit()
 
 
-def show_simulation_details(potential_potential_strength, max_angular_momentum, spin_state, theta_grid_count, phi_grid_count):
+def show_simulation_details(potential_potential_strength, max_angular_momentum_quantum_number, spin_state, theta_grid_count, phi_grid_count):
 	"""Display the input parameters for the simulation process."""
 
 	now = datetime.now()  # Current date and time
@@ -132,7 +132,7 @@ def show_simulation_details(potential_potential_strength, max_angular_momentum, 
 	# Input Parameters Section
 	print(colored("Simulation Parameters", HEADER_COLOR, attrs=['bold', 'underline']))
 	print(colored("Potential potential_strength:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(str(potential_potential_strength).ljust(VALUE_WIDTH), VALUE_COLOR))
-	print(colored("Max Angular Momentum (J_max):".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{max_angular_momentum}".ljust(VALUE_WIDTH), VALUE_COLOR))
+	print(colored("Max Angular Momentum (J_max):".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{max_angular_momentum_quantum_number}".ljust(VALUE_WIDTH), VALUE_COLOR))
 	print(colored("Spin State:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{spin_state}".ljust(VALUE_WIDTH), VALUE_COLOR))
 	print("\n**")
 
@@ -143,7 +143,7 @@ def show_simulation_details(potential_potential_strength, max_angular_momentum, 
 
 def generate_filename(
 		spin_state: str,
-		max_angular_momentum: int,
+		max_angular_momentum_quantum_number: int,
 		potential_strength: float,
 		theta_grid_count: int,
 		phi_grid_count: int,
@@ -154,7 +154,7 @@ def generate_filename(
 
 	Parameters:
 	- spin_state (str): The spin isomer type ("spinless", "para", or "ortho").
-	- max_angular_momentum (int): Highest angular quantum number.
+	- max_angular_momentum_quantum_number (int): Highest angular quantum number.
 	- potential_strength (float): Field potential_strength in Kelvin.
 	- theta_grid_count (int): Number of theta grids.
 	- phi_grid_count (int): Number of phi grids.
@@ -179,7 +179,7 @@ def generate_filename(
 
 	# Construct the file name in a logical, readable format
 	filename = (
-		f"{prefix}_for_H2_{isomer}_isomer_max_angular_momentum{max_angular_momentum}_"
+		f"{prefix}_for_H2_{isomer}_isomer_max_angular_momentum_quantum_number{max_angular_momentum_quantum_number}_"
 		f"potential_strength{potential_strength}K_"
 		f"grids_theta{theta_grid_count}_phi{phi_grid_count}"
 	)
@@ -237,30 +237,30 @@ def compute_legendre_quadrature(theta_grid_count, phi_grid_count, display_legend
 	return xGL, wGL, phixiGridPts, dphixi
 
 
-def get_number_of_basis_functions_by_spin_states(max_angular_momentum, spin_state):
+def get_number_of_basis_functions_by_spin_states(max_angular_momentum_quantum_number, spin_state):
 	"""
 	Gets and displays the number of basis functions for a linear rotor
 	categorized by spin isomers (spinless, para, ortho).
 
 	Parameters:
-	- max_angular_momentum (int): The highest angular quantum number.
+	- max_angular_momentum_quantum_number (int): The highest angular quantum number.
 	- spin_state (str): The spin isomer type ("spinless", "para", or "ortho").
 
 	Returns:
 	- dict: A dictionary with JM, JeM, JoM, and njm values.
 	"""
 	# Calculate the total number of basis functions
-	# JKM = "Sum[(2J+1),{J,0,max_angular_momentum}]" -- Derivation is given in
+	# JKM = "Sum[(2J+1),{J,0,max_angular_momentum_quantum_number}]" -- Derivation is given in
 	# lecture-notes-on-exact-diagonalization.pdf or you can derive it on
 	# ChatGPT
-	JM = int((max_angular_momentum + 1)**2)
+	JM = int((max_angular_momentum_quantum_number + 1)**2)
 
 	# Determine the even (JeM) and odd (JoM) basis function counts
-	if (max_angular_momentum % 2) == 0:
-		JeM = int((JM + max_angular_momentum + 1) / 2)
+	if (max_angular_momentum_quantum_number % 2) == 0:
+		JeM = int((JM + max_angular_momentum_quantum_number + 1) / 2)
 		JoM = JM - JeM
 	else:
-		JoM = int((JM + max_angular_momentum + 1) / 2)
+		JoM = int((JM + max_angular_momentum_quantum_number + 1) / 2)
 		JeM = JM - JoM
 
 	# Assign njm based on the spin isomer
@@ -972,8 +972,13 @@ def read_quantum_numbers_from_netcdf(filename):
 
 def save_all_quantum_data_to_netcdf(
 	filename,
-	all_quantum_numbers,
+	potential_strength,
+	max_angular_momentum_quantum_number,
+	theta_grid_count,
+	phi_grid_count,
+	B_const_cm_inv,	
 	spin_state_name,
+	all_quantum_numbers,
 	spin_state_qn_array,
 	sorted_eigenvalues,
 	sorted_eigenvectors
@@ -1000,6 +1005,7 @@ def save_all_quantum_data_to_netcdf(
 
 	with Dataset(filename, "w", format="NETCDF4") as ncfile:
 		write_metadata(ncfile, spin_state_name)
+		write_scalar_parameters(ncfile, potential_strength, max_angular_momentum_quantum_number, theta_grid_count, phi_grid_count, B_const_cm_inv)
 		write_quantum_numbers(ncfile, all_quantum_numbers, spin_state_name, spin_state_qn_array)
 		write_eigen_data(ncfile, sorted_eigenvalues, real_eigenvectors, imag_eigenvectors)
 
@@ -1008,6 +1014,31 @@ def write_metadata(ncfile, spin_state_name):
 	ncfile.description = f"Quantum number set and spin-resolved data for {spin_state_name}"
 	ncfile.history = f"Created on {datetime.now().isoformat()} by {getpass.getuser()}"
 	ncfile.source = "Generated using quantum eigenvalue analysis"
+
+def write_scalar_parameters(ncfile, potential_strength, max_J, theta_grid, phi_grid, B_const):
+	"""Write scalar parameters to NetCDF file with units."""
+	ncfile.createDimension('scalar', 1)  # Dummy dimension for scalar variables
+
+	var_potential = ncfile.createVariable("potential_strength", "f8", ("scalar",))
+	var_potential.units = "cm^-1"  # or potential-specific units
+
+	var_max_J = ncfile.createVariable("max_angular_momentum_quantum_number", "i4", ("scalar",))
+	var_max_J.units = "unitless"
+
+	var_theta = ncfile.createVariable("theta_grid_count", "i4", ("scalar",))
+	var_theta.units = "unitless"
+
+	var_phi = ncfile.createVariable("phi_grid_count", "i4", ("scalar",))
+	var_phi.units = "unitless"
+
+	var_B_const = ncfile.createVariable("B_const_cm_inv", "f8", ("scalar",))
+	var_B_const.units = "cm^-1"
+
+	var_potential[0] = potential_strength
+	var_max_J[0] = max_J
+	var_theta[0] = theta_grid
+	var_phi[0] = phi_grid
+	var_B_const[0] = B_const
 
 def write_quantum_numbers(ncfile, all_qn, spin_state_name, spin_qn):
 	all_qn = np.array(all_qn, dtype=np.int32)
@@ -1055,11 +1086,11 @@ def main():
 	# Parse command-line arguments
 	args = parse_arguments()
 	potential_strength   = args.potential_strength
-	max_angular_momentum = args.max_angular_momentum
+	max_angular_momentum_quantum_number = args.max_angular_momentum_quantum_number
 	spin_state			 = args.spin
 
 	# No. of grid points along theta and phi
-	theta_grid_count	 = int(2 * max_angular_momentum + 5)
+	theta_grid_count	 = int(2 * max_angular_momentum_quantum_number + 5)
 	phi_grid_count		 = int(2 * theta_grid_count + 5)
 
 	# Tolerance limit for a harmitian matrix
@@ -1076,7 +1107,7 @@ def main():
 	display_data				= False
 
 	# Display input parameters
-	show_simulation_details(potential_strength, max_angular_momentum, spin_state, theta_grid_count, phi_grid_count)
+	show_simulation_details(potential_strength, max_angular_momentum_quantum_number, spin_state, theta_grid_count, phi_grid_count)
 
 	# Spectroscopic constant (B) in cm⁻¹ taken from NIST data
 	B_const_cm_inv = 60.853  
@@ -1102,7 +1133,7 @@ def main():
 		energies = rotational_energy_levels(B_const_K, 10)
 		plot_rotational_levels(energies)
 
-	basis_type, base_file_name = generate_filename(spin_state, max_angular_momentum, potential_strength, theta_grid_count, phi_grid_count)
+	basis_type, base_file_name = generate_filename(spin_state, max_angular_momentum_quantum_number, potential_strength, theta_grid_count, phi_grid_count)
 	prefix = "output_file_for_checking_orthonormality_condition"
 
 	# Separator line
@@ -1113,9 +1144,9 @@ def main():
 	xGL, wGL, phixiGridPts, dphixi = compute_legendre_quadrature(theta_grid_count, phi_grid_count, display_legendre_quadrature)
 
 	# All quantum numbers: (J, M)
-	all_quantum_numbers = bfunc.generate_linear_rotor_quantum_numbers(max_angular_momentum, "spinless")
+	all_quantum_numbers = bfunc.generate_linear_rotor_quantum_numbers(max_angular_momentum_quantum_number, "spinless")
 	# Spin-state-specific quantum numbers
-	quantum_numbers_for_spin_state = bfunc.generate_linear_rotor_quantum_numbers(max_angular_momentum, spin_state)
+	quantum_numbers_for_spin_state = bfunc.generate_linear_rotor_quantum_numbers(max_angular_momentum_quantum_number, spin_state)
 
 	# Step 1: Save quantum numbers
 	#file_name_netcdf = f"output" + base_file_name + ".nc"
@@ -1127,8 +1158,8 @@ def main():
 	# Step 2: Append eigenvalues and eigenvectors
 	#append_eigen_data_to_netcdf(filename, eigenvalue_matrix, sorted_eigenvectors)
 
-	# njm, JM, JeM, JoM = compute_basis_functions(max_angular_momentum, spin_state)
-	basis_functions_info = get_number_of_basis_functions_by_spin_states(max_angular_momentum, spin_state)
+	# njm, JM, JeM, JoM = compute_basis_functions(max_angular_momentum_quantum_number, spin_state)
+	basis_functions_info = get_number_of_basis_functions_by_spin_states(max_angular_momentum_quantum_number, spin_state)
 	total_number_of_states = basis_functions_info["JM"]
 	total_number_of_spin_states = basis_functions_info["JM_spin_specific"]
 	
@@ -1259,13 +1290,17 @@ def main():
 	# Call the function to save all data to NetCDF
 	save_all_quantum_data_to_netcdf(
 		filename,
-		all_quantum_numbers,
+		potential_strength,
+		max_angular_momentum_quantum_number,
+		theta_grid_count,
+		phi_grid_count,
+		B_const_cm_inv,	
 		spin_state,
+		all_quantum_numbers,
 		quantum_numbers_for_spin_state,
 		sorted_eigenvalues,
 		sorted_eigenvectors
 	)
-
 	print(f"Data successfully written to '{filename}'")
 
 	whoami()
@@ -1309,7 +1344,7 @@ def main():
 	# printing block is closed
 
 	# computation of reduced density matrix
-	reduced_density = np.zeros((njkm, max_angular_momentum + 1), dtype=complex)
+	reduced_density = np.zeros((njkm, max_angular_momentum_quantum_number + 1), dtype=complex)
 	for i in range(njkm):
 		for ip in range(njkm):
 			if ((njkmQuantumNumList[i, 1] == njkmQuantumNumList[ip, 1]) and (
