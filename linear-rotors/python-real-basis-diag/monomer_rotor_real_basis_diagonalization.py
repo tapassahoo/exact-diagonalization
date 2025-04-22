@@ -825,49 +825,7 @@ def compute_potential_energy_einsum(basisfun_complex, umat, xGL, theta_grid_coun
 
 	return V_rot
 
-def save_eigenvalues_eigenvectors_netcdf(H_rot, scaling_factor, filename="eigen_data.nc"):
-	"""
-	Computes, sorts, and saves eigenvalues and eigenvectors to a compressed NetCDF file.
-
-	Parameters:
-	- H_rot (ndarray): Rotational Hamiltonian matrix (NxN).
-	- scaling_factor (float): Scaling factor for eigenvalues (unit conversion).
-	- filename (str): Output NetCDF file name (default: "eigen_data.nc").
-
-	Saves:
-	- Eigenvalues (sorted) and their scaled versions as a 2-column variable.
-	- Corresponding eigenvectors in sorted order.
-	"""
-	# Compute eigenvalues and eigenvectors efficiently
-	eigenvalues, eigenvectors = eigh(H_rot)
-
-	# Sort eigenvalues and rearrange eigenvectors accordingly
-	sorted_indices = np.argsort(eigenvalues)
-	sorted_eigenvalues = eigenvalues[sorted_indices]
-	sorted_eigenvectors = eigenvectors[:, sorted_indices]
-
-	# Stack eigenvalues and their scaled versions into a 2D array
-	eigenvalue_matrix = np.column_stack((sorted_eigenvalues, sorted_eigenvalues / scaling_factor))
-
-	# Create and write to NetCDF file
-	with Dataset(filename, "w", format="NETCDF4") as ncfile:
-		# Define dimensions
-		N = H_rot.shape[0]
-		ncfile.createDimension("N", N)
-		ncfile.createDimension("eigen_components", 2)  # For eigenvalues and scaled values
-
-		# Create variables with compression
-		ev_var = ncfile.createVariable("eigenvalues", "f8", ("N", "eigen_components"), zlib=True)
-		eigvec_var = ncfile.createVariable("eigenvectors", "f8", ("N", "N"), zlib=True)
-
-		# Store data
-		ev_var[:, :] = eigenvalue_matrix
-		eigvec_var[:, :] = sorted_eigenvectors
-
-	print(f"Eigenvalues and eigenvectors saved in {filename} (compressed NetCDF4)")
-
-
-def compute_sorted_eigenvalues_and_eigenvectors(H_rot, scaling_factor):
+def compute_sorted_eigenvalues_and_eigenvectors(H_rot):
 	"""
 	Computes and sorts the eigenvalues and eigenvectors of the rotational Hamiltonian matrix.
 
@@ -888,130 +846,50 @@ def compute_sorted_eigenvalues_and_eigenvectors(H_rot, scaling_factor):
 	sorted_eigenvectors = eigenvectors[:, sorted_indices]
 
 	# Create a matrix with eigenvalues and their scaled versions
-	eigenvalue_matrix = np.column_stack((sorted_eigenvalues, sorted_eigenvalues / scaling_factor))
+	#eigenvalue_matrix = np.column_stack((sorted_eigenvalues, sorted_eigenvalues / scaling_factor))
 
-	return eigenvalue_matrix, sorted_eigenvectors
+	#return eigenvalue_matrix, sorted_eigenvectors
+	return sorted_eigenvalues, sorted_eigenvectors
 
-
-def save_eigenvalues_eigenvectors_netcdf(eigenvalue_matrix, sorted_eigenvectors, filename="eigen_data.nc"):
-	"""
-	Saves sorted eigenvalues and eigenvectors (real & imaginary) to a compressed NetCDF file.
-
-	Parameters:
-	- eigenvalue_matrix (ndarray): Nx2 matrix with sorted eigenvalues and their scaled versions.
-	- sorted_eigenvectors (ndarray): NxN matrix of sorted eigenvectors (complex).
-	- filename (str): Output NetCDF file name (default: "eigen_data.nc").
-	"""
-	N = sorted_eigenvectors.shape[0]  # Matrix size
-
-	with Dataset(filename, "w", format="NETCDF4") as ncfile:
-		# Define dimensions
-		ncfile.createDimension("N", N)
-		ncfile.createDimension("eigen_components", 2)  # For eigenvalues and scaled values
-
-		# Create variables
-		ev_var = ncfile.createVariable("eigenvalues", "f8", ("N", "eigen_components"), zlib=True)
-		eigvec_real_var = ncfile.createVariable("eigenvectors_real", "f8", ("N", "N"), zlib=True)
-		eigvec_imag_var = ncfile.createVariable("eigenvectors_imag", "f8", ("N", "N"), zlib=True)
-
-		# Store real and imaginary parts separately
-		ev_var[:, :] = eigenvalue_matrix
-		eigvec_real_var[:, :] = sorted_eigenvectors.real
-		eigvec_imag_var[:, :] = sorted_eigenvectors.imag
-
-	print(f"✅ Eigenvalues and eigenvectors saved in {filename} (compressed NetCDF4)")
-
-
-def load_eigenvalues_eigenvectors_netcdf(filename="eigen_data.nc"):
-	"""
-	Reads eigenvalues and eigenvectors from a NetCDF file.
-
-	Parameters:
-	- filename (str): Name of the NetCDF file (default: "eigen_data.nc").
-
-	Returns:
-	- eigenvalues (ndarray): Sorted eigenvalues (1D array).
-	- scaled_eigenvalues (ndarray): Scaled eigenvalues (1D array).
-	- eigenvectors (ndarray): Corresponding sorted eigenvectors (NxN matrix).
-	"""
-	try:
-		with Dataset(filename, "r") as ncfile:
-			# Check if the expected variables exist in the file
-			if "eigenvalues" not in ncfile.variables:
-				raise KeyError("Missing 'eigenvalues' variable in NetCDF file.")
-			
-			eigenvalue_matrix = ncfile.variables["eigenvalues"][:]
-			eigenvalues = eigenvalue_matrix[:, 0]  # First column: original eigenvalues
-			scaled_eigenvalues = eigenvalue_matrix[:, 1]  # Second column: scaled values
-			
-			# Handling complex eigenvectors if stored separately
-			if "eigenvectors_real" in ncfile.variables and "eigenvectors_imag" in ncfile.variables:
-				eigvec_real = ncfile.variables["eigenvectors_real"][:]
-				eigvec_imag = ncfile.variables["eigenvectors_imag"][:]
-				eigenvectors = eigvec_real + 1j * eigvec_imag  # Reconstruct complex matrix
-			elif "eigenvectors" in ncfile.variables:
-				eigenvectors = ncfile.variables["eigenvectors"][:]
-			else:
-				raise KeyError("Missing eigenvectors in NetCDF file.")
-
-		return eigenvalues, scaled_eigenvalues, eigenvectors
-
-	except FileNotFoundError:
-		print(f"❌ Error: File '{filename}' not found.")
-		return None, None, None
-	except Exception as e:
-		print(f"❌ Error: {e}")
-		return None, None, None
 
 def debug_eigenvalues_eigenvectors(H_rot, sorted_eigenvalues, sorted_eigenvectors):
 	"""
-	Debugs and verifies the correctness of computed eigenvalues and eigenvectors.
+	Validates the correctness of eigenvalues and eigenvectors computed from a Hamiltonian matrix.
 
 	Parameters:
-	- H_rot (ndarray): The original rotational Hamiltonian matrix.
-	- sorted_eigenvalues (ndarray): The computed sorted eigenvalues.
-	- sorted_eigenvectors (ndarray): The computed sorted eigenvectors.
+	- H_rot (ndarray): Original real symmetric or complex Hermitian Hamiltonian matrix.
+	- sorted_eigenvalues (ndarray): 1D array of sorted eigenvalues.
+	- sorted_eigenvectors (ndarray): 2D array of corresponding eigenvectors (each column is an eigenvector).
 
 	Returns:
-	- None: Prints debugging information and raises assertion errors if checks fail.
+	- None: Performs checks and prints validation status.
 	"""
+	print("\n🔍 DEBUGGING EIGENVALUES AND EIGENVECTORS")
 
-	print("\n🔍 DEBUGGING EIGENVALUES & EIGENVECTORS 🔍")
-
-	# 1️⃣ Check if H_rot is Hermitian (Symmetric for Real Case)
-	assert np.allclose(H_rot, H_rot.T.conj()), "❌ H_rot is not Hermitian (symmetric for real case)."
+	# 1. Check Hermitian property of the Hamiltonian
+	assert np.allclose(H_rot, H_rot.T.conj()), "❌ H_rot is not Hermitian."
 	print("✅ H_rot is Hermitian.")
 
-	# 2️⃣ Verify Eigenvalue Computation
-	#print("\n🔹 Computed Eigenvalues:\n", sorted_eigenvalues)
-	assert np.all(sorted_eigenvalues[:-1] <= sorted_eigenvalues[1:]), "❌ Eigenvalues are not properly sorted!"
-	print("✅ Eigenvalues are sorted correctly.")
+	# 2. Verify eigenvalues are sorted in ascending order
+	assert np.all(np.diff(sorted_eigenvalues) >= 0), "❌ Eigenvalues are not sorted."
+	print("✅ Eigenvalues are sorted.")
 
-	# 3️⃣ Check the Eigenvectors' Orthogonality (Eigenvectors should be orthonormal)
-	identity_check = np.dot(sorted_eigenvectors.T.conj(), sorted_eigenvectors)
-	#print("\n🔹 Orthogonality Check (Should be Identity Matrix):\n", identity_check)
-	assert np.allclose(identity_check, np.eye(identity_check.shape[0])), "❌ Eigenvectors are not orthonormal!"
+	# 3. Check orthonormality of eigenvectors
+	identity = np.dot(sorted_eigenvectors.T.conj(), sorted_eigenvectors)
+	assert np.allclose(identity, np.eye(identity.shape[0])), "❌ Eigenvectors are not orthonormal."
 	print("✅ Eigenvectors are orthonormal.")
 
-	"""
-	# 4️⃣ Validate Eigenvalue Equation (HΨ = EΨ)
-	reconstructed_H = sorted_eigenvectors @ np.diag(sorted_eigenvalues) @ sorted_eigenvectors.T.conj()
-	print("\n🔹 Reconstructed H_rot from Eigenvalues and Eigenvectors:\n", reconstructed_H)
-	assert np.allclose(reconstructed_H, H_rot), "❌ Eigenvalue equation validation failed!"
-	print("✅ Eigenvalue equation holds (HΨ = EΨ).")
-	"""
+	# 4. Validate the eigen-decomposition: H = VΛV†
+	H_reconstructed = sorted_eigenvectors @ np.diag(sorted_eigenvalues) @ sorted_eigenvectors.T.conj()
+	assert np.allclose(H_rot, H_reconstructed), "❌ Eigen-decomposition reconstruction failed."
+	print("✅ Hamiltonian reconstruction from eigenpairs is accurate.")
 
-	# 5️⃣ Debugging the NetCDF Storage Issue
+	# 5. Check for complex eigenvectors
 	if np.iscomplexobj(sorted_eigenvectors):
-		print("⚠️ Warning: Eigenvectors contain complex numbers!")
-		sorted_eigenvectors = sorted_eigenvectors.real  # Store only the real part if justified
-		print("🔹 Only real part of eigenvectors will be stored in NetCDF.")
+		print("⚠️ Eigenvectors contain complex numbers. Only real part may be stored in NetCDF.")
 
-	print("\n🎯 ✅ All checks passed! Eigenvalues and eigenvectors are computed correctly. 🎯")
+	print("🎯 All validations passed successfully.")
 
-# eigenvalues_matrix, sorted_eigenvectors = compute_sorted_eigenvalues_and_eigenvectors(H_rot, 1.0)
-# sorted_eigenvalues = eigenvalues_matrix[:, 0]  # Extract original eigenvalues
-# debug_eigenvalues_eigenvectors(H_rot, sorted_eigenvalues, sorted_eigenvectors)
 
 def save_quantum_numbers_to_netcdf(
 	all_quantum_numbers,
@@ -1064,32 +942,6 @@ def save_quantum_numbers_to_netcdf(
 	print(colored(f"Quantum numbers saved in".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{filename}".ljust(VALUE_WIDTH), VALUE_COLOR))
 
 
-def append_eigen_data_to_netcdf(
-	filename,
-	eigenvalue_matrix,
-	sorted_eigenvectors
-):
-	eigenval = np.array(eigenvalue_matrix, dtype=np.float64)
-	eigvec_real = np.real(sorted_eigenvectors)
-	eigvec_imag = np.imag(sorted_eigenvectors)
-
-	with Dataset(filename, "a") as ncfile:
-		# Dimensions
-		ncfile.createDimension("num_eigenstates", eigenval.shape[0])
-		ncfile.createDimension("eigenval_components", eigenval.shape[1])
-		ncfile.createDimension("matrix_size", sorted_eigenvectors.shape[0])
-
-		# Eigenvalues
-		eigenval_var = ncfile.createVariable("eigenvalues", "f8", ("num_eigenstates", "eigenval_components"))
-		eigenval_var[:, :] = eigenval
-
-		# Eigenvectors (real and imaginary parts)
-		eigvec_real_var = ncfile.createVariable("eigenvectors_real", "f8", ("matrix_size", "matrix_size"))
-		eigvec_real_var[:, :] = eigvec_real
-
-		eigvec_imag_var = ncfile.createVariable("eigenvectors_imag", "f8", ("matrix_size", "matrix_size"))
-		eigvec_imag_var[:, :] = eigvec_imag
-
 
 def read_quantum_numbers_from_netcdf(filename):
 	with Dataset(filename, "r") as ncfile:
@@ -1118,6 +970,87 @@ def read_quantum_numbers_from_netcdf(filename):
 
 		print("\n**")
 
+def save_all_quantum_data_to_netcdf(
+	filename,
+	all_quantum_numbers,
+	spin_state_name,
+	spin_state_qn_array,
+	sorted_eigenvalues,
+	sorted_eigenvectors
+):
+	"""
+	Save quantum numbers, eigenvalues, and eigenvectors to a NetCDF file.
+
+	Parameters:
+	- filename (str): Output NetCDF file name.
+	- all_quantum_numbers (ndarray): Full list of quantum numbers.
+	- spin_state_name (str): Name of the spin state (e.g., 'singlet').
+	- spin_state_qn_array (ndarray): Quantum numbers corresponding to the spin state.
+	- sorted_eigenvalues (ndarray): Eigenvalues (e.g., in Kelvin).
+	- sorted_eigenvectors (ndarray): Corresponding eigenvectors (may be complex).
+	"""
+	sorted_eigenvalues = np.array(sorted_eigenvalues, dtype=np.float64)
+	
+	# Ensure eigenvectors are complex if they contain imaginary parts
+	sorted_eigenvectors = np.array(sorted_eigenvectors, dtype=np.complex128)
+
+	# Extract real and imaginary parts of eigenvectors
+	real_eigenvectors = np.real(sorted_eigenvectors)
+	imag_eigenvectors = np.imag(sorted_eigenvectors)
+
+	with Dataset(filename, "w", format="NETCDF4") as ncfile:
+		write_metadata(ncfile, spin_state_name)
+		write_quantum_numbers(ncfile, all_quantum_numbers, spin_state_name, spin_state_qn_array)
+		write_eigen_data(ncfile, sorted_eigenvalues, real_eigenvectors, imag_eigenvectors)
+
+def write_metadata(ncfile, spin_state_name):
+	ncfile.title = "Quantum Numbers and Eigen Data"
+	ncfile.description = f"Quantum number set and spin-resolved data for {spin_state_name}"
+	ncfile.history = f"Created on {datetime.now().isoformat()} by {getpass.getuser()}"
+	ncfile.source = "Generated using quantum eigenvalue analysis"
+
+def write_quantum_numbers(ncfile, all_qn, spin_state_name, spin_qn):
+	all_qn = np.array(all_qn, dtype=np.int32)
+	spin_qn = np.array(spin_qn, dtype=np.int32)
+
+	# Create dimensions
+	ncfile.createDimension("all_entries", all_qn.shape[0])
+	ncfile.createDimension("components", all_qn.shape[1])
+	ncfile.createDimension("spin_count", spin_qn.shape[0])
+
+	# Create variables and assign quantum numbers
+	all_var = ncfile.createVariable("all_quantum_numbers", "i4", ("all_entries", "components"))
+	all_var[:, :] = all_qn
+	all_var.long_name = "Complete set of quantum numbers including J, M, and others"
+
+	spin_var = ncfile.createVariable(f"{spin_state_name}_quantum_numbers", "i4", ("spin_count", "components"))
+	spin_var[:, :] = spin_qn
+	spin_var.long_name = f"Quantum numbers (including J and M) for {spin_state_name} spin state"
+
+def write_eigen_data(ncfile, eigenvalues, real_eigenvectors, imag_eigenvectors):
+	state_count = eigenvalues.shape[0]
+	vector_dim = real_eigenvectors.shape[1]
+
+	# Create dimensions for eigenvalues and eigenvectors
+	ncfile.createDimension("state_count", state_count)
+	ncfile.createDimension("vector_dim", vector_dim)
+
+	# Store eigenvalues as real values (float64)
+	eigval_var = ncfile.createVariable("eigenvalues", "f8", ("state_count",))
+	eigval_var[:] = eigenvalues
+	eigval_var.units = "Kelvin"
+	eigval_var.long_name = "Eigenvalues of the Hamiltonian"
+
+	# Store real and imaginary parts of eigenvectors separately
+	eigvec_real_var = ncfile.createVariable("eigenvectors_real", "f8", ("state_count", "vector_dim"))
+	eigvec_real_var[:, :] = real_eigenvectors
+	eigvec_real_var.long_name = "Real part of the eigenvectors corresponding to eigenvalues"
+
+	eigvec_imag_var = ncfile.createVariable("eigenvectors_imag", "f8", ("state_count", "vector_dim"))
+	eigvec_imag_var[:, :] = imag_eigenvectors
+	eigvec_imag_var.long_name = "Imaginary part of the eigenvectors corresponding to eigenvalues"
+
+
 def main():
 	# Parse command-line arguments
 	args = parse_arguments()
@@ -1135,12 +1068,12 @@ def main():
 	# print the normalization
 	display_legendre_quadrature = False
 	compute_rigid_rotor_energy  = False
-	orthonormality_check        = False
-	hermiticity_check           = False
-	unitarity_check			    = False
-	pot_write				    = False
+	orthonormality_check		= False
+	hermiticity_check		   = False
+	unitarity_check				= False
+	pot_write					= False
 	#
-	display_data                = False
+	display_data				= False
 
 	# Display input parameters
 	show_simulation_details(potential_strength, max_angular_momentum, spin_state, theta_grid_count, phi_grid_count)
@@ -1185,8 +1118,8 @@ def main():
 	quantum_numbers_for_spin_state = bfunc.generate_linear_rotor_quantum_numbers(max_angular_momentum, spin_state)
 
 	# Step 1: Save quantum numbers
-	file_name_netcdf = f"output" + base_file_name + ".nc"
-	save_quantum_numbers_to_netcdf(all_quantum_numbers, spin_state, quantum_numbers_for_spin_state, file_name_netcdf)
+	#file_name_netcdf = f"output" + base_file_name + ".nc"
+	#save_quantum_numbers_to_netcdf(all_quantum_numbers, spin_state, quantum_numbers_for_spin_state, file_name_netcdf)
 	if display_data:
 		# Read the data back
 		read_quantum_numbers_from_netcdf(filename)
@@ -1308,19 +1241,33 @@ def main():
 		print(f"Is the matrix Hermitian? {is_Hermitian}")
 
 	# Compute eigenvalues and eigenvectors
-	eigenvalues_matrix, sorted_eigenvectors = compute_sorted_eigenvalues_and_eigenvectors(H_rot, cm_inv_to_K)
+	#eigenvalues_matrix, sorted_eigenvectors = compute_sorted_eigenvalues_and_eigenvectors(H_rot, cm_inv_to_K)
+	sorted_eigenvalues, sorted_eigenvectors = compute_sorted_eigenvalues_and_eigenvectors(H_rot)
 
 	# Debugging function call
-	debug_eigenvalues_eigenvectors(H_rot, eigenvalues_matrix, sorted_eigenvectors)
+	debug_eigenvalues_eigenvectors(H_rot, sorted_eigenvalues, sorted_eigenvectors)
 
 	# Print the results (example)
-	print("Sorted Eigenvalues and their scaled versions:\n", eigenvalues_matrix)
-
-	#print("Corresponding Sorted Eigenvectors:\n", sorted_eigenvectors)
-	save_eigenvalues_eigenvectors_netcdf(eigenvalues_matrix, sorted_eigenvectors)
+	print("Sorted Eigenvalues (in Kelvin):\n", sorted_eigenvalues)
 
 	# Example Usage
-	eigenvalues, scaled_eigenvalues, eigenvectors = load_eigenvalues_eigenvectors_netcdf("eigen_data.nc")
+	# eigenvalues, scaled_eigenvalues, eigenvectors = load_eigenvalues_eigenvectors_netcdf("eigen_data.nc")
+
+	# Output file name
+	filename = "quantum_data.nc"
+
+	# Call the function to save all data to NetCDF
+	save_all_quantum_data_to_netcdf(
+		filename,
+		all_quantum_numbers,
+		spin_state,
+		quantum_numbers_for_spin_state,
+		sorted_eigenvalues,
+		sorted_eigenvectors
+	)
+
+	print(f"Data successfully written to '{filename}'")
+
 	whoami()
 
 
