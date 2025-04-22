@@ -983,13 +983,13 @@ def debug_eigenvalues_eigenvectors(H_rot, sorted_eigenvalues, sorted_eigenvector
 	print("✅ H_rot is Hermitian.")
 
 	# 2️⃣ Verify Eigenvalue Computation
-	print("\n🔹 Computed Eigenvalues:\n", sorted_eigenvalues)
+	#print("\n🔹 Computed Eigenvalues:\n", sorted_eigenvalues)
 	assert np.all(sorted_eigenvalues[:-1] <= sorted_eigenvalues[1:]), "❌ Eigenvalues are not properly sorted!"
 	print("✅ Eigenvalues are sorted correctly.")
 
 	# 3️⃣ Check the Eigenvectors' Orthogonality (Eigenvectors should be orthonormal)
 	identity_check = np.dot(sorted_eigenvectors.T.conj(), sorted_eigenvectors)
-	print("\n🔹 Orthogonality Check (Should be Identity Matrix):\n", identity_check)
+	#print("\n🔹 Orthogonality Check (Should be Identity Matrix):\n", identity_check)
 	assert np.allclose(identity_check, np.eye(identity_check.shape[0])), "❌ Eigenvectors are not orthonormal!"
 	print("✅ Eigenvectors are orthonormal.")
 
@@ -1140,7 +1140,7 @@ def main():
 	unitarity_check			    = False
 	pot_write				    = False
 	#
-	read_data                   = False
+	display_data                = False
 
 	# Display input parameters
 	show_simulation_details(potential_strength, max_angular_momentum, spin_state, theta_grid_count, phi_grid_count)
@@ -1187,7 +1187,7 @@ def main():
 	# Step 1: Save quantum numbers
 	file_name_netcdf = f"output" + base_file_name + ".nc"
 	save_quantum_numbers_to_netcdf(all_quantum_numbers, spin_state, quantum_numbers_for_spin_state, file_name_netcdf)
-	if read_data:
+	if display_data:
 		# Read the data back
 		read_quantum_numbers_from_netcdf(filename)
 
@@ -1284,13 +1284,10 @@ def main():
 	# Call the function to compute the rotational kinetic energy operator
 	#T_rot_einsum = compute_rotational_kinetic_energy_einsum(umat, all_quantum_numbers, B_const_K)
 	T_rot_einsum = compute_rotational_kinetic_energy_einsum(umat, all_quantum_numbers, B_const_K, debug=False)
-	# Extract and display rotational energies
-	diagonal_energies = extract_diagonal(T_rot_einsum.real)
-	display_rotational_energies(diagonal_energies, all_quantum_numbers, B_const_K)
-
-	if hermiticity_check: 
-		is_Hermitian, max_diff = check_hermiticity(T_rot_einsum, "T", "Rotational Kinetic Energy Matrix", tol=1e-10, debug=True, visualize=True)
-		print(f"Is the matrix Hermitian? {is_Hermitian}")
+	if display_data:
+		# Extract and display rotational energies
+		diagonal_energies = extract_diagonal(T_rot_einsum.real)
+		display_rotational_energies(diagonal_energies, all_quantum_numbers, B_const_K)
 
 	if False:
 		V_rot_1 = np.einsum('ia,ja->ij', umat, umat.conj())
@@ -1298,14 +1295,17 @@ def main():
 
 		is_Hermitian, max_diff = check_hermiticity(V_rot, "V", tol=1e-10, debug=True, visualize=False)
 	V_rot_einsum = compute_potential_energy_einsum(basisfun_complex, umat, xGL, theta_grid_count, phi_grid_count, potential_strength, debug=False)
+	H_rot = T_rot_einsum + V_rot_einsum
+
 	if hermiticity_check: 
+		is_Hermitian, max_diff = check_hermiticity(T_rot_einsum, "T", "Rotational Kinetic Energy Matrix", tol=1e-10, debug=True, visualize=True)
+		print(f"Is the matrix Hermitian? {is_Hermitian}")
+
 		is_Hermitian, max_diff = check_hermiticity(V_rot_einsum, "V", "Potential Energy Matrix", tol=1e-10, debug=True, visualize=False)
 		print(f"Is the matrix Hermitian? {is_Hermitian}")
 
-	H_rot = T_rot_einsum + V_rot_einsum
-
-	is_Hermitian, max_diff = check_hermiticity(H_rot, "H", "Hamiltonian Matrix", tol=1e-10, debug=True, visualize=False)
-	print(f"Is the matrix Hermitian? {is_Hermitian}")
+		is_Hermitian, max_diff = check_hermiticity(H_rot, "H", "Hamiltonian Matrix", tol=1e-10, debug=True, visualize=False)
+		print(f"Is the matrix Hermitian? {is_Hermitian}")
 
 	# Compute eigenvalues and eigenvectors
 	eigenvalues_matrix, sorted_eigenvectors = compute_sorted_eigenvalues_and_eigenvectors(H_rot, cm_inv_to_K)
@@ -1321,6 +1321,7 @@ def main():
 
 	# Example Usage
 	eigenvalues, scaled_eigenvalues, eigenvectors = load_eigenvalues_eigenvectors_netcdf("eigen_data.nc")
+	whoami()
 
 
 
