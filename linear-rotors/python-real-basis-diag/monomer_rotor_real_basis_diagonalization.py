@@ -925,7 +925,7 @@ def save_all_quantum_data_to_netcdf(
 
 	with Dataset(filename, "w", format="NETCDF4") as ncfile:
 		write_metadata(ncfile, spin_state_name)
-		write_scalar_parameters(ncfile, potential_strength, max_angular_momentum_quantum_number, theta_grid_count, phi_grid_count, B_const_cm_inv)
+		write_scalar_parameters(ncfile, potential_strength, max_angular_momentum_quantum_number, spin_state_name, theta_grid_count, phi_grid_count, B_const_cm_inv)
 		write_quantum_numbers(ncfile, all_quantum_numbers, spin_state_name, spin_state_qn_array)
 		write_eigen_data(ncfile, sorted_eigenvalues, real_eigenvectors, imag_eigenvectors)
 	print("\n**")
@@ -937,7 +937,7 @@ def write_metadata(ncfile, spin_state_name):
 	ncfile.history = f"Created on {datetime.now().isoformat()} by {getpass.getuser()}"
 	ncfile.source = "Generated using quantum eigenvalue analysis"
 
-def write_scalar_parameters(ncfile, potential_strength, max_J, theta_grid, phi_grid, B_const):
+def write_scalar_parameters(ncfile, potential_strength, max_J, spin_state, theta_grid, phi_grid, B_const):
 	"""Write scalar parameters to NetCDF file with units."""
 	ncfile.createDimension('scalar', 1)  # Dummy dimension for scalar variables
 
@@ -946,6 +946,9 @@ def write_scalar_parameters(ncfile, potential_strength, max_J, theta_grid, phi_g
 
 	var_max_J = ncfile.createVariable("max_angular_momentum_quantum_number", "i4", ("scalar",))
 	var_max_J.units = "unitless"
+
+	var_spin_state = ncfile.createVariable("spin_state", "str", ("scalar",))
+	var_spin_state.units = "unitless"
 
 	var_theta = ncfile.createVariable("theta_grid_count", "i4", ("scalar",))
 	var_theta.units = "unitless"
@@ -958,6 +961,7 @@ def write_scalar_parameters(ncfile, potential_strength, max_J, theta_grid, phi_g
 
 	var_potential[0] = potential_strength
 	var_max_J[0] = max_J
+	var_spin_state[0] = spin_state
 	var_theta[0] = theta_grid
 	var_phi[0] = phi_grid
 	var_B_const[0] = B_const
@@ -1233,10 +1237,6 @@ def main():
 		sorted_eigenvalues,
 		sorted_eigenvectors
 	)
-
-	whoami()
-
-
 
 """
 	for idx in range(4):
