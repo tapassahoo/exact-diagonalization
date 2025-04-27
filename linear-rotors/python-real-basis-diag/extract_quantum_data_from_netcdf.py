@@ -1,5 +1,7 @@
 import numpy as np
 from netCDF4 import Dataset
+import thermodynamics_kelvin as tk
+
 
 def inspect_netcdf_file(filename):
 	"""Inspect variables and their shapes in a NetCDF file."""
@@ -119,12 +121,8 @@ def read_quantum_data(filename, spin_state_name):
 
 	return all_quantum_numbers, spin_state_qn_array, eigenvalues, eigenvectors_real, eigenvectors_imag, eigenvectors
 
-# -------------------- Usage Example --------------------
-
-filename = "quantum_data_for_H2_spinless_isomer_max_angular_momentum_quantum_number6_potential_strength100.0K_grids_theta17_phi39.nc"
-
 # === Usage ===
-filename = "quantum_data_for_H2_spinless_isomer_max_angular_momentum_quantum_number6_potential_strength100.0K_grids_theta17_phi39.nc"
+filename = "quantum_data_for_H2_spinless_isomer_max_angular_momentum_quantum_number10_potential_strength100.0K_grids_theta25_phi55.nc"
 read_all_attributes(filename)
 all_variables = inspect_netcdf_file(filename)
 scalar_data = read_scalar_like_parameters_with_units(filename, all_variables)
@@ -145,3 +143,18 @@ print(np.array2string(eigenvalues[:5], precision=4, separator=", "))
 
 print("\n🔸 Sample Complex Eigenvector (First Column):")
 print(np.array2string(eigenvectors[:, 0], precision=4, separator=", "))
+
+temperatures = np.linspace(1, 500, 100)  # Temperature range from 1 K to 500 K
+fixed_temperature = 300  # Example fixed temperature for probability plot
+
+# Plot Probability vs Basis Index for a fixed temperature
+tk.plot_probability_profile(eigenvalues, fixed_temperature, threshold=0.001)
+
+# Plot Average Energy vs Temperature
+tk.plot_average_energy_vs_temperature(eigenvalues, temperatures)
+
+print(tk.compute_probabilities(eigenvalues, fixed_temperature))
+
+
+# Plot Heat Capacity vs Temperature
+tk.plot_heat_capacity_vs_temperature(eigenvalues, temperatures)
