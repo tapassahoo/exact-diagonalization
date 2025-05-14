@@ -50,6 +50,33 @@ def compute_average_energy(energy_levels, temperature):
 	average_energy = np.sum(energy_levels * probabilities)  # <E> = sum(E_i * P(E_i, T))
 	return average_energy
 
+def compute_expectation_value(values, probabilities):
+	"""
+	Compute the expectation value of a general observable given its values and probabilities.
+	"""
+	if values is None or probabilities is None:
+		raise ValueError("Input 'values' or 'probabilities' is None.")
+
+	values = np.array(values, dtype=float)
+	probabilities = np.array(probabilities, dtype=float)
+
+	if values.shape != probabilities.shape:
+		raise ValueError("values and probabilities must have the same shape.")
+
+	if np.any(np.isnan(values)) or np.any(np.isnan(probabilities)):
+		raise ValueError("Input arrays must not contain NaN values.")
+
+	if np.any(probabilities < 0):
+		raise ValueError("Probabilities must be non-negative.")
+
+	total_prob = np.sum(probabilities)
+	if total_prob == 0:
+		raise ValueError("Sum of probabilities is zero; cannot normalize.")
+
+	probabilities /= total_prob
+	expectation_value = np.sum(values * probabilities)
+	return expectation_value
+
 def compute_heat_capacity(energy_levels, temperature):
 	"""
 	Compute the heat capacity C_V at a given temperature.
@@ -66,15 +93,13 @@ def compute_heat_capacity(energy_levels, temperature):
 	probabilities = compute_probabilities(energy_levels, temperature)
 	
 	# Compute <E> (average energy)
-	average_energy = compute_average_energy(energy_levels, probabilities)
+	average_energy = compute_expectation_value(energy_levels, probabilities)
 	
 	# Compute <E^2> (average of energy squared)
-	average_energy_squared = compute_average_energy(energy_levels**2, probabilities)
+	average_energy_squared = compute_expectation_value(energy_levels**2, probabilities)
 	
 	# Compute heat capacity C_V
-	#heat_capacity = (1 / temperature**2) * (average_energy_squared - average_energy**2)
-	heat_capacity = (average_energy_squared - average_energy**2)
-	print(heat_capacity)
+	heat_capacity = (1 / temperature**2) * (average_energy_squared - average_energy**2)
 	return heat_capacity
 
 

@@ -153,8 +153,5 @@ tk.plot_probability_profile(eigenvalues, fixed_temperature, threshold=0.001)
 # Plot Average Energy vs Temperature
 tk.plot_average_energy_vs_temperature(eigenvalues, temperatures)
 
-print(tk.compute_probabilities(eigenvalues, fixed_temperature))
-
-
 # Plot Heat Capacity vs Temperature
 tk.plot_heat_capacity_vs_temperature(eigenvalues, temperatures)
