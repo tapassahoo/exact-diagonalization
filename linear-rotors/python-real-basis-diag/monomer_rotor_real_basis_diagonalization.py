@@ -1,31 +1,34 @@
-# ************************************************************************************************#
+#*************************************************************************************************#
 #																								  #
 # Computation of Eigenvalues and Eigenfunctions of a Linear Rotor Using Real Spherical Harmonics. #
 #																								  #
 # Developed by Dr. Tapas Sahoo																	  #
 #																								  #
-# ------------------------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------------------------#
 #																								  #
 # Command for running the code:																	  #
 #																								  #
 # Example:																						  #
 # python monomer_rotor_real_basis_diagonalization.py 10.0 2 spinless							  #
-#																								 #
-# ------------------------------------------------------------------------------------------------#
-#																								 #
+#																								  #
+#-------------------------------------------------------------------------------------------------#
+#																								  #
 # Inputs:																						  #
-# a) Potential potential_strength = potential_strength																  #
-# b) Highest value of Angular quantum number = max_angular_momentum_quantum_number												  #
+# a) Potential potential_strength = potential_strength											  #
+# b) Highest value of Angular quantum number = max_angular_momentum_quantum_number				  #
 # c) Specification of spin isomer = spin_state													  #
-#																								 #
+#																								  #
 # Outputs: Eigenvalues and eigenfunctions														  #
-#																								 #
-# ************************************************************************************************#
+#																								  #
+#*************************************************************************************************#
 
 import argparse
 import os
+import inspect
 import sys
 import getpass
+import socket
+import platform
 import math
 import numpy as np
 from numpy.linalg import eigh
@@ -61,46 +64,79 @@ LABEL_WIDTH = 35
 VALUE_WIDTH = 45
 
 
-def parse_arguments():
-	"""Parse command-line arguments for potential potential_strength, max_angular_momentum_quantum_number, and spin isomer."""
+import argparse
 
-	# Initialize parser for command-line arguments
+def parse_arguments():
+	"""
+	Parses command-line arguments for the computation of eigenvalues and eigenfunctions
+	of a linear quantum rotor in an external orienting potential using a real spherical harmonics basis.
+
+	Returns
+	-------
+	argparse.Namespace
+		A namespace object containing:
+		- potential_strength : float
+		- max_angular_momentum_quantum_number : int
+		- spin : str
+	"""
 	parser = argparse.ArgumentParser(
 		prog="monomer_rotor_real_basis_diagonalization.py",
-		description="Computation of Eigenvalues and Eigenfunctions of a Linear Rotor Using Real Spherical Harmonics.",
-		epilog="Enjoy the program! :)")
-
-	# Define the arguments with clear help messages and types
-	parser.add_argument(
-		"potential_strength",
-		type=float,
-		help="Interaction potential_strength of the potential in the form A*cos(theta). Enter a real number."
+		description=(
+			"Performs exact diagonalization of a linear rotor Hamiltonian\n"
+			"in an external orienting potential using a real spherical harmonics basis."
+		),
+		epilog="Developed by Dr. Tapas Sahoo — Quantum Molecular Dynamics Group"
 	)
 
 	parser.add_argument(
-		"max_angular_momentum_quantum_number",
-		type=int,
-		help="Truncated angular quantum number for the computation. Must be a non-negative integer."
+		"potential_strength", type=float,
+		help="Strength of the external orienting potential (in energy units). Used in V(θ) = A·cos(θ)."
 	)
 
 	parser.add_argument(
-		"spin",
-		type=str,
-		choices=["para", "ortho", "spinless"],
-		help="Specifies nuclear spin isomerism. Choose 'para', 'ortho', or 'spinless'."
+		"max_angular_momentum_quantum_number", type=int,
+		help="Maximum angular momentum quantum number ℓ_max used for basis truncation. Must be ≥ 0."
 	)
 
-	# Parse the arguments
+	parser.add_argument(
+		"spin", type=str, choices=["spinless", "ortho", "para"],
+		help="Nuclear spin isomer type: 'spinless', 'ortho', or 'para'."
+	)
+
 	return parser.parse_args()
 
 
 def whoami():
-	print('*' * 80)
-	print("\nATTENTION: \n")
-	print("%s/%s%s" % ("The function is \n" + sys._getframe(1).f_code.co_filename, sys._getframe(1).f_code.co_name, "\nand the line number is " + str(sys._getframe(1).f_lineno)))
-	print("")
-	print('*' * 80)
-	exit()
+	"""
+	Prints the filename, function name, and line number from where `whoami()` is called, then exits.
+	"""
+	frame = inspect.currentframe().f_back
+
+	# Separator
+	print(colored("\n" + "=" * 80, SEPARATOR_COLOR))
+
+	# Header
+	print(colored("ATTENTION", DEBUG_COLOR, attrs=['bold', 'underline']))
+	print(colored("\nCalled from:", HEADER_COLOR, attrs=['bold', 'underline']))
+
+	# Information
+	print(
+		colored("File:".ljust(LABEL_WIDTH), LABEL_COLOR) +
+		colored(f"{frame.f_code.co_filename}".ljust(VALUE_WIDTH), VALUE_COLOR)
+	)
+	print(
+		colored("Function:".ljust(LABEL_WIDTH), LABEL_COLOR) +
+		colored(f"{frame.f_code.co_name}".ljust(VALUE_WIDTH), VALUE_COLOR)
+	)
+	print(
+		colored("Line:".ljust(LABEL_WIDTH), LABEL_COLOR) +
+		colored(f"{frame.f_lineno}", VALUE_COLOR)
+	)
+
+	# Closing line
+	print(colored("=" * 80, SEPARATOR_COLOR) + '\n')
+
+	sys.exit(0)
 
 
 def show_simulation_details(potential_potential_strength, max_angular_momentum_quantum_number, spin_state, theta_grid_count, phi_grid_count):
@@ -909,7 +945,7 @@ def save_all_quantum_data_to_netcdf(
 	Parameters:
 	- filename (str): Output NetCDF file name.
 	- all_quantum_numbers (ndarray): Full list of quantum numbers.
-	- spin_state_name (str): Name of the spin state (e.g., 'singlet').
+	- spin_state_name (str): Name of the spin state (e.g., 'spinless' or 'ortho' or 'para').
 	- spin_state_qn_array (ndarray): Quantum numbers corresponding to the spin state.
 	- sorted_eigenvalues (ndarray): Eigenvalues (e.g., in Kelvin).
 	- sorted_eigenvectors (ndarray): Corresponding eigenvectors (may be complex).
@@ -931,11 +967,48 @@ def save_all_quantum_data_to_netcdf(
 	print("\n**")
 	print(colored(f"Data successfully written to".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{filename}".ljust(VALUE_WIDTH), VALUE_COLOR))
 
+
+#def write_metadata(ncfile, spin_state_name, program_version="1.0", reference=None):
 def write_metadata(ncfile, spin_state_name):
-	ncfile.title = "Quantum Numbers and Eigen Data"
-	ncfile.description = f"Quantum number set and spin-resolved data for {spin_state_name}"
-	ncfile.history = f"Created on {datetime.now().isoformat()} by {getpass.getuser()}"
-	ncfile.source = "Generated using quantum eigenvalue analysis"
+	# User and machine details
+	username = getpass.getuser()
+	hostname = socket.getfqdn()
+
+	try:
+		ip_address = socket.gethostbyname(socket.gethostname())
+	except socket.gaierror:
+		ip_address = "unavailable"
+
+
+	os_info = f"{platform.system()} {platform.release()} ({platform.version()})"
+	python_version = sys.version.replace('\n', ' ')
+
+	# Assigning metadata
+	ncfile.title = "Quantum Rotational States and Eigenvalue Data"
+	ncfile.description = (
+		f"Eigenvalues and eigenfunctions for a linear quantum rotor under a specified potential, "
+		f"resolved by spin isomer: {spin_state_name}."
+	)
+	ncfile.history = f"Created on {datetime.now().isoformat()} by {username} on machine '{hostname}'"
+	ncfile.source = "Generated using exact diagonalization with a real spherical harmonics basis"
+	ncfile.institution = "National Institute of Technology Raipur"
+	#ncfile.program_version = program_version
+	ncfile.spin_isomer = spin_state_name
+	ncfile.creation_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+	ncfile.license = "This data is provided for academic and research use only."
+
+	# System-related metadata
+	ncfile.creator_name = username
+	ncfile.creator_host = hostname
+	ncfile.creator_ip = ip_address
+	ncfile.operating_system = os_info
+	ncfile.python_version = python_version
+	ncfile.conventions = "CF-1.6"
+
+	# Optional reference
+	#if reference:
+	#	ncfile.references = reference
+
 
 def write_scalar_parameters(ncfile, potential_strength, max_J, spin_state, theta_grid, phi_grid, B_const):
 	"""Write scalar parameters to NetCDF file with units."""
@@ -1054,7 +1127,7 @@ def main():
 	display_legendre_quadrature = False
 	compute_rigid_rotor_energy  = False
 	orthonormality_check		= False
-	hermiticity_check		    = False
+	hermiticity_check			= False
 	unitarity_check				= False
 	pot_write					= False
 	#
