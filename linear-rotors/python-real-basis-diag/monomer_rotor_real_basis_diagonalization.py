@@ -103,6 +103,11 @@ def parse_arguments():
 		help="Nuclear spin isomer type: 'spinless', 'ortho', or 'para'."
 	)
 
+	parser.add_argument(
+		"--output-dir", type=str, default="output",
+		help="Directory where output files will be saved (default: 'output')."
+	)
+
 	return parser.parse_args()
 
 
@@ -1112,6 +1117,10 @@ def write_eigen_data(ncfile, eigenvalues, real_eigenvectors, imag_eigenvectors):
 def main():
 	# Parse command-line arguments
 	args = parse_arguments()
+
+	# --- Create output directory ---
+	os.makedirs(args.output_dir, exist_ok=True)
+
 	potential_strength   = args.potential_strength
 	max_angular_momentum_quantum_number = args.max_angular_momentum_quantum_number
 	spin_state			 = args.spin
@@ -1137,7 +1146,7 @@ def main():
 	show_simulation_details(potential_strength, max_angular_momentum_quantum_number, spin_state, theta_grid_count, phi_grid_count)
 
 	# Spectroscopic constant (B) in cm⁻¹ taken from NIST data
-	B_const_cm_inv = 60.853  
+	B_const_cm_inv = 20.956
 
 	# Retrieve the inverse meter-Kelvin relationship from physical constants
 	m_inv_to_K, unit, uncertainty = const.physical_constants["inverse meter-kelvin relationship"]
@@ -1293,8 +1302,11 @@ def main():
 	# Debugging function call
 	debug_eigenvalues_eigenvectors(H_rot, sorted_eigenvalues, sorted_eigenvectors)
 
+	# Ensure output directory exists
+	os.makedirs(args.output_dir, exist_ok=True)
+
 	# Output file name
-	file_name_netcdf = f"quantum_data" + base_file_name + ".nc"
+	file_name_netcdf = os.path.join(args.output_dir, f"quantum_data" + base_file_name + ".nc")
 
 	# Call the function to save all data to NetCDF
 	save_all_quantum_data_to_netcdf(
