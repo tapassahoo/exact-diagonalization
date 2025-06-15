@@ -64,8 +64,6 @@ LABEL_WIDTH = 35
 VALUE_WIDTH = 45
 
 
-import argparse
-
 def parse_arguments():
 	"""
 	Parses command-line arguments for the computation of eigenvalues and eigenfunctions
@@ -78,6 +76,10 @@ def parse_arguments():
 		- potential_strength : float
 		- max_angular_momentum_quantum_number : int
 		- spin : str
+		- dipole_moment : float or None
+		- electric_field : float or None
+		- output_dir : str
+		- dry_run : bool
 	"""
 	parser = argparse.ArgumentParser(
 		prog="monomer_rotor_real_basis_diagonalization.py",
@@ -89,8 +91,8 @@ def parse_arguments():
 	)
 
 	parser.add_argument(
-		"potential_strength", type=float,
-		help="Strength of the external orienting potential (in energy units). Used in V(θ) = A·cos(θ)."
+		"--potential-strength", type=float, default=None,
+		help="Strength of the external orienting potential (in cm⁻¹)."
 	)
 
 	parser.add_argument(
@@ -104,11 +106,36 @@ def parse_arguments():
 	)
 
 	parser.add_argument(
+		"--dipole-moment", type=float, default=None,
+		help="Dipole moment of the rotor molecule (in Debye)."
+	)
+
+	parser.add_argument(
+		"--electric-field", type=float, default=None,
+		help="Electric field strength (in kV/cm)."
+	)
+
+	parser.add_argument(
 		"--output-dir", type=str, default="output",
 		help="Directory where output files will be saved (default: 'output')."
 	)
 
-	return parser.parse_args()
+	parser.add_argument(
+		"--dry-run", action="store_true",
+		help="If set, only prints computed settings without executing the main routine."
+	)
+
+	args = parser.parse_args()
+
+	# Auto-calculate potential strength if not provided
+	if args.potential_strength is None:
+		if args.dipole_moment is not None and args.electric_field is not None:
+			args.potential_strength = 0.0168 * args.dipole_moment * args.electric_field
+		else:
+			print("Error: You must provide either --potential-strength or both --dipole-moment and --electric-field.")
+			sys.exit(1)
+
+	return args
 
 
 def whoami():
@@ -172,7 +199,7 @@ def show_simulation_details(potential_potential_strength, max_angular_momentum_q
 
 	# Input Parameters Section
 	print(colored("Simulation Parameters", HEADER_COLOR, attrs=['bold', 'underline']))
-	print(colored("Potential potential_strength:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(str(potential_potential_strength)+" K".ljust(VALUE_WIDTH), VALUE_COLOR))
+	print(colored("Potential potential_strength:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(str(potential_potential_strength)+" cm⁻¹".ljust(VALUE_WIDTH), VALUE_COLOR))
 	print(colored("Max Angular Momentum (J_max):".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{max_angular_momentum_quantum_number}".ljust(VALUE_WIDTH), VALUE_COLOR))
 	print(colored("Spin State:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{spin_state}".ljust(VALUE_WIDTH), VALUE_COLOR))
 	print("\n**")
@@ -1020,7 +1047,7 @@ def write_scalar_parameters(ncfile, potential_strength, max_J, spin_state, theta
 	ncfile.createDimension('scalar', 1)  # Dummy dimension for scalar variables
 
 	var_potential = ncfile.createVariable("potential_strength", "f8", ("scalar",))
-	var_potential.units = "Kelvin"  # or potential-specific units
+	var_potential.units = "cm–1"  # or potential-specific units
 
 	var_max_J = ncfile.createVariable("max_angular_momentum_quantum_number", "i4", ("scalar",))
 	var_max_J.units = "unitless"
@@ -1035,7 +1062,7 @@ def write_scalar_parameters(ncfile, potential_strength, max_J, spin_state, theta
 	var_phi.units = "unitless"
 
 	var_B_const = ncfile.createVariable("B_const_cm_inv", "f8", ("scalar",))
-	var_B_const.units = "cm^-1"
+	var_B_const.units = "cm-1"
 
 	var_potential[0] = potential_strength
 	var_max_J[0] = max_J
@@ -1118,19 +1145,28 @@ def main():
 	# Parse command-line arguments
 	args = parse_arguments()
 
+	if args.dry_run:
+		print(f"ℓ_max           = {args.max_angular_momentum_quantum_number}")
+		print(f"Spin            = {args.spin}")
+		print(f"Dipole moment   = {args.dipole_moment} D")
+		print(f"Electric field  = {args.electric_field} kV/cm")
+		print(f"V(θ) strength   = {args.potential_strength:.5f} cm⁻¹")
+		print(f"Output dir      = {args.output_dir}")
+		sys.exit(0)
+
 	# --- Create output directory ---
 	os.makedirs(args.output_dir, exist_ok=True)
 
-	potential_strength   = args.potential_strength
+	potential_strength_cm_inv   = args.potential_strength
 	max_angular_momentum_quantum_number = args.max_angular_momentum_quantum_number
-	spin_state			 = args.spin
+	spin_state			        = args.spin
 
 	# No. of grid points along theta and phi
-	theta_grid_count	 = int(2 * max_angular_momentum_quantum_number + 5)
-	phi_grid_count		 = int(2 * theta_grid_count + 5)
+	theta_grid_count	        = int(2 * max_angular_momentum_quantum_number + 5)
+	phi_grid_count		        = int(2 * theta_grid_count + 5)
 
 	# Tolerance limit for a harmitian matrix
-	deviation_tolerance_value = 10e-12
+	deviation_tolerance_value   = 10e-12
 
 	# print the normalization
 	display_legendre_quadrature = False
@@ -1143,7 +1179,7 @@ def main():
 	display_data				= False
 
 	# Display input parameters
-	show_simulation_details(potential_strength, max_angular_momentum_quantum_number, spin_state, theta_grid_count, phi_grid_count)
+	show_simulation_details(potential_strength_cm_inv, max_angular_momentum_quantum_number, spin_state, theta_grid_count, phi_grid_count)
 
 	# Spectroscopic constant (B) in cm⁻¹ taken from NIST data
 	B_const_cm_inv = 20.956
@@ -1156,6 +1192,7 @@ def main():
 
 	# Compute the corresponding value in Kelvin
 	B_const_K = B_const_cm_inv * cm_inv_to_K  
+	potential_strength_K = potential_strength_cm_inv * cm_inv_to_K
 
 	# Unit Conversion
 	# Display results with clear labels and scientific precision
@@ -1169,7 +1206,7 @@ def main():
 		energies = rotational_energy_levels(B_const_K, 10)
 		plot_rotational_levels(energies)
 
-	basis_type, base_file_name = generate_filename(spin_state, max_angular_momentum_quantum_number, potential_strength, theta_grid_count, phi_grid_count)
+	basis_type, base_file_name = generate_filename(spin_state, max_angular_momentum_quantum_number, potential_strength_K, theta_grid_count, phi_grid_count)
 	prefix = "output_file_for_checking_orthonormality_condition"
 
 	# Separator line
@@ -1283,7 +1320,7 @@ def main():
 		V_rot_2 = np.einsum('ia,ib->ab', umat, umat.conj())
 
 		is_Hermitian, max_diff = check_hermiticity(V_rot, "V", tol=1e-10, debug=True, visualize=False)
-	V_rot_einsum = compute_potential_energy_einsum(basisfun_complex, umat, xGL, theta_grid_count, phi_grid_count, potential_strength, debug=False)
+	V_rot_einsum = compute_potential_energy_einsum(basisfun_complex, umat, xGL, theta_grid_count, phi_grid_count, potential_strength_K, debug=False)
 	H_rot = T_rot_einsum + V_rot_einsum
 
 	if hermiticity_check: 
@@ -1311,7 +1348,7 @@ def main():
 	# Call the function to save all data to NetCDF
 	save_all_quantum_data_to_netcdf(
 		file_name_netcdf,
-		potential_strength,
+		potential_strength_cm_inv,
 		max_angular_momentum_quantum_number,
 		theta_grid_count,
 		phi_grid_count,
