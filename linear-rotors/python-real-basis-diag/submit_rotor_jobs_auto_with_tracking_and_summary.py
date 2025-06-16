@@ -9,13 +9,13 @@ from itertools import product
 # CONFIGURATION
 # -----------------------------
 # Case A: dipole + field is provided
-dipole_moment_D = 1.85
-electric_field_kVcm_list = [5.0, 10.0, 20.0]
+dipole_moment_D = 1.827
+electric_field_kVcm_list = [0.1] + list(range(10, 201, 10))
 
 # Case B (ignored if A is active): V-field values
 potential_strength_list = [0.1, 0.5]
 
-max_angular_momentum_list = [10, 20]
+max_angular_momentum_list = list(range(10, 51, 5))
 spin_type = "spinless"  # Choose from: "spinless", "ortho", "para"
 
 script_name = "monomer_rotor_real_basis_diagonalization.py"

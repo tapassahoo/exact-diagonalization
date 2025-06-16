@@ -1327,7 +1327,7 @@ def main():
 	)
 
 	# Spectroscopic constant (B) in cm⁻¹ taken from NIST data
-	B_const_cm_inv = 20.956
+	B_const_cm_inv = 20.95373
 
 	# Retrieve the inverse meter-Kelvin relationship from physical constants
 	m_inv_to_K, unit, uncertainty = const.physical_constants["inverse meter-kelvin relationship"]
