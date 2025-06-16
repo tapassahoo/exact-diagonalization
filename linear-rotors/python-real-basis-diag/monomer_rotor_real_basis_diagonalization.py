@@ -59,10 +59,9 @@ DEBUG_COLOR = 'red'
 SEPARATOR_COLOR = 'yellow'
 INFO_COLOR = 'blue'
 
-# Define fixed widths for labels and values
+# Define fixed widths for alignment
 LABEL_WIDTH = 35
 VALUE_WIDTH = 45
-
 
 def parse_arguments():
 	"""
@@ -171,88 +170,106 @@ def whoami():
 	sys.exit(0)
 
 
-def show_simulation_details(potential_potential_strength, max_angular_momentum_quantum_number, spin_state, theta_grid_count, phi_grid_count):
-	"""Display the input parameters for the simulation process."""
-
-	now = datetime.now()  # Current date and time
+def show_simulation_details(
+	potential_strength_cm_inv,
+	max_angular_momentum_quantum_number,
+	spin_state,
+	theta_grid_count,
+	phi_grid_count,
+	dipole_moment_D=None,
+	electric_field_kVcm=None,
+	computed_muE_cm_inv=None
+):
+	"""
+	Display simulation input details including dipole-field interaction info if available.
+	"""
+	now = datetime.now()
 	date_time = now.strftime("%d/%m/%Y, %H:%M:%S")
-
 	user_name = getpass.getuser()
-	input_dir_path = os.getcwd()
-	home_directory = os.path.expanduser("~")
+	cwd = os.getcwd()
+	home_dir = os.path.expanduser("~")
 
-	# Separator line
 	print(colored("*" * 80, SEPARATOR_COLOR))
-
-	# Date and Time Section
 	print(colored("Date and Time:".ljust(LABEL_WIDTH), INFO_COLOR) + colored(date_time.ljust(VALUE_WIDTH), VALUE_COLOR) + "\n")
 
-	# Debugging Information
-	print(colored("Debug mode is enabled.", DEBUG_COLOR) + "\n")
-	print("**")
 	print(colored("File System Details:", HEADER_COLOR, attrs=['bold', 'underline']))
 	print(colored("User Name:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(user_name.ljust(VALUE_WIDTH), VALUE_COLOR))
-	print(colored("Home Directory:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(home_directory.ljust(VALUE_WIDTH), VALUE_COLOR))
-	print(colored("Current Working Directory:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(input_dir_path.ljust(VALUE_WIDTH), VALUE_COLOR))
+	print(colored("Home Directory:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(home_dir.ljust(VALUE_WIDTH), VALUE_COLOR))
+	print(colored("Current Working Directory:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(cwd.ljust(VALUE_WIDTH), VALUE_COLOR))
 	print(colored("Package Location (bfunc):".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(bfunc.__file__.ljust(VALUE_WIDTH), VALUE_COLOR))
-	print("\n**")
+	print()
 
-	# Input Parameters Section
 	print(colored("Simulation Parameters", HEADER_COLOR, attrs=['bold', 'underline']))
-	print(colored("Potential potential_strength:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(str(potential_potential_strength)+" cm⁻¹".ljust(VALUE_WIDTH), VALUE_COLOR))
-	print(colored("Max Angular Momentum (J_max):".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{max_angular_momentum_quantum_number}".ljust(VALUE_WIDTH), VALUE_COLOR))
-	print(colored("Spin State:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{spin_state}".ljust(VALUE_WIDTH), VALUE_COLOR))
-	print("\n**")
+	print(colored("ℓ_max (Angular Momentum):".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{max_angular_momentum_quantum_number}".ljust(VALUE_WIDTH), VALUE_COLOR))
+	print(colored("Spin State:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(spin_state.ljust(VALUE_WIDTH), VALUE_COLOR))
+	print(colored("V(θ) Strength:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{potential_strength_cm_inv:.5f} cm⁻¹".ljust(VALUE_WIDTH), VALUE_COLOR))
 
-	# Grid Information
+	if dipole_moment_D is not None:
+		print(colored("Dipole Moment:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{dipole_moment_D:.4f} D".ljust(VALUE_WIDTH), VALUE_COLOR))
+	if electric_field_kVcm is not None:
+		print(colored("Electric Field:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{electric_field_kVcm:.4f} kV/cm".ljust(VALUE_WIDTH), VALUE_COLOR))
+	if computed_muE_cm_inv is not None:
+		print(colored("μ·E (Interaction Energy):".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{computed_muE_cm_inv:.5f} cm⁻¹".ljust(VALUE_WIDTH), VALUE_COLOR))
+	print()
+
 	print(colored("Grid Information", HEADER_COLOR, attrs=['bold', 'underline']))
 	print(colored("Theta Grid Count:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{theta_grid_count}".ljust(VALUE_WIDTH), VALUE_COLOR))
 	print(colored("Phi Grid Count:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{phi_grid_count}".ljust(VALUE_WIDTH), VALUE_COLOR))
 
 def generate_filename(
-		spin_state: str,
-		max_angular_momentum_quantum_number: int,
-		potential_strength: float,
-		theta_grid_count: int,
-		phi_grid_count: int,
-		prefix: Optional[str] = ""
+	spin_state: str,
+	max_angular_momentum_quantum_number: int,
+	potential_strength: float,
+	theta_grid_count: int,
+	phi_grid_count: int,
+	dipole_moment_D: Optional[float] = None,
+	electric_field_kVcm: Optional[float] = None,
+	prefix: Optional[str] = ""
 ) -> str:
 	"""
-	Generates a descriptive filename based on parameters for a linear rotor system.
+	Generates a descriptive filename for a quantum rotor system.
 
-	Parameters:
-	- spin_state (str): The spin isomer type ("spinless", "para", or "ortho").
-	- max_angular_momentum_quantum_number (int): Highest angular quantum number.
-	- potential_strength (float): Field potential_strength in Kelvin.
-	- theta_grid_count (int): Number of theta grids.
-	- phi_grid_count (int): Number of phi grids.
-	- prefix (str, optional): Directory path or prefix for the file name. Defaults to "".
+	Parameters
+	----------
+	spin_state : str
+		The spin isomer type ("spinless", "para", or "ortho").
+	max_angular_momentum_quantum_number : int
+		Maximum angular momentum quantum number (ℓ_max).
+	potential_strength : float
+		Orienting potential strength in Kelvin (used only if dipole-field interaction is not specified).
+	theta_grid_count : int
+		Number of θ grid points.
+	phi_grid_count : int
+		Number of φ grid points.
+	dipole_moment_D : float, optional
+		Dipole moment in Debye (include only if electric_field_kVcm is also provided).
+	electric_field_kVcm : float, optional
+		Electric field strength in kV/cm (include only if dipole_moment_D is also provided).
+	prefix : str, optional
+		Optional prefix or directory path.
 
-	Returns:
-	- str: Constructed file name.
+	Returns
+	-------
+	str
+		A clear and descriptive filename.
 	"""
-	# Determine isomer and basis type based on spin isomer
-	if spin_state == "spinless":
-		isomer = "spinless"
-		basis_type = "none"
-	elif spin_state == "para":
-		isomer = "para"
-		basis_type = "even"
-	elif spin_state == "ortho":
-		isomer = "ortho"
-		basis_type = "odd"
-	else:
-		raise ValueError(
-			"Unknown spin isomer type: expected 'spinless', 'para', or 'ortho'.")
 
-	# Construct the file name in a logical, readable format
 	filename = (
-		f"{prefix}_for_H2_{isomer}_isomer_max_angular_momentum_quantum_number{max_angular_momentum_quantum_number}_"
-		f"potential_strength{potential_strength}K_"
-		f"grids_theta{theta_grid_count}_phi{phi_grid_count}"
+		f"{prefix}HF_{spin_state}_isomer_"
+		f"lmax_{max_angular_momentum_quantum_number}_"
 	)
 
-	return basis_type, filename
+	if dipole_moment_D is not None and electric_field_kVcm is not None:
+		filename += (
+			f"dipole_moment_{dipole_moment_D:.2f}D_"
+			f"electric_field_{electric_field_kVcm:.2f}kVcm_"
+		)
+	else:
+		filename += f"potential_{potential_strength:.2f}K_"
+
+	filename += f"theta_grid_{theta_grid_count}_phi_grid_{phi_grid_count}"
+
+	return filename
 
 
 def compute_legendre_quadrature(theta_grid_count, phi_grid_count, display_legendre_quadrature):
@@ -304,34 +321,44 @@ def compute_legendre_quadrature(theta_grid_count, phi_grid_count, display_legend
 
 	return xGL, wGL, phixiGridPts, dphixi
 
-
 def get_number_of_basis_functions_by_spin_states(max_angular_momentum_quantum_number, spin_state):
 	"""
-	Gets and displays the number of basis functions for a linear rotor
-	categorized by spin isomers (spinless, para, ortho).
+	Computes and displays the number of real spherical harmonic basis functions
+	for a linear rotor system, categorized by nuclear spin isomer type.
 
-	Parameters:
-	- max_angular_momentum_quantum_number (int): The highest angular quantum number.
-	- spin_state (str): The spin isomer type ("spinless", "para", or "ortho").
+	Parameters
+	----------
+	max_angular_momentum_quantum_number : int
+		Maximum angular momentum quantum number (ℓ_max).
+	spin_state : str
+		Spin isomer type: "spinless", "para", or "ortho".
 
-	Returns:
-	- dict: A dictionary with JM, JeM, JoM, and njm values.
+	Returns
+	-------
+	dict
+		Dictionary with keys:
+		- "JM" : Total number of |J,M> functions
+		- "JeM": Number of even-J basis functions
+		- "JoM": Number of odd-J basis functions
+		- "JM_spin_specific": Number for selected spin state
 	"""
-	# Calculate the total number of basis functions
-	# JKM = "Sum[(2J+1),{J,0,max_angular_momentum_quantum_number}]" -- Derivation is given in
-	# lecture-notes-on-exact-diagonalization.pdf or you can derive it on
-	# ChatGPT
-	JM = int((max_angular_momentum_quantum_number + 1)**2)
+	spin_state = spin_state.lower()
 
-	# Determine the even (JeM) and odd (JoM) basis function counts
-	if (max_angular_momentum_quantum_number % 2) == 0:
-		JeM = int((JM + max_angular_momentum_quantum_number + 1) / 2)
+	if max_angular_momentum_quantum_number < 0:
+		raise ValueError("max_angular_momentum_quantum_number must be non-negative.")
+
+	# Total number of basis functions: sum over (2J + 1) from J = 0 to J_max
+	JM = (max_angular_momentum_quantum_number + 1) ** 2
+
+	# Even and odd J contributions
+	if max_angular_momentum_quantum_number % 2 == 0:
+		JeM = (JM + max_angular_momentum_quantum_number + 1) // 2
 		JoM = JM - JeM
 	else:
-		JoM = int((JM + max_angular_momentum_quantum_number + 1) / 2)
+		JoM = (JM + max_angular_momentum_quantum_number + 1) // 2
 		JeM = JM - JoM
 
-	# Assign njm based on the spin isomer
+	# Assign basis count based on isomer type
 	if spin_state == "spinless":
 		njm = JM
 	elif spin_state == "para":
@@ -339,15 +366,18 @@ def get_number_of_basis_functions_by_spin_states(max_angular_momentum_quantum_nu
 	elif spin_state == "ortho":
 		njm = JoM
 	else:
-		raise ValueError( "Invalid spin isomer type. Choose from 'spinless', 'para', or 'ortho'.")
+		raise ValueError("Invalid spin_state. Choose from 'spinless', 'para', or 'ortho'.")
 
-	# Optionally print the calculations 
-	print("\n**")
-	print( colored( "Number of basis functions", HEADER_COLOR, attrs=[ 'bold', 'underline']))
-	print( colored( "Total |JM> basis functions:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored( str(JM).ljust(VALUE_WIDTH), VALUE_COLOR))
-	print( colored( "Even J basis functions (JeM):".ljust(LABEL_WIDTH), LABEL_COLOR) + colored( str(JeM).ljust(VALUE_WIDTH), VALUE_COLOR))
-	print( colored( "Odd J basis functions (JoM):".ljust(LABEL_WIDTH), LABEL_COLOR) + colored( str(JoM).ljust(VALUE_WIDTH), VALUE_COLOR))
-	print(colored(f"Number of basis functions for {spin_state} isomer:".ljust( LABEL_WIDTH), LABEL_COLOR) + colored(str(njm).ljust(VALUE_WIDTH), VALUE_COLOR))
+	# Display summary
+	print(colored("\nNumber of basis functions", HEADER_COLOR, attrs=['bold', 'underline']))
+	print(colored("Total |J,M⟩ basis functions:".ljust(LABEL_WIDTH), LABEL_COLOR) +
+		  colored(str(JM).ljust(VALUE_WIDTH), VALUE_COLOR))
+	print(colored("Even J basis functions (JeM):".ljust(LABEL_WIDTH), LABEL_COLOR) +
+		  colored(str(JeM).ljust(VALUE_WIDTH), VALUE_COLOR))
+	print(colored("Odd J basis functions (JoM):".ljust(LABEL_WIDTH), LABEL_COLOR) +
+		  colored(str(JoM).ljust(VALUE_WIDTH), VALUE_COLOR))
+	print(colored(f"Basis functions for {spin_state} isomer:".ljust(LABEL_WIDTH), LABEL_COLOR) +
+		  colored(str(njm).ljust(VALUE_WIDTH), VALUE_COLOR))
 
 	return {
 		"JM": JM,
@@ -355,7 +385,6 @@ def get_number_of_basis_functions_by_spin_states(max_angular_momentum_quantum_nu
 		"JoM": JoM,
 		"JM_spin_specific": njm
 	}
-
 
 def check_normalization_condition_linear_rotor(log_file, basis_description_text, basis_function_matrix_data, normalization_matrix_data, total_number_of_basis_functions, all_quantum_numbers, deviation_tolerance_value, file_write_mode="new"):
 	"""
@@ -432,37 +461,34 @@ def check_normalization_condition_linear_rotor(log_file, basis_description_text,
 
 	return maximum_deviation_value
 
+
 def plot_heatmap(normalization_matrix_data, title):
 	"""
 	Visualizes the normalization matrix using a heatmap.
 	
 	Parameters:
 		normalization_matrix_data (ndarray): The normalization matrix.
-		basis_type (str): The type of basis function used.
 		title (str): Custom title for the heatmap.
 	"""
 	if normalization_matrix_data is None or normalization_matrix_data.size == 0:
 		print("Error: The normalization matrix is empty or None!")
 		return
 
-	#plt.style.use("dark_background")  # Set dark theme for better contrast
+	nrows, ncols = normalization_matrix_data.shape
+	if nrows != ncols:
+		print("Error: The normalization matrix must be square.")
+		return
+
+	# Set figure size
 	plt.figure(figsize=(8, 6))
 
-	"""
-	sns.heatmap(
-		np.abs(normalization_matrix_data),
-		annot=False,
-		cmap="plasma",  # High-contrast colormap on dark background
-		linewidths=0.5,
-		cbar=True
-	)
-	"""
+	# Choose whether to annotate based on size
+	enable_annot = nrows <= 10
 
 	sns.heatmap(
 		np.abs(normalization_matrix_data),
-		annot=True,
-		#cmap="Greys",  # Monochrome grayscale
-		cmap="viridis",  # Monochrome grayscale
+		annot=enable_annot,
+		cmap="viridis",
 		linewidths=0.01,
 		cbar=True
 	)
@@ -470,21 +496,17 @@ def plot_heatmap(normalization_matrix_data, title):
 	plt.title(f"{title}", fontsize=12, fontweight='bold')
 	plt.xlabel("Basis Index", fontsize=10)
 	plt.ylabel("Basis Index", fontsize=10)
-
-	# Show the plot
+	plt.tight_layout()
 	plt.show()
 
-# Example usage:
-# plot_heatmap(normalization_matrix_data, title)
 
-
-def check_unitarity(file_name, basis_type, umat, small=1e-10, mode="new"):
+def check_unitarity(file_name, spin_state, umat, small=1e-10, mode="new"):
 	"""
 	Checks whether the transformation matrix U satisfies the unitarity condition U U† = I.
 
 	Parameters:
 		file_name (str): Output file name for writing results.
-		basis_type (str): Type of basis function.
+		spin_state (str): Type of basis function.
 		umat (ndarray): Transformation matrix.
 		small (float): Numerical threshold for condition check.
 
@@ -504,9 +526,9 @@ def check_unitarity(file_name, basis_type, umat, small=1e-10, mode="new"):
 	deviation = np.linalg.norm(umat_unitarity - identity_matrix)
 
 	with open(file_name, file_mode) as f:
-		f.write(f"Checking Unitarity Condition for {basis_type} Transformation Matrix U\n")
+		f.write(f"Checking Unitarity Condition for {spin_state} Transformation Matrix U\n")
 		f.write("="*80 + "\n")
-		f.write(f"Shape of {basis_type} U matrix: {umat.shape}\n")
+		f.write(f"Shape of {spin_state} U matrix: {umat.shape}\n")
 		f.write(f"Max deviation from identity: {deviation}\n")
 
 		if deviation < small:
@@ -694,14 +716,23 @@ def check_hermiticity(H, matrix_name="H", description="", tol=1e-10, debug=True,
 		else:
 			print("✅ No discrepancies found. Matrix is Hermitian.")
 
+	nrows, ncols = H.shape
+	if nrows != ncols:
+		print("Error: The normalization matrix must be square.")
+		return
+
 	if visualize:
 		fig, axes = plt.subplots(1, 2, figsize=(18, 5))
+
+		# Choose whether to annotate based on size
+		enable_annot = nrows <= 10
+
 		#sns.heatmap(H.real, cmap="coolwarm", annot=False, ax=axes[0])
-		sns.heatmap(H.real, cmap="viridis", linewidths=0.1, annot=True, ax=axes[0])
+		sns.heatmap(H.real, cmap="viridis", linewidths=0.1, annot=enable_annot, ax=axes[0])
 		axes[0].set_title(f"Original Matrix (Re[{matrix_name}])")
 
 		#sns.heatmap(H_dagger.real, cmap="coolwarm", annot=False, ax=axes[1])
-		sns.heatmap(H_dagger.real, cmap="viridis", linewidths=0.1, annot=True, ax=axes[1])
+		sns.heatmap(H_dagger.real, cmap="viridis", linewidths=0.1, annot=enable_annot, ax=axes[1])
 		axes[1].set_title(f"Hermitian Conjugate (Re[{matrix_name}†])")
 
 		plt.tight_layout()
@@ -709,7 +740,7 @@ def check_hermiticity(H, matrix_name="H", description="", tol=1e-10, debug=True,
 
 		fig, ax = plt.subplots(figsize=(12, 7))
 		#sns.heatmap(diff, cmap="viridis", annot=True, fmt=".2e", ax=ax)
-		sns.heatmap(diff, cmap="viridis", linewidths=0.1, annot=True, fmt=".2e", ax=ax)
+		sns.heatmap(diff, cmap="viridis", linewidths=0.1, annot=enable_annot, fmt=".2e", ax=ax)
 		ax.set_title(f"Difference |{matrix_name} - {matrix_name}†| (Max: {max_diff:.2e})")
 
 		plt.tight_layout()
@@ -733,8 +764,7 @@ def rotational_energy_levels(B, J_max=10):
 	energies = {J: B * J * (J + 1) for J in J_values}  # Energy formula E_J = B * J * (J + 1)
 	
 	# Display results
-	print("\n**")
-	print(colored("Rotational energy levels of a rigid rotor", HEADER_COLOR, attrs=['bold', 'underline']))
+	print(colored("\nRotational energy levels of a rigid rotor", HEADER_COLOR, attrs=['bold', 'underline']))
 	print(f"\n{'J':<5}{'Energy (Kelvin)':>15}")
 	print("=" * 20)
 	for J, E in energies.items():
@@ -959,50 +989,89 @@ def debug_eigenvalues_eigenvectors(H_rot, sorted_eigenvalues, sorted_eigenvector
 	print("🎯 All validations passed successfully.")
 
 def save_all_quantum_data_to_netcdf(
-	filename,
-	potential_strength,
+	file_name,
+	cm_inv_to_K,
+	potential_strength_cm_inv,
 	max_angular_momentum_quantum_number,
 	theta_grid_count,
 	phi_grid_count,
-	B_const_cm_inv,	
-	spin_state_name,
+	B_const_cm_inv,
+	spin_state,
 	all_quantum_numbers,
-	spin_state_qn_array,
+	quantum_numbers_for_spin_state,
 	sorted_eigenvalues,
-	sorted_eigenvectors
+	sorted_eigenvectors,
+	dipole_moment_D=None,
+	electric_field_kVcm=None
 ):
 	"""
 	Save quantum numbers, eigenvalues, and eigenvectors to a NetCDF file.
 
 	Parameters:
-	- filename (str): Output NetCDF file name.
-	- all_quantum_numbers (ndarray): Full list of quantum numbers.
-	- spin_state_name (str): Name of the spin state (e.g., 'spinless' or 'ortho' or 'para').
-	- spin_state_qn_array (ndarray): Quantum numbers corresponding to the spin state.
-	- sorted_eigenvalues (ndarray): Eigenvalues (e.g., in Kelvin).
-	- sorted_eigenvectors (ndarray): Corresponding eigenvectors (may be complex).
+	- file_name (str): Output NetCDF file name.
+	- cm_inv_to_K (float): Conversion factor from cm-1 to Kelvin
+	- potential_strength_cm_inv (float): Orienting potential strength in cm⁻¹.
+	- max_angular_momentum_quantum_number (int): Truncation level ℓ_max.
+	- theta_grid_count (int): Number of θ grid points.
+	- phi_grid_count (int): Number of φ grid points.
+	- B_const_cm_inv (float): Rotational constant in cm⁻¹.
+	- spin_state (str): 'spinless', 'ortho', or 'para'.
+	- all_quantum_numbers (ndarray): Full quantum number list.
+	- quantum_numbers_for_spin_state (ndarray): Quantum numbers allowed for this spin state.
+	- sorted_eigenvalues (ndarray): Eigenvalues (in cm⁻¹).
+	- sorted_eigenvectors (ndarray): Complex eigenvectors.
+	- dipole_moment_D (float, optional): Dipole moment in Debye.
+	- electric_field_kVcm (float, optional): Electric field in kV/cm.
 	"""
-	sorted_eigenvalues = np.array(sorted_eigenvalues, dtype=np.float64)
-	
-	# Ensure eigenvectors are complex if they contain imaginary parts
-	sorted_eigenvectors = np.array(sorted_eigenvectors, dtype=np.complex128)
 
-	# Extract real and imaginary parts of eigenvectors
+	sorted_eigenvalues = np.asarray(sorted_eigenvalues, dtype=np.float64)
+	sorted_eigenvectors = np.asarray(sorted_eigenvectors, dtype=np.complex128)
+
 	real_eigenvectors = np.real(sorted_eigenvectors)
 	imag_eigenvectors = np.imag(sorted_eigenvectors)
 
-	with Dataset(filename, "w", format="NETCDF4") as ncfile:
-		write_metadata(ncfile, spin_state_name)
-		write_scalar_parameters(ncfile, potential_strength, max_angular_momentum_quantum_number, spin_state_name, theta_grid_count, phi_grid_count, B_const_cm_inv)
-		write_quantum_numbers(ncfile, all_quantum_numbers, spin_state_name, spin_state_qn_array)
+	with Dataset(file_name, "w", format="NETCDF4") as ncfile:
+		# Metadata and scalar parameters
+		write_metadata(ncfile, spin_state)
+		write_scalar_parameters(
+			ncfile,
+			cm_inv_to_K,
+			potential_strength_cm_inv,
+			max_angular_momentum_quantum_number,
+			spin_state,
+			theta_grid_count,
+			phi_grid_count,
+			B_const_cm_inv
+		)
+
+		# Dipole-field data if applicable
+		if dipole_moment_D is not None:
+			ncfile.dipole_moment_D = dipole_moment_D
+		if electric_field_kVcm is not None:
+			ncfile.electric_field_kVcm = electric_field_kVcm
+		if dipole_moment_D is not None and electric_field_kVcm is not None:
+			ncfile.muE_cm_inv = dipole_moment_D * electric_field_kVcm * 0.03065
+
+		# Store quantum data
+		write_quantum_numbers(ncfile, all_quantum_numbers, spin_state, quantum_numbers_for_spin_state)
 		write_eigen_data(ncfile, sorted_eigenvalues, real_eigenvectors, imag_eigenvectors)
+
+	# Output confirmation
 	print("\n**")
-	print(colored(f"Data successfully written to".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{filename}".ljust(VALUE_WIDTH), VALUE_COLOR))
+	print(
+		colored("NetCDF Output File:".ljust(LABEL_WIDTH), LABEL_COLOR) +
+		colored(f"{file_name}".ljust(VALUE_WIDTH), VALUE_COLOR)
+	)
 
-
-#def write_metadata(ncfile, spin_state_name, program_version="1.0", reference=None):
 def write_metadata(ncfile, spin_state_name):
-	# User and machine details
+	"""
+	Write metadata into the given NetCDF file for quantum rotor simulations.
+
+	Parameters:
+	- ncfile (netCDF4.Dataset): The open NetCDF file object.
+	- spin_state_name (str): Type of spin isomer ('spinless', 'ortho', or 'para').
+	"""
+	# --- User & Host Information ---
 	username = getpass.getuser()
 	hostname = socket.getfqdn()
 
@@ -1011,159 +1080,226 @@ def write_metadata(ncfile, spin_state_name):
 	except socket.gaierror:
 		ip_address = "unavailable"
 
-
 	os_info = f"{platform.system()} {platform.release()} ({platform.version()})"
 	python_version = sys.version.replace('\n', ' ')
 
-	# Assigning metadata
+	# --- Metadata Block ---
 	ncfile.title = "Quantum Rotational States and Eigenvalue Data"
 	ncfile.description = (
-		f"Eigenvalues and eigenfunctions for a linear quantum rotor under a specified potential, "
-		f"resolved by spin isomer: {spin_state_name}."
+		f"Eigenvalues and eigenfunctions computed via exact diagonalization "
+		f"for a linear quantum rotor system under orienting potential. "
+		f"Spin isomer: '{spin_state_name}'."
 	)
-	ncfile.history = f"Created on {datetime.now().isoformat()} by {username} on machine '{hostname}'"
-	ncfile.source = "Generated using exact diagonalization with a real spherical harmonics basis"
+	ncfile.source = "Simulation using real spherical harmonics basis and exact diagonalization"
 	ncfile.institution = "National Institute of Technology Raipur"
-	#ncfile.program_version = program_version
+	ncfile.history = f"Created on {datetime.now().isoformat()} by {username} on host '{hostname}'"
+	ncfile.license = "This data is provided solely for academic and research use."
+	ncfile.conventions = "CF-1.6"
+
+	# --- Simulation & Runtime Metadata ---
 	ncfile.spin_isomer = spin_state_name
 	ncfile.creation_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-	ncfile.license = "This data is provided for academic and research use only."
-
-	# System-related metadata
 	ncfile.creator_name = username
 	ncfile.creator_host = hostname
 	ncfile.creator_ip = ip_address
 	ncfile.operating_system = os_info
 	ncfile.python_version = python_version
-	ncfile.conventions = "CF-1.6"
-
-	# Optional reference
-	#if reference:
-	#	ncfile.references = reference
 
 
-def write_scalar_parameters(ncfile, potential_strength, max_J, spin_state, theta_grid, phi_grid, B_const):
-	"""Write scalar parameters to NetCDF file with units."""
-	ncfile.createDimension('scalar', 1)  # Dummy dimension for scalar variables
+def write_scalar_parameters(
+	ncfile,
+	cm_inv_to_K,
+	potential_strength_cm_inv,
+	max_angular_momentum_quantum_number,
+	spin_state_name,
+	theta_grid_count,
+	phi_grid_count,
+	B_const_cm_inv
+):
+	"""
+	Write scalar simulation parameters to the NetCDF file with appropriate units.
 
-	var_potential = ncfile.createVariable("potential_strength", "f8", ("scalar",))
-	var_potential.units = "cm–1"  # or potential-specific units
+	Parameters:
+	- ncfile: Open NetCDF file handle.
+	- cm_inv_to_K (float): Conversion factor from cm-1 to Kelvin
+	- potential_strength_cm_inv (float): Orienting potential strength in cm⁻¹.
+	- max_angular_momentum_quantum_number (int): Truncation level ℓ_max.
+	- spin_state_name (str): Spin isomer type ('spinless', 'ortho', or 'para').
+	- theta_grid_count (int): Number of grid points in θ.
+	- phi_grid_count (int): Number of grid points in φ.
+	- B_const_cm_inv (float): Rotational constant in cm⁻¹.
+	"""
+	# Create a dummy scalar dimension
+	ncfile.createDimension('scalar', 1)
 
+	# cm_inv_to_K
+	var_conversion_factor = ncfile.createVariable("cm_inv_to_K", "f8", ("scalar",))
+	var_conversion_factor.units = "Kelvin/cm⁻¹"
+	var_conversion_factor[0] = cm_inv_to_K
+
+	# Potential strength
+	var_potential = ncfile.createVariable("potential_strength_cm_inv", "f8", ("scalar",))
+	var_potential.units = "cm⁻¹"
+	var_potential[0] = potential_strength_cm_inv
+
+	# Max J
 	var_max_J = ncfile.createVariable("max_angular_momentum_quantum_number", "i4", ("scalar",))
-	var_max_J.units = "unitless"
+	var_max_J.units = "dimensionless"
+	var_max_J[0] = max_angular_momentum_quantum_number
 
-	var_spin_state = ncfile.createVariable("spin_state", "str", ("scalar",))
-	var_spin_state.units = "unitless"
+	# Spin state
+	var_spin = ncfile.createVariable("spin_state_name", str, ("scalar",))
+	var_spin.units = "dimensionless"
+	var_spin[0] = spin_state_name
 
+	# Theta grid
 	var_theta = ncfile.createVariable("theta_grid_count", "i4", ("scalar",))
-	var_theta.units = "unitless"
+	var_theta.units = "dimensionless"
+	var_theta[0] = theta_grid_count
 
+	# Phi grid
 	var_phi = ncfile.createVariable("phi_grid_count", "i4", ("scalar",))
-	var_phi.units = "unitless"
+	var_phi.units = "dimensionless"
+	var_phi[0] = phi_grid_count
 
-	var_B_const = ncfile.createVariable("B_const_cm_inv", "f8", ("scalar",))
-	var_B_const.units = "cm-1"
+	# Rotational constant
+	var_B = ncfile.createVariable("rotational_constant_cm_inv", "f8", ("scalar",))
+	var_B.units = "cm⁻¹"
+	var_B[0] = B_const_cm_inv
 
-	var_potential[0] = potential_strength
-	var_max_J[0] = max_J
-	var_spin_state[0] = spin_state
-	var_theta[0] = theta_grid
-	var_phi[0] = phi_grid
-	var_B_const[0] = B_const
 
-def write_quantum_numbers(ncfile, all_qn, spin_state_name, spin_qn):
-	all_qn = np.array(all_qn, dtype=np.int32)
-	spin_qn = np.array(spin_qn, dtype=np.int32)
+def write_quantum_numbers(ncfile, all_quantum_numbers, spin_state_name, quantum_numbers_for_spin_state):
+	"""
+	Write the quantum numbers (J, M, etc.) to the NetCDF file for both full and spin-specific basis.
+
+	Parameters:
+	- ncfile: NetCDF file handle.
+	- all_quantum_numbers (ndarray): All basis quantum numbers (e.g., J, M).
+	- spin_state_name (str): Spin isomer type ('spinless', 'ortho', or 'para').
+	- quantum_numbers_for_spin_state (ndarray): Subset of quantum numbers allowed for this spin state.
+	"""
+	all_quantum_numbers = np.array(all_quantum_numbers, dtype=np.int32)
+	quantum_numbers_for_spin_state = np.array(quantum_numbers_for_spin_state, dtype=np.int32)
 
 	# Create dimensions
-	ncfile.createDimension("all_entries", all_qn.shape[0])
-	ncfile.createDimension("components", all_qn.shape[1])
-	ncfile.createDimension("spin_count", spin_qn.shape[0])
+	ncfile.createDimension("all_entries", all_quantum_numbers.shape[0])
+	ncfile.createDimension("components", all_quantum_numbers.shape[1])
+	ncfile.createDimension("spin_count", quantum_numbers_for_spin_state.shape[0])
 
-	# Create variables and assign quantum numbers
-	all_var = ncfile.createVariable("all_quantum_numbers", "i4", ("all_entries", "components"))
-	all_var[:, :] = all_qn
-	all_var.long_name = "Complete set of quantum numbers including J, M, and others"
+	# Store all quantum numbers
+	var_all_qn = ncfile.createVariable("all_quantum_numbers", "i4", ("all_entries", "components"))
+	var_all_qn[:, :] = all_quantum_numbers
+	var_all_qn.long_name = "All basis quantum numbers (e.g., J, M)"
 
-	spin_var = ncfile.createVariable(f"{spin_state_name}_quantum_numbers", "i4", ("spin_count", "components"))
-	spin_var[:, :] = spin_qn
-	spin_var.long_name = f"Quantum numbers (including J and M) for {spin_state_name} spin state"
+	# Store quantum numbers specific to spin state
+	var_spin_qn = ncfile.createVariable(f"{spin_state_name}_quantum_numbers", "i4", ("spin_count", "components"))
+	var_spin_qn[:, :] = quantum_numbers_for_spin_state
+	var_spin_qn.long_name = f"Quantum numbers for spin isomer '{spin_state_name}'"
 
-	max_J = np.max(all_qn[:, 0])
-	if (max_J <= 4):
-		print("\n**")
+	# Pretty print (only if J is reasonably small for visual clarity)
+	max_J = np.max(all_quantum_numbers[:, 0])
+	if max_J <= 4:
+		print(colored("\nAll Quantum Numbers (J, M)", HEADER_COLOR, attrs=['bold', 'underline']))
+		print(pd.DataFrame(all_quantum_numbers, columns=["J", "M"]))
 
-		# Convert the data to a pandas DataFrame for better display
-		all_qn_df = pd.DataFrame(all_qn, columns=["J", "M"])
-
-		# Display the total quantum numbers with labels using pandas DataFrame
-		print(colored("All Quantum Numbers (J, M)\n", HEADER_COLOR, attrs=['bold', 'underline']))
-		print(all_qn_df)
-
-		# Convert to DataFrame for better visualization
-		spin_qn_df = pd.DataFrame(spin_qn, columns=["J", "M"])
-
-		# Display spin-specific quantum numbers
-		print(colored(f"\nSpin State: {spin_state_name}\n", HEADER_COLOR, attrs=['bold', 'underline']))
-		print(spin_qn_df)
+		print(colored(f"\nSpin-Specific Quantum Numbers ({spin_state_name})", HEADER_COLOR, attrs=['bold', 'underline']))
+		print(pd.DataFrame(quantum_numbers_for_spin_state, columns=["J", "M"]))
 
 
 def write_eigen_data(ncfile, eigenvalues, real_eigenvectors, imag_eigenvectors):
+	"""
+	Write eigenvalues and eigenvectors to the NetCDF file.
+
+	Parameters:
+	- ncfile: NetCDF file handle.
+	- eigenvalues (ndarray): Real-valued eigenvalues (in Kelvin).
+	- real_eigenvectors (ndarray): Real parts of eigenvectors.
+	- imag_eigenvectors (ndarray): Imaginary parts of eigenvectors.
+	"""
+	eigenvalues = np.array(eigenvalues, dtype=np.float64)
+	real_eigenvectors = np.array(real_eigenvectors, dtype=np.float64)
+	imag_eigenvectors = np.array(imag_eigenvectors, dtype=np.float64)
+
 	state_count = eigenvalues.shape[0]
 	vector_dim = real_eigenvectors.shape[1]
 
-	# Create dimensions for eigenvalues and eigenvectors
+	# Create NetCDF dimensions
 	ncfile.createDimension("state_count", state_count)
 	ncfile.createDimension("vector_dim", vector_dim)
 
-	# Store eigenvalues as real values (float64)
-	eigval_var = ncfile.createVariable("eigenvalues", "f8", ("state_count",))
-	eigval_var[:] = eigenvalues
-	eigval_var.units = "Kelvin"
-	eigval_var.long_name = "Eigenvalues of the Hamiltonian"
+	# Store eigenvalues
+	var_eigenvalues = ncfile.createVariable("eigenvalues", "f8", ("state_count",))
+	var_eigenvalues[:] = eigenvalues
+	var_eigenvalues.units = "Kelvin"
+	var_eigenvalues.long_name = "Eigenvalues of the Hamiltonian in energy units"
 
-	# Store real and imaginary parts of eigenvectors separately
-	eigvec_real_var = ncfile.createVariable("eigenvectors_real", "f8", ("state_count", "vector_dim"))
-	eigvec_real_var[:, :] = real_eigenvectors
-	eigvec_real_var.long_name = "Real part of the eigenvectors corresponding to eigenvalues"
+	# Store eigenvector components
+	var_eigvec_real = ncfile.createVariable("eigenvectors_real", "f8", ("state_count", "vector_dim"))
+	var_eigvec_real[:, :] = real_eigenvectors
+	var_eigvec_real.long_name = "Real part of Hamiltonian eigenvectors"
 
-	eigvec_imag_var = ncfile.createVariable("eigenvectors_imag", "f8", ("state_count", "vector_dim"))
-	eigvec_imag_var[:, :] = imag_eigenvectors
-	eigvec_imag_var.long_name = "Imaginary part of the eigenvectors corresponding to eigenvalues"
+	var_eigvec_imag = ncfile.createVariable("eigenvectors_imag", "f8", ("state_count", "vector_dim"))
+	var_eigvec_imag[:, :] = imag_eigenvectors
+	var_eigvec_imag.long_name = "Imaginary part of Hamiltonian eigenvectors"
 
-	print("\n**")
-	# Convert the data to a pandas DataFrame for better display
-	eigenvalues_df = pd.DataFrame(eigenvalues, columns=["Energy in Kelvin"])
-
-	# Display the total quantum numbers with labels using pandas DataFrame
-	print(colored("All eigenvalues\n", HEADER_COLOR, attrs=['bold', 'underline']))
-	print(eigenvalues_df)
-
-
+	# Display output for small systems only
+	if state_count <= 50:
+		print(colored("\nEigenvalues (in Kelvin)", HEADER_COLOR, attrs=['bold', 'underline']))
+		print(pd.DataFrame(eigenvalues, columns=["Energy"]))
 
 def main():
-	# Parse command-line arguments
+	# --- Parse command-line arguments ---
 	args = parse_arguments()
 
+	# --- Dry run mode: Show parameters and exit ---
 	if args.dry_run:
-		print(f"ℓ_max           = {args.max_angular_momentum_quantum_number}")
-		print(f"Spin            = {args.spin}")
-		print(f"Dipole moment   = {args.dipole_moment} D")
-		print(f"Electric field  = {args.electric_field} kV/cm")
-		print(f"V(θ) strength   = {args.potential_strength:.5f} cm⁻¹")
-		print(f"Output dir      = {args.output_dir}")
+		print(colored("=" * (LABEL_WIDTH + VALUE_WIDTH), SEPARATOR_COLOR))
+		print(colored("Dry Run Summary".center(LABEL_WIDTH + VALUE_WIDTH), HEADER_COLOR))
+		print(colored("=" * (LABEL_WIDTH + VALUE_WIDTH), SEPARATOR_COLOR))
+
+		print(colored("ℓ_max".ljust(LABEL_WIDTH), LABEL_COLOR) + 
+			  colored(str(args.max_angular_momentum_quantum_number).ljust(VALUE_WIDTH), VALUE_COLOR))
+		
+		print(colored("Spin".ljust(LABEL_WIDTH), LABEL_COLOR) + 
+			  colored(args.spin.ljust(VALUE_WIDTH), VALUE_COLOR))
+		
+		print(colored("Dipole moment".ljust(LABEL_WIDTH), LABEL_COLOR) + 
+			  colored(f"{args.dipole_moment or 'N/A'} D".ljust(VALUE_WIDTH), VALUE_COLOR))
+		
+		print(colored("Electric field".ljust(LABEL_WIDTH), LABEL_COLOR) + 
+			  colored(f"{args.electric_field or 'N/A'} kV/cm".ljust(VALUE_WIDTH), VALUE_COLOR))
+		
+		print(colored("V(θ) strength".ljust(LABEL_WIDTH), LABEL_COLOR) + 
+			  colored(f"{args.potential_strength or 'N/A'} cm⁻¹".ljust(VALUE_WIDTH), VALUE_COLOR))
+		
+		print(colored("Output directory".ljust(LABEL_WIDTH), LABEL_COLOR) + 
+			  colored(args.output_dir.ljust(VALUE_WIDTH), VALUE_COLOR))
+
+		print(colored("=" * (LABEL_WIDTH + VALUE_WIDTH), SEPARATOR_COLOR))
 		sys.exit(0)
+
 
 	# --- Create output directory ---
 	os.makedirs(args.output_dir, exist_ok=True)
 
-	potential_strength_cm_inv   = args.potential_strength
+	# --- Determine potential strength ---
+	if args.potential_strength is not None:
+		potential_strength_cm_inv = args.potential_strength
+	elif args.dipole_moment_D is not None and args.electric_field_kVcm is not None:
+		potential_strength_cm_inv = args.dipole_moment_D * args.electric_field_kVcm * 0.03065
+		print(f"Computed potential strength (μE) = {potential_strength_cm_inv:.4f} cm⁻¹")
+	else:
+		raise ValueError(
+			"Missing potential parameters: provide either --potential-strength "
+			"or both --dipole-moment-D and --electric-field-kVcm."
+		)
+
 	max_angular_momentum_quantum_number = args.max_angular_momentum_quantum_number
-	spin_state			        = args.spin
+	spin_state					= args.spin
 
 	# No. of grid points along theta and phi
-	theta_grid_count	        = int(2 * max_angular_momentum_quantum_number + 5)
-	phi_grid_count		        = int(2 * theta_grid_count + 5)
+	theta_grid_count			= int(2 * max_angular_momentum_quantum_number + 5)
+	phi_grid_count				= int(2 * theta_grid_count + 5)
 
 	# Tolerance limit for a harmitian matrix
 	deviation_tolerance_value   = 10e-12
@@ -1172,14 +1308,23 @@ def main():
 	display_legendre_quadrature = False
 	compute_rigid_rotor_energy  = False
 	orthonormality_check		= False
-	hermiticity_check			= False
 	unitarity_check				= False
+	hermiticity_check			= False
 	pot_write					= False
 	#
 	display_data				= False
 
 	# Display input parameters
-	show_simulation_details(potential_strength_cm_inv, max_angular_momentum_quantum_number, spin_state, theta_grid_count, phi_grid_count)
+	show_simulation_details(
+	potential_strength_cm_inv=potential_strength_cm_inv,   # float, in cm⁻¹
+	max_angular_momentum_quantum_number=args.max_angular_momentum_quantum_number,
+	spin_state=args.spin,
+	theta_grid_count=theta_grid_count,					 # e.g., 100
+	phi_grid_count=phi_grid_count,						 # e.g., 120
+	dipole_moment_D=args.dipole_moment,					 # float or None
+	electric_field_kVcm=args.electric_field,			 # float or None
+	computed_muE_cm_inv=potential_strength_cm_inv if args.potential_strength is None else None
+	)
 
 	# Spectroscopic constant (B) in cm⁻¹ taken from NIST data
 	B_const_cm_inv = 20.956
@@ -1196,8 +1341,7 @@ def main():
 
 	# Unit Conversion
 	# Display results with clear labels and scientific precision
-	print("\n**")
-	print(colored("Unit Conversion", HEADER_COLOR, attrs=['bold', 'underline']))
+	print(colored("\nUnit Conversion", HEADER_COLOR, attrs=['bold', 'underline']))
 	print(colored(f"Inverse meter-Kelvin relationship:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{m_inv_to_K:.8f} {unit} (± {uncertainty:.6e})".ljust(VALUE_WIDTH), VALUE_COLOR))
 	print(colored(f"Conversion factor from cm⁻¹ to Kelvin:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{cm_inv_to_K:.6f} K/cm⁻¹".ljust(VALUE_WIDTH), VALUE_COLOR))
 	print(colored(f"Rotational constant in Kelvin:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{B_const_K:.6f} K".ljust(VALUE_WIDTH), VALUE_COLOR))
@@ -1206,15 +1350,18 @@ def main():
 		energies = rotational_energy_levels(B_const_K, 10)
 		plot_rotational_levels(energies)
 
-	basis_type, base_file_name = generate_filename(spin_state, max_angular_momentum_quantum_number, potential_strength_K, theta_grid_count, phi_grid_count)
-	prefix = "output_file_for_checking_orthonormality_condition"
-
-	# Separator line
-	print("\n**")
-	print(colored("basis_type".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{basis_type}".ljust(VALUE_WIDTH), VALUE_COLOR))
-
 	# Gauss-Quadrature points
 	xGL, wGL, phixiGridPts, dphixi = compute_legendre_quadrature(theta_grid_count, phi_grid_count, display_legendre_quadrature)
+
+	base_file_name = generate_filename(spin_state, max_angular_momentum_quantum_number, potential_strength_K, theta_grid_count, phi_grid_count, args.dipole_moment, args.electric_field, prefix="_")
+	
+	# Ensure output directory exists
+	os.makedirs(args.output_dir, exist_ok=True)
+	# Output file name
+	log_file = os.path.join(args.output_dir, f"validation_fundamental_QM_properties" + base_file_name + ".log")
+
+	print(colored("\nValidation Log Filename", HEADER_COLOR, attrs=['bold', 'underline']))
+	print( colored("Orthonormality Check Log:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(log_file.ljust(VALUE_WIDTH), VALUE_COLOR))
 
 	# All quantum numbers: (J, M)
 	all_quantum_numbers = bfunc.generate_linear_rotor_quantum_numbers(max_angular_momentum_quantum_number, "spinless")
@@ -1229,9 +1376,14 @@ def main():
 	# where each column corresponds to a unique (J, M) quantum number pair and rows map to grid points across θ and φ angles.
 	n_basis_real = total_number_of_states
 	basisfun_real = bfunc.spherical_harmonicsReal(n_basis_real, theta_grid_count, phi_grid_count, all_quantum_numbers, xGL, wGL, phixiGridPts, dphixi)
-	# Separator line
-	print("\n**")
-	print(colored("shape of ", INFO_COLOR) + colored("spherical_harmonicsReal or basisfun_real: ".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{basisfun_real.shape}".ljust(VALUE_WIDTH), VALUE_COLOR))
+
+	# Section Header
+	print(colored("\nBasis Function Shapes", HEADER_COLOR, attrs=['bold', 'underline']))
+
+	# Real basis functions
+	print(colored("Real (basisfun_real):".ljust(LABEL_WIDTH), LABEL_COLOR) +
+		  colored(f"{basisfun_real.shape}".ljust(VALUE_WIDTH), VALUE_COLOR))
+
 
 	if (orthonormality_check):
 		# Compute the overlap (normalization) matrix to check if the basis functions are orthonormal.  
@@ -1244,8 +1396,6 @@ def main():
 		
 		#
 		print(colored("shape of ", INFO_COLOR) + colored("real_basis_normalization_matrix: ".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{real_basis_normalization_matrix.shape}".ljust(VALUE_WIDTH), VALUE_COLOR) + "\n")
-		log_file = f"validation_fundamental_QM_properties" + base_file_name + ".log"
-		print(colored("**\nFile name for checking orthonormality condition: ".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{log_file}".ljust(VALUE_WIDTH), VALUE_COLOR) + "\n")
 
 		basis_description_text = "Real Spherical Harmonics Basis |JM> for a linear rigid rotor"
 		check_normalization_condition_linear_rotor(
@@ -1268,6 +1418,11 @@ def main():
 	n_basis_complex = total_number_of_states
 	# Construction of complex basis functions 
 	basisfun_complex = bfunc.spherical_harmonicsComp(n_basis_complex, theta_grid_count, phi_grid_count, all_quantum_numbers, xGL, wGL, phixiGridPts, dphixi)
+	# Complex basis functions, if available
+	if 'basisfun_complex' in locals() or 'basisfun_complex' in globals():
+		print(colored("Complex (basisfun_complex):".ljust(LABEL_WIDTH), LABEL_COLOR) +
+			  colored(f"{basisfun_complex.shape}".ljust(VALUE_WIDTH), VALUE_COLOR))
+
 	if (orthonormality_check):
 		# Orthonormality test for "complex basis"
 		complex_basis_normalization_matrix = np.einsum('ij,ik->jk', np.conjugate(basisfun_complex), basisfun_complex)  # (n_points, n_basis) x (n_points, n_basis) → (n_basis, n_basis)
@@ -1295,7 +1450,7 @@ def main():
 	#umat = basisfun_complex.conj().T @ basisfun_real
 
 	if (unitarity_check):
-		check_unitarity(log_file, basis_type, umat, mode="append")
+		check_unitarity(log_file, spin_state, umat, mode="append")
 		# Compute UU†
 		umat_unitarity = np.einsum('ia,ja->ij', umat, np.conjugate(umat))
 		#umat_unitarity = np.einsum('ia,ja->ij', umat, umat.conj())
@@ -1339,26 +1494,35 @@ def main():
 	# Debugging function call
 	debug_eigenvalues_eigenvectors(H_rot, sorted_eigenvalues, sorted_eigenvectors)
 
-	# Ensure output directory exists
-	os.makedirs(args.output_dir, exist_ok=True)
-
 	# Output file name
 	file_name_netcdf = os.path.join(args.output_dir, f"quantum_data" + base_file_name + ".nc")
 
-	# Call the function to save all data to NetCDF
-	save_all_quantum_data_to_netcdf(
-		file_name_netcdf,
-		potential_strength_cm_inv,
-		max_angular_momentum_quantum_number,
-		theta_grid_count,
-		phi_grid_count,
-		B_const_cm_inv,	
-		spin_state,
-		all_quantum_numbers,
-		quantum_numbers_for_spin_state,
-		sorted_eigenvalues,
-		sorted_eigenvectors
-	)
+	# Prepare arguments
+	kwargs = {
+		"file_name": file_name_netcdf,
+		"cm_inv_to_K": cm_inv_to_K,
+		"potential_strength_cm_inv": potential_strength_cm_inv,
+		"max_angular_momentum_quantum_number": max_angular_momentum_quantum_number,
+		"theta_grid_count": theta_grid_count,
+		"phi_grid_count": phi_grid_count,
+		"B_const_cm_inv": B_const_cm_inv,
+		"spin_state": spin_state,
+		"all_quantum_numbers": all_quantum_numbers,
+		"quantum_numbers_for_spin_state": quantum_numbers_for_spin_state,
+		"sorted_eigenvalues": sorted_eigenvalues,
+		"sorted_eigenvectors": sorted_eigenvectors,
+	}
+
+	# Conditionally add optional values
+	if args.dipole_moment is not None and args.electric_field is not None:
+		kwargs["dipole_moment_D"] = args.dipole_moment
+		kwargs["electric_field_kVcm"] = args.electric_field
+
+	# Call the function
+	save_all_quantum_data_to_netcdf(**kwargs)
+	
+	print("\n\nHURRAY ALL COMPUTATIONS COMPLETED DATA SUCCESSFULLY WRITTEN TO NETCDF FILES")
+
 
 """
 	for idx in range(4):

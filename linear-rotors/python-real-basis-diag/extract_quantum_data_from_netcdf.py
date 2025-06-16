@@ -122,7 +122,7 @@ def read_quantum_data(filename, spin_state_name):
 	return all_quantum_numbers, spin_state_qn_array, eigenvalues, eigenvectors_real, eigenvectors_imag, eigenvectors
 
 # === Usage ===
-filename = "quantum_data_for_H2_spinless_isomer_max_angular_momentum_quantum_number10_potential_strength100.0K_grids_theta25_phi55.nc"
+filename = "output/quantum_data_for_H2_spinless_isomer_max_angular_momentum_quantum_number4_potential_strength4.471718533716K_grids_theta13_phi31.nc"
 read_all_attributes(filename)
 all_variables = inspect_netcdf_file(filename)
 scalar_data = read_scalar_like_parameters_with_units(filename, all_variables)
