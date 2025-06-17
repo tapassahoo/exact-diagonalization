@@ -1,6 +1,88 @@
+import os
+from itertools import product
 import numpy as np
 from netCDF4 import Dataset
 import thermodynamics_kelvin as tk
+from pkg_utils.utils import whoami
+from pkg_utils.env_report import whom
+
+import os
+from itertools import product
+from netCDF4 import Dataset
+
+def read_all_attributes(filename):
+	"""Helper function to read and print global and variable-level attributes from a NetCDF file."""
+	with Dataset(filename, 'r') as ncfile:
+		print("\nGlobal Attributes")
+		print("-" * 60)
+		for attr in ncfile.ncattrs():
+			print(f"{attr:30}: {ncfile.getncattr(attr)}")
+
+		print("\nVariable-wise Attributes")
+		print("-" * 60)
+		for var_name, var in ncfile.variables.items():
+			print(f"\nVariable: {var_name}")
+			for attr in var.ncattrs():
+				print(f"  {attr:28}: {var.getncattr(attr)}")
+	print("\nAttribute inspection complete.\n")
+
+def read_all_quantum_data_files(
+	base_output_dir,
+	dipole_moment_D,
+	electric_field_kVcm_list,
+	max_angular_momentum_list,
+	spin_type="spinless"
+):
+	"""
+	Read NetCDF data for various configurations of an HF monomer in an electric field.
+
+	Parameters:
+		base_output_dir (str): Base path where output directories are stored.
+		dipole_moment_D (float): Dipole moment in Debye.
+		electric_field_kVcm_list (list): Electric field strengths in kV/cm.
+		max_angular_momentum_list (list): Values of maximum angular momentum quantum number (lmax).
+		spin_type (str): Rotor spin type: 'spinless', 'ortho', or 'para'.
+	"""
+	for lmax, E in product(max_angular_momentum_list, electric_field_kVcm_list):
+		# Define grid size based on lmax
+		theta_grid_count = 2 * lmax + 5
+		phi_grid_count = 2 * theta_grid_count + 5
+
+		# Clean subdirectory and filename strings (avoid dots)
+		subdir = (
+			f"{spin_type}_HF_lmax_{lmax}_"
+			f"dipole_moment_{dipole_moment_D:.2f}D_"
+			f"electric_field_{E:.2f}kVcm"
+		).replace(".", "_")
+
+		filename = (
+			f"quantum_data_HF_{spin_type}_isomer_lmax_{lmax}_"
+			f"dipole_moment_{dipole_moment_D:.2f}D_"
+			f"electric_field_{E:.2f}kVcm_"
+			f"theta_grid_{theta_grid_count}_phi_grid_{phi_grid_count}.nc"
+		)
+
+		file_path = os.path.join(base_output_dir, subdir, filename)
+
+		print(f"\nChecking file: {file_path}")
+		if os.path.exists(file_path):
+			try:
+				read_all_attributes(file_path)
+				all_variables = inspect_netcdf_file(file_path)
+				scalar_data = read_scalar_like_parameters_with_units(file_path, all_variables)
+				display_scalar_parameters(scalar_data)
+				with Dataset(file_path, 'r') as nc:
+					print("Variable Summary")
+					print("-" * 60)
+					for var in nc.variables:
+						shape = nc.variables[var].shape
+						dtype = nc.variables[var].dtype
+						print(f"  {var:30}: shape = {shape}, dtype = {dtype}")
+				print("File read successfully.\n")
+			except Exception as e:
+				print(f"Error reading file: {e}")
+		else:
+			print("File does not exist.\n")
 
 
 def inspect_netcdf_file(filename):
@@ -55,43 +137,6 @@ def display_scalar_parameters(params):
 		print(f"{name:<40} {data['value']:>8}   {data['unit']}")
 	print("-" * 55)
 
-if False:
-	def read_all_attributes(filename):
-		with Dataset(filename, 'r') as ncfile:
-			print("=== Global Attributes ===")
-			for attr in ncfile.ncattrs():
-				print(f"{attr}: {ncfile.getncattr(attr)}")
-
-			print("\n=== Variable-wise Attributes ===")
-			for var_name in ncfile.variables:
-				var = ncfile.variables[var_name]
-				print(f"\nVariable: {var_name}")
-				for attr in var.ncattrs():
-					print(f"  {attr}: {var.getncattr(attr)}")
-
-def read_all_attributes(filename):
-	with Dataset(filename, 'r') as ncfile:
-		print("\n📌 Global Attributes")
-		print("-" * 60)
-		if ncfile.ncattrs():
-			for attr in ncfile.ncattrs():
-				print(f"{attr:30}: {ncfile.getncattr(attr)}")
-		else:
-			print("No global attributes found.")
-
-		print("\n📦 Variable-wise Attributes")
-		print("-" * 60)
-		for var_name in ncfile.variables:
-			var = ncfile.variables[var_name]
-			print(f"\n🔹 Variable: {var_name}")
-			print("-" * (11 + len(var_name)))
-			if var.ncattrs():
-				for attr in var.ncattrs():
-					print(f"  {attr:28}: {var.getncattr(attr)}")
-			else:
-				print("  No attributes found.")
-	print("\n**")
-
 def read_quantum_data(filename, spin_state_name):
 	"""
 	Read quantum numbers, eigenvalues, and eigenvectors from a NetCDF file.
@@ -122,11 +167,16 @@ def read_quantum_data(filename, spin_state_name):
 	return all_quantum_numbers, spin_state_qn_array, eigenvalues, eigenvectors_real, eigenvectors_imag, eigenvectors
 
 # === Usage ===
-filename = "output/quantum_data_for_H2_spinless_isomer_max_angular_momentum_quantum_number4_potential_strength4.471718533716K_grids_theta13_phi31.nc"
-read_all_attributes(filename)
-all_variables = inspect_netcdf_file(filename)
-scalar_data = read_scalar_like_parameters_with_units(filename, all_variables)
-display_scalar_parameters(scalar_data)
+read_all_quantum_data_files(
+	base_output_dir="/Users/tapas/academic-project/outputs/output_spinless_HF_monomer_in_field",
+	dipole_moment_D=1.83,
+	electric_field_kVcm_list=[0.1] + list(range(10, 201, 10)),
+	max_angular_momentum_list=list(range(10, 51, 5)),
+	spin_type="spinless"
+)
+
+whom()
+whoami()
 
 spin_state_name = "spinless"
 all_quantum_numbers, quantum_numbers_for_spin_state, eigenvalues, eigenvectors_real, eigenvectors_imag, eigenvectors = read_quantum_data(filename, spin_state_name)

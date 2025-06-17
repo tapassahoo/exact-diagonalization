@@ -4,6 +4,9 @@ import os
 import subprocess
 import csv
 from itertools import product
+from pkg_utils.utils import whoami
+from pkg_utils.env_report import whom
+
 
 # -----------------------------
 # CONFIGURATION
@@ -117,7 +120,7 @@ for jmax, secondary_param in param_combinations:
 
 	cmd_str = " ".join(cmd)
 	print(f"[Launching] Job: {tag}")
-	print(f"  > Command      : {cmd_str}")
+	print(f"  > Command	  : {cmd_str}")
 
 	run_script_path = os.path.join(job_dir, "run_command.sh")
 	with open(run_script_path, "w") as f:
@@ -133,7 +136,7 @@ for jmax, secondary_param in param_combinations:
 	process = subprocess.Popen(cmd, stdout=stdout_file, stderr=stderr_file)
 	pid = process.pid
 	print(f"  > Process ID   : {pid}")
-	print("  > Status       : RUNNING\n")
+	print("  > Status	   : RUNNING\n")
 
 	with open(os.path.join(job_dir, "pid.txt"), "w") as f:
 		f.write(str(pid) + "\n")
