@@ -1,4 +1,4 @@
-# modules/pkg_utils.py
+# pkg_utils/utils.py
 import sys
 import inspect
 from termcolor import colored

@@ -1,37 +1,75 @@
-# modules/env_report.py
-
 import importlib
+import importlib.util
 import logging
-import os
-import platform
-import socket
-import sys
-import getpass
-import pkg_resources
 import subprocess
+import sys
+import argparse
+import os
+import socket
+import platform
+import getpass
 from datetime import datetime
 
-# --- Set up logging ---
-LOG_DIR = "logs"
-os.makedirs(LOG_DIR, exist_ok=True)
-log_filename = os.path.join(LOG_DIR, "env_report.log")
-logging.basicConfig(level=logging.INFO,
-					format="%(asctime)s - %(levelname)s - %(message)s",
-					handlers=[
-						logging.FileHandler(log_filename, mode='w'),
-						logging.StreamHandler(sys.stdout)
-					])
-
-# --- List of required packages ---
 REQUIRED_PACKAGES = [
-	'numpy', 'scipy', 'matplotlib', 'pandas', 'qutip', 'sympy',
-	'seaborn', 'sklearn', 'tensorflow', 'torch', 'numba'
+	"argparse", "os", "inspect", "sys", "getpass", "socket", "platform",
+	"math", "cmath", "numpy", "scipy", "datetime", "termcolor", "typing",
+	"pandas", "matplotlib", "seaborn", "netCDF4", "contextlib", "io"
 ]
+
+def setup_logging():
+	logging.basicConfig(
+		level=logging.INFO,
+		format="%(levelname)-8s: %(message)s",
+		handlers=[logging.StreamHandler(sys.stdout)]
+	)
+
+def is_module_available(pkg_name: str) -> bool:
+	return importlib.util.find_spec(pkg_name) is not None
+
+def check_installed_packages(package_list=None):
+	package_list = package_list or REQUIRED_PACKAGES
+	logging.info("\n📦 Checking package availability:")
+	for pkg in package_list:
+		if is_module_available(pkg):
+			logging.info(f"  [✔] {pkg:<12} - AVAILABLE")
+		else:
+			logging.warning(f"  [✘] {pkg:<12} - NOT FOUND")
+
+def safe_import(pkg_name: str):
+	try:
+		return importlib.import_module(pkg_name)
+	except ImportError:
+		logging.warning(f"[✘] Import failed: {pkg_name}")
+		return None
+
+def list_available(package_list=None):
+	package_list = package_list or REQUIRED_PACKAGES
+	logging.info("\n📃 Listing available modules:")
+	for pkg in package_list:
+		if is_module_available(pkg):
+			logging.info(f"  [✔] {pkg}")
+		else:
+			logging.warning(f"  [✘] {pkg}")
+
+def install_missing_packages(package_list=None):
+	package_list = package_list or REQUIRED_PACKAGES
+	logging.info("\n🔧 Attempting to install missing packages...")
+	for pkg in package_list:
+		if not is_module_available(pkg):
+			logging.warning(f"  [✘] {pkg} missing. Trying to install...")
+			try:
+				subprocess.check_call([sys.executable, "-m", "pip", "install", pkg])
+				logging.info(f"  [✔] Installed {pkg}")
+			except subprocess.CalledProcessError:
+				logging.error(f"  [✘] Failed to install {pkg}")
+		else:
+			logging.debug(f"  [✔] {pkg} already available")
 
 def whom():
 	"""
 	Prints and logs basic system information.
 	"""
+	print("\n")
 	logging.info("="*60)
 	logging.info("Execution Environment Info:")
 	logging.info(f"User           : {getpass.getuser()}")
@@ -40,7 +78,7 @@ def whom():
 		ip_address = socket.gethostbyname(socket.gethostname())
 		logging.info(f"IP Address     : {ip_address}")
 	except socket.gaierror:
-		logging.info("IP Address      : Not available")
+		logging.info("IP Address     : Not available")
 	logging.info(f"System         : {platform.system()} {platform.release()}")
 	logging.info(f"Architecture   : {platform.machine()}")
 	logging.info(f"Python Version : {platform.python_version()}")
@@ -48,54 +86,28 @@ def whom():
 	logging.info(f"Timestamp      : {datetime.now()}")
 	logging.info("="*60)
 
-def check_installed_packages():
-	"""
-	Logs which scientific packages are installed and their versions.
-	"""
-	logging.info("\nChecking installed scientific packages...")
-	for pkg in REQUIRED_PACKAGES:
-		try:
-			version = pkg_resources.get_distribution(pkg).version
-			logging.info(f"[✔] {pkg:<12} - version {version}")
-		except pkg_resources.DistributionNotFound:
-			logging.warning(f"[✘] {pkg:<12} - NOT INSTALLED")
+def main():
+	parser = argparse.ArgumentParser(description="Check, list, and install Python packages.")
+	parser.add_argument("--check", action="store_true", help="Check which packages are available")
+	parser.add_argument("--install", action="store_true", help="Install missing packages")
+	parser.add_argument("--list", action="store_true", help="List all importable packages")
+	parser.add_argument("--info", action="store_true", help="Display system environment info")
 
-def safe_import(package_name):
-	"""
-	Attempts to import a package safely.
-	Returns the module object if successful, or None if failed.
-	"""
-	try:
-		return importlib.import_module(package_name)
-	except ImportError:
-		logging.warning(f"Could not import package: {package_name}")
-		return None
+	args = parser.parse_args()
+	setup_logging()
 
-def list_available(required_list=None):
-	"""
-	Lists available packages from a given list or default list.
-	"""
-	logging.info("\nAvailable packages:")
-	packages = required_list if required_list else REQUIRED_PACKAGES
-	for pkg in packages:
-		module = safe_import(pkg)
-		if module:
-			logging.info(f"[✔] {pkg}")
-		else:
-			logging.warning(f"[✘] {pkg}")
+	if args.info:
+		whom()
+	if args.check:
+		check_installed_packages()
+	if args.install:
+		install_missing_packages()
+	if args.list:
+		list_available()
 
-def install_missing_packages():
-	"""
-	Attempts to install missing packages via pip.
-	"""
-	logging.info("\nAttempting to install missing packages...")
-	for pkg in REQUIRED_PACKAGES:
-		try:
-			pkg_resources.get_distribution(pkg)
-		except pkg_resources.DistributionNotFound:
-			logging.warning(f"Installing {pkg}...")
-			try:
-				subprocess.check_call([sys.executable, "-m", "pip", "install", pkg])
-				logging.info(f"[✔] Successfully installed {pkg}")
-			except subprocess.CalledProcessError:
-				logging.error(f"[✘] Failed to install {pkg}")
+	if not any(vars(args).values()):
+		parser.print_help()
+
+if __name__ == "__main__":
+	main()
+
