@@ -409,7 +409,7 @@ def check_normalization_condition_linear_rotor(log_file, basis_description_text,
 		output_file.write(f"  Mean Eigenvalue Deviation Observed: {mean_eigenvalue_deviation_value:.3e}\n")
 
 		if maximum_eigenvalue_deviation_value > deviation_tolerance_value:
-			output_file.write("⚠ WARNING: Some eigenvalues deviate significantly from the expected value of 1!\n")
+			output_file.write("[WARNING] Some eigenvalues deviate significantly from the expected value of 1!\n")
 
 		output_file.write("=" * 80 + "\n")
 
@@ -484,9 +484,9 @@ def check_unitarity(file_name, spin_state, umat, small=1e-10, mode="new"):
 		f.write(f"Max deviation from identity: {deviation}\n")
 
 		if deviation < small:
-			f.write("✔ The matrix U satisfies the unitarity condition.\n")
+			f.write("[INFO] The matrix U satisfies the unitarity condition.\n")
 		else:
-			f.write("⚠ WARNING: The matrix U does NOT satisfy the unitarity condition.\n")
+			f.write("[WARNING] The matrix U does NOT satisfy the unitarity condition.\n")
 
 	return deviation < small  # Returns True if unitarity holds, False otherwise
 
@@ -909,21 +909,21 @@ def debug_eigenvalues_eigenvectors(H_rot, sorted_eigenvalues, sorted_eigenvector
 	print("\n🔍 DEBUGGING EIGENVALUES AND EIGENVECTORS")
 
 	# 1. Check Hermitian property of the Hamiltonian
-	assert np.allclose(H_rot, H_rot.T.conj()), "❌ H_rot is not Hermitian."
+	assert np.allclose(H_rot, H_rot.T.conj()), "[ERROR] H_rot is not Hermitian."
 	print("[INFO] H_rot is Hermitian.")
 
 	# 2. Verify eigenvalues are sorted in ascending order
-	assert np.all(np.diff(sorted_eigenvalues) >= 0), "❌ Eigenvalues are not sorted."
+	assert np.all(np.diff(sorted_eigenvalues) >= 0), "[ERROR] Eigenvalues are not sorted."
 	print("[INFO] Eigenvalues are sorted.")
 
 	# 3. Check orthonormality of eigenvectors
 	identity = np.dot(sorted_eigenvectors.T.conj(), sorted_eigenvectors)
-	assert np.allclose(identity, np.eye(identity.shape[0])), "❌ Eigenvectors are not orthonormal."
+	assert np.allclose(identity, np.eye(identity.shape[0])), "[ERROR] Eigenvectors are not orthonormal."
 	print("[INFO] Eigenvectors are orthonormal.")
 
 	# 4. Validate the eigen-decomposition: H = VΛV†
 	H_reconstructed = sorted_eigenvectors @ np.diag(sorted_eigenvalues) @ sorted_eigenvectors.T.conj()
-	assert np.allclose(H_rot, H_reconstructed), "❌ Eigen-decomposition reconstruction failed."
+	assert np.allclose(H_rot, H_reconstructed), "[ERROR] Eigen-decomposition reconstruction failed."
 	print("[INFO] Hamiltonian reconstruction from eigenpairs is accurate.")
 
 	# 5. Check for complex eigenvectors
