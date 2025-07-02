@@ -6,6 +6,9 @@ import logging
 import argparse
 from itertools import product
 from datetime import datetime
+import shutil
+from pkg_utils.utils import whoami
+from pkg_utils.env_report import whom
 
 electric_field_kVcm_list = [0.1] + list(range(20, 21, 20))
 potential_strength_list = [0.1, 0.5]
@@ -38,7 +41,7 @@ def preview_job_settings(molecule, spin_type, dipole, param_combinations, output
 	logging.info(f"Molecule              : {molecule}")
 	logging.info(f"Spin type             : {spin_type}")
 	logging.info(f"Dipole moment (D)     : {dipole}")
-	logging.info(f"Script to execute     : {script_name}")
+	logging.info(f"Script to execute     : {os.path.join(output_dir, script_name)}")
 	logging.info(f"Total job combinations: {len(param_combinations)}")
 	logging.info(f"Base output directory : {output_dir}")
 	logging.info(f"Summary CSV will be at: {csv_path}")
@@ -113,22 +116,14 @@ def main():
 	parser.add_argument("--dry-run", action="store_true", help="Preview commands without executing jobs")
 	args = parser.parse_args()
 
-	base_output_dir = f"output_{args.spin_type}_{args.molecule}_monomer_in_field"
-
-	# Decide which parameter set to use: electric field vs potential strength
-	use_dipole_field = args.dipole is not None and bool(electric_field_kVcm_list)
-
-	if use_dipole_field:
-		if not electric_field_kVcm_list:
-			raise ValueError("Electric field list is empty but dipole moment is provided.")
-		param_combinations = list(product(max_angular_momentum_list, electric_field_kVcm_list))
-	else:
-		if not potential_strength_list:
-			raise ValueError("Potential strength list is empty and no dipole moment was given.")
-		param_combinations = list(product(max_angular_momentum_list, potential_strength_list))
-
-
 	output_dir = f"output_{args.spin_type}_{args.molecule}_monomer_in_field"
+	os.makedirs(output_dir, exist_ok=True)
+	# Copy script to job_dir
+	script_basename = os.path.basename(script_name)
+	script_dest_path = os.path.join(output_dir, script_basename)
+	shutil.copy2(script_name, script_dest_path)
+	script_path_in_job_dir = os.path.join(output_dir, script_basename)
+
 	csv_path = os.path.join(output_dir, "job_summary.csv")
 	log_file = os.path.join(output_dir, "job_submission.log")
 
@@ -144,7 +139,7 @@ def main():
 			E = secondary_param
 			tag = f"{args.spin_type}_{args.molecule}_lmax_{jmax}_dipole_{args.dipole:.2f}D_E_{E:.2f}kVcm".replace(".", "_")
 			cmd = [
-				"python3", script_name,
+				"python3", script_path_in_job_dir,
 				str(jmax),
 				args.spin_type,
 				"--dipole-moment", str(args.dipole),
@@ -156,7 +151,7 @@ def main():
 			V = secondary_param
 			tag = f"{args.molecule}_Vfield_{V:.2f}cm1_Jmax_{jmax}_{args.spin_type}".replace(".", "_")
 			cmd = [
-				"python3", script_name,
+				"python3", script_path_in_job_dir,
 				str(V),
 				str(jmax),
 				args.spin_type,
@@ -219,7 +214,7 @@ def main():
 
 	print("==========================================")
 	print("HURRAY ALL JOBS SUBMITTED SUCCESSFULLY")
-	print(f"Output directory: {base_output_dir}")
+	print(f"Output directory: {output_dir}")
 	print(f"Summary CSV: {csv_path}")
 	print("==========================================")
 
