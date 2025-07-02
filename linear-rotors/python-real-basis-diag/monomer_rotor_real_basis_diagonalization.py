@@ -647,13 +647,13 @@ def check_hermiticity(H, matrix_name="H", description="", tol=1e-10, debug=True,
 	if debug:
 		print("\n**")
 		print(colored(f"Hermiticity Check: {description}", HEADER_COLOR, attrs=['bold', 'underline']))
-		print(f"✅ Matrix shape: {H.shape}")
-		print(f"✅ Max deviation: {max_diff:.2e}")
-		print(f"✅ Frobenius norm: {norm_diff:.2e}")
-		print(f"✅ Mean deviation: {mean_diff:.2e}")
+		print(f"[INFO] Matrix shape	 : {H.shape}")
+		print(f"[INFO] Max deviation	: {max_diff:.2e}")
+		print(f"[INFO] Frobenius norm   : {norm_diff:.2e}")
+		print(f"[INFO] Mean deviation   : {mean_diff:.2e}")
 
 		if discrepancies:
-			print(f"\n❌ {len(discrepancies)} discrepancies found (threshold = {tol}):")
+			print(f"\n[ERROR] {len(discrepancies)} discrepancies found (threshold = {tol}):")
 			print("   Index (Row, Col)  | Deviation |")
 			print("   --------------------------------")
 			for i, j, value in discrepancies[:10]:  # Show first 10 discrepancies
@@ -662,7 +662,7 @@ def check_hermiticity(H, matrix_name="H", description="", tol=1e-10, debug=True,
 				print("   ... (truncated)")
 
 		else:
-			print("✅ No discrepancies found. Matrix is Hermitian.")
+			print("[INFO] No discrepancies found. Matrix is Hermitian.")
 
 	nrows, ncols = H.shape
 	if nrows != ncols:
@@ -910,27 +910,27 @@ def debug_eigenvalues_eigenvectors(H_rot, sorted_eigenvalues, sorted_eigenvector
 
 	# 1. Check Hermitian property of the Hamiltonian
 	assert np.allclose(H_rot, H_rot.T.conj()), "❌ H_rot is not Hermitian."
-	print("✅ H_rot is Hermitian.")
+	print("[INFO] H_rot is Hermitian.")
 
 	# 2. Verify eigenvalues are sorted in ascending order
 	assert np.all(np.diff(sorted_eigenvalues) >= 0), "❌ Eigenvalues are not sorted."
-	print("✅ Eigenvalues are sorted.")
+	print("[INFO] Eigenvalues are sorted.")
 
 	# 3. Check orthonormality of eigenvectors
 	identity = np.dot(sorted_eigenvectors.T.conj(), sorted_eigenvectors)
 	assert np.allclose(identity, np.eye(identity.shape[0])), "❌ Eigenvectors are not orthonormal."
-	print("✅ Eigenvectors are orthonormal.")
+	print("[INFO] Eigenvectors are orthonormal.")
 
 	# 4. Validate the eigen-decomposition: H = VΛV†
 	H_reconstructed = sorted_eigenvectors @ np.diag(sorted_eigenvalues) @ sorted_eigenvectors.T.conj()
 	assert np.allclose(H_rot, H_reconstructed), "❌ Eigen-decomposition reconstruction failed."
-	print("✅ Hamiltonian reconstruction from eigenpairs is accurate.")
+	print("[INFO] Hamiltonian reconstruction from eigenpairs is accurate.")
 
 	# 5. Check for complex eigenvectors
 	if np.iscomplexobj(sorted_eigenvectors):
-		print("⚠️ Eigenvectors contain complex numbers. Only real part may be stored in NetCDF.")
+		print("[WARNING] Eigenvectors contain complex numbers. Only real part may be stored in NetCDF.")
 
-	print("🎯 All validations passed successfully.")
+	print("[TARGET] All validations passed successfully.")
 
 def save_all_quantum_data_to_netcdf(
 	file_name,
@@ -1218,7 +1218,6 @@ def main():
 
 		print(colored("=" * (LABEL_WIDTH + VALUE_WIDTH), SEPARATOR_COLOR))
 		sys.exit(0)
-
 
 	# --- Create output directory ---
 	os.makedirs(args.output_dir, exist_ok=True)

@@ -7,9 +7,9 @@ import argparse
 from itertools import product
 from datetime import datetime
 
-electric_field_kVcm_list = [0.1] + list(range(20, 201, 20))
+electric_field_kVcm_list = [0.1] + list(range(20, 21, 20))
 potential_strength_list = [0.1, 0.5]
-max_angular_momentum_list = list(range(10, 31, 5))
+max_angular_momentum_list = list(range(10, 11, 5))
 script_name = "monomer_rotor_real_basis_diagonalization.py"
 allowed_spin_types = {"spinless", "ortho", "para"}
 
@@ -113,8 +113,20 @@ def main():
 	parser.add_argument("--dry-run", action="store_true", help="Preview commands without executing jobs")
 	args = parser.parse_args()
 
-	if args.dipole is not None and args.dipole < 0:
-		raise ValueError("Dipole moment must be non-negative.")
+	base_output_dir = f"output_{args.spin_type}_{args.molecule}_monomer_in_field"
+
+	# Decide which parameter set to use: electric field vs potential strength
+	use_dipole_field = args.dipole is not None and bool(electric_field_kVcm_list)
+
+	if use_dipole_field:
+		if not electric_field_kVcm_list:
+			raise ValueError("Electric field list is empty but dipole moment is provided.")
+		param_combinations = list(product(max_angular_momentum_list, electric_field_kVcm_list))
+	else:
+		if not potential_strength_list:
+			raise ValueError("Potential strength list is empty and no dipole moment was given.")
+		param_combinations = list(product(max_angular_momentum_list, potential_strength_list))
+
 
 	output_dir = f"output_{args.spin_type}_{args.molecule}_monomer_in_field"
 	csv_path = os.path.join(output_dir, "job_summary.csv")
@@ -127,10 +139,33 @@ def main():
 
 	summary_rows = []
 
-	for jmax, value in param_combinations:
-		tag = f"{args.molecule}_{args.spin_type}_lmax_{jmax}_{'E' if use_dipole else 'V'}_{value:.2f}"
-		info_str = f"{'Field' if use_dipole else 'Potential'} = {value:.2f}"
-		job_dir = output_dir
+	for jmax, secondary_param in param_combinations:
+		if use_dipole:
+			E = secondary_param
+			tag = f"{args.spin_type}_{args.molecule}_lmax_{jmax}_dipole_{args.dipole:.2f}D_E_{E:.2f}kVcm".replace(".", "_")
+			cmd = [
+				"python3", script_name,
+				str(jmax),
+				args.spin_type,
+				"--dipole-moment", str(args.dipole),
+				"--electric-field", str(E),
+				"--output-dir", os.path.join(output_dir, tag)
+			]
+			info_str = f"Dipole moment = {args.dipole} D, E = {E} kV/cm"
+		else:
+			V = secondary_param
+			tag = f"{args.molecule}_Vfield_{V:.2f}cm1_Jmax_{jmax}_{args.spin_type}".replace(".", "_")
+			cmd = [
+				"python3", script_name,
+				str(V),
+				str(jmax),
+				args.spin_type,
+				"--output-dir", os.path.join(output_dir, tag)
+			]
+			info_str = f"V = {V} cm⁻¹"
+
+		job_dir = os.path.join(output_dir, tag)
+		os.makedirs(job_dir, exist_ok=True)
 
 		if check_job_status(tag, job_dir, jmax, args.spin_type, info_str, summary_rows):
 			continue
@@ -138,14 +173,14 @@ def main():
 		stdout_path = os.path.join(job_dir, f"{tag}.stdout")
 		stderr_path = os.path.join(job_dir, f"{tag}.stderr")
 
-		cmd = build_command(jmax, value, use_dipole, args.dipole, output_dir, args.spin_type)
 		cmd_str = " ".join(cmd)
 
 		if args.dry_run:
-			print(f"[Dry Run  ] Would launch: {tag}")
-			print(f"  > Command   : {cmd_str}")
-			print(f"  > Stdout path  : {stdout_path}")
-			print(f"  > Stderr path  : {stderr_path}")
+			print(f"\n\n[DRY RUN ] Job Name       : {tag}")
+			print(f"            Command       : {cmd_str}")
+			print(f"            Stdout Path   : {stdout_path}")
+			print(f"            Stderr Path   : {stderr_path}")
+
 			summary_rows.append({
 				"Job Name": tag,
 				"Max Angular Momentum": jmax,
@@ -156,8 +191,9 @@ def main():
 			})
 			continue
 
-		print(f"[Launching] Job: {tag}")
-		print(f"  > Command   : {cmd_str}")
+
+		print(f"\n\n[Launching] Job: {tag}")
+		print(f"  > Command      : {cmd_str}")
 		print(f"  > Stdout path  : {stdout_path}")
 		print(f"  > Stderr path  : {stderr_path}")
 
@@ -180,6 +216,12 @@ def main():
 
 	write_summary_csv(summary_rows, csv_path)
 	logging.info("All jobs processed. Summary written to CSV.")
+
+	print("==========================================")
+	print("HURRAY ALL JOBS SUBMITTED SUCCESSFULLY")
+	print(f"Output directory: {base_output_dir}")
+	print(f"Summary CSV: {csv_path}")
+	print("==========================================")
 
 if __name__ == "__main__":
 	main()
