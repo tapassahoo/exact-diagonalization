@@ -1269,7 +1269,7 @@ def main():
 
 	# Spectroscopic constant (B) in cm⁻¹ taken from NIST data
 	#B_const_cm_inv = 20.95373 # HF
-	B_const_cm_inv = 10.59342 # HCl https://cccbdb.nist.gov/exp2x.asp?casno=7647010&charge=0
+	B_const_cm_inv = 10.44 # https://opg.optica.org/viewmedia.cfm?r=1&rwjcode=josa&uri=josa-52-1-1&html=true
 
 	# Retrieve the inverse meter-Kelvin relationship from physical constants
 	m_inv_to_K, unit, uncertainty = const.physical_constants["inverse meter-kelvin relationship"]

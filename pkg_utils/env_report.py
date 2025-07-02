@@ -13,7 +13,7 @@ from datetime import datetime
 REQUIRED_PACKAGES = [
 	"argparse", "os", "inspect", "sys", "getpass", "socket", "platform",
 	"math", "cmath", "numpy", "scipy", "datetime", "termcolor", "typing",
-	"pandas", "matplotlib", "seaborn", "netCDF4", "contextlib", "io"
+	"pandas", "matplotlib", "seaborn", "netCDF4", "contextlib", "io", "tqdm"
 ]
 
 def setup_logging():
