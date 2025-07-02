@@ -46,22 +46,11 @@ import seaborn as sns
 from netCDF4 import Dataset
 from contextlib import redirect_stdout
 import io
-
+from pkg_utils.utils import whoami
+from pkg_utils.config import *
 
 # Imports basis functions of rotors (linear and nonlinear rotors)
 import pkg_basis_func_rotors.basis_func_rotors as bfunc
-
-# Define color schemes
-HEADER_COLOR = 'cyan'
-LABEL_COLOR = 'green'
-VALUE_COLOR = 'magenta'
-DEBUG_COLOR = 'red'
-SEPARATOR_COLOR = 'yellow'
-INFO_COLOR = 'blue'
-
-# Define fixed widths for alignment
-LABEL_WIDTH = 35
-VALUE_WIDTH = 45
 
 def parse_arguments():
 	"""
@@ -135,40 +124,6 @@ def parse_arguments():
 			sys.exit(1)
 
 	return args
-
-
-def whoami():
-	"""
-	Prints the filename, function name, and line number from where `whoami()` is called, then exits.
-	"""
-	frame = inspect.currentframe().f_back
-
-	# Separator
-	print(colored("\n" + "=" * 80, SEPARATOR_COLOR))
-
-	# Header
-	print(colored("ATTENTION", DEBUG_COLOR, attrs=['bold', 'underline']))
-	print(colored("\nCalled from:", HEADER_COLOR, attrs=['bold', 'underline']))
-
-	# Information
-	print(
-		colored("File:".ljust(LABEL_WIDTH), LABEL_COLOR) +
-		colored(f"{frame.f_code.co_filename}".ljust(VALUE_WIDTH), VALUE_COLOR)
-	)
-	print(
-		colored("Function:".ljust(LABEL_WIDTH), LABEL_COLOR) +
-		colored(f"{frame.f_code.co_name}".ljust(VALUE_WIDTH), VALUE_COLOR)
-	)
-	print(
-		colored("Line:".ljust(LABEL_WIDTH), LABEL_COLOR) +
-		colored(f"{frame.f_lineno}", VALUE_COLOR)
-	)
-
-	# Closing line
-	print(colored("=" * 80, SEPARATOR_COLOR) + '\n')
-
-	sys.exit(0)
-
 
 def show_simulation_details(
 	potential_strength_cm_inv,
@@ -255,7 +210,7 @@ def generate_filename(
 	"""
 
 	filename = (
-		f"{prefix}HF_{spin_state}_isomer_"
+		f"{prefix}HCl_{spin_state}_isomer_"
 		f"lmax_{max_angular_momentum_quantum_number}_"
 	)
 
@@ -270,7 +225,6 @@ def generate_filename(
 	filename += f"theta_grid_{theta_grid_count}_phi_grid_{phi_grid_count}"
 
 	return filename
-
 
 def compute_legendre_quadrature(theta_grid_count, phi_grid_count, display_legendre_quadrature):
 	"""
@@ -461,7 +415,6 @@ def check_normalization_condition_linear_rotor(log_file, basis_description_text,
 
 	return maximum_deviation_value
 
-
 def plot_heatmap(normalization_matrix_data, title):
 	"""
 	Visualizes the normalization matrix using a heatmap.
@@ -498,7 +451,6 @@ def plot_heatmap(normalization_matrix_data, title):
 	plt.ylabel("Basis Index", fontsize=10)
 	plt.tight_layout()
 	plt.show()
-
 
 def check_unitarity(file_name, spin_state, umat, small=1e-10, mode="new"):
 	"""
@@ -538,7 +490,6 @@ def check_unitarity(file_name, spin_state, umat, small=1e-10, mode="new"):
 
 	return deviation < small  # Returns True if unitarity holds, False otherwise
 
-
 def compute_rotational_kinetic_energy_loop(umat, all_quantum_numbers, B_const_K):
 	"""
 	Computes the rotational kinetic energy operator T_rot using a loop.
@@ -570,7 +521,6 @@ def compute_rotational_kinetic_energy_loop(umat, all_quantum_numbers, B_const_K)
 
 	#return np.real(T_rot)
 	return T_rot
-
 
 def compute_rotational_kinetic_energy_matrix(umat, all_quantum_numbers, B_const_K):
 	"""
@@ -608,7 +558,6 @@ def compute_rotational_kinetic_energy_matrix(umat, all_quantum_numbers, B_const_
 
 	#return np.real(T_rot)  # Return the real part of the resulting matrix
 	return T_rot  # Return the real part of the resulting matrix
-
 
 def compute_rotational_kinetic_energy_einsum(umat, all_quantum_numbers, B_const_K, debug=False):
 	"""
@@ -655,7 +604,6 @@ def compute_rotational_kinetic_energy_einsum(umat, all_quantum_numbers, B_const_
 		T_rot = np.einsum('ji, jk, kl -> il', umat.conj(), E_diag, umat)
 
 	return T_rot  # Return the real part of the resulting matrix
-
 
 def check_hermiticity(H, matrix_name="H", description="", tol=1e-10, debug=True, visualize=False):
 	"""
@@ -748,7 +696,6 @@ def check_hermiticity(H, matrix_name="H", description="", tol=1e-10, debug=True,
 
 	return is_hermitian, discrepancies
 
-
 def rotational_energy_levels(B, J_max=10):
 	"""
 	Computes and displays the rotational energy levels of a rigid rotor.
@@ -838,7 +785,6 @@ if False:
 		plt.box(False)
 		plt.show()
 
-
 def extract_diagonal(matrix):
 	"""
 	Extracts the diagonal elements from a given matrix.
@@ -885,7 +831,6 @@ def display_rotational_energies(diagonal_elements, all_quantum_numbers, B_const_
 		print(f"{int(J):>12} {theoretical_energy:>32.6f} {energy:>26.6f}")
 
 	print("=" * 80)
-
 
 def compute_potential_energy_einsum(basisfun_complex, umat, xGL, theta_grid_count, phi_grid_count, potential_strength, debug=False):
 	"""
@@ -948,7 +893,6 @@ def compute_sorted_eigenvalues_and_eigenvectors(H_rot):
 
 	#return eigenvalue_matrix, sorted_eigenvectors
 	return sorted_eigenvalues, sorted_eigenvectors
-
 
 def debug_eigenvalues_eigenvectors(H_rot, sorted_eigenvalues, sorted_eigenvectors):
 	"""
@@ -1105,7 +1049,6 @@ def write_metadata(ncfile, spin_state_name):
 	ncfile.operating_system = os_info
 	ncfile.python_version = python_version
 
-
 def write_scalar_parameters(
 	ncfile,
 	cm_inv_to_K,
@@ -1167,7 +1110,6 @@ def write_scalar_parameters(
 	var_B.units = "cm⁻¹"
 	var_B[0] = B_const_cm_inv
 
-
 def write_quantum_numbers(ncfile, all_quantum_numbers, spin_state_name, quantum_numbers_for_spin_state):
 	"""
 	Write the quantum numbers (J, M, etc.) to the NetCDF file for both full and spin-specific basis.
@@ -1204,7 +1146,6 @@ def write_quantum_numbers(ncfile, all_quantum_numbers, spin_state_name, quantum_
 
 		print(colored(f"\nSpin-Specific Quantum Numbers ({spin_state_name})", HEADER_COLOR, attrs=['bold', 'underline']))
 		print(pd.DataFrame(quantum_numbers_for_spin_state, columns=["J", "M"]))
-
 
 def write_eigen_data(ncfile, eigenvalues, real_eigenvectors, imag_eigenvectors):
 	"""
@@ -1327,7 +1268,8 @@ def main():
 	)
 
 	# Spectroscopic constant (B) in cm⁻¹ taken from NIST data
-	B_const_cm_inv = 20.95373
+	#B_const_cm_inv = 20.95373 # HF
+	B_const_cm_inv = 10.59342 # HCl https://cccbdb.nist.gov/exp2x.asp?casno=7647010&charge=0
 
 	# Retrieve the inverse meter-Kelvin relationship from physical constants
 	m_inv_to_K, unit, uncertainty = const.physical_constants["inverse meter-kelvin relationship"]

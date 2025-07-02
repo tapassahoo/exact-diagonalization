@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import os
 import subprocess
 import csv
@@ -12,13 +10,14 @@ from pkg_utils.env_report import whom
 # CONFIGURATION
 # -----------------------------
 # Case A: dipole + field is provided
-dipole_moment_D = 1.827
+#dipole_moment_D = 1.827
+dipole_moment_D = 1.093
 electric_field_kVcm_list = [0.1] + list(range(10, 201, 10))
 
 # Case B (ignored if A is active): V-field values
 potential_strength_list = [0.1, 0.5]
 
-max_angular_momentum_list = list(range(10, 51, 5))
+max_angular_momentum_list = list(range(10, 31, 5))
 spin_type = "spinless"  # Choose from: "spinless", "ortho", "para"
 
 script_name = "monomer_rotor_real_basis_diagonalization.py"
@@ -26,7 +25,7 @@ script_name = "monomer_rotor_real_basis_diagonalization.py"
 # -----------------------------
 # CHOOSE JOB PARAMETER MODE
 # -----------------------------
-base_output_dir = f"output_{spin_type}_HF_monomer_in_field"
+base_output_dir = f"output_{spin_type}_HCl_monomer_in_field"
 use_dipole_field = dipole_moment_D is not None and electric_field_kVcm_list
 
 if use_dipole_field:
@@ -41,7 +40,7 @@ summary_csv_path = os.path.join(base_output_dir, "job_summary.csv")
 # PREVIEW
 # -----------------------------
 print("==========================================")
-print("Launching HF monomer rotor job submissions")
+print("Launching HCl monomer rotor job submissions")
 print("==========================================")
 print(f"Spin type              : {spin_type}")
 print(f"Script to execute      : {script_name}")
@@ -58,7 +57,7 @@ summary_rows = []
 for jmax, secondary_param in param_combinations:
 	if use_dipole_field:
 		E = secondary_param
-		tag = f"{spin_type}_HF_lmax_{jmax}_dipole_moment_{dipole_moment_D:.2f}D_electric_field_{E:.2f}kVcm".replace(".", "_")
+		tag = f"{spin_type}_HCl_lmax_{jmax}_dipole_moment_{dipole_moment_D:.2f}D_electric_field_{E:.2f}kVcm".replace(".", "_")
 		cmd = [
 			"python3", script_name,
 			str(jmax),
@@ -70,7 +69,7 @@ for jmax, secondary_param in param_combinations:
 		info_str = f"μ={dipole_moment_D} D, E={E} kV/cm"
 	else:
 		V = secondary_param
-		tag = f"HF_Vfield{V:.2f}cm1_Jmax{jmax}_{spin_type}".replace(".", "_")
+		tag = f"HCl_Vfield{V:.2f}cm1_Jmax{jmax}_{spin_type}".replace(".", "_")
 		cmd = [
 			"python3", script_name,
 			str(V), str(jmax), spin_type,
