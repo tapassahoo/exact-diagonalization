@@ -217,56 +217,76 @@ def read_all_quantum_data_files(
 			print("File does not exist.\n")
 		"""
 
-
 def compute_thermo_from_eigenvalues(eigenvalues_kelvin, temperature_list, unit="Kelvin"):
 	"""
-	Compute partition function, internal energy, heat capacity, and Boltzmann populations
-	from energy eigenvalues in Kelvin.
+	Compute thermodynamic quantities (Boltzmann populations, partition function, internal energy 
+	and heat capacity) from energy eigenvalues given in Kelvin.
 
 	Parameters:
-		eigenvalues_kelvin (array): Energy levels in Kelvin
-		temperature_list (list): Temperatures (in Kelvin)
-		unit (str): Output unit ("Kelvin", "J/mol", or "eV")
+	-----------
+	eigenvalues_kelvin : array_like
+		Array of energy eigenvalues in Kelvin.
+	
+	temperature_list : array_like
+		List or array of temperatures in Kelvin at which thermodynamic properties are evaluated.
+
+	unit : str, optional
+		Output unit for energy and heat capacity. Choose from:
+		- "Kelvin" (default)
+		- "J/mol"
 
 	Returns:
-		dict: thermodynamic quantities indexed by temperature, including:
-			  - Z (partition function)
-			  - U (internal energy)
-			  - Cv (heat capacity)
-			  - Populations (Boltzmann weights normalized)
+	--------
+	dict
+		Dictionary with temperatures as keys and a sub-dictionary as values containing:
+		- "Populations" : Normalized Boltzmann populations
+		- "Z" : Partition function
+		- "U (unit)" : Internal energy
+		- "Cv (unit/K)" : Heat capacity
 	"""
-	thermo = {}	 
-	E = np.array(eigenvalues_kelvin, dtype=float)  # ensure float array
+	# Convert input to numpy array
+	E = np.array(eigenvalues_kelvin, dtype=np.float64)
+	if E.ndim != 1:
+		raise ValueError("Energy eigenvalues must be a 1D array.")
+
+	thermo = {}
 
 	for T in temperature_list:
+		if T <= 0:
+			raise ValueError(f"Temperature must be positive. Received: {T}")
+
 		beta = 1.0 / T
-		weights = np.exp(-beta * E)  # Boltzmann factors
+
+		# Apply zero-point shift for numerical stability
+		E_shifted = E - np.min(E)
+		weights = np.exp(-beta * E_shifted)
 		Z = np.sum(weights)
-		P = weights / Z			  # Boltzmann populations
+		P = weights / Z  # Normalized Boltzmann populations
 
-		E_avg = np.sum(E * P)
-		E2_avg = np.sum((E**2) * P)
-		Cv = (E2_avg - E_avg**2) * beta**2
+		# Use original energies for observables
+		E_avg = np.sum(P * E)
+		E2_avg = np.sum(P * E**2)
+		Cv = beta**2 * (E2_avg - E_avg**2)
 
-		# Convert units if requested
-		U = E_avg
-		if unit == "J/mol":
-			U *= k_B * N_A
-			Cv *= k_B * N_A
-		elif unit == "eV":
-			U *= k_B / e_charge
-			Cv *= k_B / e_charge
+		# Unit conversion
+		if unit == "Kelvin":
+			U_out = E_avg
+			Cv_out = Cv
+		elif unit == "J/mol":
+			U_out = E_avg * R 
+			Cv_out = Cv * R
+		else:
+			raise ValueError("Invalid unit. Choose from 'Kelvin' or 'J/mol'.")
 
 		# Store results
 		thermo[T] = {
-			"Z": Z,
-			f"U ({unit})": U,
-			f"Cv ({unit}/K)": Cv,
 			"Populations": P
+			"Z": Z,
+			f"U ({unit})": U_out,
+			f"Cv ({unit}/K)": Cv_out,
 		}
 
 	return thermo
-
 
 def plot_cv_vs_temperature(
 	thermo_data,
