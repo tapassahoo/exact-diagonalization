@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "monomer_linear_rotor"
+version = "0.1"
+description = "Exact diagonalization package for a linear rotor monomer in an electric field"
+authors = [
+    { name = "Dr. Tapas Sahoo", email = "tapascuchem@gmail.com" }
+]
+license = { file = "LICENSE" }
+readme = "README.md"
+requires-python = ">=3.8"
+
+dependencies = [
+    "numpy",
+    "scipy",
+    "matplotlib",
+    "sympy"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest"
+]
+
+[tool.setuptools.packages.find]
+where = ["monomer_linear_rotor"]
+
