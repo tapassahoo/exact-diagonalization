@@ -1,14 +1,14 @@
 import os
 from itertools import product
 import numpy as np
+from netCDF4 import Dataset
+from typing import Optional, Union
 import pandas as pd
-import matplotlib as mpl
 import pandas as pd
 import matplotlib as mpl
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 from matplotlib import cm
-from netCDF4 import Dataset
 from scipy.constants import R, k as k_B, N_A, h, c, e as e_charge
 import thermodynamics_kelvin as tk
 from pkg_utils.utils import whoami
@@ -21,57 +21,58 @@ cm_to_eV = cm_to_J / e_charge
 k_B_cm = k_B / cm_to_J
 
 
-def check_variable_attribute(nc_path, variable_name=None, attribute_name="units"):
+def check_variable_attribute(
+	nc_path: str, 
+	variable_name: Optional[str] = None, 
+	attribute_name: str = "units", 
+	verbose: bool = True
+) -> Optional[Union[str, None]]:
 	"""
-	General-purpose function to check a specific attribute (default: 'units') 
-	of any variable in a NetCDF file.
+	Check the value of a specific attribute for a given variable in a NetCDF file.
 
 	Parameters:
 		nc_path (str): Path to the NetCDF file.
-		variable_name (str or None): Name of the variable to inspect. 
-									 If None, lists all variables.
+		variable_name (str, optional): Name of the variable to inspect. 
+									   If None, lists all available variables.
 		attribute_name (str): The attribute to retrieve (e.g., 'units', 'long_name').
+		verbose (bool): If True, print status messages to stdout.
 
 	Returns:
-		str or None: Attribute value if found, else informative message.
+		str or None: The value of the attribute if found; otherwise, None.
 	"""
-	with Dataset(nc_path, 'r') as nc:
-		if variable_name is None:
-			print("[i] Variable not specified. Available variables:")
-			for var in nc.variables:
-				print(f"  - {var}")
-			return None
-
-		if variable_name in nc.variables:
-			var = nc.variables[variable_name]
-			attr_value = getattr(var, attribute_name, None)
-			if attr_value is not None:
-				print(f"[✓] '{attribute_name}' of variable '{variable_name}': {attr_value}")
-				return attr_value
-			else:
-				print(f"[!] Attribute '{attribute_name}' not found for variable '{variable_name}'.")
+	try:
+		with Dataset(nc_path, 'r') as nc:
+			if variable_name is None:
+				if verbose:
+					print("[i] Variable not specified. Available variables:")
+					for var in nc.variables:
+						print(f"  - {var}")
 				return None
-		else:
-			print(f"[X] Variable '{variable_name}' not found in file.")
-			return None
 
+			if variable_name in nc.variables:
+				var = nc.variables[variable_name]
+				if attribute_name in var.ncattrs():
+					value = var.getncattr(attribute_name)
+					if verbose:
+						print(f"[✓] '{attribute_name}' of variable '{variable_name}': {value}")
+					return value
+				else:
+					if verbose:
+						print(f"[!] Attribute '{attribute_name}' not found for variable '{variable_name}'.")
+					return None
+			else:
+				if verbose:
+					print(f"[X] Variable '{variable_name}' not found in file.")
+				return None
 
-def read_all_attributes(filename):
-	"""Helper function to read and print global and variable-level attributes from a NetCDF file."""
-	with Dataset(filename, 'r') as ncfile:
-		print("\nGlobal Attributes")
-		print("-" * 60)
-		for attr in ncfile.ncattrs():
-			print(f"{attr:30}: {ncfile.getncattr(attr)}")
-
-		print("\nVariable-wise Attributes")
-		print("-" * 60)
-		for var_name, var in ncfile.variables.items():
-			print(f"\nVariable: {var_name}")
-			for attr in var.ncattrs():
-				print(f"  {attr:28}: {var.getncattr(attr)}")
-	print("\nAttribute inspection complete.\n")
-
+	except FileNotFoundError:
+		if verbose:
+			print(f"[X] File '{nc_path}' not found.")
+		return None
+	except Exception as e:
+		if verbose:
+			print(f"[!] An error occurred while reading the file: {e}")
+		return None
 
 def inspect_netcdf_file(filename):
 	"""Inspect variables and their shapes in a NetCDF file."""
@@ -826,8 +827,15 @@ read_all_quantum_data_files_with_thermo(
 """
 
 filename="output/data/quantum_data_HCl_spinless_isomer_lmax_20_dipole_moment_1.80D_electric_field_200.00kVcm.nc"
+# Inspect the 'units' attribute of variable 'temperature'
+#check_variable_attribute(filename, "Temperature", "units")
+
+# List all variables if variable name is not known
+#check_variable_attribute(filename)
+
 read_all_attributes(filename)
-inspect_netcdf_file(filename)
+#inspect_netcdf_file(filename)
+
 
 whom()
 whoami()

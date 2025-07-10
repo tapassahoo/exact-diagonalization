@@ -433,8 +433,8 @@ def main():
 		"spin_state": spin_state,
 		"all_quantum_numbers": all_quantum_numbers,
 		"quantum_numbers_for_spin_state": quantum_numbers_for_spin_state,
-		"sorted_eigenvalues": eigenvalues,
-		"sorted_eigenvectors": eigenvectors,
+		"eigenvalues": eigenvalues,
+		"eigenvectors": eigenvectors,
 	}
 
 	# Conditionally add optional values

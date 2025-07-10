@@ -1,3 +1,5 @@
+# io_netcdf.py
+
 import os
 import inspect
 import sys
@@ -16,86 +18,66 @@ from pkg_utils.utils import whoami
 from pkg_utils.config import *
 
 def save_all_quantum_data_to_netcdf(
-	file_name,
-	cm_inv_to_K,
-	potential_strength_cm_inv,
-	max_angular_momentum_quantum_number,
-	B_const_cm_inv,
-	spin_state,
-	all_quantum_numbers,
-	quantum_numbers_for_spin_state,
-	sorted_eigenvalues,
-	sorted_eigenvectors,
-	dipole_moment_D=None,
-	electric_field_kVcm=None
-):
+	file_name: str,
+	cm_inv_to_K: float,
+	potential_strength_cm_inv: float,
+	max_angular_momentum_quantum_number: int,
+	B_const_cm_inv: float,
+	spin_state: str,
+	all_quantum_numbers: np.ndarray,
+	quantum_numbers_for_spin_state: np.ndarray,
+	eigenvalues: np.ndarray,
+	eigenvectors: np.ndarray,
+	dipole_moment_D: float = None,
+	electric_field_kVcm: float = None,
+	creator: str = "Dr. Tapas Sahoo",
+	software_version: str = "1.0"
+) -> None:
 	"""
 	Save quantum numbers, eigenvalues, and eigenvectors to a NetCDF file.
 
-	Parameters:
-	- file_name (str): Output NetCDF file name.
-	- cm_inv_to_K (float): Conversion factor from cm-1 to Kelvin
-	- potential_strength_cm_inv (float): Orienting potential strength in cm⁻¹.
-	- max_angular_momentum_quantum_number (int): Truncation level ℓ_max.
-	- B_const_cm_inv (float): Rotational constant in cm⁻¹.
-	- spin_state (str): 'spinless', 'ortho', or 'para'.
-	- all_quantum_numbers (ndarray): Full quantum number list.
-	- quantum_numbers_for_spin_state (ndarray): Quantum numbers allowed for this spin state.
-	- sorted_eigenvalues (ndarray): Eigenvalues (in cm⁻¹).
-	- sorted_eigenvectors (ndarray): Complex eigenvectors.
-	- dipole_moment_D (float, optional): Dipole moment in Debye.
-	- electric_field_kVcm (float, optional): Electric field in kV/cm.
+	Includes metadata, physical constants, and optional dipole-field information.
 	"""
-
-	sorted_eigenvalues = np.asarray(sorted_eigenvalues, dtype=np.float64)
-	sorted_eigenvectors = np.asarray(sorted_eigenvectors, dtype=np.complex128)
-
-	real_eigenvectors = np.real(sorted_eigenvectors)
-	imag_eigenvectors = np.imag(sorted_eigenvectors)
+	eigenvalues = np.asarray(eigenvalues, dtype=np.float64)
+	eigenvectors = np.asarray(eigenvectors, dtype=np.complex128)
+	real_eigenvectors = np.real(eigenvectors)
+	imag_eigenvectors = np.imag(eigenvectors)
 
 	with Dataset(file_name, "w", format="NETCDF4") as ncfile:
-		# Metadata and scalar parameters
+		# Global metadata
 		write_metadata(ncfile, spin_state)
-		write_scalar_parameters(
-			ncfile,
-			cm_inv_to_K,
-			potential_strength_cm_inv,
-			max_angular_momentum_quantum_number,
-			spin_state,
-			B_const_cm_inv
-		)
 
-		# Dipole-field data if applicable
+		# Scalar attributes with units and long names
+		global_attrs = {
+			"cm_inv_to_K": ("K/(cm^-1)", cm_inv_to_K, "Conversion factor from wavenumber to Kelvin"),
+			"potential_strength_cm_inv": ("cm^-1", potential_strength_cm_inv, "Orienting potential strength"),
+			"max_angular_momentum_quantum_number": ("dimensionless", max_angular_momentum_quantum_number, "Maximum angular momentum quantum number"),
+			"B_const_cm_inv": ("cm^-1", B_const_cm_inv, "Rotational constant"),
+			"spin_state": ("unitless (string)", spin_state, "Spin isomer type (spinless, ortho, para)")
+		}
+
 		if dipole_moment_D is not None:
-			ncfile.dipole_moment_D = dipole_moment_D
+			global_attrs["dipole_moment_D"] = ("Debye", dipole_moment_D, "Dipole moment")
 		if electric_field_kVcm is not None:
-			ncfile.electric_field_kVcm = electric_field_kVcm
+			global_attrs["electric_field_kVcm"] = ("kV/cm", electric_field_kVcm, "Electric field strength")
 		if dipole_moment_D is not None and electric_field_kVcm is not None:
-			ncfile.muE_cm_inv = dipole_moment_D * electric_field_kVcm * 0.03065
+			muE_cm_inv = dipole_moment_D * electric_field_kVcm * 0.03065
+			global_attrs["muE_cm_inv"] = ("cm^-1", muE_cm_inv, "Dipole-field interaction energy (mu·E)")
 
-		# Store quantum data
+		for key, (unit, value, long_name) in global_attrs.items():
+			ncfile.setncattr(key, value)
+			ncfile.setncattr(f"{key}_units", unit)
+			ncfile.setncattr(f"{key}_long_name", long_name)
+
 		write_quantum_numbers(ncfile, all_quantum_numbers, spin_state, quantum_numbers_for_spin_state)
-		write_eigen_data(ncfile, sorted_eigenvalues, real_eigenvectors, imag_eigenvectors)
+		write_eigen_data(ncfile, eigenvalues, real_eigenvectors, imag_eigenvectors)
 
-	# Output confirmation
-	print("\n**")
-	print(
-		colored("NetCDF Output File:".ljust(LABEL_WIDTH), LABEL_COLOR) +
-		colored(f"{file_name}".ljust(VALUE_WIDTH), VALUE_COLOR)
-	)
-
-def write_metadata(ncfile, spin_state_name):
+def write_metadata(ncfile: Dataset, spin_state_name: str) -> None:
 	"""
-	Write metadata into the given NetCDF file for quantum rotor simulations.
-
-	Parameters:
-	- ncfile (netCDF4.Dataset): The open NetCDF file object.
-	- spin_state_name (str): Type of spin isomer ('spinless', 'ortho', or 'para').
+	Write metadata and execution environment info into a NetCDF file.
 	"""
-	# --- User & Host Information ---
 	username = getpass.getuser()
 	hostname = socket.getfqdn()
-
 	try:
 		ip_address = socket.gethostbyname(socket.gethostname())
 	except socket.gaierror:
@@ -103,163 +85,163 @@ def write_metadata(ncfile, spin_state_name):
 
 	os_info = f"{platform.system()} {platform.release()} ({platform.version()})"
 	python_version = sys.version.replace('\n', ' ')
+	architecture = platform.machine()
+	cwd = os.getcwd()
+	timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-	# --- Metadata Block ---
-	ncfile.title = "Quantum Rotational States and Eigenvalue Data"
-	ncfile.description = (
-		f"Eigenvalues and eigenfunctions computed via exact diagonalization "
-		f"for a linear quantum rotor system under orienting potential. "
+	# --- NetCDF Metadata Block ---
+	ncfile.setncattr("title", "Quantum Rotational States and Eigenvalue Data")
+	ncfile.setncattr("description",
+		f"Eigenvalues and eigenfunctions computed by exact diagonalization of the analytical "
+		f"Hamiltonian for a polar, rigid, linear rotor in an external electric field. "
+		f"The dipole–field interaction is treated explicitly, and the potential energy matrix "
+		f"elements are evaluated using Wigner 3-j symbols. "
 		f"Spin isomer: '{spin_state_name}'."
 	)
-	ncfile.source = "Simulation using real spherical harmonics basis and exact diagonalization"
-	ncfile.institution = "National Institute of Technology Raipur"
-	ncfile.history = f"Created on {datetime.now().isoformat()} by {username} on host '{hostname}'"
-	ncfile.license = "This data is provided solely for academic and research use."
-	ncfile.conventions = "CF-1.6"
+	ncfile.setncattr("source", "pkg_monomer_rotor/main.py")
+	ncfile.setncattr("institution", "National Institute of Technology Raipur")
+	ncfile.setncattr("history", f"Created on {timestamp} by {username} on host '{hostname}'")
+	ncfile.setncattr("license", "Data intended for academic and research use only.")
+	ncfile.setncattr("conventions", "CF-1.6")
 
-	# --- Simulation & Runtime Metadata ---
-	ncfile.spin_isomer = spin_state_name
-	ncfile.creation_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-	ncfile.creator_name = username
-	ncfile.creator_host = hostname
-	ncfile.creator_ip = ip_address
-	ncfile.operating_system = os_info
-	ncfile.python_version = python_version
+	# --- Execution Environment Metadata ---
+	ncfile.setncattr("creator_name", "Dr. Tapas Sahoo")
+	ncfile.setncattr("creator_host", hostname)
+	ncfile.setncattr("creator_ip", ip_address)
+	ncfile.setncattr("operating_system", os_info)
+	ncfile.setncattr("architecture", architecture)
+	ncfile.setncattr("python_version", python_version)
+	ncfile.setncattr("working_directory", cwd)
+	ncfile.setncattr("creation_time", timestamp)
 
-def write_scalar_parameters(
-	ncfile,
-	cm_inv_to_K,
-	potential_strength_cm_inv,
-	max_angular_momentum_quantum_number,
-	spin_state_name,
-	B_const_cm_inv
-):
+
+def write_quantum_numbers(ncfile, all_qn, spin_state, filtered_qn):
+	n_all, n_comp = all_qn.shape
+	n_filt = filtered_qn.shape[0]
+
+	ncfile.createDimension("n_qn_all", n_all)
+	ncfile.createDimension("n_qn_allowed", n_filt)
+	ncfile.createDimension("qn_components", n_comp)
+
+	var_all = ncfile.createVariable("all_quantum_numbers", "i4", ("n_qn_all", "qn_components"))
+	var_all[:, :] = all_qn
+	var_all.units = "dimensionless"
+	var_all.long_name = "Complete list of quantum numbers (e.g., J, M or l, m)"
+
+	var_filt = ncfile.createVariable("quantum_numbers_for_spin_state", "i4", ("n_qn_allowed", "qn_components"))
+	var_filt[:, :] = filtered_qn
+	var_filt.units = "dimensionless"
+	var_filt.long_name = f"Quantum numbers allowed for spin state: {spin_state}"
+
+
+def write_eigen_data(ncfile, eigenvalues, real_evecs, imag_evecs):
+	n_states, n_basis = real_evecs.shape
+
+	ncfile.createDimension("n_states", n_states)
+	ncfile.createDimension("n_basis", n_basis)
+
+	var_eval = ncfile.createVariable("eigenvalues", "f8", ("n_states",))
+	var_eval[:] = eigenvalues
+	var_eval.units = "cm^-1"
+	var_eval.long_name = "Eigenvalues (energy levels)"
+
+	var_real = ncfile.createVariable("real_eigenvectors", "f8", ("n_states", "n_basis"))
+	var_real[:, :] = real_evecs
+	var_real.units = "dimensionless"
+	var_real.long_name = "Real part of eigenvectors"
+
+	var_imag = ncfile.createVariable("imag_eigenvectors", "f8", ("n_states", "n_basis"))
+	var_imag[:, :] = imag_evecs
+	var_imag.units = "dimensionless"
+	var_imag.long_name = "Imaginary part of eigenvectors"
+
+
+def read_all_attributes(filename: str, show_variables: bool = True) -> None:
 	"""
-	Write scalar simulation parameters to the NetCDF file with appropriate units.
+	Print global metadata, additional attributes, dimensions, and variable-level attributes from a NetCDF file.
 
 	Parameters:
-	- ncfile: Open NetCDF file handle.
-	- cm_inv_to_K (float): Conversion factor from cm-1 to Kelvin
-	- potential_strength_cm_inv (float): Orienting potential strength in cm⁻¹.
-	- max_angular_momentum_quantum_number (int): Truncation level ℓ_max.
-	- spin_state_name (str): Spin isomer type ('spinless', 'ortho', or 'para').
-	- B_const_cm_inv (float): Rotational constant in cm⁻¹.
+		filename (str): Path to the NetCDF file.
+		show_variables (bool): Whether to display variable-level attributes and shapes.
 	"""
-	# Create a dummy scalar dimension
-	ncfile.createDimension('scalar', 1)
+	important_keys = [
+		"title", "description", "source", "institution", "history", "license", "conventions", 
+		"creator_name", "creator_host", "creator_ip", "operating_system", "architecture", "python_version", 
+		"working_directory", "creation_time"
+	]
 
-	# cm_inv_to_K
-	var_conversion_factor = ncfile.createVariable("cm_inv_to_K", "f8", ("scalar",))
-	var_conversion_factor.units = "Kelvin/cm⁻¹"
-	var_conversion_factor[0] = cm_inv_to_K
 
-	# Potential strength
-	var_potential = ncfile.createVariable("potential_strength_cm_inv", "f8", ("scalar",))
-	var_potential.units = "cm⁻¹"
-	var_potential[0] = potential_strength_cm_inv
+	try:
+		with Dataset(filename, 'r') as ncfile:
+			print("\n--- Global Metadata ---")
+			print("-" * 60)
+			for key in important_keys:
+				if key in ncfile.ncattrs():
+					print(f"{key:<30}: {ncfile.getncattr(key)}")
 
-	# Max J
-	var_max_J = ncfile.createVariable("max_angular_momentum_quantum_number", "i4", ("scalar",))
-	var_max_J.units = "dimensionless"
-	var_max_J[0] = max_angular_momentum_quantum_number
+			print("\n--- Additional Global Attributes ---")
+			print("-" * 60)
+			for attr in ncfile.ncattrs():
+				if attr not in important_keys:
+					print(f"{attr:<30}: {ncfile.getncattr(attr)}")
 
-	# Spin state
-	var_spin = ncfile.createVariable("spin_state_name", str, ("scalar",))
-	var_spin.units = "dimensionless"
-	var_spin[0] = spin_state_name
+			print("\n--- Dimensions ---")
+			print("-" * 60)
+			for dim_name, dim in ncfile.dimensions.items():
+				print(f"{dim_name:<30}: size = {len(dim)}")
 
-	# Rotational constant
-	var_B = ncfile.createVariable("rotational_constant_cm_inv", "f8", ("scalar",))
-	var_B.units = "cm⁻¹"
-	var_B[0] = B_const_cm_inv
+			if show_variables:
+				print("\n--- Variable-wise Attributes and Shapes ---")
+				print("-" * 60)
+				for var_name, var in ncfile.variables.items():
+					shape_str = ", ".join(f"{s}" for s in var.shape)
+					print(f"\nVariable: {var_name}")
+					print(f"  shape: ({shape_str})")
+					print(f"  dtype: {var.dtype}")
+					for attr in var.ncattrs():
+						print(f"  {attr:<28}: {var.getncattr(attr)}")
 
-def write_quantum_numbers(ncfile, all_quantum_numbers, spin_state_name, quantum_numbers_for_spin_state):
+			print(f"\n[Status] Attribute inspection of '{filename}' completed successfully.\n")
+
+	except FileNotFoundError:
+		print(f"[ERROR] File not found - {filename}")
+	except Exception as e:
+		print(f"[ERROR] Could not read NetCDF attributes. Details: {e}")
+
+def inspect_variable(filename, variable_name, show_data=True):
 	"""
-	Write the quantum numbers (J, M, etc.) to the NetCDF file for both full and spin-specific basis.
+	Inspect a specific variable in a NetCDF file.
 
 	Parameters:
-	- ncfile: NetCDF file handle.
-	- all_quantum_numbers (ndarray): All basis quantum numbers (e.g., J, M).
-	- spin_state_name (str): Spin isomer type ('spinless', 'ortho', or 'para').
-	- quantum_numbers_for_spin_state (ndarray): Subset of quantum numbers allowed for this spin state.
+		filename (str): Path to the NetCDF file.
+		variable_name (str): Name of the variable to inspect.
+		show_data (bool): If True, prints the data content.
 	"""
-	all_quantum_numbers = np.array(all_quantum_numbers, dtype=np.int32)
-	quantum_numbers_for_spin_state = np.array(quantum_numbers_for_spin_state, dtype=np.int32)
+	with Dataset(filename, 'r') as nc:
+		if variable_name not in nc.variables:
+			print(f"[X] Variable '{variable_name}' not found in the file.")
+			return
 
-	# Create dimensions
-	ncfile.createDimension("all_entries", all_quantum_numbers.shape[0])
-	ncfile.createDimension("components", all_quantum_numbers.shape[1])
-	ncfile.createDimension("spin_count", quantum_numbers_for_spin_state.shape[0])
+		var = nc.variables[variable_name]
 
-	# Store all quantum numbers
-	var_all_qn = ncfile.createVariable("all_quantum_numbers", "i4", ("all_entries", "components"))
-	var_all_qn[:, :] = all_quantum_numbers
-	var_all_qn.long_name = "All basis quantum numbers (e.g., J, M)"
+		print(f"\nVariable: {variable_name}")
 
-	# Store quantum numbers specific to spin state
-	var_spin_qn = ncfile.createVariable(f"{spin_state_name}_quantum_numbers", "i4", ("spin_count", "components"))
-	var_spin_qn[:, :] = quantum_numbers_for_spin_state
-	var_spin_qn.long_name = f"Quantum numbers for spin isomer '{spin_state_name}'"
-
-	# Pretty print (only if J is reasonably small for visual clarity)
-	max_J = np.max(all_quantum_numbers[:, 0])
-	if max_J <= 4:
-		print(colored("\nAll Quantum Numbers (J, M)", HEADER_COLOR, attrs=['bold', 'underline']))
-		print(pd.DataFrame(all_quantum_numbers, columns=["J", "M"]))
-
-		print(colored(f"\nSpin-Specific Quantum Numbers ({spin_state_name})", HEADER_COLOR, attrs=['bold', 'underline']))
-		print(pd.DataFrame(quantum_numbers_for_spin_state, columns=["J", "M"]))
-
-def write_eigen_data(ncfile, eigenvalues, real_eigenvectors, imag_eigenvectors):
-	"""
-	Write eigenvalues and eigenvectors to the NetCDF file.
-
-	Parameters:
-	- ncfile: NetCDF file handle.
-	- eigenvalues (ndarray): Real-valued eigenvalues (in Kelvin).
-	- real_eigenvectors (ndarray): Real parts of eigenvectors (shape Nxk or kxN).
-	- imag_eigenvectors (ndarray): Imaginary parts of eigenvectors (same shape as real).
-	"""
-
-	eigenvalues = np.asarray(eigenvalues, dtype=np.float64)
-	real_eigenvectors = np.asarray(real_eigenvectors, dtype=np.float64)
-	imag_eigenvectors = np.asarray(imag_eigenvectors, dtype=np.float64)
-
-	k = eigenvalues.shape[0]
-
-	# Ensure eigenvectors are of shape (k, N): k eigenvectors, each of length N
-	if real_eigenvectors.shape[0] != k:
-		if real_eigenvectors.shape[1] == k:
-			real_eigenvectors = real_eigenvectors.T
-			imag_eigenvectors = imag_eigenvectors.T
+		# Print units if available
+		units = getattr(var, "units", None)
+		if units:
+			print(f"  Units	  : {units}")
 		else:
-			raise ValueError(f"Shape mismatch: eigenvectors shape {real_eigenvectors.shape} "
-							 f"does not match eigenvalues length {k}.")
+			print("  Units	  : [not defined]")
 
-	state_count = k
-	vector_dim = real_eigenvectors.shape[1]
+		# Print all other attributes
+		for attr in var.ncattrs():
+			if attr != "units":
+				print(f"  {attr:<10}: {getattr(var, attr)}")
 
-	# Create NetCDF dimensions
-	ncfile.createDimension("state_count", state_count)
-	ncfile.createDimension("vector_dim", vector_dim)
+		# Optionally print data
+		if show_data:
+			print("  Data	   :")
+			print(var[:])
 
-	# Store eigenvalues
-	var_eigenvalues = ncfile.createVariable("eigenvalues", "f8", ("state_count",))
-	var_eigenvalues[:] = eigenvalues
-	var_eigenvalues.units = "Kelvin"
-	var_eigenvalues.long_name = "Eigenvalues of the Hamiltonian in energy units"
-
-	# Store eigenvector components
-	var_eigvec_real = ncfile.createVariable("eigenvectors_real", "f8", ("state_count", "vector_dim"))
-	var_eigvec_real[:, :] = real_eigenvectors
-	var_eigvec_real.long_name = "Real part of Hamiltonian eigenvectors"
-
-	var_eigvec_imag = ncfile.createVariable("eigenvectors_imag", "f8", ("state_count", "vector_dim"))
-	var_eigvec_imag[:, :] = imag_eigenvectors
-	var_eigvec_imag.long_name = "Imaginary part of Hamiltonian eigenvectors"
-
-	# Display output for small systems only
-	if state_count <= 50:
-		print(colored("\nEigenvalues (in Kelvin)", HEADER_COLOR, attrs=['bold', 'underline']))
-		print(pd.DataFrame(eigenvalues, columns=["Energy"]))
+#inspect_variable("quantum_data.nc", "eigenvalues", show_data=False)
 
