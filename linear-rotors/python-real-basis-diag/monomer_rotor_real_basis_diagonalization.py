@@ -1431,6 +1431,9 @@ def main():
 
 	# Compute eigenvalues and eigenvectors
 	sorted_eigenvalues, sorted_eigenvectors = compute_sorted_eigenvalues_and_eigenvectors(H_rot)
+	print(sorted_eigenvalues)
+	for i, val in enumerate(sorted_eigenvalues):
+		print(f"  Level {i}: {val:.6f}")
 
 	# Debugging function call
 	debug_eigenvalues_eigenvectors(H_rot, sorted_eigenvalues, sorted_eigenvectors)
