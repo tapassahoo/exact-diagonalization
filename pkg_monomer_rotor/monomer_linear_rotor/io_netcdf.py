@@ -96,7 +96,7 @@ def write_metadata(ncfile: Dataset, spin_state_name: str) -> None:
 		f"Eigenvalues and eigenfunctions computed by exact diagonalization of the analytical "
 		f"Hamiltonian for a polar, rigid, linear rotor in an external electric field. "
 		f"The dipole–field interaction is treated explicitly, and the potential energy matrix "
-		f"elements are evaluated using Wigner 3-j symbols. "
+		f"elements are evaluated using Wigner's 3-j symbols. "
 		f"Spin isomer: '{spin_state_name}'."
 	)
 	ncfile.setncattr("source", "pkg_monomer_rotor/main.py")

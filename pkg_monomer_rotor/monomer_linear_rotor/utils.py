@@ -148,28 +148,13 @@ def convert_dipole_field_energy_to_cm_inv(dipole_moment_D: float, electric_field
 	Thus, the energy in cm⁻¹ becomes:
 
 		(μ [D] × E [kV/cm]) × (3.33564×10⁻³⁰ × 10⁵) / (1.98630×10⁻²³)
-	  = μ [D] × E [kV/cm] × 0.03065 cm⁻¹
+	  = μ [D] × E [kV/cm] × 0.01679 cm⁻¹
 
 	Therefore:
 
-		μ × E (in cm⁻¹) = dipole_moment_D * electric_field_kVcm * 0.03065
+		μ × E (in cm⁻¹) = dipole_moment_D * electric_field_kVcm * 0.01679
 
-	This factor (0.03065) accounts for conversion from (Debye × kV/cm) to cm⁻¹ using physical constants.
-	"""
-
-	"""
-	Converts dipole-electric field interaction energy to units of cm⁻¹.
-
-	The interaction energy is calculated using:
-		μ × E [in cm⁻¹] = μ [Debye] × E [kV/cm] × 0.03065
-
-	Constants used in derivation:
-		- 1 Debye = 3.33564 × 10⁻³⁰ C·m
-		- 1 kV/cm = 10⁵ V/m
-		- 1 cm⁻¹ = 1.98630 × 10⁻²³ J
-
-	Hence,
-		μ × E (in cm⁻¹) ≈ μ × E × 0.03065
+	This factor (0.01679) accounts for conversion from (Debye × kV/cm) to cm⁻¹ using physical constants.
 
 	Parameters:
 		dipole_moment_D (float): Dipole moment in Debye.
@@ -178,5 +163,5 @@ def convert_dipole_field_energy_to_cm_inv(dipole_moment_D: float, electric_field
 	Returns:
 		float: Interaction energy in cm⁻¹.
 	"""
-	return dipole_moment_D * electric_field_kVcm * 0.03065
+	return dipole_moment_D * electric_field_kVcm * 0.01679
 

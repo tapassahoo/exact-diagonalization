@@ -80,7 +80,7 @@ def parse_arguments():
 	parser = argparse.ArgumentParser(
 		prog="monomer_rotor_real_basis_diagonalization.py",
 		description=(
-			"Computation of eigenvalues and eigenfunctions by exact diagonalization of the analytical Hamiltonian for a polar, rigid, linear rotor in an external electric field. The dipole–field interaction is treated explicitly, and the potential energy matrix elements are evaluated using Wigner 3-j symbols."
+			"Computation of eigenvalues and eigenfunctions by exact diagonalization of the analytical Hamiltonian for a polar, rigid, linear rotor in an external electric field. The dipole–field interaction is treated explicitly, and the potential energy matrix elements are evaluated using Wigner's 3-j symbols."
 		),
 		epilog="Developed by Dr. Tapas Sahoo — Quantum Molecular Dynamics Group"
 	)
