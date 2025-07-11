@@ -127,3 +127,56 @@ def display_eigenvalues(eigenvalues, header="Rotational Energy Levels", unit="cm
 	print("-" * 50)
 	print(f"[Info] Total levels: {len(eigenvalues)}\n")
 
+def convert_dipole_field_energy_to_cm_inv(dipole_moment_D: float, electric_field_kVcm: float) -> float:
+	"""
+	Conversion of Dipole–Electric Field Interaction Energy to Wavenumbers (cm⁻¹):
+
+	The interaction energy between a dipole and an external electric field is given by:
+
+		U = -μ · E
+
+	Where:
+		- μ is the dipole moment (in Debye),
+		- E is the electric field (in kV/cm).
+
+	To convert the product μ × E to energy units of cm⁻¹, we use the following steps:
+
+	1. 1 Debye = 3.33564 × 10⁻³⁰ C·m
+	2. 1 kV/cm = 10⁵ V/m
+	3. 1 cm⁻¹ = 1.98630 × 10⁻²³ J (via E = hcν)
+
+	Thus, the energy in cm⁻¹ becomes:
+
+		(μ [D] × E [kV/cm]) × (3.33564×10⁻³⁰ × 10⁵) / (1.98630×10⁻²³)
+	  = μ [D] × E [kV/cm] × 0.03065 cm⁻¹
+
+	Therefore:
+
+		μ × E (in cm⁻¹) = dipole_moment_D * electric_field_kVcm * 0.03065
+
+	This factor (0.03065) accounts for conversion from (Debye × kV/cm) to cm⁻¹ using physical constants.
+	"""
+
+	"""
+	Converts dipole-electric field interaction energy to units of cm⁻¹.
+
+	The interaction energy is calculated using:
+		μ × E [in cm⁻¹] = μ [Debye] × E [kV/cm] × 0.03065
+
+	Constants used in derivation:
+		- 1 Debye = 3.33564 × 10⁻³⁰ C·m
+		- 1 kV/cm = 10⁵ V/m
+		- 1 cm⁻¹ = 1.98630 × 10⁻²³ J
+
+	Hence,
+		μ × E (in cm⁻¹) ≈ μ × E × 0.03065
+
+	Parameters:
+		dipole_moment_D (float): Dipole moment in Debye.
+		electric_field_kVcm (float): Electric field in kilovolts per centimeter.
+
+	Returns:
+		float: Interaction energy in cm⁻¹.
+	"""
+	return dipole_moment_D * electric_field_kVcm * 0.03065
+

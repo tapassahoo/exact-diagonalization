@@ -16,6 +16,9 @@ from netCDF4 import Dataset
 import io
 from pkg_utils.utils import whoami
 from pkg_utils.config import *
+from monomer_linear_rotor.utils import (
+	convert_dipole_field_energy_to_cm_inv  # or appropriate import
+)
 
 def save_all_quantum_data_to_netcdf(
 	file_name: str,
@@ -59,7 +62,7 @@ def save_all_quantum_data_to_netcdf(
 		if electric_field_kVcm is not None:
 			global_attrs["electric_field_kVcm"] = ("kV/cm", electric_field_kVcm, "Electric field strength")
 		if dipole_moment_D is not None and electric_field_kVcm is not None:
-			muE_cm_inv = dipole_moment_D * electric_field_kVcm * 0.03065
+			muE_cm_inv = convert_dipole_field_energy_to_cm_inv(dipole_moment_D, electric_field_kVcm)
 			global_attrs["muE_cm_inv"] = ("cm^-1", muE_cm_inv, "Dipole-field interaction energy (mu·E)")
 
 		for key, (unit, value, long_name) in global_attrs.items():

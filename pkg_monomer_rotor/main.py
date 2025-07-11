@@ -1,26 +1,4 @@
-#*************************************************************************************************#
-#																								  #
-# Computation of Eigenvalues and Eigenfunctions of a Linear Rotor Using Real Spherical Harmonics. #
-#																								  #
-# Developed by Dr. Tapas Sahoo																	  #
-#																								  #
-#-------------------------------------------------------------------------------------------------#
-#																								  #
-# Command for running the code:																	  #
-#																								  #
-# Example:																						  #
-# python monomer_rotor_real_basis_diagonalization.py 10.0 2 spinless							  #
-#																								  #
-#-------------------------------------------------------------------------------------------------#
-#																								  #
-# Inputs:																						  #
-# a) Potential potential_strength = potential_strength											  #
-# b) Highest value of Angular quantum number = max_angular_momentum_quantum_number				  #
-# c) Specification of spin isomer = spin_state													  #
-#																								  #
-# Outputs: Eigenvalues and eigenfunctions														  #
-#																								  #
-#*************************************************************************************************#
+# main.py
 
 import argparse
 import os
@@ -73,6 +51,7 @@ from monomer_linear_rotor.utils import (
 	show_simulation_details,
 	generate_filename,
 	display_eigenvalues,
+	convert_dipole_field_energy_to_cm_inv  # or appropriate import
 )	
 from monomer_linear_rotor.debug import (
 	debug_eigenvalues_eigenvectors
@@ -84,7 +63,7 @@ from monomer_linear_rotor.io_netcdf import (
 def parse_arguments():
 	"""
 	Parses command-line arguments for the computation of eigenvalues and eigenfunctions
-	of a linear quantum rotor in an external orienting potential using a real spherical harmonics basis.
+	of a linear quantum rotor in an external orienting potential.
 
 	Returns
 	-------
@@ -101,8 +80,7 @@ def parse_arguments():
 	parser = argparse.ArgumentParser(
 		prog="monomer_rotor_real_basis_diagonalization.py",
 		description=(
-			"Performs exact diagonalization of a linear rotor Hamiltonian\n"
-			"in an external orienting potential using a real spherical harmonics basis."
+			"Computation of eigenvalues and eigenfunctions by exact diagonalization of the analytical Hamiltonian for a polar, rigid, linear rotor in an external electric field. The dipole–field interaction is treated explicitly, and the potential energy matrix elements are evaluated using Wigner 3-j symbols."
 		),
 		epilog="Developed by Dr. Tapas Sahoo — Quantum Molecular Dynamics Group"
 	)
@@ -147,7 +125,7 @@ def parse_arguments():
 	# Auto-calculate potential strength if not provided
 	if args.potential_strength is None:
 		if args.dipole_moment is not None and args.electric_field is not None:
-			args.potential_strength = 0.03065 * args.dipole_moment * args.electric_field
+			args.potential_strength = convert_dipole_field_energy_to_cm_inv(args.dipole_moment, args.electric_field) 
 		else:
 			print("Error: You must provide either --potential-strength or both --dipole-moment and --electric-field.")
 			sys.exit(1)
@@ -191,8 +169,8 @@ def main():
 	# --- Determine potential strength ---
 	if args.potential_strength is not None:
 		potential_strength_cm_inv = args.potential_strength
-	elif args.dipole_moment_D is not None and args.electric_field_kVcm is not None:
-		potential_strength_cm_inv = args.dipole_moment_D * args.electric_field_kVcm * 0.03065
+	elif args.dipole_moment is not None and args.electric_field is not None:
+		potential_strength_cm_inv = convert_dipole_field_energy_to_cm_inv(args.dipole_moment * args.electric_field)
 		print(f"Computed potential strength (mu*E) = {potential_strength_cm_inv:.4f} cm⁻¹")
 	else:
 		raise ValueError(
