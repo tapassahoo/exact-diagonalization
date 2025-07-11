@@ -135,26 +135,52 @@ def write_quantum_numbers(ncfile, all_qn, spin_state, filtered_qn):
 
 
 def write_eigen_data(ncfile, eigenvalues, real_evecs, imag_evecs):
-	n_states, n_basis = real_evecs.shape
+	"""
+	Save eigenvalues and eigenvectors to a NetCDF file with shape validation.
 
+	Parameters:
+		ncfile (netCDF4.Dataset): Open NetCDF file.
+		eigenvalues (np.ndarray): Array of eigenvalues (shape: n_states,)
+		real_evecs (np.ndarray): Real part of eigenvectors (shape: n_states, n_basis)
+		imag_evecs (np.ndarray): Imaginary part of eigenvectors (shape: n_states, n_basis)
+	"""
+
+	# Convert inputs to arrays and validate types
+	eigenvalues = np.asarray(eigenvalues)
+	real_evecs = np.asarray(real_evecs)
+	imag_evecs = np.asarray(imag_evecs)
+
+	# --- Shape Validation ---
+	if real_evecs.shape != imag_evecs.shape:
+		raise ValueError(f"[ERROR] Shape mismatch: real_evecs shape {real_evecs.shape} ≠ imag_evecs shape {imag_evecs.shape}")
+
+	n_basis, n_states = real_evecs.shape
+
+	if eigenvalues.shape != (n_states,):
+		raise ValueError(
+			f"[ERROR] Shape mismatch: eigenvalues should have shape ({n_states},) but got {eigenvalues.shape}"
+		)
+
+	# --- Create Dimensions ---
 	ncfile.createDimension("n_states", n_states)
 	ncfile.createDimension("n_basis", n_basis)
 
+	# --- Store Eigenvalues ---
 	var_eval = ncfile.createVariable("eigenvalues", "f8", ("n_states",))
 	var_eval[:] = eigenvalues
 	var_eval.units = "cm^-1"
 	var_eval.long_name = "Eigenvalues (energy levels)"
 
-	var_real = ncfile.createVariable("real_eigenvectors", "f8", ("n_states", "n_basis"))
+	# --- Store Eigenvectors ---
+	var_real = ncfile.createVariable("real_eigenvectors", "f8", ("n_basis", "n_states"))
 	var_real[:, :] = real_evecs
 	var_real.units = "dimensionless"
 	var_real.long_name = "Real part of eigenvectors"
 
-	var_imag = ncfile.createVariable("imag_eigenvectors", "f8", ("n_states", "n_basis"))
+	var_imag = ncfile.createVariable("imag_eigenvectors", "f8", ("n_basis", "n_states"))
 	var_imag[:, :] = imag_evecs
 	var_imag.units = "dimensionless"
 	var_imag.long_name = "Imaginary part of eigenvectors"
-
 
 def read_all_attributes(filename: str, show_variables: bool = True) -> None:
 	"""
