@@ -235,40 +235,95 @@ def read_all_attributes(filename: str, show_variables: bool = True) -> None:
 	except Exception as e:
 		print(f"[ERROR] Could not read NetCDF attributes. Details: {e}")
 
-def inspect_variable(filename, variable_name, show_data=True):
+
+def inspect_variable(filename, variable_name, show_data=True, show_plot=False, slice_index=0, max_elements=100):
 	"""
-	Inspect a specific variable in a NetCDF file.
+	Inspect a specific variable in a NetCDF file with support for 1D, 2D, and 3D data.
 
 	Parameters:
 		filename (str): Path to the NetCDF file.
 		variable_name (str): Name of the variable to inspect.
-		show_data (bool): If True, prints the data content.
+		show_data (bool): Whether to print the data values.
+		show_plot (bool): Whether to display a heatmap (2D slice only).
+		slice_index (int): Index along the first axis for 3D tensors.
+		max_elements (int): Maximum number of elements to display for large 1D data.
 	"""
-	with Dataset(filename, 'r') as nc:
-		if variable_name not in nc.variables:
-			print(f"[X] Variable '{variable_name}' not found in the file.")
-			return
+	try:
+		with Dataset(filename, 'r') as nc:
+			if variable_name not in nc.variables:
+				print(f"[X] Variable '{variable_name}' not found in the file.")
+				return
 
-		var = nc.variables[variable_name]
+			var = nc.variables[variable_name]
+			data = var[:]
+			dims = var.dimensions
 
-		print(f"\nVariable: {variable_name}")
+			# Metadata summary
+			print(f"\n[INFO] Variable '{variable_name}'")
+			print("=" * 70)
+			print(f"[ ] Dimensions    {dims}")
+			print(f"[ ] Shape         {var.shape}")
+			print(f"[ ] Data type     {var.dtype}")
+			units = getattr(var, "units", "[not defined]")
+			print(f"[ ] Units         {units}")
 
-		# Print units if available
-		units = getattr(var, "units", None)
-		if units:
-			print(f"  Units	  : {units}")
-		else:
-			print("  Units	  : [not defined]")
+			for attr in var.ncattrs():
+				if attr != "units":
+					print(f"[ ] {attr:<13} {getattr(var, attr)}")
 
-		# Print all other attributes
-		for attr in var.ncattrs():
-			if attr != "units":
-				print(f"  {attr:<10}: {getattr(var, attr)}")
+			# Display data
+			if show_data:
+				print("\n[Data]")
+				print("-" * 70)
+				if data.ndim == 1:
+					if data.size > max_elements:
+						print(f"  [Showing first {max_elements} of {data.size} elements]")
+						print(data[:max_elements])
+					else:
+						print("  ", data)
+				elif data.ndim == 2:
+					with np.printoptions(precision=4, suppress=True, linewidth=150):
+						for row in data:
+							print("  " + "  ".join(f"{val:10.4f}" for val in row))
+				elif data.ndim == 3:
+					print(f"  [Showing 2D slice at index {slice_index} along axis 0]\n")
+					if slice_index >= data.shape[0]:
+						print(f"[ERROR] Invalid slice_index {slice_index}, max allowed: {data.shape[0] - 1}")
+						return
+					slice_2d = data[slice_index]
+					with np.printoptions(precision=4, suppress=True, linewidth=150):
+						for row in slice_2d:
+							print("  " + "  ".join(f"{val:10.4f}" for val in row))
+				else:
+					print("[ERROR] Data with ndim > 3 is not supported for printing")
 
-		# Optionally print data
-		if show_data:
-			print("  Data	   :")
-			print(var[:])
+			# Optional heatmap
+			if show_plot:
+				if data.ndim == 2:
+					plot_2d_heatmap(data, variable_name, dims, units)
+				elif data.ndim == 3:
+					if slice_index < data.shape[0]:
+						plot_2d_heatmap(data[slice_index], f"{variable_name} (slice {slice_index})", dims[1:], units)
+					else:
+						print(f"[ERROR] Invalid slice_index {slice_index} for shape {data.shape}")
 
-#inspect_variable("quantum_data.nc", "eigenvalues", show_data=False)
+			print("=" * 70 + "\n")
+
+	except FileNotFoundError:
+		print(f"[ERROR] File not found: {filename}")
+	except Exception as e:
+		print(f"[ERROR] Error while inspecting variable: {e}")
+
+def plot_2d_heatmap(matrix, title, dims, units):
+	"""
+	Helper function to plot a 2D heatmap of a matrix.
+	"""
+	plt.figure(figsize=(8, 6))
+	im = plt.imshow(matrix, cmap='viridis', aspect='auto')
+	plt.colorbar(im, label=units)
+	plt.title(f"Heatmap of '{title}'")
+	plt.xlabel(f"{dims[1]}")
+	plt.ylabel(f"{dims[0]}")
+	plt.tight_layout()
+	plt.show()
 
