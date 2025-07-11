@@ -77,4 +77,3 @@ def debug_eigenvalues_eigenvectors(H_rot, eigenvalues, eigenvectors, tol=1e-10, 
 		log("[WARNING] Eigenvectors contain complex components.")
 
 	log("[SUCCESS] All eigenpair validations completed.\n")
-

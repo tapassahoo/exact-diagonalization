@@ -5,6 +5,6 @@ from monomer_linear_rotor.io_netcdf import (
 )
 
 if __name__ == "__main__":
-	netcdf_path = "output/data/quantum_data_HCl_spinless_isomer_lmax_10_dipole_moment_1.00D_electric_field_200.00kVcm.nc"
+	netcdf_path = "output/data/quantum_data_HCl_spinless_isomer_lmax_20_dipole_moment_1.00D_electric_field_200.00kVcm.nc"
 	read_all_attributes(netcdf_path)  # Default prints both global and variable-wise metadata
 

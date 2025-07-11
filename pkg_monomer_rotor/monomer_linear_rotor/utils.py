@@ -18,6 +18,7 @@ def is_hermitian(H, tol=1e-12):
 		return np.allclose(H, H.conj().T, atol=tol)
 
 def show_simulation_details(
+	B_const_cm_inv,
 	potential_strength_cm_inv,
 	max_angular_momentum_quantum_number,
 	spin_state,
@@ -35,29 +36,27 @@ def show_simulation_details(
 	home_dir = os.path.expanduser("~")
 
 	print(colored("*" * 80, SEPARATOR_COLOR))
-	print(colored("Date and Time:".ljust(LABEL_WIDTH), INFO_COLOR) + colored(date_time.ljust(VALUE_WIDTH), VALUE_COLOR) + "\n")
+	print(colored("[ ] Date and Time:".ljust(LABEL_WIDTH), INFO_COLOR) + colored(date_time.ljust(VALUE_WIDTH), VALUE_COLOR) + "\n")
 
 	print(colored("File System Details:", HEADER_COLOR, attrs=['bold', 'underline']))
-	print(colored("User Name:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(user_name.ljust(VALUE_WIDTH), VALUE_COLOR))
-	print(colored("Home Directory:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(home_dir.ljust(VALUE_WIDTH), VALUE_COLOR))
-	print(colored("Current Working Directory:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(cwd.ljust(VALUE_WIDTH), VALUE_COLOR))
-	#print(colored("Package Location (bfunc):".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(bfunc.__file__.ljust(VALUE_WIDTH), VALUE_COLOR))
+	print(colored("[ ] User Name:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(user_name.ljust(VALUE_WIDTH), VALUE_COLOR))
+	print(colored("[ ] Home Directory:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(home_dir.ljust(VALUE_WIDTH), VALUE_COLOR))
+	print(colored("[ ] Current Working Directory:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(cwd.ljust(VALUE_WIDTH), VALUE_COLOR))
 	print()
 
 	print(colored("Simulation Parameters", HEADER_COLOR, attrs=['bold', 'underline']))
-	print(colored("ℓ_max (Angular Momentum):".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{max_angular_momentum_quantum_number}".ljust(VALUE_WIDTH), VALUE_COLOR))
-	print(colored("Spin State:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(spin_state.ljust(VALUE_WIDTH), VALUE_COLOR))
-	print(colored("V(θ) Strength:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{potential_strength_cm_inv:.5f} cm⁻¹".ljust(VALUE_WIDTH), VALUE_COLOR))
+	print(colored("[ ] ℓ_max (Angular Momentum):".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{max_angular_momentum_quantum_number}".ljust(VALUE_WIDTH), VALUE_COLOR))
+	print(colored("[ ] Spin State:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(spin_state.ljust(VALUE_WIDTH), VALUE_COLOR))
+	print(colored(f"[ ] Rotational constant:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{B_const_cm_inv:.6f} cm^-1".ljust(VALUE_WIDTH), VALUE_COLOR))
+	print(colored("[ ] V(θ) Strength:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{potential_strength_cm_inv:.5f} cm⁻¹".ljust(VALUE_WIDTH), VALUE_COLOR))
 
 	if dipole_moment_D is not None:
-		print(colored("Dipole Moment:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{dipole_moment_D:.4f} D".ljust(VALUE_WIDTH), VALUE_COLOR))
+		print(colored("[ ] Dipole Moment:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{dipole_moment_D:.4f} D".ljust(VALUE_WIDTH), VALUE_COLOR))
 	if electric_field_kVcm is not None:
-		print(colored("Electric Field:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{electric_field_kVcm:.4f} kV/cm".ljust(VALUE_WIDTH), VALUE_COLOR))
+		print(colored("[ ] Electric Field:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{electric_field_kVcm:.4f} kV/cm".ljust(VALUE_WIDTH), VALUE_COLOR))
 	if computed_muE_cm_inv is not None:
-		print(colored("μ·E (Interaction Energy):".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{computed_muE_cm_inv:.5f} cm⁻¹".ljust(VALUE_WIDTH), VALUE_COLOR))
+		print(colored("[ ] μ·E (Interaction Energy):".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{computed_muE_cm_inv:.5f} cm⁻¹".ljust(VALUE_WIDTH), VALUE_COLOR))
 	print()
-
-	print(colored("Grid Information", HEADER_COLOR, attrs=['bold', 'underline']))
 
 def generate_filename(
 	spin_state: str,
@@ -106,4 +105,25 @@ def generate_filename(
 
 	return filename
 
+def display_eigenvalues(eigenvalues, header="Rotational Energy Levels", unit="cm^-1", precision=6):
+	"""
+	Display eigenvalues with indices and physical units.
+
+	Parameters:
+		eigenvalues (array-like): Array or list of eigenvalues.
+		header (str): Descriptive header for the table.
+		unit (str): Physical unit of eigenvalues. Default is 'cm^-1'.
+		precision (int): Number of decimal places to display.
+	"""
+	if eigenvalues is None or len(eigenvalues) == 0:
+		print("[Info] No eigenvalues to display.")
+		return
+
+	print(f"\n{header}")
+	print("-" * 50)
+	for idx, val in enumerate(eigenvalues):
+		formatted_value = f"{val:.{precision}f}"
+		print(f"  Level {idx:<3} : {formatted_value:>12} {unit}")
+	print("-" * 50)
+	print(f"[Info] Total levels: {len(eigenvalues)}\n")
 

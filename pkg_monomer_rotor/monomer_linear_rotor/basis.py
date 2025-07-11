@@ -63,13 +63,13 @@ def count_basis_functions(max_angular_momentum_quantum_number, spin_state):
 
 	# Display summary
 	print(colored("\nNumber of basis functions", HEADER_COLOR, attrs=['bold', 'underline']))
-	print(colored("Total |J,M⟩ basis functions:".ljust(LABEL_WIDTH), LABEL_COLOR) +
+	print(colored("[ ] Total |J,M⟩ basis functions:".ljust(LABEL_WIDTH), LABEL_COLOR) +
 		  colored(str(JM).ljust(VALUE_WIDTH), VALUE_COLOR))
-	print(colored("Even J basis functions (JeM):".ljust(LABEL_WIDTH), LABEL_COLOR) +
+	print(colored("[ ] Even J basis functions (JeM):".ljust(LABEL_WIDTH), LABEL_COLOR) +
 		  colored(str(JeM).ljust(VALUE_WIDTH), VALUE_COLOR))
-	print(colored("Odd J basis functions (JoM):".ljust(LABEL_WIDTH), LABEL_COLOR) +
+	print(colored("[ ] Odd J basis functions (JoM):".ljust(LABEL_WIDTH), LABEL_COLOR) +
 		  colored(str(JoM).ljust(VALUE_WIDTH), VALUE_COLOR))
-	print(colored(f"Basis functions for {spin_state} isomer:".ljust(LABEL_WIDTH), LABEL_COLOR) +
+	print(colored(f"[ ] Basis functions for {spin_state} isomer:".ljust(LABEL_WIDTH), LABEL_COLOR) +
 		  colored(str(njm).ljust(VALUE_WIDTH), VALUE_COLOR))
 
 	return {

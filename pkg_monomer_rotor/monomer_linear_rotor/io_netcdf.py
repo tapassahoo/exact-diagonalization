@@ -19,11 +19,10 @@ from pkg_utils.config import *
 
 def save_all_quantum_data_to_netcdf(
 	file_name: str,
-	cm_inv_to_K: float,
-	potential_strength_cm_inv: float,
 	max_angular_momentum_quantum_number: int,
-	B_const_cm_inv: float,
 	spin_state: str,
+	B_const_cm_inv: float,
+	potential_strength_cm_inv: float,
 	all_quantum_numbers: np.ndarray,
 	quantum_numbers_for_spin_state: np.ndarray,
 	eigenvalues: np.ndarray,
@@ -49,11 +48,10 @@ def save_all_quantum_data_to_netcdf(
 
 		# Scalar attributes with units and long names
 		global_attrs = {
-			"cm_inv_to_K": ("K/(cm^-1)", cm_inv_to_K, "Conversion factor from wavenumber to Kelvin"),
-			"potential_strength_cm_inv": ("cm^-1", potential_strength_cm_inv, "Orienting potential strength"),
 			"max_angular_momentum_quantum_number": ("dimensionless", max_angular_momentum_quantum_number, "Maximum angular momentum quantum number"),
+			"spin_state": ("unitless (string)", spin_state, "Spin isomer type (spinless, ortho, para)"),
 			"B_const_cm_inv": ("cm^-1", B_const_cm_inv, "Rotational constant"),
-			"spin_state": ("unitless (string)", spin_state, "Spin isomer type (spinless, ortho, para)")
+			"potential_strength_cm_inv": ("cm^-1", potential_strength_cm_inv, "Orienting potential strength")
 		}
 
 		if dipole_moment_D is not None:
