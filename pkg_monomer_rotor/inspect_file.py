@@ -15,19 +15,20 @@ if __name__ == "__main__":
 	netcdf_path = "output/HF-spinless/data/quantum_data_HF_spinless_isomer_lmax_10_dipole_moment_1.83D_electric_field_200.00kVcm.nc"
 	read_all_attributes(netcdf_path)  # Default prints both global and variable-wise metadata
 	inspect_variable(netcdf_path, "eigenvalues", show_data=True, show_plot=False, slice_index=2)
-	whoami()
 
-read_all_quantum_data_files_with_thermo(
-	base_output_dir="/Users/tapas/academic-project/outputs/output_spinless_HF_monomer_in_field",
-	dipole_moment_D=1.83,
-	electric_field_kVcm_list=[0.1] + list(range(10, 201, 10)),
-	max_angular_momentum_list=list(range(10, 11, 5)),
-	#temperature_list=list(range(2, 50, 2))+list(range(50, 201, 5)),
-	temperature_list=list(range(10, 51, 5)),
-	spin_type="spinless",
-	unit_want="J/mol",
-	export_csv=True,
-	export_plot=True,
-	output_summary_dir="/Users/tapas/academic-project/results/result_spinless_HF_monomer_in_field"
-)
+	"""
+	read_all_quantum_data_files_with_thermo(
+		base_output_dir="/Users/tapas/academic-project/outputs/output_spinless_HF_monomer_in_field",
+		dipole_moment_D=1.83,
+		electric_field_kVcm_list=[0.1] + list(range(10, 201, 10)),
+		max_angular_momentum_list=list(range(10, 11, 5)),
+		#temperature_list=list(range(2, 50, 2))+list(range(50, 201, 5)),
+		temperature_list=list(range(10, 51, 5)),
+		spin_type="spinless",
+		unit_want="J/mol",
+		export_csv=True,
+		export_plot=True,
+		output_summary_dir="/Users/tapas/academic-project/results/result_spinless_HF_monomer_in_field"
+	)
+	"""
 

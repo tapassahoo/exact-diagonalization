@@ -600,6 +600,7 @@ def read_all_quantum_data_files_with_thermo(
 
 
 
+"""
 # === Usage ===
 read_all_quantum_data_files_with_thermo(
 	base_output_dir="/Users/tapas/academic-project/outputs/output_spinless_HF_monomer_in_field",
@@ -619,3 +620,4 @@ filename="output/data/quantum_data_HCl_spinless_isomer_lmax_20_dipole_moment_1.8
 
 whom()
 whoami()
+"""
