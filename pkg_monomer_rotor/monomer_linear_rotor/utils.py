@@ -18,7 +18,7 @@ def is_hermitian(H, tol=1e-12):
 		return np.allclose(H, H.conj().T, atol=tol)
 
 def show_simulation_details(
-	output_data_dir,
+	output_root_dir,
 	B_const_cm_inv,
 	potential_strength_cm_inv,
 	max_angular_momentum_quantum_number,
@@ -43,7 +43,7 @@ def show_simulation_details(
 	print(colored("[ ] User Name:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(user_name.ljust(VALUE_WIDTH), VALUE_COLOR))
 	print(colored("[ ] Home Directory:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(home_dir.ljust(VALUE_WIDTH), VALUE_COLOR))
 	print(colored("[ ] Current Working Directory:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(cwd.ljust(VALUE_WIDTH), VALUE_COLOR))
-	print(colored("[ ] Output will be saved to:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(output_data_dir.ljust(VALUE_WIDTH), VALUE_COLOR))
+	print(colored("[ ] Output will be saved to:".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(output_root_dir.ljust(VALUE_WIDTH), VALUE_COLOR))
 	print()
 
 	print(colored("Simulation Parameters", HEADER_COLOR, attrs=['bold', 'underline']))
@@ -92,7 +92,7 @@ def generate_filename(
 	"""
 
 	filename = (
-		f"{prefix}HCl_{spin_state}_isomer_"
+		f"{prefix}_{spin_state}_isomer_"
 		f"lmax_{max_angular_momentum_quantum_number}_"
 	)
 
@@ -120,7 +120,7 @@ def display_eigenvalues(eigenvalues, spin_state, unit="cm^-1", precision=6):
 		print("[Info] No eigenvalues to display.")
 		return
 
-	print(colored(f"\n[INFO] Lowest energy eigenvalues for spin type ", LABEL_COLOR) + colored(f"{spin_state}:", LABEL_COLOR))
+	print(colored(f"\n[INFO] Lowest energy eigenvalues for spin type ", LABEL_COLOR) + colored(f"{spin_state}:", INFO_COLOR))
 
 	#print(f"\n[ ] Lowest energy eigenvalues for spin type '{spin_state}':")
 	print("-" * 50)

@@ -84,8 +84,8 @@ def main():
 	subdir_name = f"{molecule_name}-{spin_label}"
 
 	# Final output path
-	output_data_dir = os.path.join(args.output_dir, subdir_name)
-	os.makedirs(output_data_dir, exist_ok=True)
+	output_root_dir = os.path.join(args.output_dir, subdir_name)
+	os.makedirs(output_root_dir, exist_ok=True)
 
 	max_angular_momentum_quantum_number = args.max_angular_momentum_quantum_number
 	spin_state					= args.spin
@@ -96,7 +96,7 @@ def main():
 
 	# Display input parameters
 	show_simulation_details(
-		output_data_dir=output_data_dir,
+		output_root_dir=output_root_dir,
 		B_const_cm_inv=B_const_cm_inv,
 		potential_strength_cm_inv=potential_strength_cm_inv,   # float, in cm⁻¹
 		max_angular_momentum_quantum_number=args.max_angular_momentum_quantum_number,
@@ -110,7 +110,7 @@ def main():
 		energies = rotational_energy_levels(B_const_cm_inv, 10)
 		plot_rotational_levels(energies)
 
-	base_file_name = generate_filename(spin_state, max_angular_momentum_quantum_number, potential_strength_cm_inv, args.dipole_moment, args.electric_field, prefix="_")
+	base_file_name = generate_filename(spin_state, max_angular_momentum_quantum_number, potential_strength_cm_inv, args.dipole_moment, args.electric_field, prefix=f"_{molecule_name}")
 	
 	# All quantum numbers: (J, M)
 	all_quantum_numbers = generate_monomer_linear_rotor_quantum_numbers(max_angular_momentum_quantum_number, "spinless")
@@ -134,7 +134,7 @@ def main():
 			print(colored("[WARNING] Hamiltonian is NOT Hermitian!", "red", attrs=["bold"]))
 
 		# Ensure output directories exist
-		plots_dir = os.path.join(output_data_dir, "plots")
+		plots_dir = os.path.join(output_root_dir, "plots")
 		os.makedirs(plots_dir, exist_ok=True)
 
 		# Plot sparsity pattern and save
@@ -158,12 +158,12 @@ def main():
 
 	# Output file name
 	# First, create the directory
-	output_data_dir = os.path.join(args.output_dir, "data")
+	output_data_dir = os.path.join(output_root_dir, "data")
 	os.makedirs(output_data_dir, exist_ok=True)
 
 	# Then, build the NetCDF filename
 	file_name_netcdf = os.path.join(output_data_dir, f"quantum_data{base_file_name}.nc")
-
+	print(colored("[INFO] ", "blue") + f"All quantum data will be saved to: {file_name_netcdf}")
 
 	# Prepare arguments
 	kwargs = {
