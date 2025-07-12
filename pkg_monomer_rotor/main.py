@@ -147,7 +147,10 @@ def main():
 			max_labels=30,
 			color='navy'
 		)
-		print(colored(f"[INFO] Sparsity plot saved to: {sparsity_plot_path}", "cyan"))
+		print(colored("[INFO] ", INFO_COLOR) + 
+			  colored("Sparsity plot saved to: ", LABEL_COLOR) + 
+			  colored(sparsity_plot_path, VALUE_COLOR))
+
 
 
 	# Diagonalize
@@ -163,7 +166,8 @@ def main():
 
 	# Then, build the NetCDF filename
 	file_name_netcdf = os.path.join(output_data_dir, f"quantum_data{base_file_name}.nc")
-	print(colored("[INFO] ", "blue") + f"All quantum data will be saved to: {file_name_netcdf}")
+	print(colored("[INFO] ", INFO_COLOR) + colored("All quantum data will be saved to: ", LABEL_COLOR) + colored(file_name_netcdf, VALUE_COLOR))
+
 
 	# Prepare arguments
 	kwargs = {

@@ -12,9 +12,10 @@ from pkg_utils.env_report import whom
 
 
 if __name__ == "__main__":
-	netcdf_path = "output/data/quantum_data_HCl_spinless_isomer_lmax_20_dipole_moment_1.00D_electric_field_200.00kVcm.nc"
+	netcdf_path = "output/HF-spinless/data/quantum_data_HF_spinless_isomer_lmax_10_dipole_moment_1.83D_electric_field_200.00kVcm.nc"
 	read_all_attributes(netcdf_path)  # Default prints both global and variable-wise metadata
 	inspect_variable(netcdf_path, "eigenvalues", show_data=True, show_plot=False, slice_index=2)
+	whoami()
 
 read_all_quantum_data_files_with_thermo(
 	base_output_dir="/Users/tapas/academic-project/outputs/output_spinless_HF_monomer_in_field",

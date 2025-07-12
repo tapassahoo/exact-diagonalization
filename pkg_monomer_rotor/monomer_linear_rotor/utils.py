@@ -120,7 +120,12 @@ def display_eigenvalues(eigenvalues, spin_state, unit="cm^-1", precision=6):
 		print("[Info] No eigenvalues to display.")
 		return
 
-	print(colored(f"\n[INFO] Lowest energy eigenvalues for spin type ", LABEL_COLOR) + colored(f"{spin_state}:", INFO_COLOR))
+	print(
+		colored("\n[INFO]", INFO_COLOR) +
+		colored(" Lowest energy eigenvalues for spin type ", LABEL_COLOR) +
+		colored(f"{spin_state}:", VALUE_COLOR)
+	)
+
 
 	#print(f"\n[ ] Lowest energy eigenvalues for spin type '{spin_state}':")
 	print("-" * 50)
@@ -128,7 +133,12 @@ def display_eigenvalues(eigenvalues, spin_state, unit="cm^-1", precision=6):
 		formatted_value = f"{val:.{precision}f}"
 		print(f"  Level {idx:<3} : {formatted_value:>12} {unit}")
 	print("-" * 50)
-	print(colored("[INFO] Total levels: ", LABEL_COLOR) + colored(f"{len(eigenvalues)}", VALUE_COLOR) + "\n")
+	print(
+		colored("[INFO]", INFO_COLOR) + " " +
+		colored("Total levels: ", LABEL_COLOR) +
+		colored(f"{len(eigenvalues)}", VALUE_COLOR) +
+		"\n"
+	)
 
 
 def convert_dipole_field_energy_to_cm_inv(dipole_moment_D: float, electric_field_kVcm: float) -> float:
