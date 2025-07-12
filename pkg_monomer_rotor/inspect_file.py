@@ -24,7 +24,7 @@ if __name__ == "__main__":
 	file_template = "output/HF-spinless/data/quantum_data_HF_spinless_isomer_lmax_{jmax}_dipole_moment_1.83D_electric_field_200.00kVcm.nc"
 
 	# To plot and annotate multiple levels:
-	plot_eigenvalue_convergence(jmax_list, file_template, num_levels_to_show=30)
+	plot_eigenvalue_convergence(jmax_list, file_template, num_levels_to_show=8)
 
 	# To focus only on level 3:
 	plot_eigenvalue_convergence(jmax_list, file_template, level_wanted=1)
