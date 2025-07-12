@@ -133,55 +133,6 @@ def build_monomer_linear_rotor_hamiltonian(JM_list, B_const, dipole_terms):
 
 def plot_sparsity(H, JM_list, save_path=None, dpi=600, max_labels=30, color='black'):
 	"""
-	Plot a high-quality sparsity pattern of the Hamiltonian matrix with clean aesthetics.
-
-	Parameters:
-	- H : csr_matrix
-		Sparse Hamiltonian matrix.
-	- JM_list : ndarray
-		Array of (J, M) quantum numbers defining basis states.
-	- save_path : str or None
-		If specified, saves the plot to the given path.
-	- dpi : int
-		Resolution for saved figure (default 600).
-	- max_labels : int
-		Max dimension for which tick labels (J, M) will be shown.
-	- color : str
-		Marker color for the plot (e.g., 'black', 'navy', '#1f77b4').
-	"""
-	#plt.style.use('seaborn-white')
-	plt.style.use('seaborn-v0_8-whitegrid')  # if available
-	dim = len(JM_list)
-
-	fig, ax = plt.subplots(figsize=(6.5, 6.5), dpi=dpi)
-	ax.spy(H, markersize=3.2, color=color, precision=1e-12)
-
-	ax.set_title("Sparsity Pattern of the Hamiltonian Matrix", fontsize=14, fontweight='bold', pad=15)
-	ax.set_xlabel("Ket state index  (J', M')", fontsize=12, labelpad=10)
-	ax.set_ylabel("Bra state index  (J, M)", fontsize=12, labelpad=10)
-
-	if dim <= max_labels:
-		labels = [f"{int(J)},{int(M)}" for J, M in JM_list]
-		ax.set_xticks(np.arange(dim))
-		ax.set_xticklabels(labels, rotation=90, fontsize=7, family='monospace')
-		ax.set_yticks(np.arange(dim))
-		ax.set_yticklabels(labels, fontsize=7, family='monospace')
-	else:
-		ax.set_xticks([])
-		ax.set_yticks([])
-
-	ax.tick_params(direction='in', top=True, right=True)
-	ax.grid(False)
-	plt.tight_layout()
-
-	if save_path:
-		fig.savefig(save_path, bbox_inches='tight', dpi=dpi, transparent=True)
-		print(f"Sparsity pattern saved to: {save_path}")
-	else:
-		plt.show()
-
-def plot_sparsity(H, JM_list, save_path=None, dpi=600, max_labels=30, color='black'):
-	"""
 	Plot a high-quality sparsity pattern of the Hamiltonian matrix.
 
 	Parameters:
@@ -237,7 +188,6 @@ def plot_sparsity(H, JM_list, save_path=None, dpi=600, max_labels=30, color='bla
 
 	if save_path:
 		fig.savefig(save_path, bbox_inches='tight', dpi=dpi, transparent=False)
-		print(f"Sparsity plot saved to: {save_path}")
 	else:
 		plt.show()
 
@@ -305,5 +255,3 @@ def display_rotational_energies(diagonal_elements, all_quantum_numbers, B_const_
 		print(f"{int(J):>12} {theoretical_energy:>32.6f} {energy:>26.6f}")
 
 	print("=" * 80)
-
-

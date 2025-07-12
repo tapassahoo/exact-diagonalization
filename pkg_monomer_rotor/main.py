@@ -31,6 +31,10 @@ from sympy import Rational
 from pkg_utils.utils import whoami
 from pkg_utils.config import *
 
+from monomer_linear_rotor.cli import (
+	parse_arguments,
+	show_dry_run_summary
+)
 from monomer_linear_rotor.basis import (
 	generate_monomer_linear_rotor_quantum_numbers,
 	count_basis_functions
@@ -60,130 +64,31 @@ from monomer_linear_rotor.io_netcdf import (
 	save_all_quantum_data_to_netcdf
 )
 
-def parse_arguments():
-	"""
-	Parses command-line arguments for the computation of eigenvalues and eigenfunctions
-	of a linear quantum rotor in an external orienting potential.
-
-	Returns
-	-------
-	argparse.Namespace
-		A namespace object containing:
-		- potential_strength : float
-		- max_angular_momentum_quantum_number : int
-		- spin : str
-		- dipole_moment : float or None
-		- electric_field : float or None
-		- output_dir : str
-		- dry_run : bool
-	"""
-	parser = argparse.ArgumentParser(
-		prog="monomer_rotor_real_basis_diagonalization.py",
-		description=(
-			"Computation of eigenvalues and eigenfunctions by exact diagonalization of the analytical Hamiltonian for a polar, rigid, linear rotor in an external electric field. The dipole–field interaction is treated explicitly, and the potential energy matrix elements are evaluated using Wigner's 3-j symbols."
-		),
-		epilog="Developed by Dr. Tapas Sahoo — Quantum Molecular Dynamics Group"
-	)
-
-	parser.add_argument(
-		"--potential-strength", type=float, default=None,
-		help="Strength of the external orienting potential (in cm⁻¹)."
-	)
-
-	parser.add_argument(
-		"max_angular_momentum_quantum_number", type=int,
-		help="Maximum angular momentum quantum number ℓ_max used for basis truncation. Must be ≥ 0."
-	)
-
-	parser.add_argument(
-		"spin", type=str, choices=["spinless", "ortho", "para"],
-		help="Nuclear spin isomer type: 'spinless', 'ortho', or 'para'."
-	)
-
-	parser.add_argument(
-		"--dipole-moment", type=float, default=None,
-		help="Dipole moment of the rotor molecule (in Debye)."
-	)
-
-	parser.add_argument(
-		"--electric-field", type=float, default=None,
-		help="Electric field strength (in kV/cm)."
-	)
-
-	parser.add_argument(
-		"--output-dir", type=str, default="output",
-		help="Directory where output files will be saved (default: 'output')."
-	)
-
-	parser.add_argument(
-		"--dry-run", action="store_true",
-		help="If set, only prints computed settings without executing the main routine."
-	)
-
-	args = parser.parse_args()
-
-	# Auto-calculate potential strength if not provided
-	if args.potential_strength is None:
-		if args.dipole_moment is not None and args.electric_field is not None:
-			args.potential_strength = convert_dipole_field_energy_to_cm_inv(args.dipole_moment, args.electric_field) 
-		else:
-			print("Error: You must provide either --potential-strength or both --dipole-moment and --electric-field.")
-			sys.exit(1)
-
-	return args
-
 def main():
-	# --- Parse command-line arguments ---
+	# --- Parse user input from CLI ---
 	args = parse_arguments()
+	B_const_cm_inv = args.B_const
+	potential_strength_cm_inv = args.potential_strength	
 
-	# --- Dry run mode: Show parameters and exit ---
+	# --- Dry run: show configuration and exit ---
 	if args.dry_run:
-		print(colored("=" * (LABEL_WIDTH + VALUE_WIDTH), SEPARATOR_COLOR))
-		print(colored("Dry Run Summary".center(LABEL_WIDTH + VALUE_WIDTH), HEADER_COLOR))
-		print(colored("=" * (LABEL_WIDTH + VALUE_WIDTH), SEPARATOR_COLOR))
+		show_dry_run_summary(args)
+		return
 
-		print(colored("ℓ_max".ljust(LABEL_WIDTH), LABEL_COLOR) + 
-			  colored(str(args.max_angular_momentum_quantum_number).ljust(VALUE_WIDTH), VALUE_COLOR))
-		
-		print(colored("Spin".ljust(LABEL_WIDTH), LABEL_COLOR) + 
-			  colored(args.spin.ljust(VALUE_WIDTH), VALUE_COLOR))
-		
-		print(colored("Dipole moment".ljust(LABEL_WIDTH), LABEL_COLOR) + 
-			  colored(f"{args.dipole_moment or 'N/A'} D".ljust(VALUE_WIDTH), VALUE_COLOR))
-		
-		print(colored("Electric field".ljust(LABEL_WIDTH), LABEL_COLOR) + 
-			  colored(f"{args.electric_field or 'N/A'} kV/cm".ljust(VALUE_WIDTH), VALUE_COLOR))
-		
-		print(colored("V(θ) strength".ljust(LABEL_WIDTH), LABEL_COLOR) + 
-			  colored(f"{args.potential_strength or 'N/A'} cm⁻¹".ljust(VALUE_WIDTH), VALUE_COLOR))
-		
-		print(colored("Output directory".ljust(LABEL_WIDTH), LABEL_COLOR) + 
-			  colored(args.output_dir.ljust(VALUE_WIDTH), VALUE_COLOR))
-
-		print(colored("=" * (LABEL_WIDTH + VALUE_WIDTH), SEPARATOR_COLOR))
-		sys.exit(0)
-
-	# --- Create output directory ---
+	# --- Construct output directory structure ---
 	os.makedirs(args.output_dir, exist_ok=True)
 
-	# --- Determine potential strength ---
-	if args.potential_strength is not None:
-		potential_strength_cm_inv = args.potential_strength
-	elif args.dipole_moment is not None and args.electric_field is not None:
-		potential_strength_cm_inv = convert_dipole_field_energy_to_cm_inv(args.dipole_moment * args.electric_field)
-		print(f"Computed potential strength (mu*E) = {potential_strength_cm_inv:.4f} cm⁻¹")
-	else:
-		raise ValueError(
-			"Missing potential parameters: provide either --potential-strength "
-			"or both --dipole-moment-D and --electric-field-kVcm."
-		)
+	# Use the molecule and spin arguments as-is, preserving original casing
+	molecule_name = args.molecule if args.molecule else "Unknown"
+	spin_label = args.spin if args.spin else "spinless"
+	subdir_name = f"{molecule_name}-{spin_label}"
+
+	# Final output path
+	output_data_dir = os.path.join(args.output_dir, subdir_name)
+	os.makedirs(output_data_dir, exist_ok=True)
 
 	max_angular_momentum_quantum_number = args.max_angular_momentum_quantum_number
 	spin_state					= args.spin
-
-	# Spectroscopic constant (B) in cm⁻¹ taken from NIST data
-	#B_const_cm_inv = 20.95373 # HF
-	B_const_cm_inv = 10.44 # https://opg.optica.org/viewmedia.cfm?r=1&rwjcode=josa&uri=josa-52-1-1&html=true
 
 	# print the normalization
 	compute_rigid_rotor_energy  = False
@@ -191,6 +96,7 @@ def main():
 
 	# Display input parameters
 	show_simulation_details(
+		output_data_dir=output_data_dir,
 		B_const_cm_inv=B_const_cm_inv,
 		potential_strength_cm_inv=potential_strength_cm_inv,   # float, in cm⁻¹
 		max_angular_momentum_quantum_number=args.max_angular_momentum_quantum_number,
@@ -228,7 +134,7 @@ def main():
 			print(colored("[WARNING] Hamiltonian is NOT Hermitian!", "red", attrs=["bold"]))
 
 		# Ensure output directories exist
-		plots_dir = os.path.join(args.output_dir, "plots")
+		plots_dir = os.path.join(output_data_dir, "plots")
 		os.makedirs(plots_dir, exist_ok=True)
 
 		# Plot sparsity pattern and save
@@ -241,14 +147,12 @@ def main():
 			max_labels=30,
 			color='navy'
 		)
-		print(colored(f"[INFO] Sparsity plot saved to: {sparsity_plot_path}", "blue"))
+		print(colored(f"[INFO] Sparsity plot saved to: {sparsity_plot_path}", "cyan"))
+
 
 	# Diagonalize
-	print(f"\n[ ] Lowest energy eigenvalues for spin type '{spin_state}':")
-
-	# Compute and scale
 	eigenvalues, eigenvectors = compute_eigensystem(H_rot)
-	display_eigenvalues(eigenvalues)
+	display_eigenvalues(eigenvalues, spin_state)
 	# Debugging function call
 	debug_eigenvalues_eigenvectors(H_rot, eigenvalues, eigenvectors)
 
