@@ -4,6 +4,7 @@ import argparse
 import os
 import inspect
 import sys
+from pathlib import Path
 import getpass
 import socket
 import platform
@@ -189,7 +190,14 @@ def main():
 
 	# Call the function
 	save_all_quantum_data_to_netcdf(**kwargs)
-	
+
+	path = Path(file_name_netcdf)
+
+	if path.exists():
+		print(f"[INFO] File exists: {file_name_netcdf}")
+	else:
+		print(f"[WARNING] File does not exist: {file_name_netcdf}")
+
 	print("\n\nHURRAY ALL COMPUTATIONS COMPLETED DATA SUCCESSFULLY WRITTEN TO NETCDF FILES")
 
 if __name__ == "__main__":
