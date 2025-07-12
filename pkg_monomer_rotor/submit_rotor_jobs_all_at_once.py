@@ -1,20 +1,84 @@
-
+import argparse
+import sys
 import os
 import subprocess
 import csv
 import logging
-import argparse
 from itertools import product
 from datetime import datetime
 import shutil
 from pkg_utils.utils import whoami
 from pkg_utils.env_report import whom
 
+
 electric_field_kVcm_list = [0.1] + list(range(20, 21, 20))
 potential_strength_list = [0.1, 0.5]
 max_angular_momentum_list = list(range(10, 11, 5))
 script_name = "monomer_rotor_real_basis_diagonalization.py"
-allowed_spin_types = {"spinless", "ortho", "para"}
+
+# Allowed spin types
+allowed_spin_types = ["spinless", "ortho", "para"]
+
+# Molecular constants database (extend as needed)
+MOLECULE_DATA = {
+	"HF":  {"dipole_moment": 1.83, "B_const": 20.559},
+	"HCl": {"dipole_moment": 1.03, "B_const": 10.44},
+	"HBr": {"dipole_moment": 0.78, "B_const": 8.467},
+	"HI":  {"dipole_moment": 0.38, "B_const": 6.51},
+	"CO":  {"dipole_moment": 0.112, "B_const": 1.9225},
+}
+
+import argparse
+import sys
+
+# Allowed spin types
+allowed_spin_types = ["spinless", "ortho", "para"]
+
+# Molecular database (dipole moments only)
+MOLECULE_DATA = {
+	"HF":  {"dipole_moment": 1.83},
+	"HCl": {"dipole_moment": 1.03},
+	"HBr": {"dipole_moment": 0.78},
+	"HI":  {"dipole_moment": 0.38},
+	"CO":  {"dipole_moment": 0.112},
+}
+
+def parse_arguments():
+	parser = argparse.ArgumentParser(
+		description="Submit all rotor jobs at once in background.",
+		epilog="Example: python submit_rotor_jobs_all_at_once.py --molecule HF --spin-type ortho"
+	)
+
+	parser.add_argument("--molecule", type=str,
+						help="Molecule name (e.g., 'HF', 'HCl') to auto-fill dipole moment (μ in Debye).")
+
+	parser.add_argument("--dipole-moment", type=float, default=None,
+						help="Dipole moment μ (in Debye). Overrides value from --molecule if given.")
+
+	parser.add_argument("--spin-type", default="spinless", choices=allowed_spin_types,
+						help="Spin isomer type: spinless, ortho, or para (default: spinless).")
+
+	parser.add_argument("--dry-run", action="store_true",
+						help="Print job commands without executing them.")
+
+	args = parser.parse_args()
+
+	# --- Molecule-based dipole moment setup ---
+	if args.molecule:
+		mol = args.molecule.strip().upper()
+		if mol not in MOLECULE_DATA:
+			print(f"[ERROR] Molecule '{mol}' not found in database. Available: {', '.join(MOLECULE_DATA.keys())}")
+			sys.exit(1)
+
+		# Set dipole moment only if not manually provided
+		if args.dipole_moment is None:
+			args.dipole_moment = MOLECULE_DATA[mol]["dipole_moment"]
+
+	if args.dipole_moment is None:
+		print("[ERROR] Provide either --molecule or --dipole-moment.")
+		sys.exit(1)
+
+	return args
 
 def setup_logging(log_file):
 	os.makedirs(os.path.dirname(log_file), exist_ok=True)
@@ -38,10 +102,10 @@ def preview_job_settings(molecule, spin_type, dipole, param_combinations, output
 	logging.info("==========================================")
 	logging.info(f"Launching {molecule} rotor job submissions")
 	logging.info("==========================================")
-	logging.info(f"Molecule              : {molecule}")
-	logging.info(f"Spin type             : {spin_type}")
-	logging.info(f"Dipole moment (D)     : {dipole}")
-	logging.info(f"Script to execute     : {os.path.join(output_dir, script_name)}")
+	logging.info(f"Molecule			  : {molecule}")
+	logging.info(f"Spin type			 : {spin_type}")
+	logging.info(f"Dipole moment (D)	 : {dipole}")
+	logging.info(f"Script to execute	 : {os.path.join(output_dir, script_name)}")
 	logging.info(f"Total job combinations: {len(param_combinations)}")
 	logging.info(f"Base output directory : {output_dir}")
 	logging.info(f"Summary CSV will be at: {csv_path}")
@@ -109,12 +173,11 @@ def write_summary_csv(rows, csv_path):
 		writer.writerows(rows)
 
 def main():
-	parser = argparse.ArgumentParser(description="Submit all rotor jobs at once in background")
-	parser.add_argument("--molecule", required=True, help="Name of the molecule (e.g., HF, HCl)")
-	parser.add_argument("--dipole", type=float, help="Dipole moment in Debye (if any)")
-	parser.add_argument("--spin-type", default="spinless", choices=allowed_spin_types, help="Spin type (default: spinless)")
-	parser.add_argument("--dry-run", action="store_true", help="Preview commands without executing jobs")
-	args = parser.parse_args()
+
+	args = parse_arguments()
+	print("Dipole Moment:", args.dipole_moment)
+	print("Spin Type:", args.spin_type)
+	whoami()
 
 	output_dir = f"output_{args.spin_type}_{args.molecule}_monomer_in_field"
 	os.makedirs(output_dir, exist_ok=True)
@@ -171,10 +234,10 @@ def main():
 		cmd_str = " ".join(cmd)
 
 		if args.dry_run:
-			print(f"\n\n[DRY RUN ] Job Name       : {tag}")
-			print(f"            Command       : {cmd_str}")
-			print(f"            Stdout Path   : {stdout_path}")
-			print(f"            Stderr Path   : {stderr_path}")
+			print(f"\n\n[DRY RUN ] Job Name	   : {tag}")
+			print(f"			Command	   : {cmd_str}")
+			print(f"			Stdout Path   : {stdout_path}")
+			print(f"			Stderr Path   : {stderr_path}")
 
 			summary_rows.append({
 				"Job Name": tag,
@@ -188,7 +251,7 @@ def main():
 
 
 		print(f"\n\n[Launching] Job: {tag}")
-		print(f"  > Command      : {cmd_str}")
+		print(f"  > Command	  : {cmd_str}")
 		print(f"  > Stdout path  : {stdout_path}")
 		print(f"  > Stderr path  : {stderr_path}")
 

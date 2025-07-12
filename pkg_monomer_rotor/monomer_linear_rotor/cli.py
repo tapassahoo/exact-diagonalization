@@ -27,9 +27,24 @@ def parse_arguments():
 	"""
 	parser = argparse.ArgumentParser(
 		prog="monomer_rotor_real_basis_diagonalization.py",
-		description="Exact diagonalization of the Hamiltonian for a linear polar rotor in an electric field.",
-		epilog="Developed by Dr. Tapas Sahoo — Quantum Molecular Dynamics Group"
+		description=(
+			"Exact diagonalization of the Hamiltonian for a linear polar rotor in an external electric field.\n\n"
+			"Examples:\n"
+			"  # Example 1: Use molecular name to auto-fill dipole moment and B constant\n"
+			"  python monomer_rotor_real_basis_diagonalization.py 12 spinless \\\n"
+			"		 --molecule HF \\\n"
+			"		 --electric-field 100 \\\n"
+			"		 --output-dir output/HF-spinless/\n\n"
+			"  # Example 2: Specify dipole moment and potential strength manually\n"
+			"  python monomer_rotor_real_basis_diagonalization.py 8 para \\\n"
+			"		 --dipole-moment 1.5 \\\n"
+			"		 --potential-strength 2.3 \\\n"
+			"		 --output-dir output/custom_run/"
+		),
+		epilog="Developed by Dr. Tapas Sahoo — Quantum Molecular Dynamics Group",
+		formatter_class=argparse.RawTextHelpFormatter
 	)
+
 
 	parser.add_argument("max_angular_momentum_quantum_number", type=int,
 						help="Maximum angular momentum quantum number ℓ_max for basis truncation.")
