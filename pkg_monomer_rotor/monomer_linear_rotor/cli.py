@@ -69,10 +69,6 @@ def parse_arguments():
 
 	parser.add_argument("--dry-run", action="store_true",
 						help="Print parameters and exit without running simulation.")
-
-	parser.add_argument("--verbose", action="store_true",
-						help="Print internal argument dictionary for debugging.")
-
 	args = parser.parse_args()
 
 	# Normalize molecule name and fill dipole/B values
@@ -139,10 +135,6 @@ if __name__ == "__main__":
 
 	if args.dry_run:
 		show_dry_run_summary(args)
-		if args.verbose:
-			import json
-			print("\n[Verbose] Parsed Argument Dictionary:")
-			print(json.dumps(vars(args), indent=4))
 		sys.exit(0)
 
 	os.makedirs(args.output_dir, exist_ok=True)

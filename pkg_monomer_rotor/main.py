@@ -68,13 +68,15 @@ from monomer_linear_rotor.io_netcdf import (
 def main():
 	# --- Parse user input from CLI ---
 	args = parse_arguments()
-	B_const_cm_inv = args.B_const
-	potential_strength_cm_inv = args.potential_strength	
 
 	# --- Dry run: show configuration and exit ---
 	if args.dry_run:
 		show_dry_run_summary(args)
-		return
+		sys.exit(0)
+
+	# Execution of main simulation logic goes here (to be implemented)
+	B_const_cm_inv = args.B_const
+	potential_strength_cm_inv = args.potential_strength	
 
 	# --- Construct output directory structure ---
 	os.makedirs(args.output_dir, exist_ok=True)

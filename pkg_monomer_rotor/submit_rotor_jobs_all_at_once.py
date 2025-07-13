@@ -1,7 +1,9 @@
 import argparse
 import sys
 import os
+from pathlib import Path
 import subprocess
+from typing import List
 import csv
 import logging
 from itertools import product
@@ -10,72 +12,65 @@ import shutil
 from pkg_utils.utils import whoami
 from pkg_utils.env_report import whom
 
-
 electric_field_kVcm_list = [0.1] + list(range(20, 21, 20))
 potential_strength_list = [0.1, 0.5]
 max_angular_momentum_list = list(range(10, 11, 5))
 script_name = "monomer_rotor_real_basis_diagonalization.py"
 
-# Allowed spin types
-allowed_spin_types = ["spinless", "ortho", "para"]
-
-# Molecular constants database (extend as needed)
+# Example molecule data and allowed spin types (define as per your project)
 MOLECULE_DATA = {
-	"HF":  {"dipole_moment": 1.83, "B_const": 20.559},
-	"HCl": {"dipole_moment": 1.03, "B_const": 10.44},
-	"HBr": {"dipole_moment": 0.78, "B_const": 8.467},
-	"HI":  {"dipole_moment": 0.38, "B_const": 6.51},
-	"CO":  {"dipole_moment": 0.112, "B_const": 1.9225},
-}
-
-import argparse
-import sys
-
-# Allowed spin types
-allowed_spin_types = ["spinless", "ortho", "para"]
-
-# Molecular database (dipole moments only)
-MOLECULE_DATA = {
-	"HF":  {"dipole_moment": 1.83},
+	"HF": {"dipole_moment": 1.83},
 	"HCl": {"dipole_moment": 1.03},
 	"HBr": {"dipole_moment": 0.78},
-	"HI":  {"dipole_moment": 0.38},
-	"CO":  {"dipole_moment": 0.112},
 }
+allowed_spin_types = ["spinless", "ortho", "para"]
 
 def parse_arguments():
 	parser = argparse.ArgumentParser(
-		description="Submit all rotor jobs at once in background.",
-		epilog="Example: python submit_rotor_jobs_all_at_once.py --molecule HF --spin-type ortho"
+		description="Submit rotor simulations for different field strengths and angular cutoffs.",
+		epilog="Example: python submit_rotor_jobs_all_at_once.py ortho --molecule HF --dry-run",
 	)
 
-	parser.add_argument("--molecule", type=str,
-						help="Molecule name (e.g., 'HF', 'HCl') to auto-fill dipole moment (μ in Debye).")
+	parser.add_argument(
+		"spin_type",
+		type=str,
+		choices=allowed_spin_types,
+		help="Spin isomer type: 'spinless', 'ortho', or 'para'."
+	)
 
-	parser.add_argument("--dipole-moment", type=float, default=None,
-						help="Dipole moment μ (in Debye). Overrides value from --molecule if given.")
+	parser.add_argument(
+		"--molecule", type=str,
+		help="Molecule name (e.g., HF, HCl) to auto-fill dipole moment (μ in Debye)."
+	)
 
-	parser.add_argument("--spin-type", default="spinless", choices=allowed_spin_types,
-						help="Spin isomer type: spinless, ortho, or para (default: spinless).")
+	parser.add_argument(
+		"--dipole-moment", type=float, default=None,
+		help="Dipole moment in Debye (overrides value from molecule if given)."
+	)
 
-	parser.add_argument("--dry-run", action="store_true",
-						help="Print job commands without executing them.")
+	parser.add_argument(
+		"--electric-fields", type=float, nargs='+', default=[100.0],
+		help="List of electric field strengths in kV/cm (default: [100.0])."
+	)
+
+	parser.add_argument(
+		"--dry-run", action="store_true",
+		help="Print commands without executing them."
+	)
 
 	args = parser.parse_args()
 
-	# --- Molecule-based dipole moment setup ---
+	# Auto-fill dipole moment if molecule is given and dipole not explicitly set
 	if args.molecule:
 		mol = args.molecule.strip().upper()
 		if mol not in MOLECULE_DATA:
-			print(f"[ERROR] Molecule '{mol}' not found in database. Available: {', '.join(MOLECULE_DATA.keys())}")
+			print(f"[ERROR] Unknown molecule '{mol}'. Choose from: {', '.join(MOLECULE_DATA.keys())}")
 			sys.exit(1)
-
-		# Set dipole moment only if not manually provided
 		if args.dipole_moment is None:
 			args.dipole_moment = MOLECULE_DATA[mol]["dipole_moment"]
 
 	if args.dipole_moment is None:
-		print("[ERROR] Provide either --molecule or --dipole-moment.")
+		print("[ERROR] Must provide either --molecule or --dipole-moment.")
 		sys.exit(1)
 
 	return args
@@ -172,11 +167,122 @@ def write_summary_csv(rows, csv_path):
 		writer.writeheader()
 		writer.writerows(rows)
 
+def build_and_run_command(
+	jmax: int,
+	electric_field: float,
+	use_dipole: bool,
+	dipole_moment: float,
+	output_dir: str,
+	spin_type: str,
+	script_name: str = "monomer_rotor_real_basis_diagonalization.py",
+	dry_run: bool = False,
+	execute: bool = False
+) -> List[str]:
+	"""
+	Build and optionally execute a rotor diagonalization command.
+
+	Parameters:
+		jmax (int): Maximum angular momentum quantum number (ℓ_max).
+		electric_field (float): Electric field strength in kV/cm (if use_dipole=True)
+								or potential strength V(θ) in cm⁻¹ (if use_dipole=False).
+		use_dipole (bool): If True, uses dipole moment and electric field to compute potential.
+						   If False, uses --potential-strength directly.
+		dipole_moment (float): Dipole moment μ in Debye.
+		output_dir (str): Directory to store simulation output.
+		spin_type (str): Spin isomer type: 'spinless', 'ortho', or 'para'.
+		script_name (str): Name of the rotor simulation script.
+		dry_run (bool): If True, only print the command (do not execute).
+		execute (bool): If True, execute the command using subprocess.
+
+	Returns:
+		List[str]: The constructed command-line argument list.
+	"""
+	# Ensure the output directory exists
+	Path(output_dir).mkdir(parents=True, exist_ok=True)
+
+	# Base command structure
+	cmd = [
+		"python3", script_name,
+		str(jmax),
+		spin_type,
+		"--output-dir", output_dir
+	]
+
+	# Include dipole + field or direct potential strength
+	if use_dipole:
+		cmd += [
+			"--dipole-moment", str(dipole_moment),
+			"--electric-field", str(electric_field)
+		]
+	else:
+		cmd += [
+			"--potential-strength", str(electric_field)
+		]
+
+	# Print command in dry-run mode
+	if dry_run:
+		print(f"[DRY RUN] Command preview:")
+		print("  " + " ".join(cmd))
+		print("-" * 80)
+
+	# Execute the command if requested
+	if execute:
+		try:
+			subprocess.run(cmd, check=True)
+		except subprocess.CalledProcessError as e:
+			print(f"[ERROR] Command failed with exit code {e.returncode}: {e.cmd}")
+
+	return cmd
+
+def build_job_command(jmax, args):
+	"""
+	Construct the command to run the rotor diagonalization script.
+	"""
+	output_subdir = f"output_{args.molecule.lower()}_{args.spin_type}_j{jmax}"
+	cmd = [
+		"python3", "main.py",
+		str(jmax),
+		args.spin_type,
+		"--dipole-moment", str(args.dipole_moment),
+		"--electric-field", "100",
+		"--output-dir", output_subdir
+	]
+	return cmd, output_subdir
+
+
 def main():
 
 	args = parse_arguments()
-	print("Dipole Moment:", args.dipole_moment)
-	print("Spin Type:", args.spin_type)
+
+	# --- Sweep Configuration ---
+	jmax_values = [6, 8, 10, 12]
+	electric_field_values = [10, 50, 100, 150, 200]   # in kV/cm
+	use_dipole = True								 # False if using --potential-strength instead
+	molecule_tag = args.molecule if args.molecule else "custom"
+
+	# --- Execution Banner ---
+	mode = "DRY RUN" if args.dry_run else "EXECUTION"
+	print(f"[{mode}] Submitting jobs for: molecule={molecule_tag}, spin={args.spin_type}")
+	print("=" * 80)
+
+	for jmax in jmax_values:
+		for efield in electric_field_values:
+			output_dir = f"output_{molecule_tag}_{args.spin_type}_j{jmax}_E{int(efield)}"
+
+			build_and_run_command(
+				jmax=jmax,
+				electric_field=efield,
+				use_dipole=use_dipole,
+				dipole_moment=args.dipole_moment,
+				output_dir=output_dir,
+				spin_type=args.spin_type,
+				dry_run=args.dry_run,
+				execute=not args.dry_run
+			)
+
+	print("=" * 80)
+	print("Job submission completed.")
+
 	whoami()
 
 	output_dir = f"output_{args.spin_type}_{args.molecule}_monomer_in_field"
