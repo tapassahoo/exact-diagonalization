@@ -9,6 +9,7 @@ import logging
 from itertools import product
 from datetime import datetime
 import shutil
+import stat
 from pkg_utils.utils import whoami
 from pkg_utils.env_report import whom
 
@@ -434,6 +435,7 @@ def main():
 			print(f"  > Stdout  : {stdout_path}")
 			print(f"  > Stderr  : {stderr_path}\n\n")
 
+			"""
 			# Write shell script
 			with open(os.path.join(job_dir, f"{tag}_run_command.sh"), "w") as f:
 				f.write("#!/bin/bash\n" + cmd_str + "\n")
@@ -441,6 +443,21 @@ def main():
 			# Launch process
 			with open(stdout_path, "w") as out_f, open(stderr_path, "w") as err_f:
 				subprocess.Popen(cmd, stdout=out_f, stderr=err_f)
+			"""
+
+			# --- Create shell script ---
+			run_script_path = os.path.join(job_dir, f"{tag}_run_command.sh")
+			with open(run_script_path, "w") as f:
+				f.write("#!/bin/bash\n")
+				f.write(cmd_str + "\n")
+
+			# --- Make the script executable ---
+			st = os.stat(run_script_path)
+			os.chmod(run_script_path, st.st_mode | stat.S_IEXEC)
+
+			# --- Launch the shell script ---
+			with open(stdout_path, "w") as out_f, open(stderr_path, "w") as err_f:
+				subprocess.Popen(["bash", run_script_path], stdout=out_f, stderr=err_f)
 
 			status = "SUBMITTED"
 
