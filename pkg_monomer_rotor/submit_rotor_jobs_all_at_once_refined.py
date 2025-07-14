@@ -125,6 +125,7 @@ def preview_job_settings(molecule, spin_type, dipole_moment, param_combinations,
 	logging.info(f"{'Base Output Dir':24}: {output_dir}")
 	logging.info(f"{'Summary CSV Path':24}: {csv_path}")
 	logging.info("=" * 50)
+	print()
 
 
 def write_summary_csv(rows, csv_path):
@@ -273,32 +274,44 @@ def submit_single_job(jmax, secondary_param, args, use_dipole, output_root_dir, 
 	log_and_append_summary(summary_rows, job_status, tag, jmax, args, info_str)
 
 
-def check_job_status(tag, job_dir, jmax, spin_type, info_str, summary_rows):
+def check_job_status(tag, job_dir, jmax, spin_type, info_str, summary_rows, mark_submitted=False):
+	"""
+	Checks the status of a job by inspecting status.txt, stdout, and stderr.
+	If mark_submitted=True, writes status.txt = SUBMITTED if job is being launched.
+	Returns True if job should be skipped, False otherwise.
+	"""
 	stdout_path = os.path.join(job_dir, f"{tag}.stdout")
 	stderr_path = os.path.join(job_dir, f"{tag}.stderr")
 	status_file = os.path.join(job_dir, "status.txt")
 
-	# Check completion from stdout
-	job_completed = (
-		os.path.exists(stdout_path)
-		and "HURRAY ALL COMPUTATIONS COMPLETED DATA SUCCESSFULLY WRITTEN TO NETCDF FILES"
-		in open(stdout_path).read()
-	)
+	# --- Check if job already completed based on stdout content ---
+	job_completed = False
+	if os.path.exists(stdout_path):
+		with open(stdout_path, "r") as f:
+			if "HURRAY ALL COMPUTATIONS COMPLETED DATA SUCCESSFULLY WRITTEN TO NETCDF FILES" in f.read():
+				job_completed = True
 
-	# Check for explicit status
+	# --- Read current status if available ---
 	current_status = None
 	if os.path.exists(status_file):
-		with open(status_file) as f:
+		with open(status_file, "r") as f:
 			current_status = f.read().strip().upper()
 
-	# Check known errors in stderr
-	job_failed = (
-		os.path.exists(stderr_path)
-		and any(err in open(stderr_path).read().lower()
-				for err in ["error", "traceback", "segmentation fault"])
-	)
+		# Remove PENDING status if nothing has started
+		if current_status == "PENDING" and not os.path.exists(stdout_path):
+			logging.warning(f"Removing stale status file for '{tag}' (PENDING but no stdout)")
+			os.remove(status_file)
+			current_status = None
 
-	# Determine status
+	# --- Detect known runtime failures from stderr ---
+	job_failed = False
+	if os.path.exists(stderr_path):
+		with open(stderr_path, "r") as f:
+			err_content = f.read().lower()
+			if any(k in err_content for k in ["error", "traceback", "segmentation fault"]):
+				job_failed = True
+
+	# --- Determine final status ---
 	if job_completed or current_status == "COMPLETED":
 		final_status = "COMPLETED"
 	elif current_status == "RUNNING":
@@ -307,10 +320,15 @@ def check_job_status(tag, job_dir, jmax, spin_type, info_str, summary_rows):
 		final_status = "FAILED"
 	else:
 		final_status = "PENDING"
+		if mark_submitted:
+			with open(status_file, "w") as f:
+				f.write("SUBMITTED")
+			final_status = "SUBMITTED"
+			#logging.info(f"[Submitted] Job status marked SUBMITTED for: {tag}")
 
-	#print(f"[Status] {tag}: {final_status}")
-	logging.info(f"Status of job '{tag}' = {final_status}")
+	logging.info(f"[Status] {tag}: {final_status}")
 
+	# Append status to summary table
 	summary_rows.append({
 		"Job Name": tag,
 		"Max Angular Momentum": jmax,
@@ -335,8 +353,7 @@ def main():
 
 	# Execution banner
 	mode = "DRY RUN" if args.dry_run else "EXECUTION"
-	print(f"[{mode}] Submitting jobs for: molecule = {molecule_tag}, spin = {args.spin_type}")
-	print("=" * 80)
+	print(f"[{mode}] Submitting jobs for: molecule = {molecule_tag}, spin = {args.spin_type}\n")
 
 	# Output setup
 	output_root_dir = "output"
@@ -395,15 +412,15 @@ def main():
 		os.makedirs(job_dir, exist_ok=True)
 		shutil.copy2(script_name, os.path.join(job_dir, script_basename))
 
-		# Check existing job status
-		if check_job_status(tag, job_dir, jmax, args.spin_type, info_str, summary_rows):
+		skip = check_job_status(tag, job_dir, jmax, args.spin_type, info_str, summary_rows, mark_submitted=not args.dry_run)
+
+		if skip:
 			continue
 
 		# Prepare I/O paths
 		stdout_path = os.path.join(job_dir, f"{tag}.stdout")
 		stderr_path = os.path.join(job_dir, f"{tag}.stderr")
 		cmd_str = " ".join(cmd)
-
 
 		if args.dry_run:
 			print(f"\n[DRY RUN ] Job Name: {tag}")
@@ -415,7 +432,7 @@ def main():
 			print(f"\n[Launching] Job: {tag}")
 			print(f"  > Command : {cmd_str}")
 			print(f"  > Stdout  : {stdout_path}")
-			print(f"  > Stderr  : {stderr_path}")
+			print(f"  > Stderr  : {stderr_path}\n\n")
 
 			# Write shell script
 			with open(os.path.join(job_dir, f"{tag}_run_command.sh"), "w") as f:
@@ -438,6 +455,7 @@ def main():
 
 	# Final summary
 	write_summary_csv(summary_rows, csv_path)
+	print()
 	logging.info("[INFO] All jobs processed. Summary written to CSV.")
 
 	print("==========================================")
