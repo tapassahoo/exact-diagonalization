@@ -84,7 +84,7 @@ def main():
 	# Use the molecule and spin arguments as-is, preserving original casing
 	molecule_name = args.molecule if args.molecule else "Unknown"
 	spin_label = args.spin if args.spin else "spinless"
-	subdir_name = f"{molecule_name}-{spin_label}"
+	subdir_name = f"{args.spin}_{args.molecule}_jmax_{args.max_angular_momentum_quantum_number}_field_{args.electric_field:.2f}kV_per_cm"
 
 	# Final output path
 	output_root_dir = os.path.join(args.output_dir, subdir_name)

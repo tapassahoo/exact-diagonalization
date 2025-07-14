@@ -90,17 +90,20 @@ def parse_arguments():
 
 	return args
 
-
 def setup_logging(log_file):
 	os.makedirs(os.path.dirname(log_file), exist_ok=True)
 	logging.basicConfig(
 		level=logging.INFO,
 		format="%(asctime)s - %(levelname)s - %(message)s",
-		handlers=[
-			logging.FileHandler(log_file, mode='w'),
-			logging.StreamHandler()
-		]
+		filename=log_file,
+		filemode='w'
 	)
+	# Also print to console
+	console = logging.StreamHandler()
+	console.setLevel(logging.INFO)
+	formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+	console.setFormatter(formatter)
+	logging.getLogger().addHandler(console)
 
 def get_parameter_combinations(jmax_values, dipole_moment, electric_field_values, potential_strength_values):
 	use_dipole_field = dipole_moment is not None and electric_field_values
@@ -109,72 +112,20 @@ def get_parameter_combinations(jmax_values, dipole_moment, electric_field_values
 	else:
 		return list(product(jmax_values, potential_strength_values)), False
 
-def preview_job_settings(molecule, spin_type, dipole, param_combinations, output_dir, csv_path, script_name):
-	logging.info("==========================================")
-	logging.info(f"Launching {molecule} rotor job submissions")
-	logging.info("==========================================")
-	logging.info(f"Molecule              : {molecule}")
-	logging.info(f"Spin type             : {spin_type}")
-	logging.info(f"Dipole moment (D)     : {dipole}")
-	logging.info(f"Script to execute     : {os.path.join(output_dir, script_name)}")
-	logging.info(f"Total job combinations: {len(param_combinations)}")
-	logging.info(f"Base output directory : {output_dir}")
-	logging.info(f"Summary CSV will be at: {csv_path}")
-	logging.info("------------------------------------------")
 
-def build_command(jmax, value, use_dipole, dipole, output_dir, spin_type):
-	args = [
-		"python", script_name,
-		str(jmax), spin_type,
-		"--output-dir", output_dir
-	]
-	if use_dipole:
-		args += ["--dipole-moment", str(dipole), "--electric-field", str(value)]
-	else:
-		args += ["--potential-strength", str(value)]
-	return args
+def preview_job_settings(molecule, spin_type, dipole_moment, param_combinations, output_dir, csv_path, script_name):
+	logging.info("=" * 50)
+	logging.info(f"Launching job submissions for: {molecule}")
+	logging.info("=" * 50)
+	logging.info(f"{'Molecule':24}: {molecule}")
+	logging.info(f"{'Spin Type':24}: {spin_type}")
+	logging.info(f"{'Dipole Moment (D)':24}: {dipole_moment}")
+	logging.info(f"{'Execution Script':24}: {script_name}")
+	logging.info(f"{'Job Combinations':24}: {len(param_combinations)}")
+	logging.info(f"{'Base Output Dir':24}: {output_dir}")
+	logging.info(f"{'Summary CSV Path':24}: {csv_path}")
+	logging.info("=" * 50)
 
-def check_job_status(tag, job_dir, jmax, spin_type, info_str, summary_rows):
-	stdout_path = os.path.join(job_dir, f"{tag}.stdout")
-	status_file = os.path.join(job_dir, "status.txt")
-
-	job_completed = False
-	if os.path.exists(stdout_path):
-		with open(stdout_path, "r") as f:
-			contents = f.read()
-			if "HURRAY ALL COMPUTATIONS COMPLETED DATA SUCCESSFULLY WRITTEN TO NETCDF FILES" in contents:
-				job_completed = True
-
-	current_status = None
-	if os.path.exists(status_file):
-		with open(status_file) as f:
-			current_status = f.read().strip().upper()
-
-	if job_completed or current_status == "COMPLETED":
-		print(f"[Skipping ] {tag}: status = COMPLETED")
-		summary_rows.append({
-			"Job Name": tag,
-			"Max Angular Momentum": jmax,
-			"Spin Type": spin_type,
-			"Field/Interaction": info_str,
-			"Status": "COMPLETED",
-			"PID": "-"
-		})
-		return True
-
-	if current_status == "RUNNING":
-		print(f"[Skipping ] {tag}: status = RUNNING")
-		summary_rows.append({
-			"Job Name": tag,
-			"Max Angular Momentum": jmax,
-			"Spin Type": spin_type,
-			"Field/Interaction": info_str,
-			"Status": "RUNNING",
-			"PID": "-"
-		})
-		return True
-
-	return False
 
 def write_summary_csv(rows, csv_path):
 	fieldnames = ["Job Name", "Max Angular Momentum", "Spin Type", "Field/Interaction", "Status", "PID"]
@@ -183,225 +134,133 @@ def write_summary_csv(rows, csv_path):
 		writer.writeheader()
 		writer.writerows(rows)
 
-if False:
-	def build_and_run_command(
-		jmax: int,
-		electric_field: float,
-		use_dipole: bool,
-		dipole_moment: float,
-		output_dir: str,
-		spin_type: str,
-		script_name: str = "main.py",
-		dry_run: bool = False,
-		execute: bool = False
-	) -> List[str]:
-		"""
-		Build and optionally execute a rotor diagonalization command.
-
-		Parameters:
-			jmax (int): Maximum angular momentum quantum number (ℓ_max).
-			electric_field (float): Electric field strength in kV/cm (if use_dipole=True)
-									or potential strength V(θ) in cm⁻¹ (if use_dipole=False).
-			use_dipole (bool): If True, uses dipole moment and electric field to compute potential.
-							   If False, uses --potential-strength directly.
-			dipole_moment (float): Dipole moment μ in Debye.
-			output_dir (str): Directory to store simulation output.
-			spin_type (str): Spin isomer type: 'spinless', 'ortho', or 'para'.
-			script_name (str): Name of the rotor simulation script.
-			dry_run (bool): If True, only print the command (do not execute).
-			execute (bool): If True, execute the command using subprocess.
-
-		Returns:
-			List[str]: The constructed command-line argument list.
-		"""
-		# Ensure the output directory exists
-		Path(output_dir).mkdir(parents=True, exist_ok=True)
-
-		# Base command structure
-		cmd = [
-			"python3", script_name,
-			str(jmax),
-			spin_type,
-			"--output-dir", output_dir
-		]
-
-		# Include dipole + field or direct potential strength
-		if use_dipole:
-			cmd += [
-				"--dipole-moment", str(dipole_moment),
-				"--electric-field", str(electric_field)
-			]
-		else:
-			cmd += [
-				"--potential-strength", str(electric_field)
-			]
-
-		# Print command in dry-run mode
-		if dry_run:
-			print(f"[DRY RUN] Command preview:")
-			print("  " + " ".join(cmd))
-			print("-" * 80)
-
-		# Execute the command if requested
-		if execute:
-			try:
-				subprocess.run(cmd, check=True)
-			except subprocess.CalledProcessError as e:
-				print(f"[ERROR] Command failed with exit code {e.returncode}: {e.cmd}")
-
-		return cmd
-
-def build_job_command(jmax, spin_type, molecule, efield):
+def build_job_command(
+	jmax,
+	spin_type,
+	molecule,
+	electric_field=None,
+	potential_strength=None,
+	dipole_moment=None,
+	dry_run=False,
+	output_dir=None
+):
 	"""
-	Construct the command to run the rotor diagonalization script.
+	Build the command to execute the rotor diagonalization script.
+
+	Parameters:
+		jmax (int): Maximum angular momentum quantum number.
+		spin_type (str): Spin type (e.g., 'singlet', 'triplet').
+		molecule (str): Molecule name or tag.
+		electric_field (float, optional): Field strength in kV/cm.
+		potential_strength (float, optional): Interaction potential in cm⁻¹.
+		dipole_moment (float, optional): Dipole moment in Debye.
+		dry_run (bool): If True, appends the --dry-run flag.
+		output_dir (str, optional): Path to output directory.
+
+	Returns:
+		list[str]: Command list to be passed to subprocess.
 	"""
 	cmd = [
 		"python3", "main.py",
 		str(jmax),
-		spin_type,
-		"--molecule", molecule,
-		"--electric-field", efield
+		str(spin_type),
+		"--molecule", str(molecule)
 	]
+
+	if electric_field is not None:
+		cmd += ["--electric-field", str(electric_field)]
+
+	if potential_strength is not None:
+		cmd += ["--potential-strength", str(potential_strength)]
+
+	if dipole_moment is not None:
+		cmd += ["--dipole-moment", str(dipole_moment)]
+
+	if dry_run:
+		cmd.append("--dry-run")
+
+	if output_dir is not None:
+		cmd += ["--output-dir", str(output_dir)]
+
 	return cmd
 
+def construct_job_tag(jmax, secondary_param, args, use_dipole):
+	if use_dipole:
+		return f"{args.spin_type}_{args.molecule}_jmax_{jmax}_field_{secondary_param:.2f}kV_per_cm"
+	else:
+		return f"{args.molecule}_Vfield_{secondary_param:.2f}cm1_Jmax_{jmax}_{args.spin_type}".replace(".", "_")
 
-def main():
+def construct_command(jmax, secondary_param, args, use_dipole, output_dir, script_path):
+	if use_dipole:
+		return [
+			"python3", script_path,
+			str(jmax),
+			args.spin_type,
+			"--electric-field", str(secondary_param),
+			"--output-dir", output_dir
+		]
+	else:
+		return [
+			"python3", script_path,
+			str(secondary_param),
+			str(jmax),
+			args.spin_type,
+			"--output-dir", output_dir
+		]
 
-	args = parse_arguments()
+def prepare_job_directory(output_root_dir, tag, script_basename, script_source_path):
+	output_dir = os.path.join(output_root_dir, tag)
+	os.makedirs(output_dir, exist_ok=True)
+	dest_script_path = os.path.join(output_dir, script_basename)
+	shutil.copy2(script_source_path, dest_script_path)
+	return output_dir, dest_script_path
 
-	# --- Sweep Configuration ---
-	script_name = "main.py"
-	potential_strength_values = [0.1, 0.5]
-	jmax_values =list(range(10, 11, 5)) 
-	electric_field_values = [0.1] + list(range(20, 21, 20))# [10, 50, 100, 150, 200]   # in kV/cm
-	use_dipole = True								 # False if using --potential-strength instead
-	molecule_tag = args.molecule if args.molecule else "custom"
+def log_and_append_summary(summary_rows, job_status, tag, jmax, args, info_str):
+	summary_rows.append({
+		"Job Name": tag,
+		"Max Angular Momentum": jmax,
+		"Spin Type": args.spin_type,
+		"Field/Interaction": info_str,
+		"Status": job_status,
+		"PID": "-"
+	})
 
-	# --- Execution Banner ---
-	mode = "DRY RUN" if args.dry_run else "EXECUTION"
-	print(f"[{mode}] Submitting jobs for: molecule={molecule_tag}, spin={args.spin_type}")
-	print("=" * 80)
+def submit_single_job(jmax, secondary_param, args, use_dipole, output_root_dir, script_basename, script_source_path, summary_rows):
+	tag = construct_job_tag(jmax, secondary_param, args, use_dipole)
+	info_str = (
+		f"Dipole moment = {args.dipole_moment} D, E = {secondary_param} kV/cm"
+		if use_dipole else
+		f"V = {secondary_param} cm⁻¹"
+	)
 
-	# --- Construct output directory structure ---
-	os.makedirs("output", exist_ok=True)
-	# Copy script to job_dir
-	script_basename = os.path.basename(script_name)
+	output_dir, script_path = prepare_job_directory(output_root_dir, tag, script_basename, script_source_path)
 
-	for jmax in jmax_values:
-		for efield in electric_field_values:
+	stdout_path = os.path.join(output_dir, f"{tag}.stdout")
+	stderr_path = os.path.join(output_dir, f"{tag}.stderr")
+	status_file = os.path.join(output_dir, "status.txt")
 
-			# Use the molecule and spin arguments as-is, preserving original casing
-			subdir_name = f"{args.spin_type}_{args.molecule}_jmax{jmax}_efield{efield}kV_per_cm"
+	status = determine_job_status(stdout_path, status_file)
+	if status in ["COMPLETED", "RUNNING"]:
+		print(f"[Skipping ] {tag}: status = {status}")
+		log_and_append_summary(summary_rows, status, tag, jmax, args, info_str)
+		return
 
-			# Final output path
-			output_root_dir = os.path.join("output", subdir_name)
-			os.makedirs(output_root_dir, exist_ok=True)
-			script_dest_path = os.path.join(output_root_dir, script_basename)
-			shutil.copy2(script_name, script_dest_path)
-			script_path_in_job_dir = os.path.join(output_root_dir, script_basename)
+	cmd = construct_command(jmax, secondary_param, args, use_dipole, output_dir, script_path)
+	cmd_str = " ".join(cmd)
 
+	if args.dry_run:
+		print(f"\n[DRY RUN ] Job Name   : {tag}")
+		print(f"			Command   : {cmd_str}")
+		print(f"			Stdout	: {stdout_path}")
+		print(f"			Stderr	: {stderr_path}")
+		job_status = "DRY-RUN"
+	else:
+		print(f"\n[Launching] Job: {tag}")
+		print(f"  > Command   : {cmd_str}")
+		print(f"  > Stdout	: {stdout_path}")
+		print(f"  > Stderr	: {stderr_path}")
 
-			"""
-			build_and_run_command(
-				jmax=jmax,
-				electric_field=efield,
-				use_dipole=use_dipole,
-				dipole_moment=args.dipole_moment,
-				output_dir=output_root_dir,
-				spin_type=args.spin_type,
-				script_name = "main.py",
-				dry_run=args.dry_run,
-				execute=not args.dry_run
-			)
-			"""
-
-			cmd=build_job_command(jmax, args.spin_type, args.molecule, efield)
-			print(cmd)
-
-	print("=" * 80)
-	print("Job submission completed.")
-
-	csv_path = os.path.join(output_root_dir, "job_summary.csv")
-	log_file = os.path.join(output_root_dir, "job_submission.log")
-
-	setup_logging(log_file)
-
-	param_combinations, use_dipole = get_parameter_combinations(jmax_values, args.dipole_moment, electric_field_values, potential_strength_values)
-	preview_job_settings(args.molecule, args.spin_type, args.dipole_moment, param_combinations, output_dir, csv_path, script_name)
-	whoami()
-
-	summary_rows = []
-
-	for jmax, secondary_param in param_combinations:
-		if use_dipole:
-			E = secondary_param
-			tag = f"{args.spin_type}_{args.molecule}_lmax_{jmax}_dipole_{args.dipole:.2f}D_E_{E:.2f}kVcm".replace(".", "_")
-			cmd = [
-				"python3", script_path_in_job_dir,
-				str(jmax),
-				args.spin_type,
-				"--dipole-moment", str(args.dipole),
-				"--electric-field", str(E),
-				"--output-dir", os.path.join(output_dir, tag)
-			]
-			info_str = f"Dipole moment = {args.dipole} D, E = {E} kV/cm"
-		else:
-			V = secondary_param
-			tag = f"{args.molecule}_Vfield_{V:.2f}cm1_Jmax_{jmax}_{args.spin_type}".replace(".", "_")
-			cmd = [
-				"python3", script_path_in_job_dir,
-				str(V),
-				str(jmax),
-				args.spin_type,
-				"--output-dir", os.path.join(output_dir, tag)
-			]
-			info_str = f"V = {V} cm⁻¹"
-
-		job_dir = os.path.join(output_dir, tag)
-		os.makedirs(job_dir, exist_ok=True)
-
-		status = determine_job_status(stdout_path, status_file)
-		if status in ["COMPLETED", "RUNNING"]:
-			print(f"[Skipping ] {tag}: status = {status}")
-			summary_rows.append({
-				"Job Name": tag,
-				"Max Angular Momentum": jmax,
-				"Spin Type": args.spin_type,
-				"Field/Interaction": info_str,
-				"Status": status,
-				"PID": "-"
-			})
-			continue
-			continue
-
-		stdout_path = os.path.join(job_dir, f"{tag}.stdout")
-		stderr_path = os.path.join(job_dir, f"{tag}.stderr")
-
-		cmd_str = " ".join(cmd)
-
-		if args.dry_run:
-			print(f"\n\n[DRY RUN ] Job Name	   : {tag}")
-			print(f"			Command	   : {cmd_str}")
-			print(f"			Stdout Path   : {stdout_path}")
-			print(f"			Stderr Path   : {stderr_path}")
-
-			summary_rows.append({
-				"Job Name": tag,
-				"Max Angular Momentum": jmax,
-				"Spin Type": args.spin_type,
-				"Field/Interaction": info_str,
-				"Status": "DRY-RUN",
-				"PID": "-"
-			})
-			continue
-
-
-		print(f"\n\n[Launching] Job: {tag}")
-		print(f"  > Command	  : {cmd_str}")
-		print(f"  > Stdout path  : {stdout_path}")
-		print(f"  > Stderr path  : {stderr_path}")
-
-		run_script_path = os.path.join(job_dir, f"{tag}_run_command.sh")
+		run_script_path = os.path.join(output_dir, f"{tag}_run_command.sh")
 		with open(run_script_path, "w") as f:
 			f.write("#!/bin/bash\n")
 			f.write(cmd_str + "\n")
@@ -409,23 +268,187 @@ def main():
 		with open(stdout_path, "w") as stdout_file, open(stderr_path, "w") as stderr_file:
 			subprocess.Popen(cmd, stdout=stdout_file, stderr=stderr_file)
 
+		job_status = "SUBMITTED"
+
+	log_and_append_summary(summary_rows, job_status, tag, jmax, args, info_str)
+
+
+def check_job_status(tag, job_dir, jmax, spin_type, info_str, summary_rows):
+	stdout_path = os.path.join(job_dir, f"{tag}.stdout")
+	stderr_path = os.path.join(job_dir, f"{tag}.stderr")
+	status_file = os.path.join(job_dir, "status.txt")
+
+	# Check completion from stdout
+	job_completed = (
+		os.path.exists(stdout_path)
+		and "HURRAY ALL COMPUTATIONS COMPLETED DATA SUCCESSFULLY WRITTEN TO NETCDF FILES"
+		in open(stdout_path).read()
+	)
+
+	# Check for explicit status
+	current_status = None
+	if os.path.exists(status_file):
+		with open(status_file) as f:
+			current_status = f.read().strip().upper()
+
+	# Check known errors in stderr
+	job_failed = (
+		os.path.exists(stderr_path)
+		and any(err in open(stderr_path).read().lower()
+				for err in ["error", "traceback", "segmentation fault"])
+	)
+
+	# Determine status
+	if job_completed or current_status == "COMPLETED":
+		final_status = "COMPLETED"
+	elif current_status == "RUNNING":
+		final_status = "RUNNING"
+	elif job_failed:
+		final_status = "FAILED"
+	else:
+		final_status = "PENDING"
+
+	#print(f"[Status] {tag}: {final_status}")
+	logging.info(f"Status of job '{tag}' = {final_status}")
+
+	summary_rows.append({
+		"Job Name": tag,
+		"Max Angular Momentum": jmax,
+		"Spin Type": spin_type,
+		"Field/Interaction": info_str,
+		"Status": final_status,
+		"PID": "-"
+	})
+
+	return final_status in {"COMPLETED", "RUNNING"}
+
+def main():
+	args = parse_arguments()
+
+	# Configuration
+	script_name = "main.py"
+	jmax_values = list(range(10, 11, 5))
+	electric_field_values = [0.1] + list(range(20, 21, 20))
+	potential_strength_values = [0.1, 0.5]
+	use_dipole = True
+	molecule_tag = args.molecule or "custom"
+
+	# Execution banner
+	mode = "DRY RUN" if args.dry_run else "EXECUTION"
+	print(f"[{mode}] Submitting jobs for: molecule = {molecule_tag}, spin = {args.spin_type}")
+	print("=" * 80)
+
+	# Output setup
+	output_root_dir = "output"
+	os.makedirs(output_root_dir, exist_ok=True)
+	script_basename = os.path.basename(script_name)
+
+	csv_path = os.path.join(output_root_dir, f"job_summary_{args.spin_type}_{args.molecule}.csv")
+	log_file = os.path.join(output_root_dir, f"job_submission_{args.spin_type}_{args.molecule}.log")
+	setup_logging(log_file)
+
+	# Generate parameter combinations
+	param_combinations, use_dipole = get_parameter_combinations(
+		jmax_values, args.dipole_moment, electric_field_values, potential_strength_values
+	)
+
+	preview_job_settings(
+		molecule=args.molecule,
+		spin_type=args.spin_type,
+		dipole_moment=args.dipole_moment,
+		param_combinations=param_combinations,
+		output_dir=output_root_dir,
+		csv_path=csv_path,
+		script_name=script_name
+	)
+
+	summary_rows = []
+
+	# Main loop over job combinations
+	for jmax, param in param_combinations:
+		if use_dipole:
+			E = param
+			tag = f"{args.spin_type}_{args.molecule}_jmax_{jmax}_field_{E:.2f}kV_per_cm"
+			info_str = f"Dipole moment = {args.dipole_moment} D, E = {E:.2f} kV/cm"
+			cmd = build_job_command(
+				jmax=jmax,
+				spin_type=args.spin_type,
+				molecule=args.molecule,
+				electric_field=E,
+				dry_run=args.dry_run,
+				#output_dir=os.path.join(output_root_dir, tag)
+			)
+		else:
+			V = param
+			tag = f"{args.molecule}_Vfield_{V:.2f}cm1_Jmax_{jmax}_{args.spin_type}".replace(".", "_")
+			info_str = f"V = {V:.2f} cm⁻¹"
+			cmd = build_job_command(
+				jmax=jmax,
+				spin_type=args.spin_type,
+				molecule=args.molecule,
+				potential_strength=V,
+				dry_run=args.dry_run,
+				#output_dir=os.path.join(output_root_dir, tag)
+			)
+
+		job_dir = os.path.join(output_root_dir, tag)
+		os.makedirs(job_dir, exist_ok=True)
+		shutil.copy2(script_name, os.path.join(job_dir, script_basename))
+
+		# Check existing job status
+		if check_job_status(tag, job_dir, jmax, args.spin_type, info_str, summary_rows):
+			continue
+
+		# Prepare I/O paths
+		stdout_path = os.path.join(job_dir, f"{tag}.stdout")
+		stderr_path = os.path.join(job_dir, f"{tag}.stderr")
+		cmd_str = " ".join(cmd)
+
+
+		if args.dry_run:
+			print(f"\n[DRY RUN ] Job Name: {tag}")
+			print(f"			Command: {cmd_str}")
+			print(f"			Stdout : {stdout_path}")
+			print(f"			Stderr : {stderr_path}")
+			status = "DRY-RUN"
+		else:
+			print(f"\n[Launching] Job: {tag}")
+			print(f"  > Command : {cmd_str}")
+			print(f"  > Stdout  : {stdout_path}")
+			print(f"  > Stderr  : {stderr_path}")
+
+			# Write shell script
+			with open(os.path.join(job_dir, f"{tag}_run_command.sh"), "w") as f:
+				f.write("#!/bin/bash\n" + cmd_str + "\n")
+
+			# Launch process
+			with open(stdout_path, "w") as out_f, open(stderr_path, "w") as err_f:
+				subprocess.Popen(cmd, stdout=out_f, stderr=err_f)
+
+			status = "SUBMITTED"
+
 		summary_rows.append({
 			"Job Name": tag,
 			"Max Angular Momentum": jmax,
 			"Spin Type": args.spin_type,
 			"Field/Interaction": info_str,
-			"Status": "SUBMITTED",
+			"Status": status,
 			"PID": "-"
 		})
 
+	# Final summary
 	write_summary_csv(summary_rows, csv_path)
-	logging.info("All jobs processed. Summary written to CSV.")
+	logging.info("[INFO] All jobs processed. Summary written to CSV.")
 
 	print("==========================================")
-	print("HURRAY ALL JOBS SUBMITTED SUCCESSFULLY")
-	print(f"Output directory: {output_dir}")
-	print(f"Summary CSV: {csv_path}")
+	print("HURRAY! ALL JOBS SUBMITTED SUCCESSFULLY")
+	print(f"[ ] Output directory : {output_root_dir}")
+	print(f"[ ] Summary CSV      : {csv_path}")
 	print("==========================================")
 
+# =============================
+# Place this at the very end
+# =============================
 if __name__ == "__main__":
 	main()
+
