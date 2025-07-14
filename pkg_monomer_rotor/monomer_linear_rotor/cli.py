@@ -15,7 +15,6 @@ MOLECULE_DATA = {
 	"HCl": {"dipole_moment": 1.03, "B_const": 10.44},
 	"HBr": {"dipole_moment": 0.78, "B_const": 8.467},
 	"HI":  {"dipole_moment": 0.38, "B_const": 6.51},
-	"CO":  {"dipole_moment": 0.112, "B_const": 1.9225},
 }
 
 def parse_arguments():
@@ -73,7 +72,7 @@ def parse_arguments():
 
 	# Normalize molecule name and fill dipole/B values
 	if args.molecule:
-		mol = args.molecule.strip().upper()
+		mol = args.molecule.strip()
 		if mol not in MOLECULE_DATA:
 			print(colored(f"[Error] Molecule '{mol}' is not recognized.", "red"))
 			sys.exit(1)

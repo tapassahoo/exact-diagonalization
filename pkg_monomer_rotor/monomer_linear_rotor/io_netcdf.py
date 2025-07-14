@@ -22,6 +22,7 @@ from monomer_linear_rotor.utils import (
 
 def save_all_quantum_data_to_netcdf(
 	file_name: str,
+	molecule_name: str,
 	max_angular_momentum_quantum_number: int,
 	spin_state: str,
 	B_const_cm_inv: float,
@@ -51,6 +52,7 @@ def save_all_quantum_data_to_netcdf(
 
 		# Scalar attributes with units and long names
 		global_attrs = {
+			"molecule_name": ("dimensionless", molecule_name, "Name of the linear rigid rotor"),
 			"max_angular_momentum_quantum_number": ("dimensionless", max_angular_momentum_quantum_number, "Maximum angular momentum quantum number"),
 			"spin_state": ("unitless (string)", spin_state, "Spin isomer type (spinless, ortho, para)"),
 			"B_const_cm_inv": ("cm^-1", B_const_cm_inv, "Rotational constant"),

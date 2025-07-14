@@ -175,6 +175,7 @@ def main():
 	# Prepare arguments
 	kwargs = {
 		"file_name": file_name_netcdf,
+		"molecule_name": molecule_name,
 		"max_angular_momentum_quantum_number": max_angular_momentum_quantum_number,
 		"spin_state": spin_state,
 		"B_const_cm_inv": B_const_cm_inv,

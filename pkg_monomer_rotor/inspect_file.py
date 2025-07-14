@@ -16,12 +16,14 @@ from pkg_utils.env_report import whom
 
 
 if __name__ == "__main__":
-	netcdf_path = "output/HF-spinless/data/quantum_data_HF_spinless_isomer_lmax_10_dipole_moment_1.83D_electric_field_200.00kVcm.nc"
+	netcdf_path = "output/spinless_HCl_jmax_10_field_200.00kV_per_cm/data/quantum_data_HCl_spinless_isomer_lmax_10_dipole_moment_1.83D_electric_field_200.00kVcm.nc"
+	netcdf_path = "output/spinless_HCl_jmax_20_field_100.00kV_per_cm/data/quantum_data_HCl_spinless_isomer_lmax_20_dipole_moment_1.03D_electric_field_100.00kVcm.nc"
+	netcdf_path = "output/spinless_HBr_jmax_20_field_100.00kV_per_cm/data/quantum_data_HBr_spinless_isomer_lmax_20_dipole_moment_0.78D_electric_field_100.00kVcm.nc"
 	read_all_attributes(netcdf_path)  # Default prints both global and variable-wise metadata
 	inspect_variable(netcdf_path, "eigenvalues", show_data=True, show_plot=False, slice_index=2)
 
-	jmax_list = [8, 10, 12]
-	file_template = "output/HF-spinless/data/quantum_data_HF_spinless_isomer_lmax_{jmax}_dipole_moment_1.83D_electric_field_200.00kVcm.nc"
+	jmax_list = list(range(10, 21, 2))
+	file_template = "output/spinless_HF_jmax_{jmax}_field_200.00kV_per_cm/data/quantum_data_HF_spinless_isomer_lmax_{jmax}_dipole_moment_1.83D_electric_field_200.00kVcm.nc"
 
 	# To plot and annotate multiple levels:
 	plot_eigenvalue_convergence(jmax_list, file_template, num_levels_to_show=8)

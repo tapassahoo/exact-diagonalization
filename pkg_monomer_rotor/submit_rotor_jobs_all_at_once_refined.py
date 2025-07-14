@@ -18,6 +18,7 @@ MOLECULE_DATA = {
 	"HF": {"dipole_moment": 1.83},
 	"HCl": {"dipole_moment": 1.03},
 	"HBr": {"dipole_moment": 0.78},
+	"HI":  {"dipole_moment": 0.38},
 }
 allowed_spin_types = ["spinless", "ortho", "para"]
 
@@ -78,7 +79,7 @@ def parse_arguments():
 	# --- Auto-resolve dipole moment if needed ---
 	if not args.use_potential:
 		if args.molecule:
-			mol = args.molecule.strip().upper()
+			mol = args.molecule.strip()
 			if mol not in MOLECULE_DATA:
 				print(f"[ERROR] Unknown molecule '{mol}'. Choose from: {', '.join(MOLECULE_DATA.keys())}")
 				sys.exit(1)
@@ -274,80 +275,156 @@ def submit_single_job(jmax, secondary_param, args, use_dipole, output_root_dir, 
 
 	log_and_append_summary(summary_rows, job_status, tag, jmax, args, info_str)
 
+if False:
+	def check_job_status(tag, job_dir, jmax, spin_type, info_str, summary_rows, mark_submitted=False):
+		"""
+		Checks the status of a job by inspecting status.txt, stdout, and stderr.
+		If mark_submitted=True, writes status.txt = SUBMITTED if job is being launched.
+		Returns True if job should be skipped, False otherwise.
+		"""
+		stdout_path = os.path.join(job_dir, f"{tag}.stdout")
+		stderr_path = os.path.join(job_dir, f"{tag}.stderr")
+		status_file = os.path.join(job_dir, "status.txt")
 
-def check_job_status(tag, job_dir, jmax, spin_type, info_str, summary_rows, mark_submitted=False):
-	"""
-	Checks the status of a job by inspecting status.txt, stdout, and stderr.
-	If mark_submitted=True, writes status.txt = SUBMITTED if job is being launched.
-	Returns True if job should be skipped, False otherwise.
-	"""
-	stdout_path = os.path.join(job_dir, f"{tag}.stdout")
-	stderr_path = os.path.join(job_dir, f"{tag}.stderr")
-	status_file = os.path.join(job_dir, "status.txt")
+		# --- Check if job already completed based on stdout content ---
+		job_completed = False
+		if os.path.exists(stdout_path):
+			with open(stdout_path, "r") as f:
+				if "HURRAY ALL COMPUTATIONS COMPLETED DATA SUCCESSFULLY WRITTEN TO NETCDF FILES" in f.read():
+					job_completed = True
 
-	# --- Check if job already completed based on stdout content ---
-	job_completed = False
-	if os.path.exists(stdout_path):
-		with open(stdout_path, "r") as f:
-			if "HURRAY ALL COMPUTATIONS COMPLETED DATA SUCCESSFULLY WRITTEN TO NETCDF FILES" in f.read():
-				job_completed = True
+		# --- Read current status if available ---
+		current_status = None
+		if os.path.exists(status_file):
+			with open(status_file, "r") as f:
+				current_status = f.read().strip().upper()
 
-	# --- Read current status if available ---
-	current_status = None
-	if os.path.exists(status_file):
-		with open(status_file, "r") as f:
-			current_status = f.read().strip().upper()
+			# Remove PENDING status if nothing has started
+			if current_status == "PENDING" and not os.path.exists(stdout_path):
+				logging.warning(f"Removing stale status file for '{tag}' (PENDING but no stdout)")
+				os.remove(status_file)
+				current_status = None
 
-		# Remove PENDING status if nothing has started
-		if current_status == "PENDING" and not os.path.exists(stdout_path):
-			logging.warning(f"Removing stale status file for '{tag}' (PENDING but no stdout)")
-			os.remove(status_file)
-			current_status = None
+		# --- Detect known runtime failures from stderr ---
+		job_failed = False
+		if os.path.exists(stderr_path):
+			with open(stderr_path, "r") as f:
+				err_content = f.read().lower()
+				if any(k in err_content for k in ["error", "traceback", "segmentation fault"]):
+					job_failed = True
 
-	# --- Detect known runtime failures from stderr ---
-	job_failed = False
-	if os.path.exists(stderr_path):
-		with open(stderr_path, "r") as f:
-			err_content = f.read().lower()
-			if any(k in err_content for k in ["error", "traceback", "segmentation fault"]):
-				job_failed = True
+		# --- Determine final status ---
+		if job_completed or current_status == "COMPLETED":
+			final_status = "COMPLETED"
+		elif current_status == "RUNNING":
+			final_status = "RUNNING"
+		elif job_failed:
+			final_status = "FAILED"
+		else:
+			final_status = "PENDING"
+			if mark_submitted:
+				with open(status_file, "w") as f:
+					f.write("SUBMITTED")
+				final_status = "SUBMITTED"
+				#logging.info(f"[Submitted] Job status marked SUBMITTED for: {tag}")
 
-	# --- Determine final status ---
-	if job_completed or current_status == "COMPLETED":
-		final_status = "COMPLETED"
-	elif current_status == "RUNNING":
-		final_status = "RUNNING"
-	elif job_failed:
-		final_status = "FAILED"
-	else:
-		final_status = "PENDING"
-		if mark_submitted:
-			with open(status_file, "w") as f:
-				f.write("SUBMITTED")
-			final_status = "SUBMITTED"
-			#logging.info(f"[Submitted] Job status marked SUBMITTED for: {tag}")
+		logging.info(f"[Status] {tag}: {final_status}")
 
-	logging.info(f"[Status] {tag}: {final_status}")
+		# Append status to summary table
+		summary_rows.append({
+			"Job Name": tag,
+			"Max Angular Momentum": jmax,
+			"Spin Type": spin_type,
+			"Field/Interaction": info_str,
+			"Status": final_status,
+			"PID": "-"
+		})
 
-	# Append status to summary table
-	summary_rows.append({
-		"Job Name": tag,
-		"Max Angular Momentum": jmax,
-		"Spin Type": spin_type,
-		"Field/Interaction": info_str,
-		"Status": final_status,
-		"PID": "-"
-	})
+		return final_status in {"COMPLETED", "RUNNING"}
 
-	return final_status in {"COMPLETED", "RUNNING"}
+
+def check_job_status(tag, job_dir, jmax, spin_type, info_str, summary_rows, dry_run=False):
+    """
+    Check the status of a job. Append status to summary_rows if the job is already submitted,
+    completed, failed, or dry-run. Return True if the job should be skipped.
+    """
+
+    stdout_path = os.path.join(job_dir, f"{tag}.stdout")
+    stderr_path = os.path.join(job_dir, f"{tag}.stderr")
+    status_file = os.path.join(job_dir, "status.txt")
+
+    # --- Dry-run: Report without execution ---
+    if dry_run:
+        logging.info(f"[DRY-RUN ] Ready to submit: {tag}")
+        summary_rows.append({
+            "Job Name": tag,
+            "Max Angular Momentum": jmax,
+            "Spin Type": spin_type,
+            "Field/Interaction": info_str,
+            "Status": "DRY-RUN",
+            "PID": "-"
+        })
+        return True
+
+    # --- Check for successful completion ---
+    job_completed = False
+    if os.path.exists(stdout_path):
+        try:
+            with open(stdout_path, "r") as f:
+                content = f.read()
+                job_completed = "HURRAY ALL COMPUTATIONS COMPLETED DATA SUCCESSFULLY WRITTEN TO NETCDF FILES" in content
+        except Exception as e:
+            logging.warning(f"[{tag}] Could not read stdout: {e}")
+
+    # --- Read status file ---
+    current_status = None
+    if os.path.exists(status_file):
+        try:
+            with open(status_file, "r") as f:
+                current_status = f.read().strip().upper()
+        except Exception as e:
+            logging.warning(f"[{tag}] Could not read status.txt: {e}")
+
+    # --- Check for critical errors in stderr ---
+    job_failed = False
+    if os.path.exists(stderr_path):
+        try:
+            with open(stderr_path, "r") as f:
+                content = f.read().lower()
+                job_failed = any(keyword in content for keyword in ["error", "traceback", "segmentation fault"])
+        except Exception as e:
+            logging.warning(f"[{tag}] Could not read stderr: {e}")
+
+    # --- Final status decision ---
+    if job_completed or current_status == "COMPLETED":
+        final_status = "COMPLETED"
+    elif current_status == "RUNNING":
+        final_status = "RUNNING"
+    elif job_failed:
+        final_status = "FAILED"
+    else:
+        return False  # Skip writing summary for fresh, unsubmitted jobs
+
+    # --- Record the known status ---
+    logging.info(f"[Status] {tag}: {final_status}")
+    summary_rows.append({
+        "Job Name": tag,
+        "Max Angular Momentum": jmax,
+        "Spin Type": spin_type,
+        "Field/Interaction": info_str,
+        "Status": final_status,
+        "PID": "-"
+    })
+
+    return True  # Skip this job; it's not fresh
 
 def main():
 	args = parse_arguments()
 
 	# Configuration
 	script_name = "main.py"
-	jmax_values = list(range(10, 11, 5))
-	electric_field_values = [0.1] + list(range(20, 21, 20))
+	jmax_values = list(range(10, 21, 2))
+	electric_field_values = [0.1] + list(range(20, 201, 20))
 	potential_strength_values = [0.1, 0.5]
 	use_dipole = True
 	molecule_tag = args.molecule or "custom"
@@ -413,9 +490,18 @@ def main():
 		os.makedirs(job_dir, exist_ok=True)
 		shutil.copy2(script_name, os.path.join(job_dir, script_basename))
 
-		skip = check_job_status(tag, job_dir, jmax, args.spin_type, info_str, summary_rows, mark_submitted=not args.dry_run)
+		#skip = check_job_status(tag, job_dir, jmax, args.spin_type, info_str, summary_rows, mark_submitted=not args.dry_run)
+		skip_job = check_job_status(
+			tag=tag,
+			job_dir=job_dir,
+			jmax=jmax,
+			spin_type=args.spin_type,
+			info_str=info_str,
+			summary_rows=summary_rows,
+			dry_run=args.dry_run
+		)
 
-		if skip:
+		if skip_job:
 			continue
 
 		# Prepare I/O paths
@@ -435,7 +521,6 @@ def main():
 			print(f"  > Stdout  : {stdout_path}")
 			print(f"  > Stderr  : {stderr_path}\n\n")
 
-			"""
 			# Write shell script
 			with open(os.path.join(job_dir, f"{tag}_run_command.sh"), "w") as f:
 				f.write("#!/bin/bash\n" + cmd_str + "\n")
@@ -443,8 +528,8 @@ def main():
 			# Launch process
 			with open(stdout_path, "w") as out_f, open(stderr_path, "w") as err_f:
 				subprocess.Popen(cmd, stdout=out_f, stderr=err_f)
-			"""
 
+			"""
 			# --- Create shell script ---
 			run_script_path = os.path.join(job_dir, f"{tag}_run_command.sh")
 			with open(run_script_path, "w") as f:
@@ -458,6 +543,7 @@ def main():
 			# --- Launch the shell script ---
 			with open(stdout_path, "w") as out_f, open(stderr_path, "w") as err_f:
 				subprocess.Popen(["bash", run_script_path], stdout=out_f, stderr=err_f)
+			"""
 
 			status = "SUBMITTED"
 
@@ -473,7 +559,7 @@ def main():
 	# Final summary
 	write_summary_csv(summary_rows, csv_path)
 	print()
-	logging.info("[INFO] All jobs processed. Summary written to CSV.")
+	logging.info("All jobs processed. Summary written to CSV.")
 
 	print("==========================================")
 	print("HURRAY! ALL JOBS SUBMITTED SUCCESSFULLY")
