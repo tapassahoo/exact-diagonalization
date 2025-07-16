@@ -20,76 +20,95 @@ cm_to_J = h * c * 100
 cm_to_eV = cm_to_J / e_charge
 k_B_cm = k_B / cm_to_J
 
-def compute_thermo_from_eigenvalues(eigenvalues_kelvin, temperature_list, unit="Kelvin"):
-	"""
-	Compute thermodynamic quantities (Boltzmann populations, partition function, internal energy 
-	and heat capacity) from energy eigenvalues given in Kelvin.
 
-	Parameters:
-	-----------
-	eigenvalues_kelvin : array_like
-		Array of energy eigenvalues in Kelvin.
-	
+from scipy.constants import R as GAS_CONSTANT_J_PER_MOL_K
+from scipy.constants import k as BOLTZMANN_J_PER_K
+
+def compute_thermo_from_eigenvalues(eigenvalues, temperature_list, unit):
+	"""
+	Compute thermodynamic properties (Z, populations, U, Cv) from energy eigenvalues.
+
+	Parameters
+	----------
+	eigenvalues : array_like
+		1D array of energy eigenvalues in wavenumber units (cm⁻¹).
+
 	temperature_list : array_like
-		List or array of temperatures in Kelvin at which thermodynamic properties are evaluated.
+		List or array of temperatures (in Kelvin) for which properties are computed.
 
-	unit : str, optional
-		Output unit for energy and heat capacity. Choose from:
-		- "Kelvin" (default)
-		- "J/mol"
+	unit : {'wavenumber', 'SI'}
+		Unit for output values:
+			- 'wavenumber' : Energy and Cv in cm⁻¹ and cm⁻¹/K
+			- 'SI'		 : Energy in J/mol and Cv in J/mol·K
 
-	Returns:
-	--------
+	Returns
+	-------
 	dict
-		Dictionary with temperatures as keys and a sub-dictionary as values containing:
-		- "Populations" : Normalized Boltzmann populations
-		- "Z" : Partition function
-		- "U (unit)" : Internal energy
-		- "Cv (unit/K)" : Heat capacity
+		Dictionary keyed by temperature (K), each value containing:
+			- temperature_K	   : Temperature in Kelvin
+			- unit				: 'wavenumber' or 'SI'
+			- display_unit		: e.g., 'cm^-1' or 'J/mol'
+			- beta				: Inverse temperature (1/kB·T)
+			- partition_function  : Canonical partition function Z
+			- populations		 : Normalized Boltzmann populations
+			- internal_energy	 : U in chosen unit
+			- heat_capacity	   : Cv in chosen unit per K
 	"""
-	# Convert input to numpy array
-	E = np.array(eigenvalues_kelvin, dtype=np.float64)
-	if E.ndim != 1:
-		raise ValueError("Energy eigenvalues must be a 1D array.")
+	# Ensure 1D array
+	energies = np.atleast_1d(np.asarray(eigenvalues, dtype=np.float64)).flatten()
+	if energies.ndim != 1:
+		raise ValueError("Eigenvalues must be a one-dimensional array.")
 
-	thermo = {}
+	if unit not in {"wavenumber", "SI"}:
+		raise ValueError("Invalid unit. Choose either 'wavenumber' or 'SI'.")
+
+	# Boltzmann constant in cm⁻¹/K
+	KB_CM1_PER_K = 0.69503476
+
+	results = {}
 
 	for T in temperature_list:
 		if T <= 0:
-			raise ValueError(f"Temperature must be positive. Received: {T}")
+			raise ValueError(f"Temperature must be strictly positive. Received: {T} K")
 
-		beta = 1.0 / T
+		beta = 1.0 / (KB_CM1_PER_K * T)      # unit: 1/cm⁻¹
 
-		# Apply zero-point shift for numerical stability
-		E_shifted = E - np.min(E)
-		weights = np.exp(-beta * E_shifted)
-		Z = np.sum(weights)
-		P = weights / Z  # Normalized Boltzmann populations
+		# Numerical stability: shift energies
+		E_shifted = energies - np.min(energies)
+		boltzmann_weights = np.exp(-beta * E_shifted)
+		Z = np.sum(boltzmann_weights)
+		populations = boltzmann_weights / Z
 
-		# Use original energies for observables
-		E_avg = np.sum(P * E)
-		E2_avg = np.sum(P * E**2)
+		# Use unshifted energies for thermodynamic averages
+		E_avg = np.dot(populations, energies)
+		E2_avg = np.dot(populations, energies**2)
 		Cv = beta**2 * (E2_avg - E_avg**2)
 
 		# Unit conversion
-		if unit == "Kelvin":
-			U_out = E_avg
-			Cv_out = Cv
-		elif unit == "J/mol":
-			U_out = E_avg * R 
-			Cv_out = Cv * R
-		else:
-			raise ValueError("Invalid unit. Choose from 'Kelvin' or 'J/mol'.")
+		if unit == "wavenumber":
+			U_out = E_avg                    # in cm⁻¹
+			Cv_out = Cv                      # in cm⁻¹/K
+			display_unit = "cm^-1"
+			display_cv_unit = "cm^-1/K"
+		else:  # SI
+			U_out = E_avg * GAS_CONSTANT_J_PER_MOL_K # in J/mol
+			Cv_out = Cv * GAS_CONSTANT_J_PER_MOL_K   # in J/mol·K
+			display_unit = "J/mol"
+			display_cv_unit = "J/mol·K"
 
 		# Store results
-		thermo[T] = {
-			"Populations": P,
-			"Z": Z,
-			f"U ({unit})": U_out,
-			f"Cv ({unit}/K)": Cv_out,
+		results[T] = {
+			"temperature_K": T,
+			"unit": unit,
+			"display_unit": display_unit,
+			"display_cv_unit": display_cv_unit,
+			"partition_function": Z,
+			"populations": populations,
+			"internal_energy": U_out,
+			"heat_capacity": Cv_out
 		}
 
-	return thermo
+	return results
 
 def plot_cv_vs_temperature(
 	thermo_data,
@@ -438,97 +457,86 @@ def save_thermo_with_Z_and_populations(
 					pf.write(f"{i:6d}  {Ei:20.6f}  {Pi:15.6e}\n")
 			print(f"[✓] Populations saved: {full_path}")
 
-
 def read_all_quantum_data_files_with_thermo(
-	base_output_dir,
-	dipole_moment_D,
-	electric_field_kVcm_list,
-	max_angular_momentum_list,
-	temperature_list,
-	spin_type="spinless",
-	unit_want="Kelvin",
-	export_csv=True,
-	export_plot=True,
-	output_summary_dir="thermo_summary"
+	base_output_dir: str,
+	molecule: str,
+	electric_field_list: list,
+	jmax_list: list,
+	temperature_list: list,
+	spin_type: str,
+	unit_want: str,
+	export_csv: bool = True,
+	export_plot: bool = True,
+	output_summary_dir: str = "thermo_summary"
 ):
+	"""
+	Reads quantum data files and computes thermodynamic properties
+	for a specified linear rigid rotor molecule under external fields.
+
+	Parameters:
+		base_output_dir (str): Path to the directory containing computed quantum data.
+		molecule (str): Name of the linear rigid rotor (e.g., "HF", "HCl").
+		electric_field_list (list): List of electric field strengths (in kV/cm).
+		jmax_list (list): List of maximum angular momentum quantum numbers used.
+		temperature_list (list): List of temperatures (in Kelvin) for thermodynamic evaluation.
+		spin_type (str): Type of spin model, default is "spinless".
+		unit_want (str): Output unit for thermodynamic quantities ("cm-1" or "J/mol").
+		export_csv (bool): Whether to export results as CSV files.
+		export_plot (bool): Whether to generate and save plots.
+		output_summary_dir (str): Output directory to store summary results.
+
+	Returns:
+		None
+	"""
 	os.makedirs(output_summary_dir, exist_ok=True)
 
 	thermo_dict_by_field = {}
-	for lmax, E in product(max_angular_momentum_list, electric_field_kVcm_list):
-		theta_grid_count = 2 * lmax + 5
-		phi_grid_count = 2 * theta_grid_count + 5
+	for jmax, E in product(jmax_list, electric_field_list):
 
-		subdir = (
-			f"{spin_type}_HF_lmax_{lmax}_"
-			f"dipole_moment_{dipole_moment_D:.2f}D_"
-			f"electric_field_{E:.2f}kVcm"
-		).replace(".", "_")
+		subdir = f"{spin_type}_{molecule}_jmax_{jmax}_field_{E:.2f}kV_per_cm"
 
-		filename = (
-			f"quantum_data_HF_{spin_type}_isomer_lmax_{lmax}_"
-			f"dipole_moment_{dipole_moment_D:.2f}D_"
-			f"electric_field_{E:.2f}kVcm_"
-			f"theta_grid_{theta_grid_count}_phi_grid_{phi_grid_count}.nc"
-		)
+		filename = f"quantum_data_{subdir}.nc"
+		filename_thermo_data = f"equilibrium_properties_data_{subdir}"
+		filename_heat_capacity_vs_temperature_plot = f"heat_capacity_vs_temperature_plot_{subdir}"
+		filename_population_data = f"equilibrium_population_data_{subdir}"
+		file_path = os.path.join(base_output_dir, subdir, "data", filename)
 
-		filename_thermo_data = (
-			f"equilibrium_properties_data_HF_{spin_type}_isomer_lmax_{lmax}_"
-			f"dipole_moment_{dipole_moment_D:.2f}D_"
-			f"electric_field_{E:.2f}kVcm_"
-			f"theta_grid_{theta_grid_count}_phi_grid_{phi_grid_count}"
-		)
-
-		filename_heat_capacity_vs_temperature_plot = (
-			f"heat_capacity_vs_temperature_plot_HF_{spin_type}_isomer_lmax_{lmax}_"
-			f"dipole_moment_{dipole_moment_D:.2f}D_"
-			f"electric_field_{E:.2f}kVcm_"
-			f"theta_grid_{theta_grid_count}_phi_grid_{phi_grid_count}"
-		)
-
-		filename_population_data = (
-			f"equilibrium_population_data_HF_{spin_type}_isomer_lmax_{lmax}_"
-			f"dipole_moment_{dipole_moment_D:.2f}D_"
-			f"electric_field_{E:.2f}kVcm_"
-			f"theta_grid_{theta_grid_count}_phi_grid_{phi_grid_count}"
-		)
-
-		file_path = os.path.join(base_output_dir, subdir, filename)
-
-		print(f"\n[✓] Checking file: {file_path}")
+		print(f"\n[OK] Checking file: {file_path}")
 		if os.path.exists(file_path):
 			try:
 				with Dataset(file_path, 'r') as nc:
 					if "eigenvalues" not in nc.variables:
-						print("[!] No eigenvalues found.")
+						print("[WARNING] No eigenvalues found.")
 						continue
 
 					eigenval_var = nc.variables["eigenvalues"]
 					eigenvalues = np.array(eigenval_var[:])
-					print(f"  Found {len(eigenvalues)} eigenvalues.")
+					print(f"\n[ ] Found {len(eigenvalues)} eigenvalues.")
 
 					# Extract attributes safely
 					unit = getattr(eigenval_var, "units", "N/A")
 					long_name = getattr(eigenval_var, "long_name", "N/A")
 
-					print(f"  Unit	   : {unit}")
-					print(f"  Long name  : {long_name}")
+					print(f"[ ] Unit	   : {unit}")
+					print(f"[ ] Long name  : {long_name}")
 
 
 					# Compute thermo data
 					thermo_data = compute_thermo_from_eigenvalues(eigenvalues, temperature_list, unit=unit_want)
+					
+					print("\n[INFO] Summary of important thermodynamic properties:\n")
 
-					"""
-					for T in thermo_data:
-						print(f"\nT = {T} K")
-						print(f"U = {thermo_data[T]['U (J/mol)']:.4f}")
-						print(f"Cv = {thermo_data[T]['Cv (J/mol/K)']:.4f}")
-						print(f"Populations: {thermo_data[T]['Populations']}")
-					"""
+					for T, entry in thermo_data.items():
+						print(f"\n[ ] T = {T} K")
+						print(f"[ ] Partition Function = {entry['partition_function']:.4f}")
+						print(f"[ ] U = {entry['internal_energy']:.4f} {entry['display_unit']}")
+						print(f"[ ] Cv = {entry['heat_capacity']:.4f} {entry['display_cv_unit']}")
 
 					# Output file prefix
 					base_name_equilibrium_properties = os.path.join(output_summary_dir, filename_thermo_data)
 					base_name_equilibrium_population = os.path.join(output_summary_dir, filename_population_data)
 
+					"""
 					save_thermo_with_Z_and_populations(
 						thermo_data=thermo_data,
 						temperatures=temperature_list,
@@ -549,18 +557,12 @@ def read_all_quantum_data_files_with_thermo(
 					)
 
 					thermo_dict_by_field[(lmax, E)] = thermo_data
+					"""
 
 			except Exception as e:
 				print(f"[X] Error reading file: {e}")
 		else:
 			print("[!] File does not exist.\n")
-
-	# Assume:
-	# thermo_dict_by_field = {
-	#	 0.0: thermo_0kVcm,
-	#	 0.1: thermo_01kVcm,
-	#	 ...
-	# }
 
 	#plot_cv_surface(
 	#	thermo_dict_by_field=thermo_dict_by_field,
@@ -570,6 +572,7 @@ def read_all_quantum_data_files_with_thermo(
 	#	out_path="cv_surface.png"
 	#)
 
+	"""
 	plot_cv_surface(
 		thermo_dict_by_field=thermo_dict_by_field,
 		temperature_list=temperature_list,
@@ -589,6 +592,7 @@ def read_all_quantum_data_files_with_thermo(
 		export_txt=True,
 		txt_path="cv_matrix_lmax10.txt"
 	)
+	"""
 
 
 	#plot_cv_overlay(
@@ -602,20 +606,18 @@ def read_all_quantum_data_files_with_thermo(
 
 # === Usage ===
 read_all_quantum_data_files_with_thermo(
-	base_output_dir="/Users/tapas/academic-project/outputs/output_spinless_HF_monomer_in_field",
-	dipole_moment_D=1.83,
-	electric_field_kVcm_list=[0.1] + list(range(10, 201, 10)),
-	max_angular_momentum_list=list(range(10, 11, 5)),
-	#temperature_list=list(range(2, 50, 2))+list(range(50, 201, 5)),
+	base_output_dir="/Users/tapas/academic-project/exact-diagonalization/pkg_monomer_rotor/output/",
+	molecule="HF",
+	electric_field_list=[0.1] + list(range(20, 201, 20)),
+	jmax_list=list(range(10, 21, 2)),
 	temperature_list=list(range(10, 51, 5)),
 	spin_type="spinless",
-	unit_want="J/mol",
+	unit_want="wavenumber",
+	#unit_want="SI",
 	export_csv=True,
 	export_plot=True,
 	output_summary_dir="/Users/tapas/academic-project/results/result_spinless_HF_monomer_in_field"
 )
-
-filename="output/data/quantum_data_HCl_spinless_isomer_lmax_20_dipole_moment_1.80D_electric_field_200.00kVcm.nc"
 
 whom()
 whoami()

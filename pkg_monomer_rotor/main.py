@@ -113,7 +113,7 @@ def main():
 		energies = rotational_energy_levels(B_const_cm_inv, 10)
 		plot_rotational_levels(energies)
 
-	base_file_name = generate_filename(spin_state, max_angular_momentum_quantum_number, potential_strength_cm_inv, args.dipole_moment, args.electric_field, prefix=f"_{molecule_name}")
+	base_file_name = generate_filename(molecule_name, spin_state, max_angular_momentum_quantum_number, potential_strength_cm_inv, args.dipole_moment, args.electric_field, prefix=f"")
 	
 	# All quantum numbers: (J, M)
 	all_quantum_numbers = generate_monomer_linear_rotor_quantum_numbers(max_angular_momentum_quantum_number, "spinless")

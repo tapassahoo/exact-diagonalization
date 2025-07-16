@@ -60,6 +60,7 @@ def show_simulation_details(
 		print(colored("[ ] μ·E (Interaction Energy):".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{computed_muE_cm_inv:.5f} cm⁻¹".ljust(VALUE_WIDTH), VALUE_COLOR))
 
 def generate_filename(
+	molecule_name: str,
 	spin_state: str,
 	max_angular_momentum_quantum_number: int,
 	potential_strength: float,
@@ -72,6 +73,8 @@ def generate_filename(
 
 	Parameters
 	----------
+	molecule_name : str
+		Name of the linear rigid rotor (e.g., "HF", "HCl", "CO")
 	spin_state : str
 		The spin isomer type ("spinless", "para", or "ortho").
 	max_angular_momentum_quantum_number : int
@@ -92,17 +95,17 @@ def generate_filename(
 	"""
 
 	filename = (
-		f"{prefix}_{spin_state}_isomer_"
-		f"lmax_{max_angular_momentum_quantum_number}_"
+		f"{prefix}_{spin_state}_{molecule_name}_"
+		f"jmax_{max_angular_momentum_quantum_number}_"
 	)
 
 	if dipole_moment_D is not None and electric_field_kVcm is not None:
 		filename += (
-			f"dipole_moment_{dipole_moment_D:.2f}D_"
-			f"electric_field_{electric_field_kVcm:.2f}kVcm"
+			#f"dipole_moment_{dipole_moment_D:.2f}D_"
+			f"field_{electric_field_kVcm:.2f}kV_per_cm"
 		)
 	else:
-		filename += f"potential_{potential_strength:.2f}K"
+		filename += f"potential_{potential_strength:.2f}cm_inv"
 
 	return filename
 
