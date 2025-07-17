@@ -1,16 +1,15 @@
 import os
+from pathlib import Path
 from itertools import product
 import numpy as np
 from netCDF4 import Dataset
 from typing import Optional, Union
-import pandas as pd
 import pandas as pd
 import matplotlib as mpl
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from scipy.constants import R, k as k_B, N_A, h, c, e as e_charge
-import thermodynamics_kelvin as tk
 from pkg_utils.utils import whoami
 from pkg_utils.env_report import whom
 
@@ -71,7 +70,7 @@ def compute_thermo_from_eigenvalues(eigenvalues, temperature_list, unit):
 		if T <= 0:
 			raise ValueError(f"Temperature must be strictly positive. Received: {T} K")
 
-		beta = 1.0 / (KB_CM1_PER_K * T)      # unit: 1/cm⁻¹
+		beta = 1.0 / (KB_CM1_PER_K * T)	  # unit: 1/cm⁻¹
 
 		# Numerical stability: shift energies
 		E_shifted = energies - np.min(energies)
@@ -86,8 +85,8 @@ def compute_thermo_from_eigenvalues(eigenvalues, temperature_list, unit):
 
 		# Unit conversion
 		if unit == "wavenumber":
-			U_out = E_avg                    # in cm⁻¹
-			Cv_out = Cv                      # in cm⁻¹/K
+			U_out = E_avg					# in cm⁻¹
+			Cv_out = Cv					  # in cm⁻¹/K
 			display_unit = "cm^-1"
 			display_cv_unit = "cm^-1/K"
 		else:  # SI
@@ -112,7 +111,7 @@ def compute_thermo_from_eigenvalues(eigenvalues, temperature_list, unit):
 
 def plot_cv_vs_temperature(
 	thermo_data,
-	unit="Kelvin",
+	unit="wavenumber",
 	out_path=None,
 	title=None,
 	context="Rotational"
@@ -140,7 +139,7 @@ def plot_cv_vs_temperature(
 
 	# Extract data
 	T_vals = sorted(thermo_data.keys())
-	Cv_vals = [thermo_data[T][f"Cv ({unit}/K)"] for T in T_vals]
+	Cv_vals = [thermo_data[T]['heat_capacity'] for T in T_vals]
 
 	# Set default title
 	if title is None:
@@ -385,77 +384,191 @@ def plot_cv_heatmap(
 		df.to_csv(txt_path, sep="\t", float_format="%.6f")
 		print(f"[✓] Heat capacity matrix saved to: {txt_path}")
 
-
 def save_thermo_with_Z_and_populations(
-	thermo_data,
-	temperatures,
-	eigenvalues,
-	unit="wavenumber",
-	txt_path="thermo_summary.txt",
-	csv_path="thermo_summary.csv",
-	save_populations=False,
-	population_dir="populations_txt"
+	thermo_data: dict,
+	temperatures: list,
+	eigenvalues: np.ndarray,
+	unit: str = "wavenumber",
+	txt_path: str = "thermo_summary.txt",
+	csv_path: str = "thermo_summary.csv",
+	save_populations: bool = False,
+	population_dir: str = "populations_txt"
 ):
 	"""
-	Save thermodynamic data including Z and optional populations to .txt and .csv.
+	Save thermodynamic data (U, Cv, Z) to a TXT and CSV file, and optionally
+	save population distributions for each temperature.
 
 	Parameters:
-		thermo_data (dict): Output from compute_thermo_from_eigenvalues().
-		temperatures (list): Temperatures (in Kelvin).
-		eigenvalues (array): Energy eigenvalues (in the same unit).
-		unit (str): Energy unit.
-		txt_path (str): Path to output .txt summary.
-		csv_path (str): Path to output .csv summary.
-		save_populations (bool): If True, save state-wise populations per T.
-		population_dir (str): Output directory for per-T population text files.
+		thermo_data (dict): Thermodynamic data keyed by temperature.
+		temperatures (list): List of temperatures (K).
+		eigenvalues (np.ndarray): Array of eigenvalues.
+		unit (str): Unit of energy (e.g., 'cm-1', 'J/mol').
+		txt_path (str): Output path for TXT summary.
+		csv_path (str): Output path for CSV summary.
+		save_populations (bool): If True, saves per-temperature population files.
+		population_dir (str): Directory to store population text files.
 	"""
 
-	# -----------------------------------
-	# Save formatted TXT summary
-	# -----------------------------------
-	with open(txt_path, "w") as f:
-		f.write(f"{'Temperature (K)':>15}  {f'U ({unit})':>15}  {f'Cv ({unit}/K)':>15}  {f'Z':>15}\n")
-		f.write("-" * 65 + "\n")
-		for T in sorted(temperatures):
-			Z = thermo_data[T]["partition_function"]
-			U = thermo_data[T]['internal_energy']
-			Cv = thermo_data[T]['heat_capacity']
-			f.write(f"{T:15.1f}  {U:15.6f}  {Cv:15.6f}  {Z:15.6f}\n")
-	print(f"[✓] TXT summary saved: {txt_path}")
+	# Get display unit safely from any temperature entry
+	try:
+		first_T = next(iter(thermo_data))
+		display_unit = thermo_data[first_T].get("display_unit", unit)
+		display_cv_unit = thermo_data[first_T].get("display_cv_unit", f"{unit}/K")
+	except Exception as e:
+		print(f"[X] Error accessing display units: {e}")
+		display_unit = unit
+		display_cv_unit = f"{unit}/K"
 
-	# -----------------------------------
-	# Save CSV summary
-	# -----------------------------------
-	df = pd.DataFrame({
-		"Temperature (K)": sorted(temperatures),
-		f"U ({unit})": [thermo_data[T]['internal_energy'] for T in sorted(temperatures)],
-		f"Cv ({unit}/K)": [thermo_data[T]['heat_capacity'] for T in sorted(temperatures)],
-		"Partition Function Z": [thermo_data[T]['partition_function'] for T in sorted(temperatures)]
-	})
-	df.to_csv(csv_path, index=False)
-	print(f"[✓] CSV summary saved: {csv_path}")
+	# -------------------------
+	# Write TXT Summary
+	# -------------------------
+	header_line = (
+		f"{'Temperature (K)':>15}  "
+		f"{f'U ({display_unit})':>20}  "
+		f"{f'Cv ({display_cv_unit})':>25}  "
+		f"{'Z':>15}\n"
+	)
 
-	# -----------------------------------
-	# Save per-temperature population files (optional)
-	# -----------------------------------
+	try:
+		with open(txt_path, "w") as f:
+			f.write(header_line)
+			f.write("-" * 80 + "\n")
+			for T in sorted(temperatures):
+				entry = thermo_data.get(T, {})
+				Z = entry.get("partition_function", np.nan)
+				U = entry.get("internal_energy", np.nan)
+				Cv = entry.get("heat_capacity", np.nan)
+				f.write(f"{T:15.1f}  {U:20.6f}  {Cv:25.6f}  {Z:15.6f}\n")
+		print(f"[✓] TXT summary saved: {txt_path}")
+	except Exception as e:
+		print(f"[X] Failed to write TXT summary: {e}")
+
+	# -------------------------
+	# Write CSV Summary
+	# -------------------------
+	try:
+		df = pd.DataFrame({
+			"Temperature (K)": sorted(temperatures),
+			f"U ({display_unit})": [
+				thermo_data[T].get("internal_energy", np.nan) for T in sorted(temperatures)
+			],
+			f"Cv ({display_cv_unit})": [
+				thermo_data[T].get("heat_capacity", np.nan) for T in sorted(temperatures)
+			],
+			"Partition Function Z": [
+				thermo_data[T].get("partition_function", np.nan) for T in sorted(temperatures)
+			]
+		})
+		df.to_csv(csv_path, index=False)
+		print(f"[✓] CSV summary saved: {csv_path}")
+	except Exception as e:
+		print(f"[X] Failed to write CSV summary: {e}")
+
+	# -------------------------
+	# Save Populations (Optional)
+	# -------------------------
 	if save_populations:
-		os.makedirs(population_dir, exist_ok=True)
-		eigenvalues = np.array(eigenvalues)
+		pop_dir = Path(population_dir)
+		pop_dir.mkdir(parents=True, exist_ok=True)
+		eigenvalues = np.asarray(eigenvalues)
 
 		for T in sorted(temperatures):
-			pops = thermo_data[T].get("Populations")
-			if pops is None:
+			entry = thermo_data.get(T, {})
+			populations = entry.get("populations", None)
+			if populations is None:
 				continue
 
-			pop_file = f"populations_T_{T:.1f}K.txt"
-			full_path = os.path.join(population_dir, pop_file)
-			with open(full_path, "w") as pf:
-				pf.write(f"# Population distribution at T = {T:.1f} K\n")
-				pf.write(f"# {'Index':>6}  {'Energy (' + unit + ')':>20}  {'P_i':>15}\n")
-				pf.write("#" + "-" * 50 + "\n")
-				for i, (Ei, Pi) in enumerate(zip(eigenvalues, pops)):
-					pf.write(f"{i:6d}  {Ei:20.6f}  {Pi:15.6e}\n")
-			print(f"[✓] Populations saved: {full_path}")
+			pop_file_path = pop_dir / f"populations_T_{T:.1f}K.txt"
+			try:
+				with open(pop_file_path, "w") as pf:
+					pf.write(f"# Population distribution at T = {T:.1f} K\n")
+					pf.write(f"# {'Index':>6}  {'Energy (' + unit + ')':>20}  {'P_i':>15}\n")
+					pf.write("#" + "-" * 55 + "\n")
+					for i, (E_i, P_i) in enumerate(zip(eigenvalues, populations)):
+						pf.write(f"{i:6d}  {E_i:20.6f}  {P_i:15.6e}\n")
+				print(f"[✓] Populations saved: {pop_file_path}")
+			except Exception as e:
+				print(f"[X] Failed to write populations at T={T} K: {e}")
+
+if False:
+	def save_thermo_with_Z_and_populations(
+		thermo_data,
+		temperatures,
+		eigenvalues,
+		unit="wavenumber",
+		txt_path="thermo_summary.txt",
+		csv_path="thermo_summary.csv",
+		save_populations=False,
+		population_dir="populations_txt"
+	):
+		"""
+		Save thermodynamic data including Z and optional populations to .txt and .csv.
+
+		Parameters:
+			thermo_data (dict): Output from compute_thermo_from_eigenvalues().
+			temperatures (list): Temperatures (in Kelvin).
+			eigenvalues (array): Energy eigenvalues (in the same unit).
+			unit (str): Energy unit.
+			txt_path (str): Path to output .txt summary.
+			csv_path (str): Path to output .csv summary.
+			save_populations (bool): If True, save state-wise populations per T.
+			population_dir (str): Output directory for per-T population text files.
+		"""
+
+		# -----------------------------------
+		# Save formatted TXT summary
+		# -----------------------------------
+		display_unit = thermo_data[10]["display_unit"]
+		header = (
+			f"{'Temperature (K)':>15}  "
+			f"{f'U ({display_unit})':>15}  "
+			f"{f'Cv ({display_unit}/K)':>20}  "
+			f"{'Z':>15}\n"
+		)
+
+		with open(txt_path, "w") as f:
+			f.write(header)
+			f.write("-" * 65 + "\n")
+			for T in sorted(temperatures):
+				Z = thermo_data[T]["partition_function"]
+				U = thermo_data[T]['internal_energy']
+				Cv = thermo_data[T]['heat_capacity']
+				f.write(f"{T:15.1f}  {U:15.6f}  {Cv:15.6f}  {Z:15.6f}\n")
+		print(f"[✓] TXT summary saved: {txt_path}")
+
+		# -----------------------------------
+		# Save CSV summary
+		# -----------------------------------
+		df = pd.DataFrame({
+			"Temperature (K)": sorted(temperatures),
+			f"U ({unit})": [thermo_data[T]['internal_energy'] for T in sorted(temperatures)],
+			f"Cv ({unit}/K)": [thermo_data[T]['heat_capacity'] for T in sorted(temperatures)],
+			"Partition Function Z": [thermo_data[T]['partition_function'] for T in sorted(temperatures)]
+		})
+		df.to_csv(csv_path, index=False)
+		print(f"[✓] CSV summary saved: {csv_path}")
+
+		# -----------------------------------
+		# Save per-temperature population files (optional)
+		# -----------------------------------
+		if save_populations:
+			os.makedirs(population_dir, exist_ok=True)
+			eigenvalues = np.array(eigenvalues)
+
+			for T in sorted(temperatures):
+				pops = thermo_data[T].get("populations")
+				if pops is None:
+					continue
+
+				pop_file = f"populations_T_{T:.1f}K.txt"
+				full_path = os.path.join(population_dir, pop_file)
+				with open(full_path, "w") as pf:
+					pf.write(f"# Population distribution at T = {T:.1f} K\n")
+					pf.write(f"# {'Index':>6}  {'Energy (' + unit + ')':>20}  {'P_i':>15}\n")
+					pf.write("#" + "-" * 50 + "\n")
+					for i, (Ei, Pi) in enumerate(zip(eigenvalues, pops)):
+						pf.write(f"{i:6d}  {Ei:20.6f}  {Pi:15.6e}\n")
+				print(f"[✓] Populations saved: {full_path}")
 
 def read_all_quantum_data_files_with_thermo(
 	base_output_dir: str,
@@ -474,137 +587,244 @@ def read_all_quantum_data_files_with_thermo(
 	for a specified linear rigid rotor molecule under external fields.
 
 	Parameters:
-		base_output_dir (str): Path to the directory containing computed quantum data.
-		molecule (str): Name of the linear rigid rotor (e.g., "HF", "HCl").
+		base_output_dir (str): Directory containing quantum data files.
+		molecule (str): Name of the linear rotor (e.g., 'HF', 'HCl').
 		electric_field_list (list): List of electric field strengths (in kV/cm).
-		jmax_list (list): List of maximum angular momentum quantum numbers used.
-		temperature_list (list): List of temperatures (in Kelvin) for thermodynamic evaluation.
-		spin_type (str): Type of spin model, default is "spinless".
+		jmax_list (list): List of maximum J values used in the calculations.
+		temperature_list (list): List of temperatures (in K) for thermodynamic analysis.
+		spin_type (str): 'spinless', 'ortho', 'para', etc.
 		unit_want (str): Output unit for thermodynamic quantities ("cm-1" or "J/mol").
-		export_csv (bool): Whether to export results as CSV files.
-		export_plot (bool): Whether to generate and save plots.
-		output_summary_dir (str): Output directory to store summary results.
+		export_csv (bool): Export thermodynamic data to CSV (default: True).
+		export_plot (bool): Generate heat capacity plots (default: True).
+		output_summary_dir (str): Directory to store summary outputs (default: "thermo_summary").
 
 	Returns:
-		None
+		dict: A dictionary mapping (jmax, E_field) → thermo_data
 	"""
-	os.makedirs(output_summary_dir, exist_ok=True)
+	output_summary_dir = Path(output_summary_dir)
+	output_summary_dir.mkdir(parents=True, exist_ok=True)
 
 	thermo_dict_by_field = {}
+
 	for jmax, E in product(jmax_list, electric_field_list):
-
 		subdir_name = f"{spin_type}_{molecule}_jmax_{jmax}_field_{E:.2f}kV_per_cm"
-		
-
-		# Define filenames
-		nc_file_name = f"quantum_data_{subdir_name}.nc"
-		nc_file_path = os.path.join(base_output_dir, subdir_name, "data", nc_file_name)
-
-		population_file_name = f"equilibrium_state_population_data_{subdir_name}"
-		equilibrium_population_file_path = os.path.join(output_summary_dir, population_file_name)
-
-		thermo_file_name = f"equilibrium_thermodynamic_properties_{subdir_name}"
-		equilibrium_properties_file_path = os.path.join(output_summary_dir, thermo_file_name)
-
-		cv_plot_file_name = f"heat_capacity_vs_temperature_plot_{subdir_name}"
-		cv_vs_temp_plot_file_path = os.path.join(output_summary_dir, cv_plot_file_name)
+		nc_file_path = Path(base_output_dir) / subdir_name / "data" / f"quantum_data_{subdir_name}.nc"
 
 		print(f"\n[OK] Checking file: {nc_file_path}")
-		if os.path.exists(nc_file_path):
-			try:
-				with Dataset(nc_file_path, 'r') as nc:
-					if "eigenvalues" not in nc.variables:
-						print("[WARNING] No eigenvalues found.")
-						continue
 
-					eigenval_var = nc.variables["eigenvalues"]
-					eigenvalues = np.array(eigenval_var[:])
-					print(f"\n[ ] Found {len(eigenvalues)} eigenvalues.")
+		if not nc_file_path.exists():
+			print("[!] File does not exist.")
+			continue
 
-					# Extract attributes safely
-					unit = getattr(eigenval_var, "units", "N/A")
-					long_name = getattr(eigenval_var, "long_name", "N/A")
+		try:
+			with Dataset(nc_file_path, 'r') as nc:
+				if "eigenvalues" not in nc.variables:
+					print("[WARNING] 'eigenvalues' variable not found in the file.")
+					continue
 
-					print(f"[ ] Unit	   : {unit}")
-					print(f"[ ] Long name  : {long_name}")
+				eigenval_var = nc.variables["eigenvalues"]
+				eigenvalues = np.array(eigenval_var[:])
+				unit_from_file = getattr(eigenval_var, "units", "unknown")
+				label_from_file = getattr(eigenval_var, "long_name", "eigenvalues")
 
+				print(f"[ ] Found {len(eigenvalues)} eigenvalues.")
+				print(f"[ ] Unit	   : {unit_from_file}")
+				print(f"[ ] Long name  : {label_from_file}")
 
-					# Compute thermo data
-					thermo_data = compute_thermo_from_eigenvalues(eigenvalues, temperature_list, unit=unit_want)
-					
-					print("\n[INFO] Summary of important thermodynamic properties:\n")
+				# Compute thermodynamic properties
+				thermo_data = compute_thermo_from_eigenvalues(
+					eigenvalues=eigenvalues,
+					temperature_list=temperature_list,
+					unit=unit_want
+				)
 
-					for T, entry in thermo_data.items():
-						print(f"\n[ ] T = {T} K")
-						print(f"[ ] Partition Function = {entry['partition_function']:.4f}")
-						print(f"[ ] U = {entry['internal_energy']:.4f} {entry['display_unit']}")
-						print(f"[ ] Cv = {entry['heat_capacity']:.4f} {entry['display_cv_unit']}")
+				# Print summary
+				print("\n[INFO] Thermodynamic Summary:")
+				for T in temperature_list:
+					entry = thermo_data[T]
+					print(f"\n[ ] T = {T} K")
+					print(f"[ ] Z  = {entry['partition_function']:.4f}")
+					print(f"[ ] U  = {entry['internal_energy']:.4f} {entry['display_unit']}")
+					print(f"[ ] Cv = {entry['heat_capacity']:.4f} {entry['display_cv_unit']}")
 
+				# Construct output file paths
+				file_prefix = output_summary_dir / f"equilibrium_thermodynamic_properties_{subdir_name}"
+				pop_dir = output_summary_dir / f"equilibrium_state_population_data_{subdir_name}"
+				plot_path = output_summary_dir / f"heat_capacity_vs_temperature_plot_{subdir_name}.png"
 
+				# Export to file
+				if export_csv:
 					save_thermo_with_Z_and_populations(
 						thermo_data=thermo_data,
 						temperatures=temperature_list,
 						eigenvalues=eigenvalues,
 						unit=unit_want,
-						txt_path=f"{equilibrium_properties_file_path}.txt",
-						csv_path=f"{equilibrium_properties_file_path}.csv",
-						save_populations=True,  # Save individual files
-						population_dir=f"{equilibrium_population_file_path}"
+						txt_path=str(file_prefix) + ".txt",
+						csv_path=str(file_prefix) + ".csv",
+						save_populations=True,
+						population_dir=str(pop_dir)
 					)
-					"""
 
-					base_name_heat_capacity_vs_temperature_plot = os.path.join(output_summary_dir, filename_heat_capacity_vs_temperature_plot)
+				if export_plot:
 					plot_cv_vs_temperature(
 						thermo_data=thermo_data,
 						unit=unit_want,
 						context="Rotational",
-						out_path=f"{base_name_heat_capacity_vs_temperature_plot}.png",
+						out_path=plot_path
 					)
 
-					thermo_dict_by_field[(lmax, E)] = thermo_data
-					"""
+				# Store in output dictionary
+				thermo_dict_by_field[(jmax, E)] = thermo_data
 
-			except Exception as e:
-				print(f"[X] Error reading file: {e}")
-		else:
-			print("[!] File does not exist.\n")
+		except Exception as e:
+			print(f"[X] Error reading or processing file: {e}")
 
-	#plot_cv_surface(
-	#	thermo_dict_by_field=thermo_dict_by_field,
-	#	temperature_list=temperature_list,
-	#	unit=unit_want,
-	#	mode="surface",  # or "wireframe"
-	#	out_path="cv_surface.png"
-	#)
+	return thermo_dict_by_field
 
-	"""
-	plot_cv_surface(
-		thermo_dict_by_field=thermo_dict_by_field,
-		temperature_list=temperature_list,
-		unit="J/mol",
-		mode="wireframe",
-		out_path="cv_surface_lmax10.png",
-		fixed_lmax=10,
-		title=r"Rotational Heat Capacity $C_v(T, E)$ for $l_{\max} = 10$"
-	)
+if False:
+	def read_all_quantum_data_files_with_thermo(
+		base_output_dir: str,
+		molecule: str,
+		electric_field_list: list,
+		jmax_list: list,
+		temperature_list: list,
+		spin_type: str,
+		unit_want: str,
+		export_csv: bool = True,
+		export_plot: bool = True,
+		output_summary_dir: str = "thermo_summary"
+	):
+		"""
+		Reads quantum data files and computes thermodynamic properties
+		for a specified linear rigid rotor molecule under external fields.
 
-	plot_cv_heatmap(
-		thermo_dict_by_field=thermo_dict_by_field,
-		temperature_list=temperature_list,
-		unit="J/mol",
-		fixed_lmax=10,
-		out_path="cv_heatmap_lmax10_annotated.png",
-		export_txt=True,
-		txt_path="cv_matrix_lmax10.txt"
-	)
-	"""
+		Parameters:
+			base_output_dir (str): Path to the directory containing computed quantum data.
+			molecule (str): Name of the linear rigid rotor (e.g., "HF", "HCl").
+			electric_field_list (list): List of electric field strengths (in kV/cm).
+			jmax_list (list): List of maximum angular momentum quantum numbers used.
+			temperature_list (list): List of temperatures (in Kelvin) for thermodynamic evaluation.
+			spin_type (str): Type of spin model, default is "spinless".
+			unit_want (str): Output unit for thermodynamic quantities ("cm-1" or "J/mol").
+			export_csv (bool): Whether to export results as CSV files.
+			export_plot (bool): Whether to generate and save plots.
+			output_summary_dir (str): Output directory to store summary results.
+
+		Returns:
+			None
+		"""
+		os.makedirs(output_summary_dir, exist_ok=True)
+
+		thermo_dict_by_field = {}
+		for jmax, E in product(jmax_list, electric_field_list):
+
+			subdir_name = f"{spin_type}_{molecule}_jmax_{jmax}_field_{E:.2f}kV_per_cm"
+			
+
+			# Define filenames
+			nc_file_name = f"quantum_data_{subdir_name}.nc"
+			nc_file_path = os.path.join(base_output_dir, subdir_name, "data", nc_file_name)
+
+			population_file_name = f"equilibrium_state_population_data_{subdir_name}"
+			equilibrium_population_file_path = os.path.join(output_summary_dir, population_file_name)
+
+			thermo_file_name = f"equilibrium_thermodynamic_properties_{subdir_name}"
+			equilibrium_properties_file_path = os.path.join(output_summary_dir, thermo_file_name)
+
+			cv_plot_file_name = f"heat_capacity_vs_temperature_plot_{subdir_name}"
+			cv_vs_temp_plot_file_path = os.path.join(output_summary_dir, cv_plot_file_name)
+
+			print(f"\n[OK] Checking file: {nc_file_path}")
+			if os.path.exists(nc_file_path):
+				try:
+					with Dataset(nc_file_path, 'r') as nc:
+						if "eigenvalues" not in nc.variables:
+							print("[WARNING] No eigenvalues found.")
+							continue
+
+						eigenval_var = nc.variables["eigenvalues"]
+						eigenvalues = np.array(eigenval_var[:])
+						print(f"\n[ ] Found {len(eigenvalues)} eigenvalues.")
+
+						# Extract attributes safely
+						unit = getattr(eigenval_var, "units", "N/A")
+						long_name = getattr(eigenval_var, "long_name", "N/A")
+
+						print(f"[ ] Unit	   : {unit}")
+						print(f"[ ] Long name  : {long_name}")
 
 
-	#plot_cv_overlay(
-	#	thermo_dict_by_field=thermo_dict_by_field,
-	#	unit=unit,
-	#	out_path="cv_overlay.png"
-	#)
+						# Compute thermo data
+						thermo_data = compute_thermo_from_eigenvalues(eigenvalues, temperature_list, unit=unit_want)
+						
+						print("\n[INFO] Summary of important thermodynamic properties:\n")
+
+						for T, entry in thermo_data.items():
+							print(f"\n[ ] T = {T} K")
+							print(f"[ ] Partition Function = {entry['partition_function']:.4f}")
+							print(f"[ ] U = {entry['internal_energy']:.4f} {entry['display_unit']}")
+							print(f"[ ] Cv = {entry['heat_capacity']:.4f} {entry['display_cv_unit']}")
+
+
+						save_thermo_with_Z_and_populations(
+							thermo_data=thermo_data,
+							temperatures=temperature_list,
+							eigenvalues=eigenvalues,
+							unit=unit_want,
+							txt_path=f"{equilibrium_properties_file_path}.txt",
+							csv_path=f"{equilibrium_properties_file_path}.csv",
+							save_populations=True,  # Save individual files
+							population_dir=f"{equilibrium_population_file_path}"
+						)
+
+						plot_cv_vs_temperature(
+							thermo_data=thermo_data,
+							unit=unit_want,
+							context="Rotational",
+							out_path=f"{cv_vs_temp_plot_file_path}.png",
+						)
+
+						thermo_dict_by_field[(jmax, E)] = thermo_data
+
+				except Exception as e:
+					print(f"[X] Error reading file: {e}")
+			else:
+				print("[!] File does not exist.\n")
+
+		#plot_cv_surface(
+		#	thermo_dict_by_field=thermo_dict_by_field,
+		#	temperature_list=temperature_list,
+		#	unit=unit_want,
+		#	mode="surface",  # or "wireframe"
+		#	out_path="cv_surface.png"
+		#)
+
+		#plot_cv_surface(
+		#	thermo_dict_by_field=thermo_dict_by_field,
+		#	temperature_list=temperature_list,
+		#	unit="J/mol",
+		#	mode="wireframe",
+		#	out_path="cv_surface_lmax10.png",
+		#	fixed_lmax=10,
+		#	title=r"Rotational Heat Capacity $C_v(T, E)$ for $l_{\max} = 10$"
+		#)
+
+		#plot_cv_heatmap(
+		#	thermo_dict_by_field=thermo_dict_by_field,
+		#	temperature_list=temperature_list,
+		#	unit="J/mol",
+		#	fixed_lmax=10,
+		#	out_path="cv_heatmap_lmax10_annotated.png",
+		#	export_txt=True,
+		#	txt_path="cv_matrix_lmax10.txt"
+		#)
+
+
+		#plot_cv_overlay(
+		#	thermo_dict_by_field=thermo_dict_by_field,
+		#	unit=unit,
+		#	out_path="cv_overlay.png"
+		#)
 
 
 
@@ -613,9 +833,9 @@ def read_all_quantum_data_files_with_thermo(
 read_all_quantum_data_files_with_thermo(
 	base_output_dir="/Users/tapas/academic-project/exact-diagonalization/pkg_monomer_rotor/output/",
 	molecule="HF",
-	electric_field_list=[0.1] + list(range(20, 201, 20)),
-	jmax_list=list(range(10, 21, 2)),
-	temperature_list=list(range(10, 51, 5)),
+	electric_field_list=[0.1] + list(range(20, 21, 20)),
+	jmax_list=list(range(10, 21, 20)),
+	temperature_list=list(range(5, 501, 5)),
 	spin_type="spinless",
 	unit_want="wavenumber",
 	#unit_want="SI",
