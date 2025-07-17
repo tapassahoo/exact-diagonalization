@@ -390,7 +390,7 @@ def save_thermo_with_Z_and_populations(
 	thermo_data,
 	temperatures,
 	eigenvalues,
-	unit="Kelvin",
+	unit="wavenumber",
 	txt_path="thermo_summary.txt",
 	csv_path="thermo_summary.csv",
 	save_populations=False,
@@ -417,9 +417,9 @@ def save_thermo_with_Z_and_populations(
 		f.write(f"{'Temperature (K)':>15}  {f'U ({unit})':>15}  {f'Cv ({unit}/K)':>15}  {f'Z':>15}\n")
 		f.write("-" * 65 + "\n")
 		for T in sorted(temperatures):
-			Z = thermo_data[T]["Z"]
-			U = thermo_data[T][f"U ({unit})"]
-			Cv = thermo_data[T][f"Cv ({unit}/K)"]
+			Z = thermo_data[T]["partition_function"]
+			U = thermo_data[T]['internal_energy']
+			Cv = thermo_data[T]['heat_capacity']
 			f.write(f"{T:15.1f}  {U:15.6f}  {Cv:15.6f}  {Z:15.6f}\n")
 	print(f"[✓] TXT summary saved: {txt_path}")
 
@@ -428,9 +428,9 @@ def save_thermo_with_Z_and_populations(
 	# -----------------------------------
 	df = pd.DataFrame({
 		"Temperature (K)": sorted(temperatures),
-		f"U ({unit})": [thermo_data[T][f"U ({unit})"] for T in sorted(temperatures)],
-		f"Cv ({unit}/K)": [thermo_data[T][f"Cv ({unit}/K)"] for T in sorted(temperatures)],
-		"Partition Function Z": [thermo_data[T]["Z"] for T in sorted(temperatures)]
+		f"U ({unit})": [thermo_data[T]['internal_energy'] for T in sorted(temperatures)],
+		f"Cv ({unit}/K)": [thermo_data[T]['heat_capacity'] for T in sorted(temperatures)],
+		"Partition Function Z": [thermo_data[T]['partition_function'] for T in sorted(temperatures)]
 	})
 	df.to_csv(csv_path, index=False)
 	print(f"[✓] CSV summary saved: {csv_path}")
@@ -493,18 +493,26 @@ def read_all_quantum_data_files_with_thermo(
 	thermo_dict_by_field = {}
 	for jmax, E in product(jmax_list, electric_field_list):
 
-		subdir = f"{spin_type}_{molecule}_jmax_{jmax}_field_{E:.2f}kV_per_cm"
+		subdir_name = f"{spin_type}_{molecule}_jmax_{jmax}_field_{E:.2f}kV_per_cm"
+		
 
-		filename = f"quantum_data_{subdir}.nc"
-		filename_thermo_data = f"equilibrium_properties_data_{subdir}"
-		filename_heat_capacity_vs_temperature_plot = f"heat_capacity_vs_temperature_plot_{subdir}"
-		filename_population_data = f"equilibrium_population_data_{subdir}"
-		file_path = os.path.join(base_output_dir, subdir, "data", filename)
+		# Define filenames
+		nc_file_name = f"quantum_data_{subdir_name}.nc"
+		nc_file_path = os.path.join(base_output_dir, subdir_name, "data", nc_file_name)
 
-		print(f"\n[OK] Checking file: {file_path}")
-		if os.path.exists(file_path):
+		population_file_name = f"equilibrium_state_population_data_{subdir_name}"
+		equilibrium_population_file_path = os.path.join(output_summary_dir, population_file_name)
+
+		thermo_file_name = f"equilibrium_thermodynamic_properties_{subdir_name}"
+		equilibrium_properties_file_path = os.path.join(output_summary_dir, thermo_file_name)
+
+		cv_plot_file_name = f"heat_capacity_vs_temperature_plot_{subdir_name}"
+		cv_vs_temp_plot_file_path = os.path.join(output_summary_dir, cv_plot_file_name)
+
+		print(f"\n[OK] Checking file: {nc_file_path}")
+		if os.path.exists(nc_file_path):
 			try:
-				with Dataset(file_path, 'r') as nc:
+				with Dataset(nc_file_path, 'r') as nc:
 					if "eigenvalues" not in nc.variables:
 						print("[WARNING] No eigenvalues found.")
 						continue
@@ -532,21 +540,18 @@ def read_all_quantum_data_files_with_thermo(
 						print(f"[ ] U = {entry['internal_energy']:.4f} {entry['display_unit']}")
 						print(f"[ ] Cv = {entry['heat_capacity']:.4f} {entry['display_cv_unit']}")
 
-					# Output file prefix
-					base_name_equilibrium_properties = os.path.join(output_summary_dir, filename_thermo_data)
-					base_name_equilibrium_population = os.path.join(output_summary_dir, filename_population_data)
 
-					"""
 					save_thermo_with_Z_and_populations(
 						thermo_data=thermo_data,
 						temperatures=temperature_list,
 						eigenvalues=eigenvalues,
 						unit=unit_want,
-						txt_path=f"{base_name_equilibrium_properties}.txt",
-						csv_path=f"{base_name_equilibrium_properties}.csv",
+						txt_path=f"{equilibrium_properties_file_path}.txt",
+						csv_path=f"{equilibrium_properties_file_path}.csv",
 						save_populations=True,  # Save individual files
-						population_dir=f"{base_name_equilibrium_population}"
+						population_dir=f"{equilibrium_population_file_path}"
 					)
+					"""
 
 					base_name_heat_capacity_vs_temperature_plot = os.path.join(output_summary_dir, filename_heat_capacity_vs_temperature_plot)
 					plot_cv_vs_temperature(
