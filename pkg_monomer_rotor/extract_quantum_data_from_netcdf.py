@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 from pathlib import Path
 from itertools import product
@@ -319,7 +320,7 @@ def compute_thermo_from_eigenvalues(eigenvalues, temperature_list, unit):
 	-------
 	dict
 		Dictionary keyed by temperature (in K), each entry containing:
-			- temperature_K	    : Temperature in Kelvin
+			- temperature_K		: Temperature in Kelvin
 			- unit				: 'wavenumber' or 'SI'
 			- display_unit		: Unit for U
 			- display_cv_unit	: Unit for Cv
@@ -327,7 +328,7 @@ def compute_thermo_from_eigenvalues(eigenvalues, temperature_list, unit):
 			- partition_function: Canonical partition function Z
 			- populations		: Normalized Boltzmann populations
 			- internal_energy	: Mean energy (U)
-			- heat_capacity	    : Heat capacity (Cv)
+			- heat_capacity		: Heat capacity (Cv)
 			- levels_used		: Number of energy levels included
 			- convergence_energy: Energy at which convergence was met (in cm⁻¹)
 			- convergence_index : Index where threshold was first met
@@ -339,7 +340,7 @@ def compute_thermo_from_eigenvalues(eigenvalues, temperature_list, unit):
 	if unit not in {"wavenumber", "SI"}:
 		raise ValueError("Unit must be either 'wavenumber' or 'SI'.")
 
-	BOLTZMANN_CM_INV_PER_K = 0.69503476           # k_B = 0.69503476 cm^-1/K
+	BOLTZMANN_CM_INV_PER_K = 0.69503476		   # k_B = 0.69503476 cm^-1/K
 	threshold = 1e-100
 
 	results = {}
@@ -357,7 +358,7 @@ def compute_thermo_from_eigenvalues(eigenvalues, temperature_list, unit):
 		converged = False
 
 		for i, Ei in enumerate(E_shifted):
-			wi = np.exp(-beta * Ei)               # unitless
+			wi = np.exp(-beta * Ei)			   # unitless
 			if wi <= threshold:
 				convergence_index = i
 				converged = True
@@ -380,7 +381,7 @@ def compute_thermo_from_eigenvalues(eigenvalues, temperature_list, unit):
 		energies_used_orig = energies[:convergence_index]
 		E_avg = np.dot(populations, energies_used_orig)
 		E2_avg = np.dot(populations, energies_used_orig**2)
-		Cv_cm1 = beta**2 * (E2_avg - E_avg**2)        # Need to chech its form
+		Cv_cm1 = BOLTZMANN_CM_INV_PER_K * beta**2 * (E2_avg - E_avg**2) # cm^-1/K
 
 		if unit == "wavenumber":
 			U_out = E_avg
@@ -421,7 +422,7 @@ def save_thermo_with_Z_and_populations(
 	population_dir: str = "populations_txt"
 ):
 	"""
-	Save thermodynamic data (U, Cv, Z) to a TXT and CSV file, and optionally
+	Save thermodynamic data (U, Cv, Z) to TXT and CSV files, and optionally
 	save population distributions for each temperature.
 
 	Parameters:
@@ -435,166 +436,101 @@ def save_thermo_with_Z_and_populations(
 		population_dir (str): Directory to store population text files.
 	"""
 
-	# Get display unit safely from any temperature entry
+	# -------------------------
+	# Extract display units safely
+	# -------------------------
 	try:
 		first_T = next(iter(thermo_data))
-		display_unit = thermo_data[first_T].get("display_unit", unit)
-		display_cv_unit = thermo_data[first_T].get("display_cv_unit", f"{unit}/K")
+		display_unit = thermo_data[first_T].get("display_unit", "unit")
+		display_cv_unit = thermo_data[first_T].get("display_cv_unit", "unit")
 	except Exception as e:
 		print(f"[X] Error accessing display units: {e}")
-		display_unit = unit
-		display_cv_unit = f"{unit}/K"
+		display_unit = "unit"
+		display_cv_unit = "unit"
 
 	# -------------------------
-	# Write TXT Summary
+	# Write TXT summary
 	# -------------------------
 	header_line = (
 		f"{'Temperature (K)':>15}  "
 		f"{f'U ({display_unit})':>20}  "
-		f"{f'Cv ({display_cv_unit})':>25}  "
+		f"{f'Cv ({display_cv_unit})':>20}  "
 		f"{'Z':>15}\n"
 	)
+	divider = "-" * len(header_line.strip())
 
 	try:
 		with open(txt_path, "w") as f:
-			f.write(header_line)
-			f.write("-" * 80 + "\n")
+			f.write(f"# Thermodynamic summary generated on {datetime.now():%Y-%m-%d %H:%M:%S}\n")
+			f.write("# " + header_line)
+			f.write("#" + divider + "\n")
+
 			for T in sorted(temperatures):
 				entry = thermo_data.get(T, {})
-				Z = entry.get("partition_function", np.nan)
-				U = entry.get("internal_energy", np.nan)
-				Cv = entry.get("heat_capacity", np.nan)
-				f.write(f"{T:15.1f}  {U:20.6f}  {Cv:25.6f}  {Z:15.6f}\n")
+				Z = entry.get("partition_function")
+				U = entry.get("internal_energy")
+				Cv = entry.get("heat_capacity")
+
+				Z_str = f"{Z:15.6f}" if isinstance(Z, (int, float)) else f"{'N/A':>15}"
+				U_str = f"{U:20.6f}" if isinstance(U, (int, float)) else f"{'N/A':>20}"
+				Cv_str = f"{Cv:20.6f}" if isinstance(Cv, (int, float)) else f"{'N/A':>20}"
+
+				f.write(f"{T:15.1f}  {U_str}  {Cv_str}  {Z_str}\n")
+
 		print(f"[✓] TXT summary saved: {txt_path}")
 	except Exception as e:
 		print(f"[X] Failed to write TXT summary: {e}")
 
 	# -------------------------
-	# Write CSV Summary
+	# Write CSV summary
 	# -------------------------
 	try:
-		df = pd.DataFrame({
-			"Temperature (K)": sorted(temperatures),
-			f"U ({display_unit})": [
-				thermo_data[T].get("internal_energy", np.nan) for T in sorted(temperatures)
-			],
-			f"Cv ({display_cv_unit})": [
-				thermo_data[T].get("heat_capacity", np.nan) for T in sorted(temperatures)
-			],
-			"Partition Function Z": [
-				thermo_data[T].get("partition_function", np.nan) for T in sorted(temperatures)
-			]
-		})
+		data_dict = {
+			"Temperature (K)": [],
+			f"U ({display_unit})": [],
+			f"Cv ({display_cv_unit})": [],
+			"Partition Function Z": []
+		}
+
+		for T in sorted(temperatures):
+			entry = thermo_data.get(T, {})
+			data_dict["Temperature (K)"].append(T)
+			data_dict[f"U ({display_unit})"].append(entry.get("internal_energy"))
+			data_dict[f"Cv ({display_cv_unit})"].append(entry.get("heat_capacity"))
+			data_dict["Partition Function Z"].append(entry.get("partition_function"))
+
+		df = pd.DataFrame(data_dict)
 		df.to_csv(csv_path, index=False)
 		print(f"[✓] CSV summary saved: {csv_path}")
 	except Exception as e:
 		print(f"[X] Failed to write CSV summary: {e}")
 
 	# -------------------------
-	# Save Populations (Optional)
+	# Save population distributions (optional)
 	# -------------------------
 	if save_populations:
-		pop_dir = Path(population_dir)
-		pop_dir.mkdir(parents=True, exist_ok=True)
-		eigenvalues = np.asarray(eigenvalues)
-
-		for T in sorted(temperatures):
-			entry = thermo_data.get(T, {})
-			populations = entry.get("populations", None)
-			if populations is None:
-				continue
-
-			pop_file_path = pop_dir / f"populations_T_{T:.1f}K.txt"
-			try:
-				with open(pop_file_path, "w") as pf:
-					pf.write(f"# Population distribution at T = {T:.1f} K\n")
-					pf.write(f"# {'Index':>6}  {'Energy (' + unit + ')':>20}  {'P_i':>15}\n")
-					pf.write("#" + "-" * 55 + "\n")
-					for i, (E_i, P_i) in enumerate(zip(eigenvalues, populations)):
-						pf.write(f"{i:6d}  {E_i:20.6f}  {P_i:15.6e}\n")
-				print(f"[✓] Populations saved: {pop_file_path}")
-			except Exception as e:
-				print(f"[X] Failed to write populations at T={T} K: {e}")
-
-if False:
-	def save_thermo_with_Z_and_populations(
-		thermo_data,
-		temperatures,
-		eigenvalues,
-		unit="wavenumber",
-		txt_path="thermo_summary.txt",
-		csv_path="thermo_summary.csv",
-		save_populations=False,
-		population_dir="populations_txt"
-	):
-		"""
-		Save thermodynamic data including Z and optional populations to .txt and .csv.
-
-		Parameters:
-			thermo_data (dict): Output from compute_thermo_from_eigenvalues().
-			temperatures (list): Temperatures (in Kelvin).
-			eigenvalues (array): Energy eigenvalues (in the same unit).
-			unit (str): Energy unit.
-			txt_path (str): Path to output .txt summary.
-			csv_path (str): Path to output .csv summary.
-			save_populations (bool): If True, save state-wise populations per T.
-			population_dir (str): Output directory for per-T population text files.
-		"""
-
-		# -----------------------------------
-		# Save formatted TXT summary
-		# -----------------------------------
-		display_unit = thermo_data[10]["display_unit"]
-		header = (
-			f"{'Temperature (K)':>15}  "
-			f"{f'U ({display_unit})':>15}  "
-			f"{f'Cv ({display_unit}/K)':>20}  "
-			f"{'Z':>15}\n"
-		)
-
-		with open(txt_path, "w") as f:
-			f.write(header)
-			f.write("-" * 65 + "\n")
-			for T in sorted(temperatures):
-				Z = thermo_data[T]["partition_function"]
-				U = thermo_data[T]['internal_energy']
-				Cv = thermo_data[T]['heat_capacity']
-				f.write(f"{T:15.1f}  {U:15.6f}  {Cv:15.6f}  {Z:15.6f}\n")
-		print(f"[✓] TXT summary saved: {txt_path}")
-
-		# -----------------------------------
-		# Save CSV summary
-		# -----------------------------------
-		df = pd.DataFrame({
-			"Temperature (K)": sorted(temperatures),
-			f"U ({unit})": [thermo_data[T]['internal_energy'] for T in sorted(temperatures)],
-			f"Cv ({unit}/K)": [thermo_data[T]['heat_capacity'] for T in sorted(temperatures)],
-			"Partition Function Z": [thermo_data[T]['partition_function'] for T in sorted(temperatures)]
-		})
-		df.to_csv(csv_path, index=False)
-		print(f"[✓] CSV summary saved: {csv_path}")
-
-		# -----------------------------------
-		# Save per-temperature population files (optional)
-		# -----------------------------------
-		if save_populations:
-			os.makedirs(population_dir, exist_ok=True)
-			eigenvalues = np.array(eigenvalues)
+		try:
+			pop_dir = Path(population_dir)
+			pop_dir.mkdir(parents=True, exist_ok=True)
+			eigenvalues = np.asarray(eigenvalues)
 
 			for T in sorted(temperatures):
-				pops = thermo_data[T].get("populations")
-				if pops is None:
+				entry = thermo_data.get(T, {})
+				populations = entry.get("populations")
+				if populations is None:
 					continue
 
-				pop_file = f"populations_T_{T:.1f}K.txt"
-				full_path = os.path.join(population_dir, pop_file)
-				with open(full_path, "w") as pf:
+				pop_file_path = pop_dir / f"populations_T_{T:.1f}K.txt"
+				with open(pop_file_path, "w") as pf:
 					pf.write(f"# Population distribution at T = {T:.1f} K\n")
-					pf.write(f"# {'Index':>6}  {'Energy (' + unit + ')':>20}  {'P_i':>15}\n")
-					pf.write("#" + "-" * 50 + "\n")
-					for i, (Ei, Pi) in enumerate(zip(eigenvalues, pops)):
-						pf.write(f"{i:6d}  {Ei:20.6f}  {Pi:15.6e}\n")
-				print(f"[✓] Populations saved: {full_path}")
+					pf.write(f"# {'Index':>6}  {'Energy (' + display_unit + ')':>20}  {'P_i':>15}\n")
+					pf.write("#" + "-" * 55 + "\n")
+					for i, (E_i, P_i) in enumerate(zip(eigenvalues, populations)):
+						pf.write(f"{i:6d}  {E_i:20.6f}  {P_i:20.6e}\n")
+				print(f"[✓] Populations saved: {pop_file_path}")
+
+		except Exception as e:
+			print(f"[X] Failed to save population files: {e}")
 
 def read_all_quantum_data_files_with_thermo(
 	quantum_data_root_dir: str,
@@ -670,9 +606,9 @@ def read_all_quantum_data_files_with_thermo(
 				unit_from_file = getattr(eigenval_var, "units", "unknown")
 				label_from_file = getattr(eigenval_var, "long_name", "eigenvalues")
 
-				print(f"[ ] Found {len(eigenvalues)} eigenvalues.")
-				print(f"[ ] Unit	   : {unit_from_file}")
-				print(f"[ ] Long name  : {label_from_file}")
+				print(f"[ ] {'Found':<12}: {len(eigenvalues)} eigenvalues")
+				print(f"[ ] {'Unit':<12}: {unit_from_file}")
+				print(f"[ ] {'Description':<12}: {label_from_file}")
 
 				# Compute thermodynamic properties
 				thermo_data = compute_thermo_from_eigenvalues(
@@ -685,19 +621,18 @@ def read_all_quantum_data_files_with_thermo(
 				print("\n[INFO] Thermodynamic Summary:")
 				for T in temperature_list:
 					entry = thermo_data[T]
-					print(f"\n[ ] T = {T} K")
-					print(f"[ ] levels_use = {entry['levels_used']}")
-					print(f"[ ] convergence_energy = {entry['convergence_energy']}")
-					print(f"[ ] convergence_index = {entry['convergence_index']}")
-					print(f"[ ] Z  = {entry['partition_function']:.4f}")
-					print(f"[ ] U  = {entry['internal_energy']:.4f} {entry['display_unit']}")
-					print(f"[ ] Cv = {entry['heat_capacity']:.4f} {entry['display_cv_unit']}")
+					print(f"\n[ ] {'T':<22}= {T} K")
+					print(f"[ ] {'levels_used':<22}= {entry['levels_used']}")
+					print(f"[ ] {'convergence_energy':<22}= {entry['convergence_energy']} {entry['display_unit']}")
+					print(f"[ ] {'convergence_index':<22}= {entry['convergence_index']}")
+					print(f"[ ] {'Z':<22}= {entry['partition_function']:.4f}")
+					print(f"[ ] {'U':<22}= {entry['internal_energy']:.4f} {entry['display_unit']}")
+					print(f"[ ] {'Cv':<22}= {entry['heat_capacity']:.4f} {entry['display_cv_unit']}\n")
 
-				"""
-				# Construct output file paths
-				file_prefix = output_summary_dir / f"equilibrium_thermodynamic_properties_{subdir_name}"
-				pop_dir = output_summary_dir / f"equilibrium_state_population_data_{subdir_name}"
-				plot_path = output_summary_dir / f"heat_capacity_vs_temperature_plot_{subdir_name}.png"
+
+				file_prefix = summary_output_dir / f"equilibrium_thermodynamic_properties_{data_subdir}"
+				pop_dir = summary_output_dir / f"equilibrium_state_population_data_{data_subdir}"
+				plot_path = summary_output_dir / f"heat_capacity_vs_temperature_plot_{data_subdir}.png"
 
 				# Export to file
 				if export_csv:
@@ -712,6 +647,7 @@ def read_all_quantum_data_files_with_thermo(
 						population_dir=str(pop_dir)
 					)
 
+				"""
 				if export_plot:
 					plot_cv_vs_temperature(
 						thermo_data=thermo_data,
@@ -719,10 +655,10 @@ def read_all_quantum_data_files_with_thermo(
 						context="Rotational",
 						out_path=plot_path
 					)
+				"""
 
 				# Store in output dictionary
 				thermo_dict_by_field[(jmax, E)] = thermo_data
-				"""
 
 		except Exception as e:
 			print(f"[X] Error reading or processing file: {e}")
@@ -774,7 +710,7 @@ read_all_quantum_data_files_with_thermo(
 	molecule="HF",
 	electric_field_list=[0.1] + list(range(20, 21, 20)),
 	jmax_list=list(range(10, 21, 10)),
-	temperature_list=list(range(5, 501, 5)),
+	temperature_list=list(range(5, 51, 50)),
 	spin_type="spinless",
 	unit_want="wavenumber",
 	#unit_want="SI",
