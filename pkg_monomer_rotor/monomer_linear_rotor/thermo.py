@@ -1,5 +1,6 @@
 from datetime import datetime
 import os
+import math
 from pathlib import Path
 from itertools import product
 import numpy as np
@@ -74,8 +75,6 @@ def plot_cv_vs_temperature(
 		plt.show()
 
 	plt.close()
-
-
 
 def compute_thermo_from_eigenvalues(eigenvalues, temperature_list, unit):
 	"""
@@ -256,7 +255,7 @@ def save_thermo_with_Z_and_populations(
 
 				f.write(f"{T:15.1f}  {U_str}  {Cv_str}  {Z_str}\n")
 
-		print(f"[✓] TXT summary saved: {txt_path}")
+		print(f"[INFO] TXT summary saved: {txt_path}")
 	except Exception as e:
 		print(f"[X] Failed to write TXT summary: {e}")
 
@@ -280,7 +279,7 @@ def save_thermo_with_Z_and_populations(
 
 		df = pd.DataFrame(data_dict)
 		df.to_csv(csv_path, index=False)
-		print(f"[✓] CSV summary saved: {csv_path}")
+		print(f"[INFO] CSV summary saved: {csv_path}")
 	except Exception as e:
 		print(f"[X] Failed to write CSV summary: {e}")
 
@@ -306,7 +305,7 @@ def save_thermo_with_Z_and_populations(
 					pf.write("#" + "-" * 55 + "\n")
 					for i, (E_i, P_i) in enumerate(zip(eigenvalues, populations)):
 						pf.write(f"{i:6d}  {E_i:20.6f}  {P_i:20.6e}\n")
-				print(f"[✓] Populations saved: {pop_file_path}")
+				print(f"[INFO] Populations saved: {pop_file_path}")
 
 		except Exception as e:
 			print(f"[X] Failed to save population files: {e}")
@@ -402,7 +401,14 @@ def read_all_quantum_data_files_with_thermo(
 					entry = thermo_data[T]
 					print(f"\n[ ] {'T':<22}= {T} K")
 					print(f"[ ] {'levels_used':<22}= {entry['levels_used']}")
-					print(f"[ ] {'convergence_energy':<22}= {entry['convergence_energy']} {entry['display_unit']}")
+					#print(f"[ ] {'convergence_energy':<22}= {entry['convergence_energy']} {entry['display_unit']}")
+					 # Convergence energy with conditional unit display
+					convergence_energy = entry.get("convergence_energy")
+					display_unit = entry.get("display_unit", "")
+					if isinstance(convergence_energy, (int, float)) and not math.isnan(convergence_energy):
+						print(f"[ ] {'convergence_energy':<22}= {convergence_energy:.6f} {display_unit}")
+					else:
+						print(f"[ ] {'convergence_energy':<22}= N/A")
 					print(f"[ ] {'convergence_index':<22}= {entry['convergence_index']}")
 					print(f"[ ] {'Z':<22}= {entry['partition_function']:.4f}")
 					print(f"[ ] {'U':<22}= {entry['internal_energy']:.4f} {entry['display_unit']}")
@@ -426,7 +432,6 @@ def read_all_quantum_data_files_with_thermo(
 						population_dir=str(pop_dir)
 					)
 
-				"""
 				if export_plot:
 					plot_cv_vs_temperature(
 						thermo_data=thermo_data,
@@ -434,7 +439,6 @@ def read_all_quantum_data_files_with_thermo(
 						context="Rotational",
 						out_path=plot_path
 					)
-				"""
 
 				# Store in output dictionary
 				thermo_dict_by_field[(jmax, E)] = thermo_data

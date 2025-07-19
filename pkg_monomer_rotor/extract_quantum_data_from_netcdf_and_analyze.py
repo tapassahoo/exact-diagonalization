@@ -270,25 +270,31 @@ def plot_cv_heatmap(
 		#	out_path="cv_overlay.png"
 		#)
 
+logging.basicConfig(level=logging.INFO, format="%(message)s")
+whom()
 
-
+quantum_data_root_dir="/Users/tapas/academic-project/exact-diagonalization/pkg_monomer_rotor/output/"
+molecule="HF"
+electric_field_list=[0.1] + list(range(20, 201, 200))
+jmax_list=list(range(10, 21, 20))
+temperature_list=[1.0]+list(range(2, 51, 2))
+print(temperature_list)
+unit_want="wavenumber"
+#unit_want="SI",
 
 read_all_quantum_data_files_with_thermo(
-	quantum_data_root_dir="/Users/tapas/academic-project/exact-diagonalization/pkg_monomer_rotor/output/",
-	molecule="HF",
-	electric_field_list=[0.1] + list(range(20, 201, 20)),
-	jmax_list=list(range(10, 21, 10)),
-	temperature_list=list(range(5, 501, 10)),
+	quantum_data_root_dir=quantum_data_root_dir,
+	molecule=molecule,
+	electric_field_list=electric_field_list,
+	jmax_list=jmax_list,
+	temperature_list=temperature_list,
 	spin_type="spinless",
-	unit_want="wavenumber",
-	#unit_want="SI",
+	unit_want=unit_want,
 	export_csv=True,
 	export_plot=True,
 	output_summary_dir="/Users/tapas/academic-project/results/"
 )
 
 
-logging.basicConfig(level=logging.INFO, format="%(message)s")
-whom()
 whoami()
 
