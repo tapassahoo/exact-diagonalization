@@ -20,6 +20,63 @@ from monomer_linear_rotor.utils import (
 from pkg_utils.utils import whoami
 from pkg_utils.env_report import whom
 
+def plot_cv_vs_temperature(
+	thermo_data,
+	unit="wavenumber",
+	out_path=None,
+	title=None,
+	context="Rotational"
+):
+	"""
+	Plot Cv vs Temperature using LaTeX-rendered labels with automatic context-based titling.
+
+	Parameters:
+		thermo_data (dict): {T: {Cv data}}
+		unit (str): Units of heat capacity ("Kelvin", "J/mol", or "eV").
+		out_path (str): Path to save the plot. If None, displays instead.
+		title (str): Custom title. If None, auto-generated from context.
+		context (str): Physical context like "Rotational", "Vibrational", etc.
+	"""
+	# Enable LaTeX rendering in matplotlib
+	mpl.rcParams.update({
+		"text.usetex": True,
+		"font.family": "serif",
+		"axes.labelsize": 12,
+		"font.size": 12,
+		"legend.fontsize": 11,
+		"xtick.labelsize": 10,
+		"ytick.labelsize": 10
+	})
+
+	# Extract data
+	T_vals = sorted(thermo_data.keys())
+	Cv_vals = [thermo_data[T]['heat_capacity'] for T in T_vals]
+
+	# Set default title
+	if title is None:
+		title = rf"{context} Heat Capacity $C_V$ vs Temperature $T$"
+
+	# Create plot
+	plt.figure(figsize=(6, 4))
+	plt.plot(T_vals, Cv_vals, 'o-', label=rf"$C_V$ ({unit}/K)")
+	plt.xlabel(r"Temperature $T$ (K)")
+	plt.ylabel(rf"Heat Capacity $C_V$ ({unit}/K)")
+	plt.title(title)
+	plt.grid(True)
+	plt.legend()
+	plt.tight_layout()
+
+	# Save or show
+	if out_path:
+		plt.savefig(out_path, dpi=300)
+		print(f"[✓] Plot saved to: {out_path}")
+	else:
+		plt.show()
+
+	plt.close()
+
+
+
 def compute_thermo_from_eigenvalues(eigenvalues, temperature_list, unit):
 	"""
 	Compute thermodynamic properties (Z, populations, U, Cv) from energy eigenvalues,
