@@ -182,3 +182,38 @@ def convert_dipole_field_energy_to_cm_inv(dipole_moment_D: float, electric_field
 	"""
 	return dipole_moment_D * electric_field_kVcm * 0.01679
 
+def wavenumber_to_joules_per_mole(wavenumber_cm_inv):
+	"""
+	Convert energy from wavenumber units (cm⁻¹) to energy in joules per mole (J/mol).
+
+	This function uses the direct conversion factor:
+
+		1 cm⁻¹ = 11.96265622 J/mol
+
+	This factor is derived from:
+		E [J/mol] = ν̃ × h × c × N_A
+
+	where:
+		h   = 6.62607015 × 10⁻³⁴ J·s	  (Planck's constant)
+		c   = 2.99792458 × 10⁸ m/s		(speed of light)
+		N_A = 6.02214076 × 10²³ mol⁻¹	 (Avogadro's number)
+		and 1 cm⁻¹ = 100 m⁻¹
+
+	Parameters
+	----------
+	wavenumber_cm_inv : float or array_like
+		Energy expressed in wavenumber units (cm⁻¹). Can be a scalar or NumPy-compatible array.
+
+	Returns
+	-------
+	energy_j_per_mol : float or ndarray
+		Energy converted to joules per mole (J/mol), matching the shape and type of the input.
+
+	Example
+	-------
+	>>> wavenumber_to_joules_per_mole(1000)
+	11962.65622  # J/mol
+	"""
+	CONVERSION_FACTOR = 11.96265622  # 1 cm⁻¹ = 11.96265622 J/mol
+	return wavenumber_cm_inv * CONVERSION_FACTOR
+
