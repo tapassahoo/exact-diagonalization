@@ -22,23 +22,23 @@ from pkg_utils.utils import whoami
 from pkg_utils.env_report import whom
 
 def plot_cv_vs_temperature(
-	thermo_data,
-	unit="wavenumber",
-	out_path=None,
-	title=None,
-	context="Rotational"
+	thermo_data: dict,
+	unit: str = None,				# <-- Optional manual override
+	out_path: str = None,
+	title: str = None,
+	context: str = "Rotational"
 ):
 	"""
-	Plot Cv vs Temperature using LaTeX-rendered labels with automatic context-based titling.
+	Plot heat capacity (Cv) vs Temperature using LaTeX-rendered labels.
 
 	Parameters:
-		thermo_data (dict): {T: {Cv data}}
-		unit (str): Units of heat capacity ("Kelvin", "J/mol", or "eV").
-		out_path (str): Path to save the plot. If None, displays instead.
-		title (str): Custom title. If None, auto-generated from context.
-		context (str): Physical context like "Rotational", "Vibrational", etc.
+		thermo_data (dict): Dictionary with temperature as keys and Cv data as values.
+		unit (str): Optional override for Cv unit (e.g., 'cm^{-1}', 'J/mol'). If None, uses value from thermo_data.
+		out_path (str): If provided, saves the plot to this path; otherwise displays the plot.
+		title (str): Custom plot title. If None, a default one is generated.
+		context (str): Physical context such as "Rotational", "Vibrational", etc.
 	"""
-	# Enable LaTeX rendering in matplotlib
+	# Enable LaTeX rendering
 	mpl.rcParams.update({
 		"text.usetex": True,
 		"font.family": "serif",
@@ -49,25 +49,32 @@ def plot_cv_vs_temperature(
 		"ytick.labelsize": 10
 	})
 
-	# Extract data
-	T_vals = sorted(thermo_data.keys())
-	Cv_vals = [thermo_data[T]['heat_capacity'] for T in T_vals]
+	if not thermo_data:
+		print("[X] No thermodynamic data to plot.")
+		return
 
-	# Set default title
+	# Extract units
+	first_T = next(iter(thermo_data))
+	final_unit = thermo_data[first_T]["display_cv_unit"]
+
+	# Prepare data
+	T_vals = sorted(thermo_data.keys())
+	Cv_vals = [thermo_data[T]["heat_capacity"] for T in T_vals]
+
+	# Default title
 	if title is None:
 		title = rf"{context} Heat Capacity $C_V$ vs Temperature $T$"
 
-	# Create plot
+	# Plotting
 	plt.figure(figsize=(6, 4))
-	plt.plot(T_vals, Cv_vals, 'o-', label=rf"$C_V$ ({unit}/K)")
+	plt.plot(T_vals, Cv_vals, 'o-', label=rf"$C_V$ ($\mathrm{{{final_unit}}}$/K)")
 	plt.xlabel(r"Temperature $T$ (K)")
-	plt.ylabel(rf"Heat Capacity $C_V$ ({unit}/K)")
+	plt.ylabel(rf"$C_V$ ($\mathrm{{{final_unit}}}$/K)")
 	plt.title(title)
 	plt.grid(True)
 	plt.legend()
 	plt.tight_layout()
 
-	# Save or show
 	if out_path:
 		plt.savefig(out_path, dpi=300)
 		print(f"[✓] Plot saved to: {out_path}")
@@ -447,6 +454,3 @@ def read_all_quantum_data_files_with_thermo(
 			print(f"[X] Error reading or processing file: {e}")
 
 	return thermo_dict_by_field
-
-
-
