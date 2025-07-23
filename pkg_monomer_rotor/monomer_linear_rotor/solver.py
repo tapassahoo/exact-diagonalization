@@ -23,7 +23,7 @@ def compute_eigensystem(H, num_eig=6, return_vectors=True):
 	dim = H.shape[0]
 
 	# Choose eigensolver based on matrix size
-	if dim <= 300:
+	if dim <= 2000:
 		eigenvalues, eigenvectors = eigh(H)
 	else:
 		if return_vectors:
