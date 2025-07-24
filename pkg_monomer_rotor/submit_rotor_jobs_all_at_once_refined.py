@@ -316,7 +316,7 @@ def check_job_status(
 	summary_rows,
 	dry_run=False,
 	script_name=None,
-	cmd_str=None
+	cmd=None
 ):
 	"""
 	Check the status of a job. Append status to summary_rows if the job is already submitted,
@@ -325,6 +325,7 @@ def check_job_status(
 
 	stdout_path = os.path.join(job_dir, f"{tag}.stdout")
 	stderr_path = os.path.join(job_dir, f"{tag}.stderr")
+	cmd_str = " ".join(cmd)
 
 	# --- DRY-RUN handling ---
 	if dry_run:
@@ -362,14 +363,20 @@ def check_job_status(
 					f.write("#!/bin/bash\n")
 					f.write(f"{cmd_str}\n")
 				os.chmod(run_script, 0o755)
+				# Launch process
+				with open(stdout_path, "w") as out_f, open(stderr_path, "w") as err_f:
+					subprocess.Popen(cmd, stdout=out_f, stderr=err_f)
+
 			except Exception as e:
 				print(f"[WARNING   ] {tag:<{label_width}}: Failed to write run_command.sh — {e}")
+				return
 
 		print(f"[NEW JOB] {tag:<{label_width}}: Directory created.")
 		print(f"{'':{label_width}}{'Job Name':<{label_width}}: {tag}")
 		print(f"{'':{label_width}}{'Command':<{label_width}}: {cmd_str}")
 		print(f"{'':{label_width}}{'Stdout':<{label_width}}: {stdout_path}")
 		print(f"{'':{label_width}}{'Stderr':<{label_width}}: {stderr_path}")
+		print(f"[SUBMITTED] \n")
 
 		return False  # Proceed to submit
 
@@ -429,22 +436,22 @@ def check_job_status(
 				content = f.read()
 				if "HURRAY ALL COMPUTATIONS COMPLETED DATA SUCCESSFULLY WRITTEN TO NETCDF FILES" in content:
 					status = "COMPLETED"
-					print(f"[COMPLETED ] {tag:<{label_width}}: Job completed.")
-					print(f"{'':{label_width}}{'Command':<{label_width}}: {cmd_str}")
-					print(f"{'':{label_width}}{'Stdout':<{label_width}}: {stdout_path}")
-					print(f"{'':{label_width}}{'Stderr':<{label_width}}: {stderr_path}\n")
+					print(f"[{status} ] {tag:<{label_width}}")
+					#print(f"{'':{label_width}}{'Command':<{label_width}}: {cmd_str}")
+					#print(f"{'':{label_width}}{'Stdout':<{label_width}}: {stdout_path}")
+					#print(f"{'':{label_width}}{'Stderr':<{label_width}}: {stderr_path}\n")
 				elif len(content.strip()) > 0:
 					status = "RUNNING"
-					print(f"[RUNNING ] {tag:<{label_width}}: stdout indicates job is still running.")
-					print(f"{'':{label_width}}{'Command':<{label_width}}: {cmd_str}")
+					print(f"[{status} ] {tag:<{label_width}}: stdout indicates job is still running.")
+					#print(f"{'':{label_width}}{'Command':<{label_width}}: {cmd_str}")
 					print(f"{'':{label_width}}{'Stdout':<{label_width}}: {stdout_path}")
-					print(f"{'':{label_width}}{'Stderr':<{label_width}}: {stderr_path}\n")
+					#print(f"{'':{label_width}}{'Stderr':<{label_width}}: {stderr_path}\n")
 				else:
 					status = "PENDING"
-					print(f"[PENDING ] {tag:<{label_width}}: stdout exists but is empty.")
-					print(f"{'':{label_width}}{'Command':<{label_width}}: {cmd_str}")
+					print(f"[{status} ] {tag:<{label_width}}: stdout exists but is empty.")
+					#print(f"{'':{label_width}}{'Command':<{label_width}}: {cmd_str}")
 					print(f"{'':{label_width}}{'Stdout':<{label_width}}: {stdout_path}")
-					print(f"{'':{label_width}}{'Stderr':<{label_width}}: {stderr_path}\n")
+					#print(f"{'':{label_width}}{'Stderr':<{label_width}}: {stderr_path}\n")
 		except Exception as e:
 			status = "UNKNOWN"
 			print(f"[WARNING   ] {tag:<{label_width}}: Could not read stdout — {e}")
@@ -539,7 +546,6 @@ def main():
 
 		# Prepare I/O paths
 		job_dir = os.path.join(output_root_dir, tag)
-		cmd_str = " ".join(cmd)
 
 		skip_job=check_job_status(
 			tag=tag,
@@ -550,15 +556,11 @@ def main():
 			summary_rows=summary_rows,
 			dry_run=args.dry_run,
 			script_name=script_name,
-			cmd_str=cmd_str
+			cmd=cmd
 		)
 
 		if skip_job:
 			continue
-
-		# Launch process
-		with open(stdout_path, "w") as out_f, open(stderr_path, "w") as err_f:
-			subprocess.Popen(cmd, stdout=out_f, stderr=err_f)
 
 		"""
 		# --- Create shell script ---
