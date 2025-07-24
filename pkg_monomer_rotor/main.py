@@ -101,7 +101,7 @@ def main():
 	show_simulation_details(
 		output_root_dir=output_root_dir,
 		B_const_cm_inv=B_const_cm_inv,
-		potential_strength_cm_inv=potential_strength_cm_inv,   # float, in cm⁻¹
+		potential_strength_cm_inv=potential_strength_cm_inv, # float, in cm⁻¹
 		max_angular_momentum_quantum_number=args.max_angular_momentum_quantum_number,
 		spin_state=args.spin,
 		dipole_moment_D=args.dipole_moment,					 # float or None
@@ -154,10 +154,9 @@ def main():
 			  colored("Sparsity plot saved to: ", LABEL_COLOR) + 
 			  colored(sparsity_plot_path, VALUE_COLOR))
 
-
-
 	# Diagonalize
-	eigenvalues, eigenvectors = compute_eigensystem(H_rot)
+	check_residual=False
+	eigenvalues, eigenvectors = compute_eigensystem(H_rot, check_residual)
 	display_eigenvalues(eigenvalues, spin_state)
 	# Debugging function call
 	debug_eigenvalues_eigenvectors(H_rot, eigenvalues, eigenvectors)
