@@ -15,6 +15,37 @@ from pkg_utils.env_report import whom
 # Universal gas constant in J/mol·K
 GAS_CONSTANT_J_PER_MOL_K = 8.314462618
 
+def get_temperature_list(molecule: str):
+	if molecule == "HF":
+		return sorted(set(
+			list(np.arange(0.5, 20.1, 0.5)) +
+			list(range(20, 41, 1)) +
+			list(range(40, 101, 2))
+		))
+	elif molecule == "HCl":
+		return sorted(set(
+			list(np.arange(0.2, 12.1, 0.2)) +
+			list(np.arange(12.5, 20.1, 0.5)) +
+			list(np.arange(20.0, 40.1, 1.0)) +
+			list(range(40, 101, 2))
+		))
+	elif molecule == "HBr":
+		return sorted(set(
+			list(np.arange(0.2, 10.1, 0.2)) +
+			list(np.arange(10.0, 20.1, 0.5)) +
+			list(np.arange(20.0, 40.1, 1.0)) +
+			list(range(40, 101, 2))
+		))
+	elif molecule == "HI":
+		return sorted(set(
+			list(np.arange(0.2, 10.1, 0.2)) +
+			list(np.arange(10.0, 20.1, 0.5)) +
+			list(np.arange(20.0, 40.1, 1.0)) +
+			list(range(40, 101, 2))
+		))
+	else:
+		raise ValueError(f"Unsupported molecule: {molecule}")
+
 def plot_cv_surface(
 	thermo_dict_by_field,
 	temperature_list,
@@ -273,12 +304,13 @@ def plot_cv_heatmap(
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 whom()
 
-quantum_data_root_dir="/Users/tapas/academic-project/exact-diagonalization/pkg_monomer_rotor/output/"
-molecule="HF"
-electric_field_list=[0.1] + list(range(20, 201, 200))
-jmax_list=list(range(10, 21, 20))
-temperature_list=[1.0]+list(range(2, 51, 2))
-print(temperature_list)
+quantum_data_root_dir="/Users/tapas/academic-project/outputs/output/"
+molecule="HI"
+electric_field_list=[5] + list(range(20, 201, 20))
+jmax_list=list(range(20, 41, 5))
+# Usage
+temperature_list = get_temperature_list(molecule)
+
 unit_want="wavenumber"
 #unit_want="SI",
 
