@@ -127,6 +127,7 @@ def main():
 	#H_rot = T_rot_einsum + V_rot_einsum
 	dipole_terms = precompute_monomer_linear_rotor_dipole_terms(quantum_numbers_for_spin_state, potential_strength_cm_inv)
 	H_rot = build_monomer_linear_rotor_hamiltonian(quantum_numbers_for_spin_state, B_const_cm_inv, dipole_terms)
+	whoami()
 
 	# Check Hermiticity
 	if hermiticity_check:

@@ -28,6 +28,16 @@ def precompute_monomer_linear_rotor_dipole_terms(JM_list, potential_strength: fl
 					w2 = float(wigner_3j(Rational(J), 1, Rational(Jp), -Rational(M), 0, Rational(M)).evalf())
 
 					# Prefactor from angular momentum algebra
+					# Note:
+					# For integer M, (-1)**(-M) == (-1)**M because:
+					#   (-1)**M alternates between +1 (M even) and -1 (M odd).
+					#   The inverse power simply flips sign in the exponent,
+					#   but since the sequence is periodic with period 2, the value is unchanged.
+					# Therefore:
+					#   -(-1)**(-M) == -(-1)**M
+					#
+					# The prefactor expression thus remains identical whether you use (-M) or M in the exponent.
+					#prefactor = -(-1)**(-M) * potential_strength * np.sqrt((2 * J + 1) * (2 * Jp + 1)) 
 					prefactor = -(-1)**M * potential_strength * np.sqrt((2 * J + 1) * (2 * Jp + 1))
 
 					# Store non-zero matrix elements
