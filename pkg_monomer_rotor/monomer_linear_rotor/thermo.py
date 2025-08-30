@@ -356,11 +356,13 @@ def read_all_quantum_data_files_with_thermo(
 	summary_subdir = f"{spin_type}_{molecule}_monomer_in_electric_field"
 	summary_output_dir = output_base_dir / summary_subdir
 
-	# Create the output directory if it does not exist
-	summary_output_dir.mkdir(parents=True, exist_ok=True)
-
-	# Confirm creation
-	print(f"[INFO] Output directory created: {summary_output_dir.resolve()}\n")
+	# Check if directory exists
+	if summary_output_dir.exists():
+		print(f"[INFO] Output directory already exists: {summary_output_dir.resolve()}\n")
+	else:
+		# Create the output directory if it does not exist
+		summary_output_dir.mkdir(parents=True, exist_ok=True)
+		print(f"[INFO] Output directory created: {summary_output_dir.resolve()}\n")
 
 	# Initialize dictionary to hold thermo data by (jmax, E)
 	thermo_dict_by_field = {}
