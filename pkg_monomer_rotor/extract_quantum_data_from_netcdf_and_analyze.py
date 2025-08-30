@@ -301,9 +301,6 @@ def plot_cv_heatmap(
 		#	out_path="cv_overlay.png"
 		#)
 
-logging.basicConfig(level=logging.INFO, format="%(message)s")
-whom()
-
 quantum_data_root_dir="/Users/tapas/academic-project/outputs/output/"
 molecule="HI"
 electric_field_list=[5] + list(range(20, 201, 20))
@@ -328,5 +325,4 @@ read_all_quantum_data_files_with_thermo(
 )
 
 
-whoami()
 

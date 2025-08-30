@@ -129,7 +129,8 @@ def build_monomer_linear_rotor_hamiltonian(JM_list, B_const, dipole_terms):
 				H[i, j] = val
 				if i != j:
 					H[j, i] = val
-	return H.tocsr()
+	return H
+	#return H.tocsr()
 
 def plot_sparsity(H, JM_list, save_path=None, dpi=600, max_labels=30, color='black'):
 	"""

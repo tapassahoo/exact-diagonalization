@@ -69,8 +69,9 @@ def whom():
 	"""
 	Prints and logs basic system information.
 	"""
+	logging.basicConfig(level=logging.INFO, format="%(message)s")
 	print("\n")
-	logging.info("="*60)
+	logging.info("="*80)
 	logging.info("Execution Environment Info:")
 	logging.info(f"User           : {getpass.getuser()}")
 	logging.info(f"Hostname       : {socket.gethostname()}")
@@ -84,7 +85,7 @@ def whom():
 	logging.info(f"Python Version : {platform.python_version()}")
 	logging.info(f"Working Dir    : {os.getcwd()}")
 	logging.info(f"Timestamp      : {datetime.now()}")
-	logging.info("="*60)
+	logging.info("="*80)
 
 def main():
 	parser = argparse.ArgumentParser(description="Check, list, and install Python packages.")

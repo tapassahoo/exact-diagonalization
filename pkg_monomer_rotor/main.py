@@ -52,6 +52,8 @@ from monomer_linear_rotor.solver import (
 	compute_eigensystem
 )
 from monomer_linear_rotor.utils import (
+	rephase_eigenvectors_real,
+	analyze_matrix,
 	is_hermitian,
 	show_simulation_details,
 	generate_filename,
@@ -127,6 +129,14 @@ def main():
 	#H_rot = T_rot_einsum + V_rot_einsum
 	dipole_terms = precompute_monomer_linear_rotor_dipole_terms(quantum_numbers_for_spin_state, potential_strength_cm_inv)
 	H_rot = build_monomer_linear_rotor_hamiltonian(quantum_numbers_for_spin_state, B_const_cm_inv, dipole_terms)
+	result = analyze_matrix(H_rot)
+	print("\n\n")
+	print(f"Is real? {analyze_matrix(H_rot)["is_real"]}")
+	print(f"Is symmetric? {analyze_matrix(H_rot)["is_symmetric"]}")
+	print(f"Is hermitian? {analyze_matrix(H_rot)["is_hermitian"]}")
+	print(f"Is eigenvectors real? {analyze_matrix(H_rot)["eigenvectors_real"]}")
+	print("\n\n")
+	print(analyze_matrix(H_rot)["eigenvectors"][-2,:])
 	whoami()
 
 	# Check Hermiticity

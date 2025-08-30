@@ -8,6 +8,49 @@ from typing import Optional
 from pkg_utils.utils import whoami
 from pkg_utils.config import *
 
+def rephase_eigenvectors_real(eigvecs, tol=1e-12):
+	"""
+	Try to rephase complex eigenvectors so they are real
+	if possible (within tolerance).
+	"""
+	vecs_real = eigvecs.copy()
+	for i in range(vecs_real.shape[1]):
+		idx = np.argmax(np.abs(vecs_real[:, i]))  # first nonzero element
+		if np.abs(vecs_real[idx, i]) > tol:
+			phase = np.angle(vecs_real[idx, i])
+			vecs_real[:, i] *= np.exp(-1j * phase)
+	return vecs_real
+
+def analyze_matrix(A, tol=1e-12):
+	if issparse(A):
+		# Check if all imaginary parts are near zero
+		is_real = np.all(np.abs(A.imag.data) < tol)
+		
+		# Check symmetry/Hermitian using sparse methods
+		is_symmetric = is_real and ((A - A.T).count_nonzero() == 0)
+		is_hermitian = ((A - A.getH()).count_nonzero() == 0)
+		
+		# Dense eigenvalue computation (need to convert anyway)
+		eigvals, eigvecs = np.linalg.eigh(A.toarray()) if is_hermitian else np.linalg.eig(A.toarray())
+	else:
+		is_real = np.all(np.abs(np.imag(A)) < tol)
+		is_symmetric = np.allclose(A, A.T, atol=tol) if is_real else False
+		is_hermitian = np.allclose(A, A.conj().T, atol=tol)
+		eigvals, eigvecs = np.linalg.eigh(A) if is_hermitian else np.linalg.eig(A)
+	
+	eigvals_real = np.all(np.abs(np.imag(eigvals)) < tol)
+	eigvecs_real = np.all(np.abs(np.imag(eigvecs)) < tol)
+
+	return {
+		"is_real": is_real,
+		"is_symmetric": is_symmetric,
+		"is_hermitian": is_hermitian,
+		"eigenvalues_real": eigvals_real,
+		"eigenvectors_real": eigvecs_real,
+		"eigenvalues": eigvals,
+		"eigenvectors": eigvecs
+	}
+
 def is_hermitian(H, tol=1e-12):
 	"""
 	Check whether a matrix is Hermitian (sparse or dense).
