@@ -14,6 +14,8 @@ from matplotlib import cm
 from scipy.constants import R as GAS_CONSTANT_J_PER_MOL_K
 from scipy.constants import k as BOLTZMANN_J_PER_K
 import warnings
+import itertools
+
 
 from monomer_linear_rotor.utils import (
 	wavenumber_to_joules_per_mole,
@@ -82,6 +84,116 @@ def plot_cv_vs_temperature(
 		plt.show()
 
 	plt.close()
+
+def plot_cv_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want, out_path):
+	"""
+	Plots heat capacity vs temperature for multiple molecules together.
+
+	Parameters:
+		thermo_dict_by_molecule (dict): { molecule: {(jmax, E): thermo_data} }
+		get_temperature_list (function): Function to fetch temperature list for a molecule.
+		unit_want (str): Unit for Cv display.
+		out_path (str or Path): Path to save combined plot.
+	"""
+
+	plt.figure(figsize=(9, 7))
+
+	# Assign consistent colors per molecule
+	color_cycle = plt.cm.tab10.colors  
+	line_styles = ["-", "--", "-.", ":"]
+	markers = ["o", "s", "D", "^", "v"]
+
+	for mol_idx, (molecule, thermo_dict) in enumerate(thermo_dict_by_molecule.items()):
+		temperature_list = get_temperature_list(molecule)
+
+		# Flatten if nested
+		if len(temperature_list) == 1 and isinstance(temperature_list[0], (list, tuple)):
+			temperature_list = temperature_list[0]
+
+		color = color_cycle[mol_idx % len(color_cycle)]
+		style_iter = itertools.product(line_styles, markers)
+
+		for (jmax, E), thermo_data in thermo_dict.items():
+			cv_values = [thermo_data[T]["heat_capacity"] for T in temperature_list]
+			unit_cv = thermo_data[temperature_list[0]]["display_cv_unit"]
+
+			ls, mk = next(style_iter)
+
+			plt.plot(
+				temperature_list,
+				cv_values,
+				linestyle=ls,
+				marker=mk,
+				color=color,
+				label=f"{molecule} (Jmax={jmax}, E={E:.2f} kV/cm)"
+			)
+
+	plt.xlabel("Temperature (K)", fontsize=12)
+	safe_unit = unit_cv.replace("^-1", "$^{-1}$")  
+	plt.ylabel(f"Heat Capacity (Cv) [{safe_unit}]", fontsize=12)
+
+	plt.title("Heat Capacity vs Temperature for Linear Rotors", fontsize=14)
+	plt.legend(fontsize=9, loc="best")
+	plt.grid(True, ls="--", alpha=0.6)
+	plt.tight_layout()
+
+	# Save first, then show
+	plt.savefig(out_path, dpi=300)
+	print(f"[INFO] Combined Cv plot saved: {out_path}")
+
+if False:
+	def plot_cv_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want, out_path):
+		"""
+		Plots heat capacity vs temperature for multiple molecules together.
+		
+		Parameters:
+			thermo_dict_by_molecule (dict): { molecule: {(jmax, E): thermo_data} }
+			temperature_list (list): List of temperatures (K).
+			unit_want (str): Unit for Cv display.
+			out_path (str or Path): Path to save combined plot.
+		"""
+
+		plt.figure(figsize=(8, 6))
+		for molecule, thermo_dict in thermo_dict_by_molecule.items():
+			temperature_list = get_temperature_list(molecule)
+
+			# Flatten if nested
+			if len(temperature_list) == 1 and isinstance(temperature_list[0], (list, tuple)):
+				temperature_list = temperature_list[0]
+
+			#print(f"[DEBUG] {molecule} temperature list: {temperature_list}")
+
+			first_key = next(iter(thermo_dict))
+			thermo_data = thermo_dict[first_key]
+
+			cv_values = [thermo_data[T]["heat_capacity"] for T in temperature_list]
+			#print(f"[DEBUG] {molecule} Cv values: {cv_values}")
+			unit_cv = thermo_data[temperature_list[0]]["display_cv_unit"]
+
+			plt.plot(
+				temperature_list,
+				cv_values,
+				marker="o",
+				label=f"{molecule}"
+			)
+
+		plt.xlabel("Temperature (K)")
+
+		# Fix LaTeX formatting for unit safely
+		safe_unit = unit_cv.replace("^-1", "$^{-1}$")
+		plt.ylabel(f"Heat Capacity (Cv) [{safe_unit}]")
+
+		plt.title("Heat Capacity vs Temperature for Linear Rotors")
+		plt.legend()
+		#plt.grid(True, ls="--", alpha=0.6)
+		plt.tight_layout()
+
+		# Save first, then show
+		plt.savefig(out_path, dpi=300)
+		print(f"[INFO] Combined Cv plot saved: {out_path}")
+
+		plt.show()
+		plt.close()
 
 def compute_thermo_from_eigenvalues(eigenvalues, temperature_list, unit):
 	"""
