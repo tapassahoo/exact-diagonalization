@@ -96,9 +96,38 @@ def plot_cv_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want,
 		out_path (str or Path): Path to save combined plot.
 	"""
 
-	plt.figure(figsize=(9, 7))
+	plt.figure(figsize=(12, 6))
+
+	color_cycle = plt.cm.tab10.colors
+	line_styles = ["-", "--", "-.", ":"]
+	markers = ["*", "p", "s", "o", "v"]
+
+	for mol_idx, (molecule, thermo_dict) in enumerate(thermo_dict_by_molecule.items()):
+		temperature_list = get_temperature_list(molecule)
+
+		if len(temperature_list) == 1 and isinstance(temperature_list[0], (list, tuple)):
+			temperature_list = temperature_list[0]
+
+		color = color_cycle[mol_idx % len(color_cycle)]
+		mk = markers[mol_idx % len(markers)]
+
+		for curve_idx, ((jmax, E), thermo_data) in enumerate(thermo_dict.items()):
+			cv_values = [thermo_data[T]["heat_capacity"] for T in temperature_list]
+			unit_cv = thermo_data[temperature_list[0]]["display_cv_unit"]
+
+			ls = line_styles[curve_idx % len(line_styles)]
+
+			plt.plot(
+				temperature_list,
+				cv_values,
+				linestyle=ls,
+				marker=mk,
+				color=color,
+				label=rf"{molecule} ($J_{{\max}}={jmax}$, $E={E:.2f}\,\mathrm{{kV/cm}}$)"
+			)
 
 	# Assign consistent colors per molecule
+	"""
 	color_cycle = plt.cm.tab10.colors  
 	line_styles = ["-", "--", "-.", ":"]
 	markers = ["o", "s", "D", "^", "v"]
@@ -125,20 +154,29 @@ def plot_cv_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want,
 				linestyle=ls,
 				marker=mk,
 				color=color,
-				label=f"{molecule} (Jmax={jmax}, E={E:.2f} kV/cm)"
+				label=rf"{molecule} (Jmax={jmax}, E={E:.2f} kV/cm)"
 			)
+	"""
 
-	plt.xlabel("Temperature (K)", fontsize=12)
+	# X-axis ticks
+	xticks = np.arange(0, 101, 10)
+	plt.xticks(xticks, fontsize=18)
+	plt.xlabel("Temperature (K)", fontsize=18)
 	safe_unit = unit_cv.replace("^-1", "$^{-1}$")  
-	plt.ylabel(f"Heat Capacity (Cv) [{safe_unit}]", fontsize=12)
+	plt.ylabel(rf"Heat Capacity ($C_V$) [{safe_unit}]", fontsize=18)
+	#plt.tick_params(axis='x', labelsize=18, colors='red')
+	# Tick parameters
+	plt.tick_params(axis='both', labelsize=18)
+	plt.xlim(-0.5, 100.5)
 
-	plt.title("Heat Capacity vs Temperature for Linear Rotors", fontsize=14)
-	plt.legend(fontsize=9, loc="best")
+	#plt.title("Heat Capacity vs Temperature for Linear Rotors", fontsize=14)
+	plt.legend(fontsize=18, loc="best")
 	plt.grid(True, ls="--", alpha=0.6)
 	plt.tight_layout()
 
 	# Save first, then show
 	plt.savefig(out_path, dpi=300)
+	print("")
 	print(f"[INFO] Combined Cv plot saved: {out_path}")
 
 if False:

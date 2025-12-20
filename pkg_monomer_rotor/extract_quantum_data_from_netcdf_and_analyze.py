@@ -303,7 +303,6 @@ def plot_cv_heatmap(
 		#)
 
 quantum_data_root_dir="/Users/tapas/academic-project/outputs/output/"
-#molecule="HI"
 #electric_field_list=[5] + list(range(20, 201, 20))
 #jmax_list=list(range(20, 41, 5))
 electric_field_list=[5]
