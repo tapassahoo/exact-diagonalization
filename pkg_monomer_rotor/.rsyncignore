@@ -1,0 +1,13 @@
+.git/
+.gitignore
+__pycache__/
+*.pyc
+*.o
+*.out
+*.log
+*.tmp
+*.swp
+*.bak
+results/
+output/
+checkpoint/

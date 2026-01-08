@@ -37,6 +37,9 @@ pkg_monomer_rotor/
 ├── pyproject.toml
 ├── README.md
 ├── LICENSE
+├── docs
+├── examples
 ├── tests/
 │   └── test_monomer_linear_rotor.py
+├── deploy.sh
 
