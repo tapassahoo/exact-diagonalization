@@ -138,7 +138,6 @@ def main():
 	print(colored("[ ] H_rot is hermitian (H = H†):".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{result['is_hermitian']}".ljust(VALUE_WIDTH), VALUE_COLOR))
 	print(colored("[ ] Eigenvectors of H_rot matrix are real-valued):".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{result['eigenvectors_real']}".ljust(VALUE_WIDTH), VALUE_COLOR))
 	#print(result["eigenvectors"][-2,:])
-	whoami()
 
 	# Check Hermiticity
 	if hermiticity_check:

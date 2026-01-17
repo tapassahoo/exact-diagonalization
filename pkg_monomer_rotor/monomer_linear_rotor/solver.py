@@ -29,7 +29,7 @@ def compute_eigensystem(H, num_eig=6, return_vectors=True, check_residual=False,
 	# Convert sparse to dense if appropriate
 	if issparse(H):
 		dim = H.shape[0]
-		if dim <= 2000:
+		if dim <= 6000:
 			H = H.toarray()
 		else:
 			# Use sparse eigensolver
@@ -45,6 +45,7 @@ def compute_eigensystem(H, num_eig=6, return_vectors=True, check_residual=False,
 				eigvecs = eigvecs[:, sorted_idx]
 
 			return eigvals, eigvecs
+
 
 	# Ensure it's a dense array
 	H = np.asarray(H, dtype=np.complex128)
