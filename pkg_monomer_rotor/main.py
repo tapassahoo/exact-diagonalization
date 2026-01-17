@@ -130,13 +130,15 @@ def main():
 	dipole_terms = precompute_monomer_linear_rotor_dipole_terms(quantum_numbers_for_spin_state, potential_strength_cm_inv)
 	H_rot = build_monomer_linear_rotor_hamiltonian(quantum_numbers_for_spin_state, B_const_cm_inv, dipole_terms)
 	result = analyze_matrix(H_rot)
-	print("\n\n")
-	print(f"Is real? {result['is_real']}")
-	print(f"Is symmetric? {result['is_symmetric']}")
-	print(f"Is hermitian? {result['is_hermitian']}")
-	print(f"Is eigenvectors real? {result['eigenvectors_real']}")
-	print("\n\n")
+
+	print()
+	print(colored("Quantum Mechanical Operator Diagnostics:", HEADER_COLOR, attrs=['bold', 'underline']))
+	print(colored("[ ] H_rot matrix is real):".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{result['is_real']}".ljust(VALUE_WIDTH), VALUE_COLOR))
+	print(colored("[ ] H_rot is symmetric (H = H.T):".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{result['is_symmetric']}".ljust(VALUE_WIDTH), VALUE_COLOR))
+	print(colored("[ ] H_rot is hermitian (H = H†):".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{result['is_hermitian']}".ljust(VALUE_WIDTH), VALUE_COLOR))
+	print(colored("[ ] Eigenvectors of H_rot matrix are real-valued):".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{result['eigenvectors_real']}".ljust(VALUE_WIDTH), VALUE_COLOR))
 	#print(result["eigenvectors"][-2,:])
+	whoami()
 
 	# Check Hermiticity
 	if hermiticity_check:

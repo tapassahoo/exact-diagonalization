@@ -62,7 +62,7 @@ def count_basis_functions(max_angular_momentum_quantum_number, spin_state):
 		raise ValueError("Invalid spin_state. Choose from 'spinless', 'para', or 'ortho'.")
 
 	# Display summary
-	print(colored("\nNumber of basis functions", HEADER_COLOR, attrs=['bold', 'underline']))
+	print(colored("\nNumber of Basis Functions", HEADER_COLOR, attrs=['bold', 'underline']))
 	print(colored("[ ] Total |J,M⟩ basis functions:".ljust(LABEL_WIDTH), LABEL_COLOR) +
 		  colored(str(JM).ljust(VALUE_WIDTH), VALUE_COLOR))
 	print(colored("[ ] Even J basis functions (JeM):".ljust(LABEL_WIDTH), LABEL_COLOR) +

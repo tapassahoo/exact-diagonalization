@@ -485,7 +485,7 @@ def main():
 
 	# Configuration
 	script_name = "main.py"
-	jmax_values = list(range(20, 41, 10))
+	jmax_values = list(range(50, 61, 10))
 	electric_field_values = [0.1] + list(range(100, 501, 100))
 	potential_strength_values = [0.1, 0.5]
 	use_dipole = True
