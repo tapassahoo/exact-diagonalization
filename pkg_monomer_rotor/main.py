@@ -136,8 +136,7 @@ def main():
 	print(f"Is hermitian? {analyze_matrix(H_rot)["is_hermitian"]}")
 	print(f"Is eigenvectors real? {analyze_matrix(H_rot)["eigenvectors_real"]}")
 	print("\n\n")
-	print(analyze_matrix(H_rot)["eigenvectors"][-2,:])
-	whoami()
+	#print(analyze_matrix(H_rot)["eigenvectors"][-2,:])
 
 	# Check Hermiticity
 	if hermiticity_check:

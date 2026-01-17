@@ -485,8 +485,8 @@ def main():
 
 	# Configuration
 	script_name = "main.py"
-	jmax_values = list(range(20, 41, 20))
-	electric_field_values = [0.1] + list(range(100, 201, 100))
+	jmax_values = list(range(40, 61, 10))
+	electric_field_values = [0.1] + list(range(100, 501, 100))
 	potential_strength_values = [0.1, 0.5]
 	use_dipole = True
 	molecule_tag = args.molecule or "custom"
