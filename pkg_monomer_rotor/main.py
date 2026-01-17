@@ -132,11 +132,11 @@ def main():
 	result = analyze_matrix(H_rot)
 	print("\n\n")
 	print(f"Is real? {result['is_real']}")
-	print(f"Is symmetric? {analyze_matrix(H_rot)['is_symmetric']}")
-	print(f"Is hermitian? {analyze_matrix(H_rot)['is_hermitian']}")
-	print(f"Is eigenvectors real? {analyze_matrix(H_rot)['eigenvectors_real']}")
+	print(f"Is symmetric? {result['is_symmetric']}")
+	print(f"Is hermitian? {result['is_hermitian']}")
+	print(f"Is eigenvectors real? {result['eigenvectors_real']}")
 	print("\n\n")
-	#print(analyze_matrix(H_rot)["eigenvectors"][-2,:])
+	#print(result["eigenvectors"][-2,:])
 
 	# Check Hermiticity
 	if hermiticity_check:
