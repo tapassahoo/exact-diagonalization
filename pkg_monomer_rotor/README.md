@@ -43,3 +43,8 @@ pkg_monomer_rotor/
 │   └── test_monomer_linear_rotor.py
 ├── deploy.sh
 
+
+## Frequently Used Commands
+
+- Locate all NetCDF (.nc) files within spinless_HI_jmax_*0_field_*kV_per_cm directories:
+  find spinless_HI_jmax_*0_field_*kV_per_cm/ -type f -name "*.nc"
