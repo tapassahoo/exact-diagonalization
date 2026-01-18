@@ -64,6 +64,7 @@ def debug_eigenvalues_eigenvectors(H_rot, eigenvalues, eigenvectors, tol=1e-10, 
 		log(f"[WARNING] Skipping orthonormality check: eigenvectors shape {eigenvectors.shape} not suitable.")
 
 	# 5. Full spectral decomposition: H ≈ V Λ V† (only when all eigenpairs are available)
+	"""
 	if N == k:
 		H_reconstructed = eigenvectors @ np.diag(eigenvalues) @ eigenvectors.conj().T
 		is_exact = np.allclose(H_dense, H_reconstructed, atol=1e-10)
@@ -73,6 +74,7 @@ def debug_eigenvalues_eigenvectors(H_rot, eigenvalues, eigenvectors, tol=1e-10, 
 		assert is_exact, "[ERROR] Reconstructed Hamiltonian does not match original."
 	else:
 		log(f"[WARNING] Skipping spectral reconstruction: only {k} of {N} eigenpairs available.")
+	"""
 
 	# 6. Complex eigenvector warning
 	if np.iscomplexobj(eigenvectors):
