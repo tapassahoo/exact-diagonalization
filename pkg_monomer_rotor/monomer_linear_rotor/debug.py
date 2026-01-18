@@ -66,7 +66,7 @@ def debug_eigenvalues_eigenvectors(H_rot, eigenvalues, eigenvectors, tol=1e-10, 
 	# 5. Full spectral decomposition: H ≈ V Λ V† (only when all eigenpairs are available)
 	if N == k:
 		H_reconstructed = eigenvectors @ np.diag(eigenvalues) @ eigenvectors.conj().T
-		is_exact = np.allclose(H, H_reconstructed, atol=1e-10)
+		is_exact = np.allclose(H_dense, H_reconstructed, atol=1e-10)
 		#H_reconstructed = np.einsum("ij,j,jk->ik", eigenvectors, eigenvalues, eigenvectors.conj().T)
 		#is_exact = np.allclose(H_dense, H_reconstructed, atol=tol)
 		log("[INFO] Spectral decomposition is accurate." if is_exact else "[ERROR] Reconstructed matrix mismatch.")
