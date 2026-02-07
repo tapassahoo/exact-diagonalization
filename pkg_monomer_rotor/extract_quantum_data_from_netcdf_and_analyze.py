@@ -302,10 +302,10 @@ def plot_cv_heatmap(
 		#	out_path="cv_overlay.png"
 		#)
 
-quantum_data_root_dir="/Users/tapas/academic-project/outputs/output/"
+quantum_data_root_dir="/Volumes/Schrodinger/pcsa-backup/outputs-of-exeact-diagonalization/"
 #electric_field_list=[5] + list(range(20, 201, 20))
 #jmax_list=list(range(20, 41, 5))
-electric_field_list=[5]
+electric_field_list=[9]
 jmax_list=[40]
 # Usage
 
@@ -317,7 +317,7 @@ for mol in ["HF", "HCl", "HBr", "HI"]:
 	thermo_dict = read_all_quantum_data_files_with_thermo(
 		quantum_data_root_dir=quantum_data_root_dir,
 		molecule=mol,
-		electric_field_list=[200],#electric_field_list,
+		electric_field_list=[500],#electric_field_list,
 		jmax_list=[40],#jmax_list,
 		temperature_list=get_temperature_list(mol),
 		spin_type="spinless",
