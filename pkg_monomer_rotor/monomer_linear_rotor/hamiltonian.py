@@ -23,19 +23,12 @@ def rotational_energy_levels(B, J_max=10):
 	Returns:
 	- energies (dict): Dictionary with J values as keys and energy in cm⁻¹ as values.
 	"""
-	J_values = np.arange(0, J_max +
-						 1)  # Rotational quantum numbers J = 0, 1, 2, ...
+	J_values = np.arange(0, J_max + 1)  # Rotational quantum numbers J = 0, 1, 2, ...
 	# Energy formula E_J = B * J * (J + 1)
 	energies = {J: B * J * (J + 1) for J in J_values}
 
 	# Display results
-	print(
-		colored(
-			"\nRotational energy levels of a rigid rotor",
-			HEADER_COLOR,
-			attrs=[
-				'bold',
-				'underline']))
+	print(colored("\nRotational energy levels of a rigid rotor", HEADER_COLOR, attrs=['bold', 'underline']))
 	print(f"\n{'J':<5}{'Energy (cm^-1)':>15}")
 	print("=" * 20)
 	for J, E in energies.items():
