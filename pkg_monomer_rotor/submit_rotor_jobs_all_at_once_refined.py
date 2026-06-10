@@ -19,11 +19,12 @@ bar = "=" * 60
 bar = "=" * 72
 label_width = 12
 
+# Define known molecular parameters
 MOLECULE_DATA = {
-	"HF": {"dipole_moment": 1.83},
-	"HCl": {"dipole_moment": 1.03},
-	"HBr": {"dipole_moment": 0.78},
-	"HI":  {"dipole_moment": 0.38},
+	"HF":  {"dipole_moment": 1.8265, "B_const": 20.5598},
+	"HCl": {"dipole_moment": 1.1085, "B_const": 10.44025},
+	"HBr": {"dipole_moment": 0.8280, "B_const": 8.3511},
+	"HI":  {"dipole_moment": 0.4477, "B_const": 6.426},
 }
 allowed_spin_types = ["spinless", "ortho", "para"]
 
@@ -485,7 +486,7 @@ def main():
 
 	# Configuration
 	script_name = "main.py"
-	jmax_values = list(range(50, 61, 10))
+	jmax_values = list(range(30, 41, 10))
 	electric_field_values = [0.1] + list(range(100, 501, 100))
 	potential_strength_values = [0.1, 0.5]
 	use_dipole = True
