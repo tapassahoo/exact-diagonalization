@@ -98,7 +98,7 @@ def main():
 
 	# print the normalization
 	compute_rigid_rotor_energy = False
-	hermiticity_check = True
+	hermiticity_check = False
 
 	# Display input parameters
 	show_simulation_details(
@@ -174,7 +174,6 @@ def main():
 		print(colored("[INFO] ", INFO_COLOR) + colored("Sparsity plot saved to: ", LABEL_COLOR) + colored(sparsity_plot_path, VALUE_COLOR))
 
 	# Diagonalize
-	whoami()
 	check_residual = False
 	eigenvalues, eigenvectors = compute_eigensystem(H_rot, check_residual)
 	display_eigenvalues(eigenvalues, spin_state)

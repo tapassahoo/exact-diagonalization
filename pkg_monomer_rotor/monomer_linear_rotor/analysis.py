@@ -114,9 +114,6 @@ def plot_eigenvalue_convergence(jmax_list, file_template, num_levels_to_show=5, 
 		threshold (float): Relative error threshold.
 		level_wanted (int or None): If set, only this level is analyzed and plotted.
 	"""
-	import os
-	import matplotlib.pyplot as plt
-
 	eigenvalues_by_jmax = {}
 
 	for jmax in jmax_list:
@@ -176,6 +173,7 @@ def plot_eigenvalue_convergence(jmax_list, file_template, num_levels_to_show=5, 
 
 	plt.xlabel(r"$J_{\mathrm{max}}$", fontsize=12)
 	plt.ylabel(r"Eigenvalue (cm$^{-1}$)", fontsize=12)
+	plt.xticks(jmax_list)  # positions
 	if level_wanted is not None:
 		title_label = rf"$E_{{{level_wanted}}}$"
 	else:

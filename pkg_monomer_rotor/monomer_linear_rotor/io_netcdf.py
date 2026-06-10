@@ -102,7 +102,7 @@ def write_metadata(ncfile: Dataset, spin_state_name: str) -> None:
 		f"Spin isomer: '{spin_state_name}'."
 	)
 	ncfile.setncattr("source", "pkg_monomer_rotor/main.py")
-	ncfile.setncattr("institution", "National Institute of Technology Raipur")
+	ncfile.setncattr("institution", "Haldia Institute of Technology Raipur")
 	ncfile.setncattr("history", f"Created on {timestamp} by {username} on host '{hostname}'")
 	ncfile.setncattr("license", "Data intended for academic and research use only.")
 	ncfile.setncattr("conventions", "CF-1.6")
