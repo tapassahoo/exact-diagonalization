@@ -11,10 +11,10 @@ from monomer_linear_rotor.utils import convert_dipole_field_energy_to_cm_inv
 
 # Define known molecular parameters
 MOLECULE_DATA = {
-	"HF":  {"dipole_moment": 1.83, "B_const": 20.559},
-	"HCl": {"dipole_moment": 1.03, "B_const": 10.44},
-	"HBr": {"dipole_moment": 0.78, "B_const": 8.467},
-	"HI":  {"dipole_moment": 0.38, "B_const": 6.51},
+	"HF":  {"dipole_moment": 1.8265, "B_const": 20.5598},
+	"HCl": {"dipole_moment": 1.1085, "B_const": 10.44025},
+	"HBr": {"dipole_moment": 0.8280, "B_const": 8.3511},
+	"HI":  {"dipole_moment": 0.4477, "B_const": 6.426},
 }
 
 def parse_arguments():

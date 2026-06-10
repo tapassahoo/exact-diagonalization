@@ -1,61 +1,81 @@
+from matplotlib.colors import LogNorm
 import numpy as np
-import matplotlib.pyplot as plt
+from scipy.sparse import issparse
 from scipy.sparse import lil_matrix, csr_matrix
 from scipy.sparse.linalg import eigsh
 from numpy.linalg import eigh
 from termcolor import colored
+import matplotlib.pyplot as plt
+from matplotlib.colors import LogNorm
+from matplotlib.ticker import NullLocator
 from pkg_utils.utils import whoami
 from pkg_utils.config import *
+
 
 def rotational_energy_levels(B, J_max=10):
 	"""
 	Computes and displays the rotational energy levels of a rigid rotor.
-	
+
 	Parameters:
 	- B (float): Rotational constant in cm⁻¹.
 	- J_max (int): Maximum rotational quantum number to compute.
-	
+
 	Returns:
 	- energies (dict): Dictionary with J values as keys and energy in cm⁻¹ as values.
 	"""
-	J_values = np.arange(0, J_max + 1)  # Rotational quantum numbers J = 0, 1, 2, ...
-	energies = {J: B * J * (J + 1) for J in J_values}  # Energy formula E_J = B * J * (J + 1)
-	
+	J_values = np.arange(0, J_max +
+						 1)  # Rotational quantum numbers J = 0, 1, 2, ...
+	# Energy formula E_J = B * J * (J + 1)
+	energies = {J: B * J * (J + 1) for J in J_values}
+
 	# Display results
-	print(colored("\nRotational energy levels of a rigid rotor", HEADER_COLOR, attrs=['bold', 'underline']))
+	print(
+		colored(
+			"\nRotational energy levels of a rigid rotor",
+			HEADER_COLOR,
+			attrs=[
+				'bold',
+				'underline']))
 	print(f"\n{'J':<5}{'Energy (cm^-1)':>15}")
 	print("=" * 20)
 	for J, E in energies.items():
-		print(f"{J:<5}{E:>15.2f}")
-	
+		print(f"{J:<5}{E:>15.6f}")
+
 	return energies
 
+
 def plot_rotational_levels(
-	energies: dict,
-	show_degeneracy: bool = True,
-	title_suffix: str = "",
-	save_path: str = None
+		energies: dict,
+		show_degeneracy: bool = True,
+		title_suffix: str = "",
+		save_path: str = None
 ):
-	""" 
+	"""
 	Plot rotational energy levels of a rigid rotor using LaTeX labels.
 
 	Parameters:
-		energies (dict): Keys are J values, values are energies (in cm⁻¹).
-		show_degeneracy (bool): Whether to annotate 2J+1 degeneracy.
-		title_suffix (str): Extra title text (e.g., ' (Field-Free)', ' for HF').
-		save_path (str or None): If provided, saves the plot to this path.
+			energies (dict): Keys are J values, values are energies (in cm⁻¹).
+			show_degeneracy (bool): Whether to annotate 2J+1 degeneracy.
+			title_suffix (str): Extra title text (e.g., ' (Field-Free)', ' for HF').
+			save_path (str or None): If provided, saves the plot to this path.
 	"""
 	J_values = list(energies.keys())
 	energy_values = list(energies.values())
 
 	plt.figure(figsize=(10, 6))
 	plt.vlines(J_values, 0, energy_values, color='royalblue', linewidth=2)
-	plt.scatter(J_values, energy_values, color='crimson', s=80, zorder=3, label="Energy Levels")
+	plt.scatter(
+		J_values,
+		energy_values,
+		color='crimson',
+		s=80,
+		zorder=3,
+		label="Energy Levels")
 
 	for J, E in energies.items():
 		label = f"{E:.2f} " + r"$\mathrm{cm}^{-1}$"
 		if show_degeneracy:
-			label += f"\n({2*J + 1}×)"
+			label += f"\n({2 * J + 1}×)"
 		plt.text(J, E + max(energy_values) * 0.03, label,
 				 ha='center', va='bottom', fontsize=9, color='black')
 
@@ -63,7 +83,8 @@ def plot_rotational_levels(
 	plt.yticks(fontsize=10)
 	plt.xlabel(r"Rotational Quantum Number $J$", fontsize=12)
 	plt.ylabel(r"Rotational Energy $E_J$ (in $\mathrm{cm}^{-1}$)", fontsize=12)
-	plt.title(r"Rotational Energy Levels of a Rigid Rotor" + title_suffix, fontsize=14, weight='bold')
+	plt.title(r"Rotational Energy Levels of a Rigid Rotor" +
+			  title_suffix, fontsize=14, weight='bold')
 	plt.grid(True, linestyle="--", alpha=0.4)
 	plt.tight_layout()
 	plt.legend()
@@ -75,11 +96,12 @@ def plot_rotational_levels(
 	else:
 		plt.show()
 
+
 if False:
 	def plot_rotational_levels(energies):
-		""" 
+		"""
 		Plots the rotational energy levels of a rigid rotor with enhanced aesthetics.
-		
+
 		Parameters:
 		- energies (dict): Dictionary where keys are rotational quantum numbers (J) and
 		  values are the corresponding energy levels in cm^-1.
@@ -91,19 +113,32 @@ if False:
 		offset = max_energy * 0.04  # space for annotation
 
 		plt.figure(figsize=(12, 6))
-		
+
 		# Plot vertical energy levels as steps
 		for J in J_values:
-			plt.hlines(energy_values[J], J - 0.3, J + 0.3, colors='teal', linewidth=3)
-			plt.text(J, energy_values[J] + offset, f"{energy_values[J]:.2f} cm^-1", 
-					 ha='center', va='bottom', fontsize=10, color='dimgray')
+			plt.hlines(
+				energy_values[J],
+				J - 0.3,
+				J + 0.3,
+				colors='teal',
+				linewidth=3)
+			plt.text(J,
+					 energy_values[J] + offset,
+					 f"{energy_values[J]:.2f} cm^-1",
+					 ha='center',
+					 va='bottom',
+					 fontsize=10,
+					 color='dimgray')
 
 		# Formatting axes
 		plt.xticks(J_values, fontsize=10)
 		plt.yticks(fontsize=10)
 		plt.xlabel("Rotational Quantum Number $J$", fontsize=12, weight='bold')
 		plt.ylabel("Rotational Energy (cm^-1)", fontsize=12, weight='bold')
-		plt.title("Rotational Energy Levels of a Rigid Rotor", fontsize=14, weight='bold')
+		plt.title(
+			"Rotational Energy Levels of a Rigid Rotor",
+			fontsize=14,
+			weight='bold')
 
 		# Visual tweaks
 		plt.grid(axis='y', linestyle='--', alpha=0.5)
@@ -131,65 +166,126 @@ def build_monomer_linear_rotor_hamiltonian(JM_list, B_const, dipole_terms):
 					H[j, i] = val
 	return H.tocsr()
 
-def plot_sparsity(H, JM_list, save_path=None, dpi=600, max_labels=30, color='black'):
+
+def plot_coupling_with_dJ_overlay(
+	H,
+	JM_list,
+	dJ_values=(0, 1, -1, 2, -2),
+	save_path=None,
+	log_scale=True,
+	cmap=None,
+	overlay_color=None,
+	overlay_alpha=0.9,
+	max_labels=40,
+):
 	"""
-	Plot a high-quality sparsity pattern of the Hamiltonian matrix.
+	Plot |H_ij| with ΔJ selection-rule overlay.
 
-	Parameters:
-	- H : csr_matrix
-		Sparse Hamiltonian matrix.
-	- JM_list : ndarray
-		Array of (J, M) quantum numbers.
-	- save_path : str or None
-		If provided, the plot is saved to this path.
-	- dpi : int
-		Resolution of saved plot.
-	- max_labels : int
-		Max matrix size for which tick labels are shown.
-	- color : str
-		Marker color in the sparsity plot.
+	Parameters
+	----------
+	H : matrix (dense or sparse)
+	JM_list : list of (J, M)
+	dJ_values : tuple
+		Allowed ΔJ values to overlay
 	"""
 
-	# Fallback style (safe on all systems)
-	plt.rcParams.update({
-		"font.size": 10,
-		"axes.titlesize": 13,
-		"axes.labelsize": 11,
-		"xtick.labelsize": 8,
-		"ytick.labelsize": 8,
-		"xtick.direction": 'in',
-		"ytick.direction": 'in',
-		"axes.edgecolor": 'gray',
-		"axes.linewidth": 0.8,
-	})
+	dim = H.shape[0]
 
-	dim = len(JM_list)
-	fig, ax = plt.subplots(figsize=(6.5, 6.5), dpi=dpi)
+	# Convert to dense if needed
+	H_abs = np.abs(H.toarray() if hasattr(H, "toarray") else H)
+	H_abs[H_abs == 0] = 1e-16  # avoid log issues
 
-	ax.spy(H, markersize=3.2, color=color, precision=1e-12)
-	ax.set_title("Hamiltonian Matrix Sparsity", pad=15, fontweight='bold')
-	ax.set_xlabel("Ket index (J', M')", labelpad=8)
-	ax.set_ylabel("Bra index (J, M)", labelpad=8)
+	J_vals = np.array([J for J, M in JM_list])
 
+	# ------------------------------------------------------------------
+	# Plot base heatmap
+	# ------------------------------------------------------------------
+	fig, ax = plt.subplots(figsize=(8, 8))
+
+	norm = LogNorm(vmin=H_abs.min(), vmax=H_abs.max()) if log_scale else None
+
+	im = ax.imshow(
+		H_abs,
+		origin="upper",
+		cmap=cmap,
+		norm=norm,
+		aspect="equal",
+	)
+
+	# ------------------------------------------------------------------
+	# Overlay ΔJ bands
+	# ------------------------------------------------------------------
+	for dJ in dJ_values:
+		mask = (J_vals[:, None] - J_vals[None, :]) == dJ
+
+		# Extract indices where condition holds
+		y, x = np.where(mask)
+
+		ax.scatter(
+			x,
+			y,
+			s=1.0,
+			color=overlay_color,
+			alpha=overlay_alpha,
+			label=fr"$\Delta J = {dJ}$" if dJ == dJ_values[0] else None,
+		)
+
+	# ------------------------------------------------------------------
+	# Colorbar
+	# ------------------------------------------------------------------
+	cbar = plt.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
+	cbar.set_label(r"$\log_{10}(|H_{ij}|)$", fontsize=12)
+
+	# ------------------------------------------------------------------
+	# Labels
+	# ------------------------------------------------------------------
+	#ax.set_title("Hamiltonian Coupling with $\Delta J$ Selection Rules", fontweight="bold", pad=15)
+
+	# Tick labels
 	if dim <= max_labels:
-		labels = [f"{int(J)},{int(M)}" for J, M in JM_list]
-		ax.set_xticks(np.arange(dim))
-		ax.set_yticks(np.arange(dim))
-		ax.set_xticklabels(labels, rotation=90, fontsize=7, family='monospace')
-		ax.set_yticklabels(labels, fontsize=7, family='monospace')
-	else:
-		ax.set_xticks([])
-		ax.set_yticks([])
+		ticks = np.arange(dim)
 
-	ax.tick_params(top=True, right=True)
-	ax.grid(False)
-	fig.patch.set_facecolor('white')  # Ensure clean background
+		def fmt(x):
+			return str(int(x)) if x == int(x) else f"{x:.1f}"
+
+
+		def fmt_M(x):
+			if x > 0:
+				return f"+{int(x)}" if x == int(x) else f"+{x:.1f}"
+			elif x == 0:
+				return rf"\,{int(x)}"   # no + sign
+			else:
+				return f"{int(x)}" if x == int(x) else f"{x:.1f}"
+
+
+		xlabels = [rf"$|{fmt(J)},{fmt_M(M)}\rangle$" for J, M in JM_list]
+		ylabels = [rf"$\langle{fmt(J)},{fmt_M(M)}|$" for J, M in JM_list]
+
+		ax.set_xticks(ticks)
+		ax.set_yticks(ticks)
+		ax.set_xticklabels(xlabels, rotation=90, fontsize=12)
+		ax.set_yticklabels(ylabels, fontsize=12)
+		# Move x-axis labels to the top
+		ax.xaxis.tick_top()
+		ax.tick_params(direction="in", top=True, right=True)
+	else:
+		ax.xaxis.set_major_locator(NullLocator())
+		ax.yaxis.set_major_locator(NullLocator())
+
+	# Styling
+	ax.tick_params(direction="in", top=True, right=True)
+	for spine in ax.spines.values():
+		spine.set_linewidth(1.0)
+
 	plt.tight_layout()
 
+	# Save or show
 	if save_path:
-		fig.savefig(save_path, bbox_inches='tight', dpi=dpi, transparent=False)
+		plt.savefig(save_path, dpi=300, bbox_inches="tight")
 	else:
 		plt.show()
+
+	plt.close(fig)
 
 def diagonalize(H, num_eig=6):
 	dim = H.shape[0]
@@ -197,6 +293,7 @@ def diagonalize(H, num_eig=6):
 		return np.sort(eigh(H.toarray())[0])
 	else:
 		return np.sort(eigsh(H, k=min(num_eig, dim - 2), which='SA')[0])
+
 
 def compute_sorted_eigenvalues_and_eigenvectors(H_rot):
 	"""
@@ -219,19 +316,23 @@ def compute_sorted_eigenvalues_and_eigenvectors(H_rot):
 	sorted_eigenvectors = eigenvectors[:, sorted_indices]
 
 	# Create a matrix with eigenvalues and their scaled versions
-	#eigenvalue_matrix = np.column_stack((sorted_eigenvalues, sorted_eigenvalues / scaling_factor))
+	# eigenvalue_matrix = np.column_stack((sorted_eigenvalues, sorted_eigenvalues / scaling_factor))
 
-	#return eigenvalue_matrix, sorted_eigenvectors
+	# return eigenvalue_matrix, sorted_eigenvectors
 	return sorted_eigenvalues, sorted_eigenvectors
 
-def display_rotational_energies(diagonal_elements, all_quantum_numbers, B_const_cm_inv):
+
+def display_rotational_energies(
+		diagonal_elements,
+		all_quantum_numbers,
+		B_const_cm_inv):
 	"""
 	Displays the extracted diagonal elements as rotational energy levels.
 
 	Parameters:
 	- diagonal_elements (np.ndarray): Extracted diagonal elements representing energy levels.
 	- all_quantum_numbers (np.ndarray): Array of quantum numbers, where each row represents a state
-											  and the first column contains the J values (rotational quantum numbers).
+																					  and the first column contains the J values (rotational quantum numbers).
 	- B_const_cm_inv (float): The rotational constant (cm⁻¹), used to compute rotational energy levels.
 
 	Returns:
@@ -249,8 +350,7 @@ def display_rotational_energies(diagonal_elements, all_quantum_numbers, B_const_
 	for J, energy in zip(J_values, diagonal_elements):
 		# Calculate the theoretical energy level based on the B constant
 		theoretical_energy = B_const_cm_inv * J * (J + 1)
-		
-		
+
 		# Display the results
 		print(f"{int(J):>12} {theoretical_energy:>32.6f} {energy:>26.6f}")
 

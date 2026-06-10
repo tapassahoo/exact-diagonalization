@@ -45,7 +45,7 @@ from monomer_linear_rotor.hamiltonian import (
 	rotational_energy_levels,
 	plot_rotational_levels,
 	build_monomer_linear_rotor_hamiltonian,
-	plot_sparsity,
+	plot_coupling_with_dJ_overlay,
 	diagonalize
 )
 from monomer_linear_rotor.solver import (
@@ -59,13 +59,14 @@ from monomer_linear_rotor.utils import (
 	generate_filename,
 	display_eigenvalues,
 	convert_dipole_field_energy_to_cm_inv  # or appropriate import
-)	
+)
 from monomer_linear_rotor.debug import (
 	debug_eigenvalues_eigenvectors
 )
 from monomer_linear_rotor.io_netcdf import (
 	save_all_quantum_data_to_netcdf
 )
+
 
 def main():
 	# --- Parse user input from CLI ---
@@ -78,7 +79,7 @@ def main():
 
 	# Execution of main simulation logic goes here (to be implemented)
 	B_const_cm_inv = args.B_const
-	potential_strength_cm_inv = args.potential_strength	
+	potential_strength_cm_inv = args.potential_strength
 
 	# --- Construct output directory structure ---
 	os.makedirs(args.output_dir, exist_ok=True)
@@ -93,11 +94,11 @@ def main():
 	os.makedirs(output_root_dir, exist_ok=True)
 
 	max_angular_momentum_quantum_number = args.max_angular_momentum_quantum_number
-	spin_state					= args.spin
+	spin_state = args.spin
 
 	# print the normalization
-	compute_rigid_rotor_energy  = False
-	hermiticity_check			= True
+	compute_rigid_rotor_energy = False
+	hermiticity_check = True
 
 	# Display input parameters
 	show_simulation_details(
@@ -115,8 +116,15 @@ def main():
 		energies = rotational_energy_levels(B_const_cm_inv, 10)
 		plot_rotational_levels(energies)
 
-	base_file_name = generate_filename(molecule_name, spin_state, max_angular_momentum_quantum_number, potential_strength_cm_inv, args.dipole_moment, args.electric_field, prefix=f"")
-	
+	base_file_name = generate_filename(
+		molecule_name,
+		spin_state,
+		max_angular_momentum_quantum_number,
+		potential_strength_cm_inv,
+		args.dipole_moment,
+		args.electric_field,
+		prefix=f"")
+
 	# All quantum numbers: (J, M)
 	all_quantum_numbers = generate_monomer_linear_rotor_quantum_numbers(max_angular_momentum_quantum_number, "spinless")
 	# Spin-state-specific quantum numbers
@@ -125,19 +133,19 @@ def main():
 	basis_functions_info = count_basis_functions(max_angular_momentum_quantum_number, spin_state)
 	total_number_of_states = basis_functions_info["JM"]
 	total_number_of_spin_states = basis_functions_info["JM_spin_specific"]
-	
-	#H_rot = T_rot_einsum + V_rot_einsum
+
+	# H_rot = T_rot_einsum + V_rot_einsum
 	dipole_terms = precompute_monomer_linear_rotor_dipole_terms(quantum_numbers_for_spin_state, potential_strength_cm_inv)
 	H_rot = build_monomer_linear_rotor_hamiltonian(quantum_numbers_for_spin_state, B_const_cm_inv, dipole_terms)
 	result = analyze_matrix(H_rot)
 
 	print()
-	print(colored("Quantum Mechanical Operator Diagnostics:", HEADER_COLOR, attrs=['bold', 'underline']))
+	print( colored("Quantum Mechanical Operator Diagnostics:", HEADER_COLOR, attrs=['bold', 'underline']))
 	print(colored("[ ] H_rot matrix is real):".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{result['is_real']}".ljust(VALUE_WIDTH), VALUE_COLOR))
 	print(colored("[ ] H_rot is symmetric (H = H.T):".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{result['is_symmetric']}".ljust(VALUE_WIDTH), VALUE_COLOR))
 	print(colored("[ ] H_rot is hermitian (H = H†):".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{result['is_hermitian']}".ljust(VALUE_WIDTH), VALUE_COLOR))
 	print(colored("[ ] Eigenvectors of H_rot matrix are real-valued):".ljust(LABEL_WIDTH), LABEL_COLOR) + colored(f"{result['eigenvectors_real']}".ljust(VALUE_WIDTH), VALUE_COLOR))
-	#print(result["eigenvectors"][-2,:])
+	# print(result["eigenvectors"][-2,:])
 
 	# Check Hermiticity
 	if hermiticity_check:
@@ -153,20 +161,21 @@ def main():
 
 		# Plot sparsity pattern and save
 		sparsity_plot_path = os.path.join(plots_dir, "sparsity_hamiltonian.pdf")
-		plot_sparsity(
+
+		plot_coupling_with_dJ_overlay(
 			H_rot,
 			quantum_numbers_for_spin_state,
+			dJ_values=(0, 1, -1, 2, -2),
 			save_path=sparsity_plot_path,
-			dpi=300,
-			max_labels=30,
-			color='navy'
+			cmap="Greys",
+			overlay_color="Green",
 		)
-		print(colored("[INFO] ", INFO_COLOR) + 
-			  colored("Sparsity plot saved to: ", LABEL_COLOR) + 
-			  colored(sparsity_plot_path, VALUE_COLOR))
+
+		print(colored("[INFO] ", INFO_COLOR) + colored("Sparsity plot saved to: ", LABEL_COLOR) + colored(sparsity_plot_path, VALUE_COLOR))
 
 	# Diagonalize
-	check_residual=False
+	whoami()
+	check_residual = False
 	eigenvalues, eigenvectors = compute_eigensystem(H_rot, check_residual)
 	display_eigenvalues(eigenvalues, spin_state)
 	# Debugging function call
@@ -181,7 +190,6 @@ def main():
 	file_name_netcdf = os.path.join(output_data_dir, f"quantum_data{base_file_name}.nc")
 	print(colored("[INFO] ", INFO_COLOR) + colored("All quantum data will be saved to: ", LABEL_COLOR) + colored(file_name_netcdf, VALUE_COLOR))
 
-
 	# Prepare arguments
 	kwargs = {
 		"file_name": file_name_netcdf,
@@ -193,8 +201,7 @@ def main():
 		"all_quantum_numbers": all_quantum_numbers,
 		"quantum_numbers_for_spin_state": quantum_numbers_for_spin_state,
 		"eigenvalues": eigenvalues,
-		"eigenvectors": eigenvectors
-	}
+		"eigenvectors": eigenvectors}
 
 	# Conditionally add optional values
 	if args.dipole_moment is not None and args.electric_field is not None:
@@ -212,6 +219,7 @@ def main():
 		print(f"[WARNING] File does not exist: {file_name_netcdf}")
 
 	print("\n\nHURRAY ALL COMPUTATIONS COMPLETED DATA SUCCESSFULLY WRITTEN TO NETCDF FILES")
+
 
 if __name__ == "__main__":
 	main()
