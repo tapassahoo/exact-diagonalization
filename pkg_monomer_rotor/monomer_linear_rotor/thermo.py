@@ -15,13 +15,123 @@ from scipy.constants import R as GAS_CONSTANT_J_PER_MOL_K
 from scipy.constants import k as BOLTZMANN_J_PER_K
 import warnings
 import itertools
+from termcolor import colored
 
+from monomer_linear_rotor.molecule_data import MOLECULE_DATA
 
 from monomer_linear_rotor.utils import (
 	wavenumber_to_joules_per_mole,
 )
 from pkg_utils.utils import whoami
+from pkg_utils.config import *
 from pkg_utils.env_report import whom
+
+
+def compute_rotational_levels_cum(
+	B,
+	T=None,
+	J_max=10,
+	tol=1e-6,
+	return_dict=False,
+	display=False
+):
+	"""
+	Compute rotational energy levels with cumulative-population truncation.
+
+	Parameters
+	----------
+	B : float
+		Rotational constant (cm⁻¹)
+	T : float, optional
+		Temperature (K). If None → no Boltzmann statistics
+	J_max : int
+		Maximum J (used if T is None)
+	tol : float
+		Missing population tolerance (1 - cumulative cutoff)
+		e.g., tol=1e-6 → retain 99.9999% population
+	return_dict : bool
+		If True, also return dictionaries
+	display : bool
+		If True, print formatted table
+
+	Returns
+	-------
+	J : ndarray
+	E : ndarray
+	p : ndarray or None
+	cum : ndarray or None
+	(optional dicts)
+	"""
+
+	k_B_cm = 0.69503476  # cm⁻¹/K
+
+	# ---- Case 1: No temperature ----
+	if T is None:
+		J = np.arange(J_max + 1)
+		E = B * J * (J + 1)
+		p = None
+		cum = None
+
+	# ---- Case 2: With temperature ----
+	else:
+		# Estimate upper bound
+		J_peak = int(max(0, np.sqrt(k_B_cm * T / (2 * B)) - 0.5))
+		J_max_eff = int(J_peak * 6 + 10)
+
+		J_full = np.arange(J_max_eff + 1)
+		E_full = B * J_full * (J_full + 1)
+
+		# Boltzmann weights
+		w = (2 * J_full + 1) * np.exp(-E_full / (k_B_cm * T))
+
+		# Normalize → probabilities
+		Z = np.sum(w)
+		p_full = w / Z
+
+		# Cumulative population
+		cum_full = np.cumsum(p_full)
+
+		# Find truncation index
+		cutoff_idx = np.searchsorted(cum_full, 1 - tol)
+
+		# Slice
+		J = J_full[:cutoff_idx + 1]
+		E = E_full[:cutoff_idx + 1]
+		p = p_full[:cutoff_idx + 1]
+		cum = cum_full[:cutoff_idx + 1]
+
+	# ---- Optional dictionaries ----
+	if return_dict:
+		energies = dict(zip(J, E))
+		pop_dict = dict(zip(J, p)) if p is not None else None
+		cum_dict = dict(zip(J, cum)) if cum is not None else None
+
+	# ---- Display (optional, separated for HPC cleanliness) ----
+	if display:
+		print(colored("\nRotational energy levels of a rigid rotor",
+					  HEADER_COLOR, attrs=['bold', 'underline']))
+
+		if T is not None:
+			print(f"Temperature = {T} K")
+			print(f"Retained population = {cum[-1]:.8f}")
+
+			print(f"\n{'J':<5}{'Energy':>12}{'Pop':>15}{'Cumulative':>15}")
+			print("=" * 50)
+
+			for j, e, pj, cj in zip(J, E, p, cum):
+				print(f"{j:<5}{e:>12.6f}{pj:>15.6e}{cj:>15.6f}")
+		else:
+			print(f"\n{'J':<5}{'Energy (cm^-1)':>15}")
+			print("=" * 22)
+			for j, e in zip(J, E):
+				print(f"{j:<5}{e:>15.6f}")
+
+	# ---- Return ----
+	if return_dict:
+		return J, E, p, cum, energies, pop_dict, cum_dict
+	else:
+		return J, E, p, cum
+
 
 def plot_cv_vs_temperature(
 	thermo_data: dict,
@@ -95,6 +205,9 @@ def plot_cv_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want,
 		unit_want (str): Unit for Cv display.
 		out_path (str or Path): Path to save combined plot.
 	"""
+
+	J, E, p, cum = compute_rotational_levels_cum(B=MOLECULE_DATA["HF"]["B_const"], T=300, tol=1e-8, display=True)
+	whoami()
 
 	plt.figure(figsize=(12, 6))
 

@@ -10,8 +10,10 @@ from monomer_linear_rotor.thermo import (
 	read_all_quantum_data_files_with_thermo,
 	plot_cv_comparison,
 )
+
 from pkg_utils.utils import whoami
 from pkg_utils.env_report import whom
+
 
 # Universal gas constant in J/mol·K
 GAS_CONSTANT_J_PER_MOL_K = 8.314462618
@@ -306,14 +308,15 @@ quantum_data_root_dir="/Volumes/Schrodinger/pcsa-backup/outputs-of-exeact-diagon
 #electric_field_list=[5] + list(range(20, 201, 20))
 #jmax_list=list(range(20, 41, 5))
 electric_field_list=[9]
-jmax_list=[40]
+jmax_list=[60]
 # Usage
 
 unit_want="wavenumber"
 #unit_want="SI",
 
 all_results = {}
-for mol in ["HF", "HCl", "HBr", "HI"]:
+#for mol in ["HF", "HCl", "HBr", "HI"]:
+for mol in ["HF"]:
 	thermo_dict = read_all_quantum_data_files_with_thermo(
 		quantum_data_root_dir=quantum_data_root_dir,
 		molecule=mol,

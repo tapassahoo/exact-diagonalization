@@ -12,6 +12,8 @@ import shutil
 import stat
 from pkg_utils.utils import whoami
 from pkg_utils.env_report import whom
+from monomer_linear_rotor.molecule_data import MOLECULE_DATA
+
 
 width = 70
 separator = "=" * width
@@ -19,13 +21,6 @@ bar = "=" * 60
 bar = "=" * 72
 label_width = 12
 
-# Define known molecular parameters
-MOLECULE_DATA = {
-	"HF":  {"dipole_moment": 1.8265, "B_const": 20.5598},
-	"HCl": {"dipole_moment": 1.1085, "B_const": 10.44025},
-	"HBr": {"dipole_moment": 0.8280, "B_const": 8.3511},
-	"HI":  {"dipole_moment": 0.4477, "B_const": 6.426},
-}
 allowed_spin_types = ["spinless", "ortho", "para"]
 
 def parse_arguments():
