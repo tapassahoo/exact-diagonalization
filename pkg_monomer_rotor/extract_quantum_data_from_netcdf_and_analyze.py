@@ -20,32 +20,55 @@ GAS_CONSTANT_J_PER_MOL_K = 8.314462618
 
 def get_temperature_list(molecule: str):
 	if molecule == "HF":
-		return sorted(set(
-			list(np.arange(0.5, 20.1, 0.5)) +
-			list(range(20, 41, 1)) +
-			list(range(40, 101, 2))
-		))
+		return np.unique(np.concatenate([
+			np.linspace(0.5, 5.0, 5),
+			np.arange(5.0, 20.5 + 1e-12, 0.25),
+			np.arange(20.0, 40.0 + 1e-12, 1.25),
+			np.arange(40.0, 200.0 + 1e-12, 1.5)
+		]))
+		#return sorted(set(
+		#	list(np.arange(0.5, 20.1, 0.25)) +
+		#	list(range(20, 41, 1)) +
+		#	list(range(40, 101, 1))
+		#))
+
 	elif molecule == "HCl":
-		return sorted(set(
-			list(np.arange(0.2, 12.1, 0.2)) +
-			list(np.arange(12.5, 20.1, 0.5)) +
-			list(np.arange(20.0, 40.1, 1.0)) +
-			list(range(40, 101, 2))
-		))
+		return np.unique(np.concatenate([
+			np.arange(0.5, 3.0 + 1e-9, 0.5),
+			np.arange(3.1, 8.5 + 1e-9, 0.1),
+			np.arange(8.2, 10.6 + 1e-9, 0.2),
+			np.arange(10.0, 20.0 + 1e-9, 1.0),
+			np.arange(20.0, 100.0 + 1e-9, 1.0)
+		]))
+		#return sorted(set(
+		#	list(np.arange(0.2, 12.1, 0.2)) +
+		#	list(np.arange(12.5, 20.1, 0.5)) +
+		#	list(np.arange(20.0, 40.1, 1.0)) +
+		#	list(range(40, 101, 2))
+		#))
 	elif molecule == "HBr":
-		return sorted(set(
-			list(np.arange(0.2, 10.1, 0.2)) +
-			list(np.arange(10.0, 20.1, 0.5)) +
-			list(np.arange(20.0, 40.1, 1.0)) +
-			list(range(40, 101, 2))
-		))
+		return np.unique(np.concatenate([
+			np.arange(0.2, 2.0 + 1e-9, 0.5),
+			np.arange(2.0, 5.2 + 1e-9, 0.05),
+			np.arange(5.1, 8.0 + 1e-9, 0.1),
+			np.arange(8.0, 10.6 + 1e-9, 0.2),
+			np.arange(10.0, 100.0 + 1e-9, 1.0)
+		]))
 	elif molecule == "HI":
-		return sorted(set(
-			list(np.arange(0.2, 10.1, 0.2)) +
-			list(np.arange(10.0, 20.1, 0.5)) +
-			list(np.arange(20.0, 40.1, 1.0)) +
-			list(range(40, 101, 2))
-		))
+		return np.unique(np.concatenate([
+			np.arange(0.2, 2.0 + 1e-9, 0.5),
+			np.arange(2.0, 5.2 + 1e-9, 0.05),
+			np.arange(5.1, 8.0 + 1e-9, 0.1),
+			np.arange(8.0, 10.6 + 1e-9, 0.2),
+			np.arange(10.0, 100.0 + 1e-9, 1.0)
+		]))
+		#return sorted(set(
+		#	list(np.arange(0.2, 10.1, 0.1)) +
+		#	list(np.arange(10.0, 20.1, 0.5)) +
+		#	list(np.arange(20.0, 40.1, 1.0)) +
+		#	list(range(40, 101, 1))
+		#))
+
 	else:
 		raise ValueError(f"Unsupported molecule: {molecule}")
 
@@ -315,13 +338,13 @@ unit_want="wavenumber"
 #unit_want="SI",
 
 all_results = {}
+for mol in ["HI"]:
 #for mol in ["HF", "HCl", "HBr", "HI"]:
-for mol in ["HF"]:
 	thermo_dict = read_all_quantum_data_files_with_thermo(
 		quantum_data_root_dir=quantum_data_root_dir,
 		molecule=mol,
 		electric_field_list=[500],#electric_field_list,
-		jmax_list=[40],#jmax_list,
+		jmax_list=[60],#jmax_list,
 		temperature_list=get_temperature_list(mol),
 		spin_type="spinless",
 		unit_want=unit_want,
@@ -335,5 +358,5 @@ plot_cv_comparison(
 	thermo_dict_by_molecule=all_results,
 	get_temperature_list=get_temperature_list,
 	unit_want=unit_want,
-	out_path="/Users/tapas/academic-project/results/all_molecules_heat_capacity.png"
+	out_path="/Users/tapas/academic-project/results/heat_capacity_plot_of_HI_upto_100K.png"
 )

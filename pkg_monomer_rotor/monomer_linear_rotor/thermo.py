@@ -11,6 +11,7 @@ import matplotlib as mpl
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 from matplotlib import cm
+from matplotlib.ticker import MultipleLocator
 from scipy.constants import R as GAS_CONSTANT_J_PER_MOL_K
 from scipy.constants import k as BOLTZMANN_J_PER_K
 import warnings
@@ -22,6 +23,11 @@ from monomer_linear_rotor.molecule_data import MOLECULE_DATA
 from monomer_linear_rotor.utils import (
 	wavenumber_to_joules_per_mole,
 )
+
+from monomer_linear_rotor.hamiltonian import (
+	rotational_energy_levels,
+)
+
 from pkg_utils.utils import whoami
 from pkg_utils.config import *
 from pkg_utils.env_report import whom
@@ -30,7 +36,7 @@ from pkg_utils.env_report import whom
 def compute_rotational_levels_cum(
 	B,
 	T=None,
-	J_max=1000,
+	J_max=2000,
 	tol=1e-100,
 	return_dict=False,
 	display=False
@@ -132,7 +138,6 @@ def compute_rotational_levels_cum(
 	else:
 		return J, E, p, cum
 
-
 def plot_cv_vs_temperature(
 	thermo_data: dict,
 	unit: str = None,				# <-- Optional manual override
@@ -205,17 +210,21 @@ def plot_cv_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want,
 		unit_want (str): Unit for Cv display.
 		out_path (str or Path): Path to save combined plot.
 	"""
+	# -----------------------------
+	# Figure setup
+	# -----------------------------
+	fig, ax = plt.subplots(figsize=(9, 6))
 
-	#J, eigenvalues_free, p, cum = compute_rotational_levels_cum(B=MOLECULE_DATA["HF"]["B_const"], tol=1e-100)
-
-	plt.figure(figsize=(12, 6))
-
-	color_cycle = plt.cm.tab10.colors
+	color_cycle = ["red", "grey", "blue", "green"]
 	line_styles = ["-", "--", "-.", ":"]
-	markers = ["*", "p", "s", "o", "v"]
+	markers = ["o", "s", "p", "d", "v"]
 
+	
 	for mol_idx, (molecule, thermo_dict) in enumerate(thermo_dict_by_molecule.items()):
 		temperature_list = get_temperature_list(molecule)
+
+		J_num, energies_free = rotational_energy_levels(MOLECULE_DATA[molecule]["B_const"], 2000)
+		thermo_data_free = compute_thermo_vectorized_free(energies_free, temperature_list, unit_want, pop_tol=1e-10, cum_tol=1-1e-10)
 
 		if len(temperature_list) == 1 and isinstance(temperature_list[0], (list, tuple)):
 			temperature_list = temperature_list[0]
@@ -223,80 +232,105 @@ def plot_cv_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want,
 		color = color_cycle[mol_idx % len(color_cycle)]
 		mk = markers[mol_idx % len(markers)]
 
-		cv_values_free = rotational_heat_capacity_array(B=MOLECULE_DATA["HF"]["B_const"], T=temperature_list)
 
 		for curve_idx, ((jmax, E), thermo_data) in enumerate(thermo_dict.items()):
 			cv_values = [thermo_data[T]["heat_capacity"] for T in temperature_list]
+			cv_values_free = [thermo_data_free[T]["heat_capacity"] for T in temperature_list]
 			unit_cv = thermo_data[temperature_list[0]]["display_cv_unit"]
 
 
 			ls = line_styles[curve_idx % len(line_styles)]
 
+			#plt.plot(
+			#	temperature_list,
+			#	cv_values,
+			#	linestyle='none',
+			#	marker=mk,
+			#	markersize=8,
+			#	#`markerfacecolor='none',
+			#	color=color,
+			#	alpha=0.65,
+			#	#label=rf"{molecule} ($J_{{\max}}={jmax}$, $E={E:.2f}\,\mathrm{{kV/cm}}$)"
+			#	label=rf"{molecule}"
+			#)
+			
 			plt.plot(
 				temperature_list,
 				cv_values,
-				linestyle=ls,
-				marker=mk,
+				linestyle='none',
+				#linewidth=1.6,
+				marker='o',
+				markersize=8,
+				#markerfacecolor='none',
 				color=color,
-				label=rf"{molecule} ($J_{{\max}}={jmax}$, $E={E:.2f}\,\mathrm{{kV/cm}}$)"
+				label=rf"{molecule} (static electric field, $E={E:.2f}\,\mathrm{{kV/cm}}$)"
 			)
 
 			plt.plot(
 				temperature_list,
 				cv_values_free,
-				linestyle=ls,
-				marker=mk,
-				color=color,
-				label=rf"{molecule} ($J_{{\max}}={jmax}$, $E={E:.2f}\,\mathrm{{kV/cm}}$)"
+				linestyle='none',
+				#linewidth=1.4,
+				marker='p',
+				markersize=8,
+				color="blue",
+				alpha=0.65,
+				label=rf"{molecule} (field-free rotor)"
 			)
 
+	# -----------------------------
+	# Axis labels
+	# -----------------------------
+	ax.set_xlabel("Temperature (K)", fontsize=18)
 
-	# Assign consistent colors per molecule
-	"""
-	color_cycle = plt.cm.tab10.colors  
-	line_styles = ["-", "--", "-.", ":"]
-	markers = ["o", "s", "D", "^", "v"]
+	safe_unit = unit_cv.replace("^-1", "$^{-1}$")
+	ax.set_ylabel(rf"Heat Capacity [{safe_unit}]", fontsize=18)
 
-	for mol_idx, (molecule, thermo_dict) in enumerate(thermo_dict_by_molecule.items()):
-		temperature_list = get_temperature_list(molecule)
+	# -----------------------------
+	# Limits
+	# -----------------------------
+	ax.set_xlim(-0.5, 100.5)
+	ax.set_ylim(-0.01, 0.8)
 
-		# Flatten if nested
-		if len(temperature_list) == 1 and isinstance(temperature_list[0], (list, tuple)):
-			temperature_list = temperature_list[0]
+	# -----------------------------
+	# Major ticks
+	# -----------------------------
+	ax.set_xticks(np.arange(0, 101, 10))
+	ax.yaxis.set_major_locator(MultipleLocator(0.1))
 
-		color = color_cycle[mol_idx % len(color_cycle)]
-		style_iter = itertools.product(line_styles, markers)
+	# -----------------------------
+	# Minor ticks
+	# -----------------------------
+	ax.xaxis.set_minor_locator(MultipleLocator(2))
+	ax.yaxis.set_minor_locator(MultipleLocator(0.02))
 
-		for (jmax, E), thermo_data in thermo_dict.items():
-			cv_values = [thermo_data[T]["heat_capacity"] for T in temperature_list]
-			unit_cv = thermo_data[temperature_list[0]]["display_cv_unit"]
+	# -----------------------------
+	# Tick styling (publication quality)
+	# -----------------------------
+	ax.tick_params(axis='both', which='major',
+				   direction='in', length=7, width=1.2,
+				   labelsize=18, top=True, right=True)
 
-			ls, mk = next(style_iter)
+	ax.tick_params(axis='both', which='minor',
+				   direction='in', length=4, width=1.0,
+				   top=True, right=True)
 
-			plt.plot(
-				temperature_list,
-				cv_values,
-				linestyle=ls,
-				marker=mk,
-				color=color,
-				label=rf"{molecule} (Jmax={jmax}, E={E:.2f} kV/cm)"
-			)
-	"""
+	# -----------------------------
+	# Spines (frame thickness)
+	# -----------------------------
+	for spine in ax.spines.values():
+		spine.set_linewidth(1.2)
 
-	# X-axis ticks
-	xticks = np.arange(0, 101, 10)
-	plt.xticks(xticks, fontsize=18)
-	plt.xlabel("Temperature (K)", fontsize=18)
-	safe_unit = unit_cv.replace("^-1", "$^{-1}$")  
-	plt.ylabel(rf"Heat Capacity ($C_V$) [{safe_unit}]", fontsize=18)
-	#plt.tick_params(axis='x', labelsize=18, colors='red')
-	# Tick parameters
-	plt.tick_params(axis='both', labelsize=18)
-	plt.xlim(-0.5, 100.5)
+	# -----------------------------
+	# Optional: light grid (very subtle)
+	# -----------------------------
+	#ax.grid(which='major', linestyle='--', linewidth=0.5, alpha=0.5)
+	#ax.grid(which='minor', linestyle=':', linewidth=0.4, alpha=0.4)
 
-	#plt.title("Heat Capacity vs Temperature for Linear Rotors", fontsize=14)
 	plt.legend(fontsize=18, loc="best")
-	plt.grid(True, ls="--", alpha=0.6)
+	# -----------------------------
+	# Layout
+	# -----------------------------
 	plt.tight_layout()
 
 	# Save first, then show
@@ -359,62 +393,138 @@ if False:
 		plt.close()
 
 
-def rotational_heat_capacity_array(B, T, J_max=200):
+def compute_thermo_vectorized_free(
+	eigenvalues,
+	temperature_list,
+	unit,
+	pop_tol=1e-10,
+	cum_tol=1 - 1e-10
+):
 	"""
-	Compute rotational heat capacity Cv(T) for an array of temperatures.
+	Vectorized thermodynamics for a free linear rigid rotor including degeneracy.
 
 	Parameters
 	----------
-	B : float
-		Rotational constant (cm⁻¹)
-	T : array_like
-		Temperatures (K)
-	J_max : int
-		Maximum rotational level (fixed basis)
+	eigenvalues : array_like or dict
+		Rotational energies (cm^-1). If dict, keys assumed to be J.
+	temperature_list : array_like
+		Temperatures in Kelvin.
+	unit : {'wavenumber', 'SI'}
+		Output unit system.
+	pop_tol : float, optional
+		Absolute Boltzmann weight cutoff.
+	cum_tol : float, optional
+		Cumulative population threshold.
 
 	Returns
 	-------
-	T : ndarray
-		तापमान (same shape as input)
-	Cv : ndarray
-		Heat capacity in units of k_B
+	dict
+		Thermodynamic quantities indexed by temperature.
 	"""
 
-	k_B_cm = 0.69503476  # cm⁻¹/K
+	import numpy as np
 
-	T = np.asarray(T, dtype=float)
-	J = np.arange(J_max + 1)
+	# ---- Handle dict input (J → E_J) ----
+	if isinstance(eigenvalues, dict):
+		J = np.array(list(eigenvalues.keys()), dtype=int)
+		energies = np.array(list(eigenvalues.values()), dtype=np.float64)
+	else:
+		energies = np.asarray(eigenvalues, dtype=np.float64)
+		if energies.ndim != 1:
+			raise ValueError("Eigenvalues must be 1D.")
+		J = np.arange(len(energies))
 
-	# Energies (J, 1)
-	E = B * J * (J + 1)
-	E = E[:, np.newaxis]
+	if unit not in {"wavenumber", "SI"}:
+		raise ValueError("Invalid unit.")
 
-	# Inverse temperature (1, T)
-	beta = 1.0 / (k_B_cm * T)
-	beta = beta[np.newaxis, :]
+	# ---- Sort by energy ----
+	sort_idx = np.argsort(energies)
+	energies = energies[sort_idx]
+	J = J[sort_idx]
 
-	# Boltzmann weights (J, T)
-	w = (2 * J[:, np.newaxis] + 1) * np.exp(-beta * E)
+	kB = 0.69503476  # cm^-1/K
 
-	# Partition function
-	Z = np.sum(w, axis=0)
+	# ---- Energy shifting (numerical stability) ----
+	E0 = energies[0]
+	Delta = energies - E0
 
-	# Probabilities
-	p = w / Z
+	results = {}
 
-	# Moments
-	E_mean = np.sum(p * E, axis=0)
-	E2_mean = np.sum(p * E**2, axis=0)
+	for T in temperature_list:
+		if T <= 0:
+			raise ValueError(f"T must be > 0. Got {T}")
 
-	# Heat capacity
-	Cv = (E2_mean - E_mean**2) / (k_B_cm * T**2)
+		beta = 1.0 / (kB * T)
 
-	return Cv
+		# ---- Free rotor degeneracy ----
+		g = 2 * J + 1
 
+		# ---- Boltzmann weights ----
+		weights = g * np.exp(-beta * Delta)
 
-def compute_thermo_from_eigenvalues_free(eigenvalues, temperature_list, unit):
+		# ---- Safety cutoff ----
+		mask = weights > pop_tol
+		weights = weights[mask]
+		energies_used = energies[mask]
+		J_used = J[mask]
+
+		# ---- Partition function ----
+		Z = np.sum(weights)
+
+		# ---- Probabilities ----
+		populations = weights / Z
+
+		# ---- Cumulative population ----
+		cum_pop = np.cumsum(populations)
+
+		# ---- Adaptive truncation ----
+		idx_conv = np.searchsorted(cum_pop, cum_tol)
+
+		populations = populations[:idx_conv + 1]
+		cum_pop = cum_pop[:idx_conv + 1]
+		energies_used = energies_used[:idx_conv + 1]
+		J_used = J_used[:idx_conv + 1]
+
+		# ---- Observables ----
+		E_avg = np.dot(populations, energies_used)
+		E2_avg = np.dot(populations, energies_used**2)
+
+		Cv_cm1 = kB * beta**2 * (E2_avg - E_avg**2)
+
+		# ---- Unit conversion ----
+		if unit == "wavenumber":
+			U_out = E_avg
+			Cv_out = Cv_cm1
+			display_unit = "cm^-1"
+			display_cv_unit = "cm^-1/K"
+		else:
+			U_out = wavenumber_to_joules_per_mole(E_avg)
+			Cv_out = wavenumber_to_joules_per_mole(Cv_cm1)
+			display_unit = "J/mol"
+			display_cv_unit = "J/mol·K"
+
+		results[T] = {
+			"temperature_K": T,
+			"beta": beta,
+			"partition_function": Z,
+			"populations": populations,
+			"cum_populations": cum_pop,
+			"J_levels": J_used,
+			"internal_energy": U_out,
+			"heat_capacity": Cv_out,
+			"levels_used": len(populations),
+			"convergence_index": idx_conv,
+			"convergence_energy": energies_used[idx_conv],
+			"unit": unit,
+			"display_unit": display_unit,
+			"display_cv_unit": display_cv_unit
+		}
+
+	return results
+
+def compute_thermo_vectorized(eigenvalues, temperature_list, unit, pop_tol=1e-10, cum_tol=1-1e-10):
 	"""
-	Compute thermodynamic properties (Z, populations, U, Cv) from energy eigenvalues,
+	Compute thermodynamic properties (Z, populations, cumulative-population truncation, U, Cv) from energy eigenvalues,
 	and report the index and energy at which Boltzmann convergence is reached.
 
 	Parameters
@@ -430,6 +540,15 @@ def compute_thermo_from_eigenvalues_free(eigenvalues, temperature_list, unit):
 			- 'wavenumber' : Energy in cm⁻¹ and heat capacity in cm⁻¹/K
 			- 'SI'		 : Energy in J/mol and heat capacity in J/mol·K
 
+	pop_tol : float, optional (default=1e-10)
+	Absolute cutoff for Boltzmann weights. States with weights below this
+	threshold are discarded as numerically insignificant.
+
+	cum_tol : float, optional (default=1 - 1e-10)
+	Cumulative population threshold used for adaptive truncation. The summation
+	over states is truncated once the cumulative Boltzmann population reaches
+	this value, ensuring that neglected states contribute negligibly.
+
 	Returns
 	-------
 	dict
@@ -441,6 +560,7 @@ def compute_thermo_from_eigenvalues_free(eigenvalues, temperature_list, unit):
 			- beta				: 1 / (kB·T) in cm⁻¹⁻¹
 			- partition_function: Canonical partition function Z
 			- populations		: Normalized Boltzmann populations
+			- cum_populations	: Cumulative sum of populations, used for convergence assessment.
 			- internal_energy	: Mean energy (U)
 			- heat_capacity		: Heat capacity (Cv)
 			- levels_used		: Number of energy levels included
@@ -449,15 +569,18 @@ def compute_thermo_from_eigenvalues_free(eigenvalues, temperature_list, unit):
 	"""
 
 	energies = np.asarray(eigenvalues, dtype=np.float64)
-	print(energies)
-	whoami()
 	if energies.ndim != 1:
 		raise ValueError("Eigenvalues must be a one-dimensional array.")
 	if unit not in {"wavenumber", "SI"}:
 		raise ValueError("Unit must be either 'wavenumber' or 'SI'.")
 
-	BOLTZMANN_CM_INV_PER_K = 0.69503476		   # k_B = 0.69503476 cm^-1/K
-	threshold = 1e-10
+	# ---- Sort energies (important for monotonic convergence) ----
+	sort_idx = np.argsort(energies)
+	energies = energies[sort_idx]
+
+	kB = 0.69503476  # cm^-1/K
+	E0 = energies[0]
+	Delta = energies - E0   # shifted energies (>=0)
 
 	results = {}
 
@@ -465,155 +588,40 @@ def compute_thermo_from_eigenvalues_free(eigenvalues, temperature_list, unit):
 		if T <= 0:
 			raise ValueError(f"Temperature must be > 0 K. Got: {T}")
 
-		beta = 1.0 / (BOLTZMANN_CM_INV_PER_K * T) # cm
-		E_shifted = energies - np.min(energies)   # cm^-1
+		beta = 1.0 / (kB * T)
 
-		weights = []
-		E_used = []
-		convergence_index = None
-		converged = False
+		# ---- Vectorized Boltzmann weights ----
+		weights = np.exp(-beta * Delta)
 
-		for i, Ei in enumerate(E_shifted):
-			wi = np.exp(-beta * Ei)			   # unitless
-			if wi <= threshold:
-				convergence_index = i
-				converged = True
-				break
-			weights.append(wi)
-			E_used.append(Ei)
+		# Optional safety cutoff (avoid tiny numbers)
+		mask = weights > pop_tol
+		weights = weights[mask]
+		energies_used = energies[mask]
 
-		if not converged:
-			convergence_index = len(energies)
-			warnings.warn(
-				f"Convergence not reached at T = {T:.2f} K. Boltzmann factor did not fall below {threshold}.",
-				RuntimeWarning
-			)
-
-		weights = np.array(weights)
-		E_used = np.array(E_used)
+		# ---- Partition function ----
 		Z = np.sum(weights)
-		populations = weights / Z if Z > 0 else np.zeros_like(weights)
 
-		energies_used_orig = energies[:convergence_index]
-		E_avg = np.dot(populations, energies_used_orig)
-		E2_avg = np.dot(populations, energies_used_orig**2)
-		Cv_cm1 = BOLTZMANN_CM_INV_PER_K * beta**2 * (E2_avg - E_avg**2) # cm^-1/K
+		# ---- Probabilities ----
+		populations = weights / Z
 
-		if unit == "wavenumber":
-			U_out = E_avg
-			Cv_out = Cv_cm1
-			print(Cv_out)
-			display_unit = "cm^-1"
-			display_cv_unit = "cm^-1/K"
-		else:
-			U_out = wavenumber_to_joules_per_mole(E_avg)
-			Cv_out = wavenumber_to_joules_per_mole(Cv_cm1)
-			display_unit = "J/mol"
-			display_cv_unit = "J/mol·K"
+		# ---- Cumulative population ----
+		cum_pop = np.cumsum(populations)
 
-		results[T] = {
-			"temperature_K": T,
-			"unit": unit,
-			"display_unit": display_unit,
-			"display_cv_unit": display_cv_unit,
-			"beta": beta,
-			"partition_function": Z,
-			"populations": populations,
-			"internal_energy": U_out,
-			"heat_capacity": Cv_out,
-			"levels_used": convergence_index,
-			"convergence_energy": energies[convergence_index] if convergence_index < len(energies) else None,
-			"convergence_index": convergence_index
-		}
+		# ---- Adaptive truncation (dominant criterion) ----
+		idx_conv = np.searchsorted(cum_pop, cum_tol)
 
-	return results
+		# Slice consistently
+		populations = populations[:idx_conv + 1]
+		cum_pop = cum_pop[:idx_conv + 1]
+		energies_used = energies_used[:idx_conv + 1]
 
+		# ---- Observables (use original energies) ----
+		E_avg = np.dot(populations, energies_used)
+		E2_avg = np.dot(populations, energies_used**2)
 
-def compute_thermo_from_eigenvalues(eigenvalues, temperature_list, unit):
-	"""
-	Compute thermodynamic properties (Z, populations, U, Cv) from energy eigenvalues,
-	and report the index and energy at which Boltzmann convergence is reached.
+		Cv_cm1 = kB * beta**2 * (E2_avg - E_avg**2)
 
-	Parameters
-	----------
-	eigenvalues : array_like
-		1D array of energy eigenvalues in wavenumber units (cm⁻¹).
-
-	temperature_list : array_like
-		List or array of temperatures (in Kelvin) for which properties are computed.
-
-	unit : {'wavenumber', 'SI'}
-		Desired output unit system:
-			- 'wavenumber' : Energy in cm⁻¹ and heat capacity in cm⁻¹/K
-			- 'SI'		 : Energy in J/mol and heat capacity in J/mol·K
-
-	Returns
-	-------
-	dict
-		Dictionary keyed by temperature (in K), each entry containing:
-			- temperature_K		: Temperature in Kelvin
-			- unit				: 'wavenumber' or 'SI'
-			- display_unit		: Unit for U
-			- display_cv_unit	: Unit for Cv
-			- beta				: 1 / (kB·T) in cm⁻¹⁻¹
-			- partition_function: Canonical partition function Z
-			- populations		: Normalized Boltzmann populations
-			- internal_energy	: Mean energy (U)
-			- heat_capacity		: Heat capacity (Cv)
-			- levels_used		: Number of energy levels included
-			- convergence_energy: Energy at which convergence was met (in cm⁻¹)
-			- convergence_index : Index where threshold was first met
-	"""
-
-	energies = np.atleast_1d(np.asarray(eigenvalues, dtype=np.float64)).flatten()
-	if energies.ndim != 1:
-		raise ValueError("Eigenvalues must be a one-dimensional array.")
-	if unit not in {"wavenumber", "SI"}:
-		raise ValueError("Unit must be either 'wavenumber' or 'SI'.")
-
-	BOLTZMANN_CM_INV_PER_K = 0.69503476		   # k_B = 0.69503476 cm^-1/K
-	threshold = 1e-10
-
-	results = {}
-
-	for T in temperature_list:
-		if T <= 0:
-			raise ValueError(f"Temperature must be > 0 K. Got: {T}")
-
-		beta = 1.0 / (BOLTZMANN_CM_INV_PER_K * T) # cm
-		E_shifted = energies - np.min(energies)   # cm^-1
-
-		weights = []
-		E_used = []
-		convergence_index = None
-		converged = False
-
-		for i, Ei in enumerate(E_shifted):
-			wi = np.exp(-beta * Ei)			   # unitless
-			if wi <= threshold:
-				convergence_index = i
-				converged = True
-				break
-			weights.append(wi)
-			E_used.append(Ei)
-
-		if not converged:
-			convergence_index = len(energies)
-			warnings.warn(
-				f"Convergence not reached at T = {T:.2f} K. Boltzmann factor did not fall below {threshold}.",
-				RuntimeWarning
-			)
-
-		weights = np.array(weights)
-		E_used = np.array(E_used)
-		Z = np.sum(weights)
-		populations = weights / Z if Z > 0 else np.zeros_like(weights)
-
-		energies_used_orig = energies[:convergence_index]
-		E_avg = np.dot(populations, energies_used_orig)
-		E2_avg = np.dot(populations, energies_used_orig**2)
-		Cv_cm1 = BOLTZMANN_CM_INV_PER_K * beta**2 * (E2_avg - E_avg**2) # cm^-1/K
-
+		# ---- Unit conversion ----
 		if unit == "wavenumber":
 			U_out = E_avg
 			Cv_out = Cv_cm1
@@ -627,17 +635,18 @@ def compute_thermo_from_eigenvalues(eigenvalues, temperature_list, unit):
 
 		results[T] = {
 			"temperature_K": T,
-			"unit": unit,
-			"display_unit": display_unit,
-			"display_cv_unit": display_cv_unit,
 			"beta": beta,
 			"partition_function": Z,
 			"populations": populations,
+			"cum_populations": cum_pop,
 			"internal_energy": U_out,
 			"heat_capacity": Cv_out,
-			"levels_used": convergence_index,
-			"convergence_energy": energies[convergence_index] if convergence_index < len(energies) else None,
-			"convergence_index": convergence_index
+			"levels_used": len(populations),
+			"convergence_index": idx_conv,
+			"convergence_energy": energies_used[idx_conv],
+			"unit": unit,
+			"display_unit": display_unit,
+			"display_cv_unit": display_cv_unit
 		}
 
 	return results
@@ -844,7 +853,12 @@ def read_all_quantum_data_files_with_thermo(
 				print(f"[ ] {'Description':<12}: {label_from_file}")
 
 				# Compute thermodynamic properties
-				thermo_data = compute_thermo_from_eigenvalues(
+				#thermo_data = compute_thermo_from_eigenvalues(
+				#	eigenvalues=eigenvalues,
+				#	temperature_list=temperature_list,
+				#	unit=unit_want
+				#)
+				thermo_data = compute_thermo_vectorized(
 					eigenvalues=eigenvalues,
 					temperature_list=temperature_list,
 					unit=unit_want

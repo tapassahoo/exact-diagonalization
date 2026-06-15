@@ -113,7 +113,7 @@ def main():
 	)
 
 	if compute_rigid_rotor_energy:
-		energies = rotational_energy_levels(B_const_cm_inv, 10)
+		energies = rotational_energy_levels(B_const_cm_inv, 10, display = True)
 		plot_rotational_levels(energies)
 
 	base_file_name = generate_filename(
