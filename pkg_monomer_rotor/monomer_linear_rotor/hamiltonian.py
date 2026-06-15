@@ -49,10 +49,11 @@ def rotational_energy_levels(B, J_max=10, return_dict=False, display=False):
 	J = np.arange(0, J_max + 1)
 	E = B * J * (J + 1)
 
+	# Display results
 	if display:
-		print("\nRotational energy levels of a rigid rotor")
+		print(colored("\nRotational energy levels of a rigid rotor", HEADER_COLOR, attrs=['bold', 'underline']))
 		print(f"\n{'J':<5}{'Energy (cm^-1)':>15}")
-		print("=" * 22)
+		print("=" * 20)
 		for j, e in zip(J, E):
 			print(f"{j:<5}{e:>15.6f}")
 
@@ -60,33 +61,6 @@ def rotational_energy_levels(B, J_max=10, return_dict=False, display=False):
 		return dict(zip(J, E))
 	else:
 		return J, E
-
-if False:
-	def rotational_energy_levels(B, J_max=10, display = False):
-		"""
-		Computes and displays the rotational energy levels of a rigid rotor.
-
-		Parameters:
-		- B (float): Rotational constant in cm⁻¹.
-		- J_max (int): Maximum rotational quantum number to compute.
-
-		Returns:
-		- energies (dict): Dictionary with J values as keys and energy in cm⁻¹ as values.
-		"""
-		J_values = np.arange(0, J_max + 1)  # Rotational quantum numbers J = 0, 1, 2, ...
-		# Energy formula E_J = B * J * (J + 1)
-		energies = {J: B * J * (J + 1) for J in J_values}
-
-		# Display results
-		if display:
-			print(colored("\nRotational energy levels of a rigid rotor", HEADER_COLOR, attrs=['bold', 'underline']))
-			print(f"\n{'J':<5}{'Energy (cm^-1)':>15}")
-			print("=" * 20)
-			for J, E in energies.items():
-				print(f"{J:<5}{E:>15.6f}")
-
-		return energies
-
 
 def plot_rotational_levels(
 		energies: dict,
@@ -317,7 +291,7 @@ def plot_coupling_with_dJ_overlay(
 		ax.yaxis.set_major_locator(NullLocator())
 
 	# Styling
-	ax.tick_params(direction="in", top=True, right=True)
+	ax.tick_params(direction="in", top=True, bottom=True, right=True)
 	for spine in ax.spines.values():
 		spine.set_linewidth(1.0)
 
