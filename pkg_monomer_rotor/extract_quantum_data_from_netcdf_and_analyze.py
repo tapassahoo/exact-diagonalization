@@ -24,7 +24,8 @@ def get_temperature_list(molecule: str):
 			np.linspace(0.5, 5.0, 5),
 			np.arange(5.0, 20.5 + 1e-12, 0.25),
 			np.arange(20.0, 40.0 + 1e-12, 1.25),
-			np.arange(40.0, 200.0 + 1e-12, 1.5)
+			np.arange(40.0, 202.0 + 1e-12, 1.5),
+			np.array([100.0, 200.0])  # explicitly include
 		]))
 		#return sorted(set(
 		#	list(np.arange(0.5, 20.1, 0.25)) +
@@ -38,7 +39,8 @@ def get_temperature_list(molecule: str):
 			np.arange(3.1, 8.5 + 1e-9, 0.1),
 			np.arange(8.2, 10.6 + 1e-9, 0.2),
 			np.arange(10.0, 20.0 + 1e-9, 1.0),
-			np.arange(20.0, 100.0 + 1e-9, 1.0)
+			np.arange(20.0, 100.0 + 1e-9, 1.0),
+			np.array([100.0, 200.0])  # explicitly include
 		]))
 		#return sorted(set(
 		#	list(np.arange(0.2, 12.1, 0.2)) +
@@ -52,7 +54,8 @@ def get_temperature_list(molecule: str):
 			np.arange(2.0, 5.2 + 1e-9, 0.05),
 			np.arange(5.1, 8.0 + 1e-9, 0.1),
 			np.arange(8.0, 10.6 + 1e-9, 0.2),
-			np.arange(10.0, 100.0 + 1e-9, 1.0)
+			np.arange(10.0, 100.0 + 1e-9, 1.0),
+			np.array([100.0, 200.0])  # explicitly include
 		]))
 	elif molecule == "HI":
 		return np.unique(np.concatenate([
@@ -60,7 +63,8 @@ def get_temperature_list(molecule: str):
 			np.arange(2.0, 5.2 + 1e-9, 0.05),
 			np.arange(5.1, 8.0 + 1e-9, 0.1),
 			np.arange(8.0, 10.6 + 1e-9, 0.2),
-			np.arange(10.0, 100.0 + 1e-9, 1.0)
+			np.arange(10.0, 100.0 + 1e-9, 1.0),
+			np.array([100.0, 200.0])  # explicitly include
 		]))
 		#return sorted(set(
 		#	list(np.arange(0.2, 10.1, 0.1)) +

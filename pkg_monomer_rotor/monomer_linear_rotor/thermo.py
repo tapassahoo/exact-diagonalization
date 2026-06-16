@@ -210,21 +210,23 @@ def plot_cv_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want,
 		unit_want (str): Unit for Cv display.
 		out_path (str or Path): Path to save combined plot.
 	"""
+	num_molecules = len(thermo_dict_by_molecule)	
 	# -----------------------------
 	# Figure setup
 	# -----------------------------
-	fig, ax = plt.subplots(figsize=(9, 6))
+	if num_molecules != 1:
+		fig, ax = plt.subplots(figsize=(9, 6))
+
+	else:
+		# Create figure with 2 row, 1 columns
+		fig, axs = plt.subplots(2, 1, figsize=(9, 12))
 
 	color_cycle = ["red", "grey", "blue", "green"]
 	line_styles = ["-", "--", "-.", ":"]
 	markers = ["o", "s", "p", "d", "v"]
 
-	
 	for mol_idx, (molecule, thermo_dict) in enumerate(thermo_dict_by_molecule.items()):
 		temperature_list = get_temperature_list(molecule)
-
-		J_num, energies_free = rotational_energy_levels(MOLECULE_DATA[molecule]["B_const"], 2000)
-		thermo_data_free = compute_thermo_vectorized_free(energies_free, temperature_list, unit_want, pop_tol=1e-10, cum_tol=1-1e-10)
 
 		if len(temperature_list) == 1 and isinstance(temperature_list[0], (list, tuple)):
 			temperature_list = temperature_list[0]
@@ -232,103 +234,248 @@ def plot_cv_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want,
 		color = color_cycle[mol_idx % len(color_cycle)]
 		mk = markers[mol_idx % len(markers)]
 
+		if num_molecules == 1:
+			J_num, energies_free = rotational_energy_levels(MOLECULE_DATA[molecule]["B_const"], 2000)
+			thermo_data_free = compute_thermo_vectorized_free(energies_free, temperature_list, unit_want, pop_tol=1e-10, cum_tol=1-1e-10)
+			cv_values_free = [thermo_data_free[T]["heat_capacity"] for T in temperature_list]
+			cum_populations_free = thermo_data_free[100]["cum_populations"]
+			states_free = np.arange(1, len(cum_populations_free) + 1)
+
 
 		for curve_idx, ((jmax, E), thermo_data) in enumerate(thermo_dict.items()):
 			cv_values = [thermo_data[T]["heat_capacity"] for T in temperature_list]
-			cv_values_free = [thermo_data_free[T]["heat_capacity"] for T in temperature_list]
 			unit_cv = thermo_data[temperature_list[0]]["display_cv_unit"]
 
+			cum_populations_field = thermo_data[100]["cum_populations"]
+			states_field = np.arange(1, len(cum_populations_field) + 1)
 
-			ls = line_styles[curve_idx % len(line_styles)]
 
-			#plt.plot(
-			#	temperature_list,
-			#	cv_values,
-			#	linestyle='none',
-			#	marker=mk,
-			#	markersize=8,
-			#	#`markerfacecolor='none',
-			#	color=color,
-			#	alpha=0.65,
-			#	#label=rf"{molecule} ($J_{{\max}}={jmax}$, $E={E:.2f}\,\mathrm{{kV/cm}}$)"
-			#	label=rf"{molecule}"
-			#)
+			if num_molecules != 1:
+				ls = line_styles[curve_idx % len(line_styles)]
+				plt.plot(
+					temperature_list,
+					cv_values,
+					linestyle='none',
+					marker=mk,
+					markersize=8,
+					#`markerfacecolor='none',
+					color=color,
+					alpha=0.65,
+					label=rf"{molecule}"
+				)
 			
-			plt.plot(
-				temperature_list,
-				cv_values,
-				linestyle='none',
-				#linewidth=1.6,
-				marker='o',
-				markersize=8,
-				#markerfacecolor='none',
-				color=color,
-				label=rf"{molecule} (static electric field, $E={E:.2f}\,\mathrm{{kV/cm}}$)"
-			)
+			if num_molecules == 1:
+				axs[0].plot(
+					temperature_list,
+					cv_values,
+					linestyle='none',
+					#linewidth=1.6,
+					marker='o',
+					markersize=8,
+					#markerfacecolor='none',
+					color=color,
+					label=rf"{molecule} (static electric field, $E={E:.0f}\,\mathrm{{kV/cm}}$)"
+				)
 
-			plt.plot(
-				temperature_list,
-				cv_values_free,
-				linestyle='none',
-				#linewidth=1.4,
-				marker='p',
-				markersize=8,
-				color="blue",
-				alpha=0.65,
-				label=rf"{molecule} (field-free rotor)"
-			)
+				axs[0].plot(
+					temperature_list,
+					cv_values_free,
+					linestyle='none',
+					#linewidth=1.4,
+					marker='p',
+					markersize=8,
+					color="blue",
+					alpha=0.65,
+					label=rf"{molecule} (field-free rotor)"
+				)
+				axs[1].plot(
+					states_field,
+					cum_populations_field,
+					linestyle='none',
+					#linewidth=1.6,
+					marker='o',
+					markersize=8,
+					#markerfacecolor='none',
+					color=color,
+					label=rf"{molecule} (static electric field, $E={E:.0f}\,\mathrm{{kV/cm}}$)"
+				)
 
-	# -----------------------------
-	# Axis labels
-	# -----------------------------
-	ax.set_xlabel("Temperature (K)", fontsize=18)
+				axs[1].plot(
+					states_free,
+					cum_populations_free,
+					linestyle='none',
+					#linewidth=1.4,
+					marker='p',
+					markersize=8,
+					color="blue",
+					alpha=0.65,
+					label=rf"{molecule} (field-free rotor)"
+				)
 
-	safe_unit = unit_cv.replace("^-1", "$^{-1}$")
-	ax.set_ylabel(rf"Heat Capacity [{safe_unit}]", fontsize=18)
+	if num_molecules == 1:
+		# -----------------------------
+		# Axis labels
+		# -----------------------------
+		axs[0].set_xlabel("Temperature (K)", fontsize=18)
 
-	# -----------------------------
-	# Limits
-	# -----------------------------
-	ax.set_xlim(-0.5, 100.5)
-	ax.set_ylim(-0.01, 0.8)
+		safe_unit = unit_cv.replace("^-1", "$^{-1}$")
+		axs[0].set_ylabel(rf"Heat Capacity [{safe_unit}]", fontsize=18)
 
-	# -----------------------------
-	# Major ticks
-	# -----------------------------
-	ax.set_xticks(np.arange(0, 101, 10))
-	ax.yaxis.set_major_locator(MultipleLocator(0.1))
+		# -----------------------------
+		# Limits
+		# -----------------------------
+		axs[0].set_xlim(-0.5, 100.5)
+		axs[0].set_ylim(-0.01, 0.8)
 
-	# -----------------------------
-	# Minor ticks
-	# -----------------------------
-	ax.xaxis.set_minor_locator(MultipleLocator(2))
-	ax.yaxis.set_minor_locator(MultipleLocator(0.02))
+		# -----------------------------
+		# Major ticks
+		# -----------------------------
+		axs[0].set_xticks(np.arange(0, 101, 10))
+		axs[0].yaxis.set_major_locator(MultipleLocator(0.1))
 
-	# -----------------------------
-	# Tick styling (publication quality)
-	# -----------------------------
-	ax.tick_params(axis='both', which='major',
-				   direction='in', length=7, width=1.2,
-				   labelsize=18, top=True, right=True)
+		# -----------------------------
+		# Minor ticks
+		# -----------------------------
+		axs[0].xaxis.set_minor_locator(MultipleLocator(2))
+		axs[0].yaxis.set_minor_locator(MultipleLocator(0.02))
 
-	ax.tick_params(axis='both', which='minor',
-				   direction='in', length=4, width=1.0,
-				   top=True, right=True)
+		# -----------------------------
+		# Tick styling (publication quality)
+		# -----------------------------
+		axs[0].tick_params(axis='both', which='major',
+					   direction='in', length=7, width=1.2,
+					   labelsize=18, top=True, right=True)
 
-	# -----------------------------
-	# Spines (frame thickness)
-	# -----------------------------
-	for spine in ax.spines.values():
-		spine.set_linewidth(1.2)
+		axs[0].tick_params(axis='both', which='minor',
+					   direction='in', length=4, width=1.0,
+					   top=True, right=True)
 
-	# -----------------------------
-	# Optional: light grid (very subtle)
-	# -----------------------------
-	#ax.grid(which='major', linestyle='--', linewidth=0.5, alpha=0.5)
-	#ax.grid(which='minor', linestyle=':', linewidth=0.4, alpha=0.4)
+		# -----------------------------
+		# Spines (frame thickness)
+		# -----------------------------
+		for spine in axs[0].spines.values():
+			spine.set_linewidth(1.2)
 
-	plt.legend(fontsize=18, loc="best")
-	# -----------------------------
+		# -----------------------------
+		# Optional: light grid (very subtle)
+		# -----------------------------
+		#ax.grid(which='major', linestyle='--', linewidth=0.5, alpha=0.5)
+		#ax.grid(which='minor', linestyle=':', linewidth=0.4, alpha=0.4)
+
+		axs[0].legend(fontsize=18, loc="best")
+		# -----------------------------
+		# -----------------------------
+		# Axis labels
+		# -----------------------------
+		axs[1].set_xlabel("Index of states", fontsize=18)
+		axs[1].set_ylabel(rf"Cumulative population", fontsize=18)
+
+		# -----------------------------
+		# Limits
+		# -----------------------------
+		#axs[1].set_xlim(-0.5, 100.5)
+		axs[1].set_ylim(-0.01, 1.01)
+
+		# -----------------------------
+		# Major ticks
+		# -----------------------------
+		#axs[1].set_xticks(np.arange(0, 101, 10))
+		#axs[1].yaxis.set_major_locator(MultipleLocator(0.1))
+
+		# -----------------------------
+		# Minor ticks
+		# -----------------------------
+		axs[1].xaxis.set_minor_locator(MultipleLocator(1))
+		axs[1].yaxis.set_minor_locator(MultipleLocator(0.02))
+
+		# -----------------------------
+		# Tick styling (publication quality)
+		# -----------------------------
+		axs[1].tick_params(axis='both', which='major',
+					   direction='in', length=7, width=1.2,
+					   labelsize=18, top=True, right=True)
+
+		axs[1].tick_params(axis='both', which='minor',
+					   direction='in', length=4, width=1.0,
+					   top=True, right=True)
+
+		# -----------------------------
+		# Spines (frame thickness)
+		# -----------------------------
+		for spine in axs[1].spines.values():
+			spine.set_linewidth(1.2)
+
+		# -----------------------------
+		# Optional: light grid (very subtle)
+		# -----------------------------
+		#ax.grid(which='major', linestyle='--', linewidth=0.5, alpha=0.5)
+		#ax.grid(which='minor', linestyle=':', linewidth=0.4, alpha=0.4)
+
+		axs[1].legend(fontsize=18, loc="lower right")
+		# -----------------------------
+
+		# Labels (a), (b)
+		labels = ["(a)", "(b)"]
+		for i, ax in enumerate(axs):
+			ax.text(0.02, 0.97, labels[i],
+					transform=ax.transAxes,
+					fontsize=20,
+					fontweight='bold',
+					va='top', ha='left')
+
+
+	if num_molecules != 1:
+		# -----------------------------
+		# Axis labels
+		# -----------------------------
+		ax.set_xlabel("Temperature (K)", fontsize=18)
+
+		safe_unit = unit_cv.replace("^-1", "$^{-1}$")
+		ax.set_ylabel(rf"Heat Capacity [{safe_unit}]", fontsize=18)
+
+		# -----------------------------
+		# Limits
+		# -----------------------------
+		ax.set_xlim(-0.5, 100.5)
+		ax.set_ylim(-0.01, 0.8)
+
+		# -----------------------------
+		# Major ticks
+		# -----------------------------
+		ax.set_xticks(np.arange(0, 101, 10))
+		ax.yaxis.set_major_locator(MultipleLocator(0.1))
+
+		# -----------------------------
+		# Minor ticks
+		# -----------------------------
+		ax.xaxis.set_minor_locator(MultipleLocator(2))
+		ax.yaxis.set_minor_locator(MultipleLocator(0.02))
+
+		# -----------------------------
+		# Tick styling (publication quality)
+		# -----------------------------
+		ax.tick_params(axis='both', which='major',
+					   direction='in', length=7, width=1.2,
+					   labelsize=18, top=True, right=True)
+
+		ax.tick_params(axis='both', which='minor',
+					   direction='in', length=4, width=1.0,
+					   top=True, right=True)
+
+		# -----------------------------
+		# Spines (frame thickness)
+		# -----------------------------
+		for spine in ax.spines.values():
+			spine.set_linewidth(1.2)
+
+		# -----------------------------
+		# Optional: light grid (very subtle)
+		# -----------------------------
+		#ax.grid(which='major', linestyle='--', linewidth=0.5, alpha=0.5)
+		#ax.grid(which='minor', linestyle=':', linewidth=0.4, alpha=0.4)
+
+		plt.legend(fontsize=18, loc="best")
+		# -----------------------------
 	# Layout
 	# -----------------------------
 	plt.tight_layout()
@@ -337,61 +484,6 @@ def plot_cv_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want,
 	plt.savefig(out_path, dpi=300)
 	print("")
 	print(f"[INFO] Combined Cv plot saved: {out_path}")
-
-if False:
-	def plot_cv_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want, out_path):
-		"""
-		Plots heat capacity vs temperature for multiple molecules together.
-		
-		Parameters:
-			thermo_dict_by_molecule (dict): { molecule: {(jmax, E): thermo_data} }
-			temperature_list (list): List of temperatures (K).
-			unit_want (str): Unit for Cv display.
-			out_path (str or Path): Path to save combined plot.
-		"""
-
-		plt.figure(figsize=(8, 6))
-		for molecule, thermo_dict in thermo_dict_by_molecule.items():
-			temperature_list = get_temperature_list(molecule)
-
-			# Flatten if nested
-			if len(temperature_list) == 1 and isinstance(temperature_list[0], (list, tuple)):
-				temperature_list = temperature_list[0]
-
-			#print(f"[DEBUG] {molecule} temperature list: {temperature_list}")
-
-			first_key = next(iter(thermo_dict))
-			thermo_data = thermo_dict[first_key]
-
-			cv_values = [thermo_data[T]["heat_capacity"] for T in temperature_list]
-			#print(f"[DEBUG] {molecule} Cv values: {cv_values}")
-			unit_cv = thermo_data[temperature_list[0]]["display_cv_unit"]
-
-			plt.plot(
-				temperature_list,
-				cv_values,
-				marker="o",
-				label=f"{molecule}"
-			)
-
-		plt.xlabel("Temperature (K)")
-
-		# Fix LaTeX formatting for unit safely
-		safe_unit = unit_cv.replace("^-1", "$^{-1}$")
-		plt.ylabel(f"Heat Capacity (Cv) [{safe_unit}]")
-
-		plt.title("Heat Capacity vs Temperature for Linear Rotors")
-		plt.legend()
-		#plt.grid(True, ls="--", alpha=0.6)
-		plt.tight_layout()
-
-		# Save first, then show
-		plt.savefig(out_path, dpi=300)
-		print(f"[INFO] Combined Cv plot saved: {out_path}")
-
-		plt.show()
-		plt.close()
-
 
 def compute_thermo_vectorized_free(
 	eigenvalues,
