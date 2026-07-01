@@ -40,7 +40,9 @@ from monomer_linear_rotor.basis import (
 	generate_monomer_linear_rotor_quantum_numbers,
 	count_basis_functions
 )
-from monomer_linear_rotor.dipole import precompute_monomer_linear_rotor_dipole_terms
+from monomer_linear_rotor.dipole import (
+	precompute_monomer_linear_rotor_dipole_terms,
+)
 from monomer_linear_rotor.hamiltonian import (
 	rotational_energy_levels,
 	plot_rotational_levels,
@@ -61,7 +63,8 @@ from monomer_linear_rotor.utils import (
 	convert_dipole_field_energy_to_cm_inv  # or appropriate import
 )
 from monomer_linear_rotor.debug import (
-	debug_eigenvalues_eigenvectors
+	debug_eigenvalues_eigenvectors,
+	debug_dipole_terms,
 )
 from monomer_linear_rotor.io_netcdf import (
 	save_all_quantum_data_to_netcdf
@@ -136,6 +139,8 @@ def main():
 
 	# H_rot = T_rot_einsum + V_rot_einsum
 	dipole_terms = precompute_monomer_linear_rotor_dipole_terms(quantum_numbers_for_spin_state, potential_strength_cm_inv)
+
+	debug_dipole_terms(dipole_terms, quantum_numbers_for_spin_state)
 	H_rot = build_monomer_linear_rotor_hamiltonian(quantum_numbers_for_spin_state, B_const_cm_inv, dipole_terms)
 	result = analyze_matrix(H_rot)
 

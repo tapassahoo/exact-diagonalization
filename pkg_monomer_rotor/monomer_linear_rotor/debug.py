@@ -81,3 +81,59 @@ def debug_eigenvalues_eigenvectors(H_rot, eigenvalues, eigenvectors, tol=1e-10, 
 		log("[WARNING] Eigenvectors contain complex components.")
 
 	log("[SUCCESS] All eigenpair validations completed.\n")
+
+
+def debug_dipole_terms(dipole_terms, JM_list, tol=1e-12, debug=False):
+	"""
+	Debug and validate dipole matrix elements.
+	"""
+
+	if debug:
+		print("\n===== DEBUGGING DIPOLE TERMS =====\n")
+
+		JM_set = {(int(J), int(M)) for J, M in JM_list}
+
+		# 1. Print all elements (sorted)
+		print("Matrix Elements:")
+		for key in sorted(dipole_terms.keys()):
+			J, Jp, M = key
+			val = dipole_terms[key]
+			print(f"<{J},{M}|cos(theta)|{Jp},{M}> = {val:.8f}")
+
+		# 2. Check selection rules
+		print("\nChecking Selection Rules:")
+		for (J, Jp, M), val in dipole_terms.items():
+			if abs(Jp - J) != 1:
+				print(f"Violation: delta J != 1 at {(J, Jp, M)}")
+			if (J, M) not in JM_set or (Jp, M) not in JM_set:
+				print(f"Violation: state not in basis {(J, Jp, M)}")
+
+		print("Selection rule check complete")
+
+		# 3. Check symmetry (Hermiticity)
+		print("\nChecking Symmetry:")
+		for (J, Jp, M), val in dipole_terms.items():
+			if (Jp, J, M) in dipole_terms:
+				val2 = dipole_terms[(Jp, J, M)]
+				if abs(val - val2) > tol:
+					print(f"Mismatch: ({J},{Jp},{M}) != ({Jp},{J},{M})")
+
+		print("Symmetry check complete")
+
+		# 4. Check missing expected elements
+		print("\nChecking Missing Elements:")
+		for (J, M) in JM_set:
+			for dJ in (-1, 1):
+				Jp = J + dJ
+				if (Jp, M) in JM_set:
+					if (J, Jp, M) not in dipole_terms:
+						print(f"Missing element: ({J},{Jp},{M})")
+
+		print("Missing element check complete")
+
+		nonzero_count = sum(1 for val in dipole_terms.values() if abs(val) > tol)
+
+		print("\n===== SUMMARY =====")
+		print("Total stored elements:", len(dipole_terms))
+		print("Total nonzero elements:", nonzero_count)
+		print("=================================\n")

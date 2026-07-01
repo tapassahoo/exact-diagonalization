@@ -167,21 +167,79 @@ if False:
 		plt.show()
 
 
-def build_monomer_linear_rotor_hamiltonian(JM_list, B_const, dipole_terms):
+def build_monomer_linear_rotor_hamiltonian(
+	JM_list, B_const, dipole_terms, tol=1e-12, debug=False
+):
+	"""
+	Construct the Hamiltonian matrix for a linear rigid rotor
+	in the |J, M> basis.
+
+	Parameters
+	----------
+	JM_list : list of tuple
+		List of (J, M) quantum numbers
+	B_const : float
+		Rotational constant
+	dipole_terms : dict
+		Dictionary of dipole matrix elements {(J, Jp, M): value}
+	tol : float
+		Numerical tolerance for zero
+	debug : bool
+		If True, print diagnostics
+
+	Returns
+	-------
+	H : csr_matrix
+		Sparse Hamiltonian matrix
+	"""
+
 	dim = len(JM_list)
 	H = lil_matrix((dim, dim))
+
+	nonzero_count = 0
+	rot_count = 0
+	dip_count = 0
+
 	for i, (J, M) in enumerate(JM_list):
 		for j in range(i, dim):
 			Jp, Mp = JM_list[j]
+
+			# Selection rule: M must be conserved
 			if M != Mp:
 				continue
+
+			# Rotational term (diagonal)
 			h_rot = B_const * J * (J + 1) if J == Jp else 0.0
+			if abs(h_rot) > tol:
+				rot_count += 1
+
+			# Dipole term
 			h_dip = dipole_terms.get((J, Jp, M), 0.0)
+			if abs(h_dip) > tol:
+				dip_count += 1
+
 			val = h_rot + h_dip
-			if abs(val) > 1e-12:
+
+			if abs(val) > tol:
 				H[i, j] = val
 				if i != j:
 					H[j, i] = val
+				nonzero_count += 1 if i == j else 2
+
+				if debug:
+					print(
+						f"H[{i},{j}] <- (J,M)=({J},{M}) → (J',M')=({Jp},{Mp}) | "
+						f"rot={h_rot:.3e}, dip={h_dip:.3e}, total={val:.3e}"
+					)
+
+	if debug:
+		print("\n===== DEBUG SUMMARY =====")
+		print(f"Matrix dimension		: {dim}")
+		print(f"Total nonzero elements  : {nonzero_count}")
+		print(f"Rotational contributions: {rot_count}")
+		print(f"Dipole contributions	: {dip_count}")
+		print("========================\n")
+
 	return H.tocsr()
 
 
