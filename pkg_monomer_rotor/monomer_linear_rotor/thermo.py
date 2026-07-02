@@ -935,27 +935,83 @@ def read_all_quantum_data_files_with_thermo(
 					print("[WARNING] 'eigenvalues' variable not found in the file.")
 					continue
 
+				# --- Load quantum numbers ---
+				JM_list_var = nc.variables["quantum_numbers_for_spin_state"]
+				JM_list = np.array(JM_list_var[:, :], dtype=int)   # (N, 2)
+
+				# --- Load eigenvalues ---
 				eigenval_var = nc.variables["eigenvalues"]
-				eigenvalues = np.array(eigenval_var[:])
+				eigenvalues = np.array(eigenval_var[:], dtype=float)  # (N,)
+
+				# --- Load eigenvectors (real + imaginary) ---
+				real_var = nc.variables["real_eigenvectors"]
+				imag_var = nc.variables["imag_eigenvectors"]
+
+				real_evecs = np.array(real_var[:, :], dtype=float)
+				imag_evecs = np.array(imag_var[:, :], dtype=float)
+
+				# --- Construct complex eigenvectors ---
+				eigenvectors = real_evecs + 1j * imag_evecs   
+
+				# --- Metadata ---
 				unit_from_file = getattr(eigenval_var, "units", "unknown")
 				label_from_file = getattr(eigenval_var, "long_name", "eigenvalues")
 
-				print(f"[ ] {'Found':<12}: {len(eigenvalues)} eigenvalues")
-				print(f"[ ] {'Unit':<12}: {unit_from_file}")
-				print(f"[ ] {'Description':<12}: {label_from_file}")
+				# --- Diagnostics ---
+				print(f"[INFO] {'Eigenstates':<15}: {len(eigenvalues)}")
+				print(f"[INFO] {'Units':<15}: {unit_from_file}")
+				print(f"[INFO] {'Description':<15}: {label_from_file}")
 
-				# Compute thermodynamic properties
-				#thermo_data = compute_thermo_from_eigenvalues(
-				#	eigenvalues=eigenvalues,
-				#	temperature_list=temperature_list,
-				#	unit=unit_want
-				#)
+				print(f"[INFO] {'JM_list shape':<15}: {JM_list.shape}")
+				print(f"[INFO] {'Eigenvec shape':<15}: {eigenvectors.shape}")
+				print(f"[INFO] {'Data type':<15}: {eigenvectors.dtype}")
+
+
+				norms = np.sum(np.abs(eigenvectors)**2, axis=0)
+
+				if not np.allclose(norms, 1.0, atol=1e-6):
+					print("[WARNING] Eigenvectors not normalized → trying transpose")
+					eigenvectors = eigenvectors.T
+
+					norms = np.sum(np.abs(eigenvectors)**2, axis=0)
+					if not np.allclose(norms, 1.0, atol=1e-6):
+						raise ValueError("Eigenvectors are not orthonormal.")
+
+
 				thermo_data = compute_thermo_vectorized(
 					eigenvalues=eigenvalues,
 					temperature_list=temperature_list,
 					unit=unit_want
 				)
 
+				# --- Precompute once ---
+				i_idx, j_idx, A = precompute_coupling_arrays(JM_list)
+
+
+				print("\n\n")
+				for k in range(10):
+					print(f"{k}: i={i_idx[k]}, j={j_idx[k]}, A={A[k]:.6f}")
+
+
+				T_array, cos_theta_T = compute_cos_theta_vectorized(
+					eigenvalues,
+					eigenvectors,   # complex (constructed earlier)
+					i_idx,
+					j_idx,
+					A,
+					temperature_list
+				)
+
+
+				for T, val in zip(T_array, cos_theta_T):
+					print(f"T={T:.2f}, <cosθ>={val:.6f}")
+				
+				plt.plot(T_array, cos_theta_T)
+				plt.xlabel("Temperature")
+				plt.ylabel(r"$\langle \cos\theta \rangle_T$")
+				plt.grid()
+				plt.show()
+				whoami()
 				# Print summary
 				print("\n[INFO] Thermodynamic Summary:")
 				for T in temperature_list:
@@ -1008,3 +1064,133 @@ def read_all_quantum_data_files_with_thermo(
 			print(f"[X] Error reading or processing file: {e}")
 
 	return thermo_dict_by_field
+
+def precompute_coupling_arrays(JM_list):
+	JM_to_index = {tuple(jm): i for i, jm in enumerate(JM_list)}
+	#for key, value in JM_to_index.items():
+	#	print(f"(J, M) = {key}  →  index = {value}")
+
+	i_list, j_list, A_list = [], [], []
+
+	for i, (J, M) in enumerate(JM_list):
+		key = (J + 1, M)
+		if key in JM_to_index:
+			j = JM_to_index[key]
+
+			A = np.sqrt(((J + 1)**2 - M**2) /
+						((2*J + 1) * (2*J + 3)))
+
+			i_list.append(i)
+			j_list.append(j)
+			A_list.append(A)
+
+	return (np.array(i_list),
+			np.array(j_list),
+			np.array(A_list))
+
+
+def compute_cos_theta_vectorized(evals, evecs, i_idx, j_idx, A, beta):
+	"""
+	Fully vectorized computation of <cos(theta)>_T.
+	
+	Parameters
+	----------
+	evals : (N,) array
+	evecs : (N, N) array (columns = eigenvectors)
+	i_idx, j_idx : arrays of indices
+	A : coupling coefficients
+	beta : float
+	
+	Returns
+	-------
+	float
+	"""
+	# Boltzmann weights
+	weights = np.exp(-beta * evals)
+	Z = np.sum(weights)
+
+	# Extract coefficient pairs
+	C_i = evecs[i_idx, :]   # shape (P, N)
+	C_j = evecs[j_idx, :]   # shape (P, N)
+
+	# Compute real part of overlaps
+	overlaps = np.real(np.conj(C_i) * C_j)  # (P, N)
+
+	# Multiply by coefficients A (broadcasting)
+	weighted_pairs = A[:, None] * overlaps  # (P, N)
+
+	# Sum over (J,M) pairs
+	sum_pairs = np.sum(weighted_pairs, axis=0)  # (N,)
+
+	# Thermal sum over eigenstates
+	total = np.sum(weights * sum_pairs)
+
+	return (2.0 / Z) * total
+
+
+def compute_cos_theta_vs_T(evals, evecs, JM_list, T_list, kB=1.0):
+	"""
+	Compute <cos(theta)>_T for a list of temperatures.
+
+	Parameters
+	----------
+	evals : (N,) array
+	evecs : (N, N) array
+	JM_list : list of (J,M)
+	T_list : array-like
+		Temperatures
+	kB : float
+		Boltzmann constant (default = 1)
+
+	Returns
+	-------
+	T_array : ndarray
+	cos_theta_T : ndarray
+	"""
+
+	# --- Precompute once ---
+	i_idx, j_idx, A = precompute_coupling_arrays(JM_list)
+
+	T_array = np.array(T_list)
+	cos_vals = np.zeros_like(T_array, dtype=float)
+
+	for t_idx, T in enumerate(T_array):
+		beta = 1.0 / (kB * T)
+
+		cos_vals[t_idx] = compute_cos_theta_vectorized(
+			evals, evecs, i_idx, j_idx, A, beta
+		)
+
+	return T_array, cos_vals
+
+def compute_cos_theta_vectorized(evals, evecs, i_idx, j_idx, A, T_list, kB=1.0):
+	"""
+	Compute <cos(theta)>_T for multiple temperatures.
+
+	evals : (N,)
+	evecs : (N_basis, N_states)  complex
+	i_idx, j_idx : coupling indices
+	A : coupling coefficients
+	T_list : array of temperatures
+	"""
+
+	T_array = np.array(T_list)
+	beta = 1.0 / (kB * T_array)[:, None]   # (nT, 1)
+
+	# --- Extract coupled components ---
+	C_i = evecs[i_idx, :]   # (n_pairs, N_states)
+	C_j = evecs[j_idx, :]   # (n_pairs, N_states)
+
+	# --- Complex-safe overlap ---
+	overlaps = np.real(np.conj(C_i) * C_j)
+
+	# --- Sum over basis pairs ---
+	pair_sum = np.sum(A[:, None] * overlaps, axis=0)  # (N_states,)
+
+	# --- Boltzmann weights ---
+	weights = np.exp(-beta * evals[None, :])  # (nT, N_states)
+
+	Z = np.sum(weights, axis=1)
+	total = np.sum(weights * pair_sum, axis=1)
+
+	return T_array, (2.0 / Z) * total
