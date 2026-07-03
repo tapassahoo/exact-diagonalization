@@ -342,7 +342,7 @@ unit_want="wavenumber"
 #unit_want="SI",
 
 all_results = {}
-for mol in ["HF"]:
+for mol in ["HI"]:
 #for mol in ["HF", "HCl", "HBr", "HI"]:
 	thermo_dict = read_all_quantum_data_files_with_thermo(
 		quantum_data_root_dir=quantum_data_root_dir,
