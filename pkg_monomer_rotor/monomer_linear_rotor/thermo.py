@@ -12,6 +12,8 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from matplotlib.ticker import MultipleLocator
+from matplotlib.ticker import MaxNLocator
+from matplotlib.ticker import AutoMinorLocator
 from scipy.constants import R as GAS_CONSTANT_J_PER_MOL_K
 from scipy.constants import k as BOLTZMANN_J_PER_K
 import warnings
@@ -19,6 +21,9 @@ import itertools
 from termcolor import colored
 
 from monomer_linear_rotor.molecule_data import MOLECULE_DATA
+
+from monomer_linear_rotor.utils import convert_dipole_field_energy_to_cm_inv
+
 
 from monomer_linear_rotor.utils import (
 	wavenumber_to_joules_per_mole,
@@ -225,6 +230,15 @@ def plot_cv_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want,
 	line_styles = ["-", "--", "-.", ":"]
 	markers = ["o", "s", "p", "d", "v"]
 
+	# Rotational heat capacity (constant)
+	Cv_rot_equipartition_theorem = 0.695  # cm^-1 K^-1
+
+	# Temperature range (K)
+	T = np.linspace(0, 1000, 200)
+
+	# Create an array of same size
+	Cv_array = np.full_like(T, Cv_rot_equipartition_theorem)
+
 	for mol_idx, (molecule, thermo_dict) in enumerate(thermo_dict_by_molecule.items()):
 		temperature_list = get_temperature_list(molecule)
 
@@ -263,7 +277,17 @@ def plot_cv_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want,
 					alpha=0.65,
 					label=rf"{molecule}"
 				)
-			
+
+				if ((mol_idx%num_molecules) == (num_molecules-1)):
+					# Plot
+					plt.plot(
+						T,
+						Cv_array,
+						'k--',
+						linewidth=2,
+						label=r'Classical limit: $C_{V,\mathrm{rot}} = R \approx 0.695\ \mathrm{cm^{-1}\,K^{-1}}$'
+					)
+
 			if num_molecules == 1:
 				axs[0].plot(
 					temperature_list,
@@ -288,6 +312,16 @@ def plot_cv_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want,
 					alpha=0.65,
 					label=rf"{molecule} (field-free rotor)"
 				)
+
+				# Plot
+				axs[0].plot(
+					T,
+					Cv_array,
+					'k--',
+					linewidth=2,
+					label=r'Classical limit: $C_{V,\mathrm{rot}} = R \approx 0.695\ \mathrm{cm^{-1}\,K^{-1}}$'
+				)
+
 				axs[1].plot(
 					states_field,
 					cum_populations_field,
@@ -514,8 +548,6 @@ def compute_thermo_vectorized_free(
 		Thermodynamic quantities indexed by temperature.
 	"""
 
-	import numpy as np
-
 	# ---- Handle dict input (J → E_J) ----
 	if isinstance(eigenvalues, dict):
 		J = np.array(list(eigenvalues.keys()), dtype=int)
@@ -614,7 +646,7 @@ def compute_thermo_vectorized_free(
 
 	return results
 
-def compute_thermo_vectorized(eigenvalues, temperature_list, unit, pop_tol=1e-10, cum_tol=1-1e-10):
+def compute_thermo_vectorized(JM_list, eigenvalues, eigenvectors, temperature_list, unit, pop_tol=1e-16, cum_tol=1-1e-14):
 	"""
 	Compute thermodynamic properties (Z, populations, cumulative-population truncation, U, Cv) from energy eigenvalues,
 	and report the index and energy at which Boltzmann convergence is reached.
@@ -659,16 +691,30 @@ def compute_thermo_vectorized(eigenvalues, temperature_list, unit, pop_tol=1e-10
 			- convergence_energy: Energy at which convergence was met (in cm⁻¹)
 			- convergence_index : Index where threshold was first met
 	"""
+	# --- Precompute once ---
+	i_idx, j_idx, A = precompute_coupling_arrays(JM_list)
+
+	#print("\n\n")
+	#for k in range(10):
+	#	print(f"{k}: i={i_idx[k]}, j={j_idx[k]}, A={A[k]:.6f}")
+	#
+	#print("\n\n")
+
+	# --- Extract coupled components ---
+	C_i = eigenvectors[i_idx, :]   # (n_pairs, N_states)
+	C_j = eigenvectors[j_idx, :]   # (n_pairs, N_states)
+
+	# --- Complex-safe overlap ---
+	overlaps = np.real(np.conj(C_i) * C_j)
+
+	# --- Sum over basis pairs ---
+	pair_sum = np.sum(A[:, None] * overlaps, axis=0)  # (N_states,)
 
 	energies = np.asarray(eigenvalues, dtype=np.float64)
 	if energies.ndim != 1:
 		raise ValueError("Eigenvalues must be a one-dimensional array.")
 	if unit not in {"wavenumber", "SI"}:
 		raise ValueError("Unit must be either 'wavenumber' or 'SI'.")
-
-	# ---- Sort energies (important for monotonic convergence) ----
-	sort_idx = np.argsort(energies)
-	energies = energies[sort_idx]
 
 	kB = 0.69503476  # cm^-1/K
 	E0 = energies[0]
@@ -682,36 +728,50 @@ def compute_thermo_vectorized(eigenvalues, temperature_list, unit, pop_tol=1e-10
 
 		beta = 1.0 / (kB * T)
 
-		# ---- Vectorized Boltzmann weights ----
+		# ---- Full Boltzmann weights ----
 		weights = np.exp(-beta * Delta)
 
-		# Optional safety cutoff (avoid tiny numbers)
-		mask = weights > pop_tol
-		weights = weights[mask]
-		energies_used = energies[mask]
-
-		# ---- Partition function ----
+		# ---- Partition function (FULL) ----
 		Z = np.sum(weights)
 
-		# ---- Probabilities ----
-		populations = weights / Z
+		# ---- Full normalized probabilities ----
+		populations_full = weights / Z
 
-		# ---- Cumulative population ----
-		cum_pop = np.cumsum(populations)
+		# ==========================================================
+		# Convergence check (DO NOT use for observables)
+		# ==========================================================
+		mask = weights > pop_tol
+		populations_check = populations_full[mask]
+		cum_pop = np.cumsum(populations_check)
 
-		# ---- Adaptive truncation (dominant criterion) ----
-		idx_conv = np.searchsorted(cum_pop, cum_tol)
+		weights_mask = weights[mask]
+		Z_mask = np.sum(weights_mask)
 
-		# Slice consistently
-		populations = populations[:idx_conv + 1]
-		cum_pop = cum_pop[:idx_conv + 1]
-		energies_used = energies_used[:idx_conv + 1]
+		missing_pop = 1.0 - (Z_mask / Z)
 
-		# ---- Observables (use original energies) ----
-		E_avg = np.dot(populations, energies_used)
-		E2_avg = np.dot(populations, energies_used**2)
+		if missing_pop > (1.0 - cum_tol):
+			raise RuntimeError(
+				f"Population convergence NOT reached at T={T} K.\n"
+				f"Missing population = {missing_pop:.6e} exceeds tolerance {1.0 - cum_tol:.6e}.\n"
+				f"Increase basis size or relax tolerances."
+			)
+		# ==========================================================
+		# Observables (ALWAYS FULL SPACE)
+		# ==========================================================
+
+		# ---- Energy moments ----
+		E_avg = np.dot(populations_full, energies)
+		E2_avg = np.dot(populations_full, energies**2)
 
 		Cv_cm1 = kB * beta**2 * (E2_avg - E_avg**2)
+
+		# ---- Orientation ----
+		#total = np.sum(weights * pair_sum, axis=1)
+		total = np.dot(weights, pair_sum)   # FULL
+		cos_theta_avg = (2.0 / Z) * total
+
+		# ---- Adaptive truncation (dominant criterion) ----
+		idx_conv = len(cum_pop)
 
 		# ---- Unit conversion ----
 		if unit == "wavenumber":
@@ -729,13 +789,14 @@ def compute_thermo_vectorized(eigenvalues, temperature_list, unit, pop_tol=1e-10
 			"temperature_K": T,
 			"beta": beta,
 			"partition_function": Z,
-			"populations": populations,
+			"populations_full": populations_full,
+			"populations_check": populations_check,
 			"cum_populations": cum_pop,
 			"internal_energy": U_out,
 			"heat_capacity": Cv_out,
-			"levels_used": len(populations),
+			"dipole_orientation": cos_theta_avg,
 			"convergence_index": idx_conv,
-			"convergence_energy": energies_used[idx_conv],
+			"convergence_energy": energies[idx_conv],
 			"unit": unit,
 			"display_unit": display_unit,
 			"display_cv_unit": display_cv_unit
@@ -979,83 +1040,62 @@ def read_all_quantum_data_files_with_thermo(
 
 
 				thermo_data = compute_thermo_vectorized(
+					JM_list,
 					eigenvalues=eigenvalues,
+					eigenvectors=eigenvectors,
 					temperature_list=temperature_list,
 					unit=unit_want
 				)
 
-				# --- Precompute once ---
-				i_idx, j_idx, A = precompute_coupling_arrays(JM_list)
 
-
-				print("\n\n")
-				for k in range(10):
-					print(f"{k}: i={i_idx[k]}, j={j_idx[k]}, A={A[k]:.6f}")
-
-
-				T_array, cos_theta_T = compute_cos_theta_vectorized(
-					eigenvalues,
-					eigenvectors,   # complex (constructed earlier)
-					i_idx,
-					j_idx,
-					A,
-					temperature_list
-				)
-
-
-				for T, val in zip(T_array, cos_theta_T):
-					print(f"T={T:.2f}, <cosθ>={val:.6f}")
-				
-				plt.plot(T_array, cos_theta_T)
-				plt.xlabel("Temperature")
-				plt.ylabel(r"$\langle \cos\theta \rangle_T$")
-				plt.grid()
-				plt.show()
-				whoami()
 				# Print summary
 				print("\n[INFO] Thermodynamic Summary:")
 				for T in temperature_list:
 					entry = thermo_data[T]
-					print(f"\n[ ] {'T':<22}= {T} K")
-					print(f"[ ] {'levels_used':<22}= {entry['levels_used']}")
-					#print(f"[ ] {'convergence_energy':<22}= {entry['convergence_energy']} {entry['display_unit']}")
+					print(f"\n[ ] {'T':<30}= {T} K")
+					#print(f"[ ] {'convergence_energy':<30}= {entry['convergence_energy']} {entry['display_unit']}")
 					 # Convergence energy with conditional unit display
 					convergence_energy = entry.get("convergence_energy")
 					display_unit = entry.get("display_unit", "")
 					if isinstance(convergence_energy, (int, float)) and not math.isnan(convergence_energy):
-						print(f"[ ] {'convergence_energy':<22}= {convergence_energy:.6f} {display_unit}")
+						print(f"[ ] {'convergence_energy':<30}= {convergence_energy:.6f} {display_unit}")
 					else:
-						print(f"[ ] {'convergence_energy':<22}= N/A")
-					print(f"[ ] {'convergence_index':<22}= {entry['convergence_index']}")
-					print(f"[ ] {'Z':<22}= {entry['partition_function']:.4f}")
-					print(f"[ ] {'U':<22}= {entry['internal_energy']:.4f} {entry['display_unit']}")
-					print(f"[ ] {'Cv':<22}= {entry['heat_capacity']:.4f} {entry['display_cv_unit']}\n")
+						print(f"[ ] {'convergence_energy':<30}= N/A")
+					print(f"[ ] {'convergence size':<30}= {entry['convergence_index']}")
+					print(f"[ ] {'final cumalative population':<30}= {(entry['cum_populations'][-1])}")
+					print(f"[ ] {'Z':<30}= {entry['partition_function']:.6f}")
+					print(f"[ ] {'U':<30}= {entry['internal_energy']:.6f} {entry['display_unit']}")
+					print(f"[ ] {'Cv':<30}= {entry['heat_capacity']:.6f} {entry['display_cv_unit']}")
+					print(f"[ ] {'<cosθ>':<30}= {entry['dipole_orientation']:.6f}\n")
+				
+				print("\n\n")
 
+				if False:
+					file_prefix = summary_output_dir / f"equilibrium_thermodynamic_properties_{data_subdir}"
+					pop_dir = summary_output_dir / f"equilibrium_state_population_data_{data_subdir}"
+					plot_path = summary_output_dir / f"heat_capacity_vs_temperature_plot_{data_subdir}.png"
 
-				file_prefix = summary_output_dir / f"equilibrium_thermodynamic_properties_{data_subdir}"
-				pop_dir = summary_output_dir / f"equilibrium_state_population_data_{data_subdir}"
-				plot_path = summary_output_dir / f"heat_capacity_vs_temperature_plot_{data_subdir}.png"
+					
+					# Export to file
+					if export_csv:
+						save_thermo_with_Z_and_populations(
+							thermo_data=thermo_data,
+							temperatures=temperature_list,
+							eigenvalues=eigenvalues,
+							unit=unit_want,
+							txt_path=str(file_prefix) + ".txt",
+							csv_path=str(file_prefix) + ".csv",
+							save_populations=True,
+							population_dir=str(pop_dir)
+						)
 
-				# Export to file
-				if export_csv:
-					save_thermo_with_Z_and_populations(
-						thermo_data=thermo_data,
-						temperatures=temperature_list,
-						eigenvalues=eigenvalues,
-						unit=unit_want,
-						txt_path=str(file_prefix) + ".txt",
-						csv_path=str(file_prefix) + ".csv",
-						save_populations=True,
-						population_dir=str(pop_dir)
-					)
-
-				if export_plot:
-					plot_cv_vs_temperature(
-						thermo_data=thermo_data,
-						unit=unit_want,
-						context="Rotational",
-						out_path=plot_path
-					)
+					if export_plot:
+						plot_cv_vs_temperature(
+							thermo_data=thermo_data,
+							unit=unit_want,
+							context="Rotational",
+							out_path=plot_path
+						)
 
 				# Store in output dictionary
 				thermo_dict_by_field[(jmax, E)] = thermo_data
@@ -1089,81 +1129,7 @@ def precompute_coupling_arrays(JM_list):
 			np.array(A_list))
 
 
-def compute_cos_theta_vectorized(evals, evecs, i_idx, j_idx, A, beta):
-	"""
-	Fully vectorized computation of <cos(theta)>_T.
-	
-	Parameters
-	----------
-	evals : (N,) array
-	evecs : (N, N) array (columns = eigenvectors)
-	i_idx, j_idx : arrays of indices
-	A : coupling coefficients
-	beta : float
-	
-	Returns
-	-------
-	float
-	"""
-	# Boltzmann weights
-	weights = np.exp(-beta * evals)
-	Z = np.sum(weights)
-
-	# Extract coefficient pairs
-	C_i = evecs[i_idx, :]   # shape (P, N)
-	C_j = evecs[j_idx, :]   # shape (P, N)
-
-	# Compute real part of overlaps
-	overlaps = np.real(np.conj(C_i) * C_j)  # (P, N)
-
-	# Multiply by coefficients A (broadcasting)
-	weighted_pairs = A[:, None] * overlaps  # (P, N)
-
-	# Sum over (J,M) pairs
-	sum_pairs = np.sum(weighted_pairs, axis=0)  # (N,)
-
-	# Thermal sum over eigenstates
-	total = np.sum(weights * sum_pairs)
-
-	return (2.0 / Z) * total
-
-
-def compute_cos_theta_vs_T(evals, evecs, JM_list, T_list, kB=1.0):
-	"""
-	Compute <cos(theta)>_T for a list of temperatures.
-
-	Parameters
-	----------
-	evals : (N,) array
-	evecs : (N, N) array
-	JM_list : list of (J,M)
-	T_list : array-like
-		Temperatures
-	kB : float
-		Boltzmann constant (default = 1)
-
-	Returns
-	-------
-	T_array : ndarray
-	cos_theta_T : ndarray
-	"""
-
-	# --- Precompute once ---
-	i_idx, j_idx, A = precompute_coupling_arrays(JM_list)
-
-	T_array = np.array(T_list)
-	cos_vals = np.zeros_like(T_array, dtype=float)
-
-	for t_idx, T in enumerate(T_array):
-		beta = 1.0 / (kB * T)
-
-		cos_vals[t_idx] = compute_cos_theta_vectorized(
-			evals, evecs, i_idx, j_idx, A, beta
-		)
-
-	return T_array, cos_vals
-
-def compute_cos_theta_vectorized(evals, evecs, i_idx, j_idx, A, T_list, kB=1.0):
+def compute_cos_theta_vectorized(evals, evecs, i_idx, j_idx, A, T_list):
 	"""
 	Compute <cos(theta)>_T for multiple temperatures.
 
@@ -1174,6 +1140,7 @@ def compute_cos_theta_vectorized(evals, evecs, i_idx, j_idx, A, T_list, kB=1.0):
 	T_list : array of temperatures
 	"""
 
+	kB = 0.69503476  # cm^-1/K
 	T_array = np.array(T_list)
 	beta = 1.0 / (kB * T_array)[:, None]   # (nT, 1)
 
@@ -1194,3 +1161,164 @@ def compute_cos_theta_vectorized(evals, evecs, i_idx, j_idx, A, T_list, kB=1.0):
 	total = np.sum(weights * pair_sum, axis=1)
 
 	return T_array, (2.0 / Z) * total
+
+def plot_dipole_orientation_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want, out_path):
+	"""
+	Plots heat capacity vs temperature for multiple molecules together.
+
+	Parameters:
+		thermo_dict_by_molecule (dict): { molecule: {(jmax, E): thermo_data} }
+		get_temperature_list (function): Function to fetch temperature list for a molecule.
+		unit_want (str): Unit for Cv display.
+		out_path (str or Path): Path to save combined plot.
+	"""
+	num_molecules = len(thermo_dict_by_molecule)	
+	fig, ax = plt.subplots(figsize=(9, 6))
+
+	color_cycle = ["red", "grey", "blue", "green"]
+	line_styles = ["-", "--", "-.", ":"]
+	markers = ["o", "s", "p", "d", "v"]
+
+	for mol_idx, (molecule, thermo_dict) in enumerate(thermo_dict_by_molecule.items()):
+		temperature_list = get_temperature_list(molecule)
+
+		if len(temperature_list) == 1 and isinstance(temperature_list[0], (list, tuple)):
+			temperature_list = temperature_list[0]
+
+		color = color_cycle[mol_idx % len(color_cycle)]
+		mk = markers[mol_idx % len(markers)]
+
+		for curve_idx, ((jmax, E), thermo_data) in enumerate(thermo_dict.items()):
+			dipole_orientation_values = [thermo_data[T]["dipole_orientation"] for T in temperature_list]
+
+			cum_populations_field = thermo_data[100]["cum_populations"]
+			states_field = np.arange(1, len(cum_populations_field) + 1)
+
+
+			ls = line_styles[curve_idx % len(line_styles)]
+			plt.plot(
+				temperature_list,
+				dipole_orientation_values,
+				linestyle='none',
+				marker=mk,
+				markersize=8,
+				#`markerfacecolor='none',
+				color=color,
+				alpha=0.65,
+				label=rf"{molecule}"
+			)
+
+	# -----------------------------
+	# Axis labels
+	# -----------------------------
+	ax.set_xlabel("Temperature (K)", fontsize=18)
+
+	ax.set_ylabel(r"$\langle \cos\theta \rangle$", fontsize=18)
+
+	# -----------------------------
+	# Limits
+	# -----------------------------
+	ax.set_xlim(-0.5, 100.5)
+	#ax.set_ylim(-0.01, 0.8)
+	ax.margins(y=0.05)
+
+	# -----------------------------
+	# Major ticks
+	# -----------------------------
+	ax.set_xticks(np.arange(0, 101, 10))
+	#ax.yaxis.set_major_locator(MultipleLocator(0.1))
+	ax.yaxis.set_major_locator(MaxNLocator(nbins=6))
+
+	# -----------------------------
+	# Minor ticks
+	# -----------------------------
+	ax.xaxis.set_minor_locator(MultipleLocator(2))
+	ax.yaxis.set_minor_locator(AutoMinorLocator())
+	#ax.yaxis.set_minor_locator(MultipleLocator(0.02))
+
+	# -----------------------------
+	# Tick styling (publication quality)
+	# -----------------------------
+	ax.tick_params(axis='both', which='major',
+				   direction='in', length=7, width=1.2,
+				   labelsize=18, top=True, right=True)
+
+	ax.tick_params(axis='both', which='minor',
+				   direction='in', length=4, width=1.0,
+				   top=True, right=True)
+
+	# -----------------------------
+	# Spines (frame thickness)
+	# -----------------------------
+	for spine in ax.spines.values():
+		spine.set_linewidth(1.2)
+
+	# -----------------------------
+	# Optional: light grid (very subtle)
+	# -----------------------------
+	#ax.grid(which='major', linestyle='--', linewidth=0.5, alpha=0.5)
+	#ax.grid(which='minor', linestyle=':', linewidth=0.4, alpha=0.4)
+
+	plt.legend(fontsize=18, loc="best")
+	# -----------------------------
+	# Layout
+	# -----------------------------
+	plt.tight_layout()
+
+	# Save first, then show
+	plt.savefig(out_path, dpi=300)
+	print("")
+	print(f"[INFO] Combined dipole orientation <cos(theta)>_T plot saved: {out_path}")
+
+
+def get_ground_state_dipole_orientation(thermo_dict_by_molecule, get_temperature_list):
+	"""
+	Approximate ground-state dipole orientation using lowest available temperature
+	and compare with low-field analytical expression.
+	"""
+
+	for molecule, thermo_dict in thermo_dict_by_molecule.items():
+		temperature_list = get_temperature_list(molecule)
+
+		# Flatten if needed
+		if len(temperature_list) == 1 and isinstance(temperature_list[0], (list, tuple)):
+			temperature_list = temperature_list[0]
+
+		T_min = min(temperature_list)
+
+		print(f"\nMolecule: {molecule} (using T = {T_min} K)")
+
+		# Molecular constants
+		B_const = MOLECULE_DATA[molecule]["B_const"]
+		dipole_moment = MOLECULE_DATA[molecule]["dipole_moment"]
+
+		for (jmax, E), thermo_data in thermo_dict.items():
+
+			if T_min not in thermo_data:
+				raise KeyError(
+					f"T={T_min} missing for {molecule}, jmax={jmax}, E={E}"
+				)
+
+			# Numerical value
+			val_num = thermo_data[T_min]["dipole_orientation"]
+
+			# Convert μE → cm^-1
+			potential_strength = convert_dipole_field_energy_to_cm_inv(
+				dipole_moment, E
+			)
+
+			# Dimensionless parameter
+			x = potential_strength / B_const
+
+			# Analytical (low-field expansion)
+			val_ana = (x / 3.0) * (1.0 - x**2 / 12.0)
+
+			# Difference
+			error = abs(val_num - val_ana)
+
+			print(
+				f"  jmax={jmax:2d}, E={E:10.4f}, x={x:10.4f}  |  "
+				f"<cosθ>_num = {val_num: .6f}  |  "
+				f"<cosθ>_ana = {val_ana: .6f}  |  "
+				f"Δ = {error:.2e}"
+			)

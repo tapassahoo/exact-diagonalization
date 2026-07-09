@@ -9,6 +9,8 @@ import logging
 from monomer_linear_rotor.thermo import (
 	read_all_quantum_data_files_with_thermo,
 	plot_cv_comparison,
+	plot_dipole_orientation_comparison,
+	get_ground_state_dipole_orientation,
 )
 
 from pkg_utils.utils import whoami
@@ -334,7 +336,8 @@ def plot_cv_heatmap(
 quantum_data_root_dir="/Volumes/Schrodinger/pcsa-backup/outputs-of-exeact-diagonalization/"
 #electric_field_list=[5] + list(range(20, 201, 20))
 #jmax_list=list(range(20, 41, 5))
-electric_field_list=[9]
+electric_field_list=[100, 200, 300, 400, 500]
+#electric_field_list=[100]
 jmax_list=[60]
 # Usage
 
@@ -342,12 +345,12 @@ unit_want="wavenumber"
 #unit_want="SI",
 
 all_results = {}
-for mol in ["HI"]:
-#for mol in ["HF", "HCl", "HBr", "HI"]:
+#for mol in ["HF"]:
+for mol in ["HF", "HCl", "HBr", "HI"]:
 	thermo_dict = read_all_quantum_data_files_with_thermo(
 		quantum_data_root_dir=quantum_data_root_dir,
 		molecule=mol,
-		electric_field_list=[100],#electric_field_list,
+		electric_field_list=electric_field_list,
 		jmax_list=[60],#jmax_list,
 		temperature_list=get_temperature_list(mol),
 		spin_type="spinless",
@@ -358,21 +361,26 @@ for mol in ["HI"]:
 	)
 	all_results[mol] = thermo_dict
 
+get_ground_state_dipole_orientation(
+	all_results,
+	get_temperature_list,
+)
+whoami()
+
+#filename = f"dipole_orientation_cos_theta_avg_{mol}_E{electric_field_list[0]}kVcm_upto_100K.png"
+filename = f"dipole_orientation_cos_theta_avg_E{electric_field_list[0]}kVcm_upto_100K.png"
+plot_dipole_orientation_comparison(
+	thermo_dict_by_molecule=all_results,
+	get_temperature_list=get_temperature_list,
+	unit_want=unit_want,
+	out_path = f"/Users/tapas/academic-project/results/{filename}"
+)
 if False:
-	T, cosT = compute_cos_theta_vs_T(
-		evals, evecs, JM_list, temperature_list
-	)
-
-	plt.plot(T, cosT)
-	plt.xlabel("Temperature")
-	plt.ylabel(r"$\langle \cos\theta \rangle_T$")
-	plt.show()
-
+	filename = f"Cv_rot_{mol}_E{electric_field_list[0]}kVcm_upto_100K.png"
+	#filename = f"Cv_rot_E{electric_field_list[0]}kVcm_upto_100K.png"
 	plot_cv_comparison(
 		thermo_dict_by_molecule=all_results,
 		get_temperature_list=get_temperature_list,
 		unit_want=unit_want,
-		out_path="/Users/tapas/academic-project/results/heat_capacity_plot_of_HI_upto_100K.png"
+		out_path = f"/Users/tapas/academic-project/results/{filename}"
 	)
-
-
