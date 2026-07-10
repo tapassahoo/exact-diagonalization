@@ -285,7 +285,7 @@ def plot_cv_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want,
 						Cv_array,
 						'k--',
 						linewidth=2,
-						label=r'Classical limit: $C_{V,\mathrm{rot}} = R \approx 0.695\ \mathrm{cm^{-1}\,K^{-1}}$'
+						label=r'Classical limit: $C_{V,\mathrm{rot}} = k_\mathrm{B} \approx 0.695\ \mathrm{cm^{-1}\,K^{-1}}$'
 					)
 
 			if num_molecules == 1:
@@ -1070,32 +1070,31 @@ def read_all_quantum_data_files_with_thermo(
 				
 				print("\n\n")
 
-				if False:
-					file_prefix = summary_output_dir / f"equilibrium_thermodynamic_properties_{data_subdir}"
-					pop_dir = summary_output_dir / f"equilibrium_state_population_data_{data_subdir}"
-					plot_path = summary_output_dir / f"heat_capacity_vs_temperature_plot_{data_subdir}.png"
+				file_prefix = summary_output_dir / f"equilibrium_thermodynamic_properties_{data_subdir}"
+				pop_dir = summary_output_dir / f"equilibrium_state_population_data_{data_subdir}"
+				plot_path = summary_output_dir / f"heat_capacity_vs_temperature_plot_{data_subdir}.png"
 
-					
-					# Export to file
-					if export_csv:
-						save_thermo_with_Z_and_populations(
-							thermo_data=thermo_data,
-							temperatures=temperature_list,
-							eigenvalues=eigenvalues,
-							unit=unit_want,
-							txt_path=str(file_prefix) + ".txt",
-							csv_path=str(file_prefix) + ".csv",
-							save_populations=True,
-							population_dir=str(pop_dir)
-						)
+				
+				# Export to file
+				if export_csv:
+					save_thermo_with_Z_and_populations(
+						thermo_data=thermo_data,
+						temperatures=temperature_list,
+						eigenvalues=eigenvalues,
+						unit=unit_want,
+						txt_path=str(file_prefix) + ".txt",
+						csv_path=str(file_prefix) + ".csv",
+						save_populations=True,
+						population_dir=str(pop_dir)
+					)
 
-					if export_plot:
-						plot_cv_vs_temperature(
-							thermo_data=thermo_data,
-							unit=unit_want,
-							context="Rotational",
-							out_path=plot_path
-						)
+				if export_plot:
+					plot_cv_vs_temperature(
+						thermo_data=thermo_data,
+						unit=unit_want,
+						context="Rotational",
+						out_path=plot_path
+					)
 
 				# Store in output dictionary
 				thermo_dict_by_field[(jmax, E)] = thermo_data
@@ -1172,47 +1171,62 @@ def plot_dipole_orientation_comparison(thermo_dict_by_molecule, get_temperature_
 		unit_want (str): Unit for Cv display.
 		out_path (str or Path): Path to save combined plot.
 	"""
-	num_molecules = len(thermo_dict_by_molecule)	
 	fig, ax = plt.subplots(figsize=(9, 6))
 
-	color_cycle = ["red", "grey", "blue", "green"]
-	line_styles = ["-", "--", "-.", ":"]
-	markers = ["o", "s", "p", "d", "v"]
+	styles = {
+		"HF":  {"color": "black", "linestyle": "-",  "marker": "o"},
+		"HCl": {"color": "black", "linestyle": "--", "marker": "s"},
+		"HBr": {"color": "black", "linestyle": "-.", "marker": "D"},
+		"HI":  {"color": "black", "linestyle": ":",  "marker": "^"}
+	}
 
 	for mol_idx, (molecule, thermo_dict) in enumerate(thermo_dict_by_molecule.items()):
-		temperature_list = get_temperature_list(molecule)
+		temperature_list = get_temperature_list(molecule, dipole_orientation=True)
 
 		if len(temperature_list) == 1 and isinstance(temperature_list[0], (list, tuple)):
 			temperature_list = temperature_list[0]
 
-		color = color_cycle[mol_idx % len(color_cycle)]
-		mk = markers[mol_idx % len(markers)]
-
 		for curve_idx, ((jmax, E), thermo_data) in enumerate(thermo_dict.items()):
 			dipole_orientation_values = [thermo_data[T]["dipole_orientation"] for T in temperature_list]
 
-			cum_populations_field = thermo_data[100]["cum_populations"]
-			states_field = np.arange(1, len(cum_populations_field) + 1)
+			style = styles[molecule]
 
-
-			ls = line_styles[curve_idx % len(line_styles)]
+			# Smooth line
 			plt.plot(
 				temperature_list,
 				dipole_orientation_values,
-				linestyle='none',
-				marker=mk,
-				markersize=8,
-				#`markerfacecolor='none',
-				color=color,
-				alpha=0.65,
-				label=rf"{molecule}"
+				color="black",
+				linestyle=style["linestyle"],
+				linewidth=2.2,
+				label=molecule
 			)
+
+			"""
+			plt.scatter(
+				temperature_list[::5],
+				dipole_orientation_values[::5],
+				facecolors='none',
+				edgecolors='black',
+				marker=style["marker"],
+				s=28,
+				linewidths=1,
+			)
+			"""
+
+	plt.text(
+		0.5, 0.85,
+		r"Electric Field:" "\n" fr"$E = {E:.1f}\ \mathrm{{kV/cm}}$",
+		transform=plt.gca().transAxes,
+		fontsize=14,
+		ha='center',
+		va='center',
+		bbox=dict(boxstyle="round", facecolor="white", edgecolor="black")
+	)
 
 	# -----------------------------
 	# Axis labels
 	# -----------------------------
 	ax.set_xlabel("Temperature (K)", fontsize=18)
-
 	ax.set_ylabel(r"$\langle \cos\theta \rangle$", fontsize=18)
 
 	# -----------------------------
@@ -1251,7 +1265,7 @@ def plot_dipole_orientation_comparison(thermo_dict_by_molecule, get_temperature_
 	# Spines (frame thickness)
 	# -----------------------------
 	for spine in ax.spines.values():
-		spine.set_linewidth(1.2)
+		spine.set_linewidth(1.5)
 
 	# -----------------------------
 	# Optional: light grid (very subtle)
@@ -1278,7 +1292,7 @@ def get_ground_state_dipole_orientation(thermo_dict_by_molecule, get_temperature
 	"""
 
 	for molecule, thermo_dict in thermo_dict_by_molecule.items():
-		temperature_list = get_temperature_list(molecule)
+		temperature_list = get_temperature_list(molecule, dipole_orientation=True)
 
 		# Flatten if needed
 		if len(temperature_list) == 1 and isinstance(temperature_list[0], (list, tuple)):
@@ -1316,9 +1330,12 @@ def get_ground_state_dipole_orientation(thermo_dict_by_molecule, get_temperature
 			# Difference
 			error = abs(val_num - val_ana)
 
+			Z = thermo_data[T_min]["partition_function"]
+
 			print(
-				f"  jmax={jmax:2d}, E={E:10.4f}, x={x:10.4f}  |  "
+				f"  jmax={jmax:2d}, E={E:10.4f}, x={x:10.4f}, Z={Z:10.4f}  |  "
 				f"<cosθ>_num = {val_num: .6f}  |  "
 				f"<cosθ>_ana = {val_ana: .6f}  |  "
 				f"Δ = {error:.2e}"
 			)
+

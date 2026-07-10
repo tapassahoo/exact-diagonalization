@@ -16,67 +16,98 @@ from monomer_linear_rotor.thermo import (
 from pkg_utils.utils import whoami
 from pkg_utils.env_report import whom
 
+if False:
+	def get_temperature_list(molecule: str):
+		"It is for the computation of heat capacity."
+		if molecule == "HF":
+			return np.unique(np.concatenate([
+				np.linspace(0.5, 5.0, 5),
+				np.arange(5.0, 20.5 + 1e-12, 0.25),
+				np.arange(20.0, 40.0 + 1e-12, 1.25),
+				np.arange(40.0, 202.0 + 1e-12, 1.5),
+				np.array([100.0, 200.0])  # explicitly include
+			]))
+			#return sorted(set(
+			#	list(np.arange(0.5, 20.1, 0.25)) +
+			#	list(range(20, 41, 1)) +
+			#	list(range(40, 101, 1))
+			#))
 
-# Universal gas constant in J/mol·K
-GAS_CONSTANT_J_PER_MOL_K = 8.314462618
+		elif molecule == "HCl":
+			return np.unique(np.concatenate([
+				np.arange(0.5, 3.0 + 1e-9, 0.5),
+				np.arange(3.1, 8.5 + 1e-9, 0.1),
+				np.arange(8.2, 10.6 + 1e-9, 0.2),
+				np.arange(10.0, 20.0 + 1e-9, 1.0),
+				np.arange(20.0, 100.0 + 1e-9, 1.0),
+				np.array([100.0, 200.0])  # explicitly include
+			]))
+			#return sorted(set(
+			#	list(np.arange(0.2, 12.1, 0.2)) +
+			#	list(np.arange(12.5, 20.1, 0.5)) +
+			#	list(np.arange(20.0, 40.1, 1.0)) +
+			#	list(range(40, 101, 2))
+			#))
+		elif molecule == "HBr":
+			return np.unique(np.concatenate([
+				np.arange(0.2, 2.0 + 1e-9, 0.5),
+				np.arange(2.0, 5.2 + 1e-9, 0.05),
+				np.arange(5.1, 8.0 + 1e-9, 0.1),
+				np.arange(8.0, 10.6 + 1e-9, 0.2),
+				np.arange(10.0, 100.0 + 1e-9, 1.0),
+				np.array([100.0, 200.0])  # explicitly include
+			]))
+		elif molecule == "HI":
+			return np.unique(np.concatenate([
+				np.arange(0.2, 2.0 + 1e-9, 0.5),
+				np.arange(2.0, 5.2 + 1e-9, 0.05),
+				np.arange(5.1, 8.0 + 1e-9, 0.1),
+				np.arange(8.0, 10.6 + 1e-9, 0.2),
+				np.arange(10.0, 100.0 + 1e-9, 1.0),
+				np.array([100.0, 200.0])  # explicitly include
+			]))
+			#return sorted(set(
+			#	list(np.arange(0.2, 10.1, 0.1)) +
+			#	list(np.arange(10.0, 20.1, 0.5)) +
+			#	list(np.arange(20.0, 40.1, 1.0)) +
+			#	list(range(40, 101, 1))
+			#))
 
-def get_temperature_list(molecule: str):
-	if molecule == "HF":
-		return np.unique(np.concatenate([
-			np.linspace(0.5, 5.0, 5),
-			np.arange(5.0, 20.5 + 1e-12, 0.25),
-			np.arange(20.0, 40.0 + 1e-12, 1.25),
-			np.arange(40.0, 202.0 + 1e-12, 1.5),
-			np.array([100.0, 200.0])  # explicitly include
-		]))
-		#return sorted(set(
-		#	list(np.arange(0.5, 20.1, 0.25)) +
-		#	list(range(20, 41, 1)) +
-		#	list(range(40, 101, 1))
-		#))
+		else:
+			raise ValueError(f"Unsupported molecule: {molecule}")
 
-	elif molecule == "HCl":
-		return np.unique(np.concatenate([
-			np.arange(0.5, 3.0 + 1e-9, 0.5),
-			np.arange(3.1, 8.5 + 1e-9, 0.1),
-			np.arange(8.2, 10.6 + 1e-9, 0.2),
-			np.arange(10.0, 20.0 + 1e-9, 1.0),
-			np.arange(20.0, 100.0 + 1e-9, 1.0),
-			np.array([100.0, 200.0])  # explicitly include
-		]))
-		#return sorted(set(
-		#	list(np.arange(0.2, 12.1, 0.2)) +
-		#	list(np.arange(12.5, 20.1, 0.5)) +
-		#	list(np.arange(20.0, 40.1, 1.0)) +
-		#	list(range(40, 101, 2))
-		#))
-	elif molecule == "HBr":
-		return np.unique(np.concatenate([
-			np.arange(0.2, 2.0 + 1e-9, 0.5),
-			np.arange(2.0, 5.2 + 1e-9, 0.05),
-			np.arange(5.1, 8.0 + 1e-9, 0.1),
-			np.arange(8.0, 10.6 + 1e-9, 0.2),
-			np.arange(10.0, 100.0 + 1e-9, 1.0),
-			np.array([100.0, 200.0])  # explicitly include
-		]))
-	elif molecule == "HI":
-		return np.unique(np.concatenate([
-			np.arange(0.2, 2.0 + 1e-9, 0.5),
-			np.arange(2.0, 5.2 + 1e-9, 0.05),
-			np.arange(5.1, 8.0 + 1e-9, 0.1),
-			np.arange(8.0, 10.6 + 1e-9, 0.2),
-			np.arange(10.0, 100.0 + 1e-9, 1.0),
-			np.array([100.0, 200.0])  # explicitly include
-		]))
-		#return sorted(set(
-		#	list(np.arange(0.2, 10.1, 0.1)) +
-		#	list(np.arange(10.0, 20.1, 0.5)) +
-		#	list(np.arange(20.0, 40.1, 1.0)) +
-		#	list(range(40, 101, 1))
-		#))
+
+def get_temperature_list(
+	molecule: str,
+	dipole_orientation: bool = False,
+	heat_capacity: bool = False
+):
+	"""
+	Returns temperature grid depending on the requested property.
+
+	Parameters:
+		molecule (str)
+		dipole_orientation (bool): grid optimized for <cos(theta)>
+		heat_capacity (bool): grid optimized for Cv
+	"""
+
+	if dipole_orientation:
+		# Coarse grid (your requirement)
+		temps = np.concatenate((
+			np.array([0.01]),
+			np.arange(2, 101, 1)
+		))
+
+	elif heat_capacity:
+		# Heat capacity needs smooth derivatives → dense grid
+		temps = np.linspace(0.01, 100.0, 1000)
 
 	else:
-		raise ValueError(f"Unsupported molecule: {molecule}")
+		# Default (general purpose)
+		temps = np.linspace(0.01, 100.0, 500)
+
+	return temps
+
 
 def plot_cv_surface(
 	thermo_dict_by_field,
@@ -333,14 +364,16 @@ def plot_cv_heatmap(
 		#	out_path="cv_overlay.png"
 		#)
 
-quantum_data_root_dir="/Volumes/Schrodinger/pcsa-backup/outputs-of-exeact-diagonalization/"
-#electric_field_list=[5] + list(range(20, 201, 20))
-#jmax_list=list(range(20, 41, 5))
-electric_field_list=[100, 200, 300, 400, 500]
-#electric_field_list=[100]
-jmax_list=[60]
-# Usage
+#temperature_list = get_temperature_list("HF", dipole_orientation=True)
+#print("Temperature list:")
+#print([f"{T:.2f}" for T in temperature_list])
 
+quantum_data_root_dir="/Volumes/Schrodinger/pcsa-backup/outputs-of-exeact-diagonalization/"
+#jmax_list=list(range(20, 41, 5))
+jmax_list=[60]
+#electric_field_list=[100, 200, 300, 400, 500]
+electric_field_list=[0.1]
+dipole_orientation = True
 unit_want="wavenumber"
 #unit_want="SI",
 
@@ -351,21 +384,21 @@ for mol in ["HF", "HCl", "HBr", "HI"]:
 		quantum_data_root_dir=quantum_data_root_dir,
 		molecule=mol,
 		electric_field_list=electric_field_list,
-		jmax_list=[60],#jmax_list,
-		temperature_list=get_temperature_list(mol),
+		jmax_list=jmax_list,
+		temperature_list=get_temperature_list(mol, dipole_orientation = True),
 		spin_type="spinless",
 		unit_want=unit_want,
-		export_csv=True,
-		export_plot=True,
+		export_csv=False,
+		export_plot=False,
 		output_summary_dir="/Users/tapas/academic-project/results/"
 	)
 	all_results[mol] = thermo_dict
 
-get_ground_state_dipole_orientation(
-	all_results,
-	get_temperature_list,
-)
-whoami()
+if False:
+	get_ground_state_dipole_orientation(
+		all_results,
+		get_temperature_list,
+	)
 
 #filename = f"dipole_orientation_cos_theta_avg_{mol}_E{electric_field_list[0]}kVcm_upto_100K.png"
 filename = f"dipole_orientation_cos_theta_avg_E{electric_field_list[0]}kVcm_upto_100K.png"
@@ -375,6 +408,7 @@ plot_dipole_orientation_comparison(
 	unit_want=unit_want,
 	out_path = f"/Users/tapas/academic-project/results/{filename}"
 )
+
 if False:
 	filename = f"Cv_rot_{mol}_E{electric_field_list[0]}kVcm_upto_100K.png"
 	#filename = f"Cv_rot_E{electric_field_list[0]}kVcm_upto_100K.png"
