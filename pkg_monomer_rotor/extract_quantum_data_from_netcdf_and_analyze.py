@@ -11,6 +11,7 @@ from monomer_linear_rotor.thermo import (
 	plot_cv_comparison,
 	plot_dipole_orientation_comparison,
 	get_ground_state_dipole_orientation,
+	compute_angular_probability_density,
 )
 
 from pkg_utils.utils import whoami
@@ -372,14 +373,14 @@ quantum_data_root_dir="/Volumes/Schrodinger/pcsa-backup/outputs-of-exeact-diagon
 #jmax_list=list(range(20, 41, 5))
 jmax_list=[60]
 #electric_field_list=[100, 200, 300, 400, 500]
-electric_field_list=[0.1]
+electric_field_list=[500]
 dipole_orientation = True
 unit_want="wavenumber"
 #unit_want="SI",
 
 all_results = {}
-#for mol in ["HF"]:
-for mol in ["HF", "HCl", "HBr", "HI"]:
+for mol in ["HF"]:
+#for mol in ["HF", "HCl", "HBr", "HI"]:
 	thermo_dict = read_all_quantum_data_files_with_thermo(
 		quantum_data_root_dir=quantum_data_root_dir,
 		molecule=mol,
@@ -393,6 +394,8 @@ for mol in ["HF", "HCl", "HBr", "HI"]:
 		output_summary_dir="/Users/tapas/academic-project/results/"
 	)
 	all_results[mol] = thermo_dict
+
+whoami()
 
 if False:
 	get_ground_state_dipole_orientation(

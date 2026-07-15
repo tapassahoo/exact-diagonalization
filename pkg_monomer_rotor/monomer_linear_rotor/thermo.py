@@ -19,6 +19,8 @@ from scipy.constants import k as BOLTZMANN_J_PER_K
 import warnings
 import itertools
 from termcolor import colored
+from scipy.special import lpmv, gammaln
+from numpy.polynomial.legendre import leggauss
 
 from monomer_linear_rotor.molecule_data import MOLECULE_DATA
 
@@ -36,6 +38,12 @@ from monomer_linear_rotor.hamiltonian import (
 from pkg_utils.utils import whoami
 from pkg_utils.config import *
 from pkg_utils.env_report import whom
+# ============================================================
+# CONSTANT
+# ============================================================
+
+# Boltzmann constant in cm^{-1} K^{-1}
+KB_CM_INV_PER_K = 0.69503476
 
 
 def compute_rotational_levels_cum(
@@ -785,6 +793,42 @@ def compute_thermo_vectorized(JM_list, eigenvalues, eigenvectors, temperature_li
 			display_unit = "J/mol"
 			display_cv_unit = "J/mol·K"
 
+		# --------------------------------------------------------
+		# Compute angular distribution
+		# --------------------------------------------------------
+
+		results = (
+			compute_angular_distribution_from_eigensystem(
+				eigenvalues=eigenvalues,
+				eigenvectors=eigenvectors,
+				basis=JM_list,
+				temperature=T,
+				n_quad=300,
+			)
+		)
+
+		# Extract results
+		x = results["x"]
+		P_x = results["P_x"]
+
+		print(
+			f"Tr(rho) = "
+			f"{results['trace_rho'].real:.15f}"
+		)
+
+		print(
+			f"Integral P(x) dx = "
+			f"{results['normalization']:.15f}"
+		)
+
+		print(
+			f"<cos(theta)> = "
+			f"{results['cos_theta_average']:.15f}"
+		)
+
+		whoami()
+
+
 		results[T] = {
 			"temperature_K": T,
 			"beta": beta,
@@ -1046,7 +1090,6 @@ def read_all_quantum_data_files_with_thermo(
 					temperature_list=temperature_list,
 					unit=unit_want
 				)
-
 
 				# Print summary
 				print("\n[INFO] Thermodynamic Summary:")
@@ -1339,3 +1382,731 @@ def get_ground_state_dipole_orientation(thermo_dict_by_molecule, get_temperature
 				f"Δ = {error:.2e}"
 			)
 
+
+
+
+# ============================================================
+# SPHERICAL-HARMONIC NORMALIZATION
+# ============================================================
+
+def spherical_harmonic_normalization(J, M):
+	r"""
+	Compute the normalization constant
+
+		N_J^M =
+		sqrt[
+			(2J+1)/(4*pi)
+			(J-|M|)!/(J+|M|)!
+		].
+
+	Notes
+	-----
+	scipy.special.lpmv(m, J, x) includes the Condon--Shortley
+	phase (-1)^m. Therefore, no additional (-1)^M factor is
+	included here.
+	"""
+
+	m = abs(M)
+
+	log_norm_squared = (
+		np.log(2.0 * J + 1.0)
+		- np.log(4.0 * np.pi)
+		+ gammaln(J - m + 1.0)
+		- gammaln(J + m + 1.0)
+	)
+
+	return np.exp(0.5 * log_norm_squared)
+
+
+# ============================================================
+# THERMAL BOLTZMANN PROBABILITIES
+# ============================================================
+
+def compute_boltzmann_probabilities(
+	eigenvalues,
+	temperature,
+	kb=KB_CM_INV_PER_K,
+):
+	r"""
+	Compute the canonical probabilities
+
+		p_n = exp(-beta E_n) / Z.
+
+	The energies are shifted by the ground-state energy for
+	numerical stability.
+
+	Parameters
+	----------
+	eigenvalues : ndarray, shape (n_states,)
+		Energy eigenvalues in cm^{-1}.
+
+	temperature : float
+		Temperature in K.
+
+	kb : float
+		Boltzmann constant in cm^{-1} K^{-1}.
+
+	Returns
+	-------
+	probabilities : ndarray
+		Normalized Boltzmann probabilities.
+
+	beta : float
+		Inverse temperature in (cm^{-1})^{-1}.
+
+	partition_function_shifted : float
+		Partition function computed using shifted energies.
+
+	ground_state_energy : float
+		Minimum energy.
+	"""
+
+	eigenvalues = np.asarray(
+		eigenvalues,
+		dtype=np.float64,
+	)
+
+	if temperature <= 0.0:
+		raise ValueError(
+			"Temperature must be greater than zero."
+		)
+
+	beta = 1.0 / (kb * temperature)
+
+	ground_state_energy = np.min(eigenvalues)
+
+	shifted_energies = (
+		eigenvalues
+		- ground_state_energy
+	)
+
+	boltzmann_factors = np.exp(
+		-beta * shifted_energies
+	)
+
+	partition_function_shifted = np.sum(
+		boltzmann_factors
+	)
+
+	probabilities = (
+		boltzmann_factors
+		/ partition_function_shifted
+	)
+
+	return (
+		probabilities,
+		beta,
+		partition_function_shifted,
+		ground_state_energy,
+	)
+
+
+# ============================================================
+# CONSTRUCT THERMAL DENSITY MATRIX
+# ============================================================
+
+def compute_thermal_density_matrix(
+	eigenvalues,
+	eigenvectors,
+	temperature,
+	kb=KB_CM_INV_PER_K,
+):
+	r"""
+	Compute the thermal density matrix in the |J,M> basis:
+
+		rho_{alpha,beta}
+		=
+		sum_n
+		p_n
+		c_alpha^(n)
+		c_beta^(n)*.
+
+	Here alpha and beta label the basis states |J,M>.
+
+	Parameters
+	----------
+	eigenvalues : ndarray, shape (n_states,)
+		Eigenvalues.
+
+	eigenvectors : ndarray, shape (n_basis, n_states)
+		Eigenvectors. Column n contains the nth eigenvector.
+
+	temperature : float
+		Temperature in K.
+
+	Returns
+	-------
+	rho : ndarray, shape (n_basis, n_basis)
+		Thermal density matrix.
+
+	probabilities : ndarray
+		Boltzmann probabilities.
+	"""
+
+	eigenvalues = np.asarray(
+		eigenvalues,
+		dtype=np.float64,
+	)
+
+	eigenvectors = np.asarray(
+		eigenvectors,
+		dtype=np.complex128,
+	)
+
+	if eigenvectors.shape[1] != len(eigenvalues):
+		raise ValueError(
+			"The number of eigenvector columns must equal "
+			"the number of eigenvalues."
+		)
+
+	(
+		probabilities,
+		beta,
+		partition_function_shifted,
+		ground_state_energy,
+	) = compute_boltzmann_probabilities(
+		eigenvalues=eigenvalues,
+		temperature=temperature,
+		kb=kb,
+	)
+
+	# --------------------------------------------------------
+	# rho = C diag(p_n) C^\dagger
+	#
+	# Equivalent to:
+	#
+	# rho_{alpha,beta}
+	# =
+	# sum_n
+	# p_n
+	# c_alpha^(n)
+	# c_beta^(n)*
+	# --------------------------------------------------------
+
+	rho = (
+		eigenvectors
+		@ np.diag(probabilities)
+		@ eigenvectors.conj().T
+	)
+
+	return (
+		rho,
+		probabilities,
+		beta,
+		partition_function_shifted,
+		ground_state_energy,
+	)
+
+
+# ============================================================
+# EXTRACT M BLOCKS OF THE DENSITY MATRIX
+# ============================================================
+
+def extract_density_matrix_M_blocks(
+	rho,
+	basis,
+):
+	r"""
+	Extract
+
+		rho_{J,J'}^(M)
+		=
+		<J,M | rho | J',M>
+
+	from the full density matrix.
+
+	Parameters
+	----------
+	rho : ndarray, shape (n_basis, n_basis)
+		Full thermal density matrix.
+
+	basis : list of tuple
+		Basis ordering:
+
+			basis[i] = (J, M)
+
+	Returns
+	-------
+	rho_by_M : dict
+		Dictionary with
+
+			rho_by_M[M]["J_values"]
+			rho_by_M[M]["rho"]
+	"""
+
+	basis = list(basis)
+	#for i, (J, M) in enumerate(basis[:20]):
+	#	print(f"{i:3d}: J = {J:3d}, M = {M:3d}")
+
+	#print("\n\n")
+
+	if rho.shape[0] != len(basis):
+		raise ValueError(
+			"The dimension of rho does not match the basis size."
+		)
+
+	# Unique M values
+	M_values = sorted(
+		set(M for J, M in basis)
+	)
+
+	#for i, M in enumerate(M_values[:20]):
+	#	print(f"{i:3d}: M = {M:3d}")
+
+	rho_by_M = {}
+
+	for M in M_values:
+
+		# Indices belonging to this M sector
+		indices = [
+			i
+			for i, (J, M_basis) in enumerate(basis)
+			if M_basis == M
+		]
+
+		#print(f"M = {M:3d} : indices = {indices}")
+
+		# Sort by J
+		indices = sorted(
+			indices,
+			key=lambda i: basis[i][0],
+		)
+
+		J_values = np.array(
+			[
+				basis[i][0]
+				for i in indices
+			],
+			dtype=int,
+		)
+
+		# Extract M block
+		rho_M = rho[
+			np.ix_(
+				indices,
+				indices,
+			)
+		]
+
+		rho_by_M[M] = {
+			"J_values": J_values,
+			"rho": rho_M,
+		}
+
+	return rho_by_M
+
+
+# ============================================================
+# COMPUTE P(x), x = cos(theta)
+# ============================================================
+
+def compute_angular_probability_density(
+	rho_by_M,
+	n_quad=300,
+):
+	r"""
+	Compute
+
+		P(x)
+		=
+		2*pi
+		sum_M
+		sum_{J,J'}
+		rho_{J,J'}^(M)
+		N_J^M
+		N_{J'}^M
+		P_J^M(x)
+		P_{J'}^M(x),
+
+	where
+
+		x = cos(theta).
+
+	Gauss--Legendre quadrature is used.
+
+	Parameters
+	----------
+	rho_by_M : dict
+		Density-matrix blocks returned by
+		extract_density_matrix_M_blocks().
+
+	n_quad : int
+		Number of Gauss--Legendre quadrature points.
+
+	Returns
+	-------
+	x : ndarray
+		Gauss--Legendre nodes in [-1,1].
+
+	weights : ndarray
+		Gauss--Legendre quadrature weights.
+
+	P_x : ndarray
+		Probability density P(x).
+
+	normalization : float
+		Numerical value of
+
+			integral_{-1}^{1} P(x) dx.
+	"""
+
+	# Gauss--Legendre nodes and weights
+	x, weights = leggauss(n_quad)
+
+	P_x = np.zeros(
+		n_quad,
+		dtype=np.complex128,
+	)
+
+	# --------------------------------------------------------
+	# Sum over M sectors
+	# --------------------------------------------------------
+
+	for M, data in rho_by_M.items():
+
+		J_values = data["J_values"]
+		rho_M = data["rho"]
+
+		n_J = len(J_values)
+
+		# ----------------------------------------------------
+		# Phi[J_index, x_index]
+		#
+		# =
+		#
+		# N_J^M P_J^M(x)
+		# ----------------------------------------------------
+
+		Phi = np.empty(
+			(n_J, n_quad),
+			dtype=np.float64,
+		)
+
+		m = abs(M)
+
+		for j_index, J in enumerate(J_values):
+
+			N_JM = (
+				spherical_harmonic_normalization(
+					J=J,
+					M=M,
+				)
+			)
+
+			P_JM = lpmv(
+				m,
+				J,
+				x,
+			)
+
+			Phi[j_index, :] = (
+				N_JM
+				* P_JM
+			)
+
+		# ----------------------------------------------------
+		# At each x_i:
+		#
+		# P_M(x_i)
+		# =
+		# 2*pi
+		# sum_{J,J'}
+		# rho_{J,J'}^(M)
+		# Phi_J^M(x_i)
+		# Phi_{J'}^M(x_i)
+		# ----------------------------------------------------
+
+		P_x += (
+			2.0
+			* np.pi
+			* np.einsum(
+				"ji,jk,ki->i",
+				Phi.conj(),
+				rho_M,
+				Phi,
+				optimize=True,
+			)
+		)
+
+	# The result must be real
+	max_imaginary_part = np.max(
+		np.abs(P_x.imag)
+	)
+
+	if max_imaginary_part > 1.0e-10:
+		print(
+			"Warning: P(x) contains a non-negligible "
+			f"imaginary part: {max_imaginary_part:.3e}"
+		)
+
+	P_x = np.real(P_x)
+
+	# Gauss--Legendre normalization
+	normalization = np.sum(
+		weights * P_x
+	)
+
+	return (
+		x,
+		weights,
+		P_x,
+		normalization,
+	)
+
+
+# ============================================================
+# EXPECTATION VALUE <cos(theta)>
+# ============================================================
+
+def compute_cos_theta_expectation(
+	x,
+	weights,
+	P_x,
+):
+	r"""
+	Compute
+
+		<cos(theta)>
+		=
+		integral_{-1}^{1}
+		x P(x) dx.
+	"""
+
+	return np.sum(
+		weights
+		* x
+		* P_x
+	)
+
+
+# ============================================================
+# MASTER FUNCTION
+# ============================================================
+
+def compute_angular_distribution_from_eigensystem(
+	eigenvalues,
+	eigenvectors,
+	basis,
+	temperature,
+	n_quad=300,
+	kb=KB_CM_INV_PER_K,
+):
+	"""
+	Compute the thermal angular probability distribution
+	directly from supplied eigenvalues and eigenvectors.
+
+	Parameters
+	----------
+	eigenvalues : ndarray, shape (n_states,)
+		Eigenvalues in cm^{-1}.
+
+	eigenvectors : ndarray, shape (n_basis, n_states)
+		Eigenvectors. Column n is the nth eigenvector.
+
+	basis : list of tuple
+		Basis ordering:
+
+			[(J_0, M_0), (J_1, M_1), ...]
+
+	temperature : float
+		Temperature in K.
+
+	n_quad : int
+		Number of Gauss--Legendre quadrature points.
+
+	Returns
+	-------
+	results : dict
+		Dictionary containing all computed quantities.
+	"""
+
+	# --------------------------------------------------------
+	# Thermal density matrix
+	# --------------------------------------------------------
+
+	(
+		rho,
+		probabilities,
+		beta,
+		partition_function_shifted,
+		ground_state_energy,
+	) = compute_thermal_density_matrix(
+		eigenvalues=eigenvalues,
+		eigenvectors=eigenvectors,
+		temperature=temperature,
+		kb=kb,
+	)
+
+	# --------------------------------------------------------
+	# Extract fixed-M blocks
+	# --------------------------------------------------------
+
+	rho_by_M = (
+		extract_density_matrix_M_blocks(
+			rho=rho,
+			basis=basis,
+		)
+	)
+
+	# --------------------------------------------------------
+	# Compute P(x)
+	# --------------------------------------------------------
+
+	(
+		x,
+		weights,
+		P_x,
+		normalization,
+	) = compute_angular_probability_density(
+		rho_by_M=rho_by_M,
+		n_quad=n_quad,
+	)
+
+	# --------------------------------------------------------
+	# Compute <cos(theta)>
+	# --------------------------------------------------------
+
+	cos_theta_average = (
+		compute_cos_theta_expectation(
+			x=x,
+			weights=weights,
+			P_x=P_x,
+		)
+	)
+
+	# --------------------------------------------------------
+	# Trace of density matrix
+	# --------------------------------------------------------
+
+	trace_rho = np.trace(rho)
+
+	return {
+		"x": x,
+		"weights": weights,
+		"P_x": P_x,
+		"rho": rho,
+		"rho_by_M": rho_by_M,
+		"probabilities": probabilities,
+		"beta": beta,
+		"partition_function_shifted":
+			partition_function_shifted,
+		"ground_state_energy":
+			ground_state_energy,
+		"trace_rho": trace_rho,
+		"normalization": normalization,
+		"cos_theta_average":
+			cos_theta_average,
+	}
+
+
+# ============================================================
+# EXAMPLE
+# ============================================================
+
+if __name__ == "__main__":
+
+	# --------------------------------------------------------
+	# Replace these arrays with your actual eigenvalues,
+	# eigenvectors, and basis.
+	# --------------------------------------------------------
+
+	# Example basis:
+	#
+	# |0,0>, |1,-1>, |1,0>, |1,1>
+	#
+	basis = [
+		(0, 0),
+		(1, -1),
+		(1, 0),
+		(1, 1),
+	]
+
+	# Example eigenvalues in cm^{-1}
+	eigenvalues = np.array(
+		[
+			0.0,
+			40.0,
+			41.0,
+			42.0,
+		],
+		dtype=np.float64,
+	)
+
+	# Example eigenvectors
+	#
+	# Columns are eigenvectors.
+	#
+	# Replace with your actual eigenvectors.
+	eigenvectors = np.eye(
+		len(eigenvalues),
+		dtype=np.complex128,
+	)
+
+	# Temperature in K
+	temperature = 10.0
+
+	# --------------------------------------------------------
+	# Compute angular distribution
+	# --------------------------------------------------------
+
+	results = (
+		compute_angular_distribution_from_eigensystem(
+			eigenvalues=eigenvalues,
+			eigenvectors=eigenvectors,
+			basis=basis,
+			temperature=temperature,
+			n_quad=300,
+		)
+	)
+
+	# Extract results
+	x = results["x"]
+	P_x = results["P_x"]
+
+	print(
+		f"Tr(rho) = "
+		f"{results['trace_rho'].real:.15f}"
+	)
+
+	print(
+		f"Integral P(x) dx = "
+		f"{results['normalization']:.15f}"
+	)
+
+	print(
+		f"<cos(theta)> = "
+		f"{results['cos_theta_average']:.15f}"
+	)
+
+	# --------------------------------------------------------
+	# Plot P(cos theta)
+	# --------------------------------------------------------
+
+	plt.figure(
+		figsize=(7.0, 5.0)
+	)
+
+	plt.plot(
+		x,
+		P_x,
+		linewidth=2.0,
+	)
+
+	plt.xlabel(
+		r"$\cos\theta$",
+		fontsize=14,
+	)
+
+	plt.ylabel(
+		r"$P(\cos\theta)$",
+		fontsize=14,
+	)
+
+	plt.xlim(
+		-1.0,
+		1.0,
+	)
+
+	plt.tight_layout()
+
+	plt.show()
