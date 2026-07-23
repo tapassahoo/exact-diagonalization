@@ -797,36 +797,35 @@ def compute_thermo_vectorized(JM_list, eigenvalues, eigenvectors, temperature_li
 		# Compute angular distribution
 		# --------------------------------------------------------
 
-		results = (
-			compute_angular_distribution_from_eigensystem(
-				eigenvalues=eigenvalues,
-				eigenvectors=eigenvectors,
-				basis=JM_list,
-				temperature=T,
-				n_quad=300,
+		if False:
+			results = (
+				compute_angular_distribution_from_eigensystem(
+					eigenvalues=eigenvalues,
+					eigenvectors=eigenvectors,
+					basis=JM_list,
+					temperature=T,
+					n_quad=300,
+				)
 			)
-		)
 
-		# Extract results
-		x = results["x"]
-		P_x = results["P_x"]
+			# Extract results
+			x = results["x"]
+			P_x = results["P_x"]
 
-		print(
-			f"Tr(rho) = "
-			f"{results['trace_rho'].real:.15f}"
-		)
+			print(
+				f"Tr(rho) = "
+				f"{results['trace_rho'].real:.15f}"
+			)
 
-		print(
-			f"Integral P(x) dx = "
-			f"{results['normalization']:.15f}"
-		)
+			print(
+				f"Integral P(x) dx = "
+				f"{results['normalization']:.15f}"
+			)
 
-		print(
-			f"<cos(theta)> = "
-			f"{results['cos_theta_average']:.15f}"
-		)
-
-		whoami()
+			print(
+				f"<cos(theta)> = "
+				f"{results['cos_theta_average']:.15f}"
+			)
 
 
 		results[T] = {
@@ -1368,9 +1367,11 @@ def get_ground_state_dipole_orientation(thermo_dict_by_molecule, get_temperature
 			x = potential_strength / B_const
 
 			# Analytical (low-field expansion)
-			val_ana = (x / 3.0) * (1.0 - x**2 / 12.0)
+			#val_ana_norm = (x / 3.0) * (1.0 - x**2 / 12.0)
+			val_ana = x / 3.0
 
 			# Difference
+			#error_norm = abs(val_num - val_ana_norm)
 			error = abs(val_num - val_ana)
 
 			Z = thermo_data[T_min]["partition_function"]
@@ -1379,7 +1380,9 @@ def get_ground_state_dipole_orientation(thermo_dict_by_molecule, get_temperature
 				f"  jmax={jmax:2d}, E={E:10.4f}, x={x:10.4f}, Z={Z:10.4f}  |  "
 				f"<cosθ>_num = {val_num: .6f}  |  "
 				f"<cosθ>_ana = {val_ana: .6f}  |  "
+				#f"<cosθ>_ana_norm = {val_ana_norm: .6f}  |  "
 				f"Δ = {error:.2e}"
+				#f"Δ = {error_norm:.2e}"
 			)
 
 

@@ -372,15 +372,15 @@ def plot_cv_heatmap(
 quantum_data_root_dir="/Volumes/Schrodinger/pcsa-backup/outputs-of-exeact-diagonalization/"
 #jmax_list=list(range(20, 41, 5))
 jmax_list=[60]
-#electric_field_list=[100, 200, 300, 400, 500]
-electric_field_list=[500]
+electric_field_list=[100, 200, 300, 400, 500]
+#electric_field_list=[500]
 dipole_orientation = True
 unit_want="wavenumber"
 #unit_want="SI",
 
 all_results = {}
-for mol in ["HF"]:
-#for mol in ["HF", "HCl", "HBr", "HI"]:
+#for mol in ["HF"]:
+for mol in ["HF", "HCl", "HBr", "HI"]:
 	thermo_dict = read_all_quantum_data_files_with_thermo(
 		quantum_data_root_dir=quantum_data_root_dir,
 		molecule=mol,
@@ -395,13 +395,11 @@ for mol in ["HF"]:
 	)
 	all_results[mol] = thermo_dict
 
-whoami()
-
-if False:
 	get_ground_state_dipole_orientation(
 		all_results,
 		get_temperature_list,
 	)
+whoami()
 
 #filename = f"dipole_orientation_cos_theta_avg_{mol}_E{electric_field_list[0]}kVcm_upto_100K.png"
 filename = f"dipole_orientation_cos_theta_avg_E{electric_field_list[0]}kVcm_upto_100K.png"
