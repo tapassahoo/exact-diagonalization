@@ -235,6 +235,8 @@ def plot_cv_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want,
 		unit_want (str): Unit for Cv display.
 		out_path (str or Path): Path to save combined plot.
 	"""
+	set_plot_style()
+
 	num_molecules = len(thermo_dict_by_molecule)	
 	# -----------------------------
 	# Figure setup
@@ -246,21 +248,39 @@ def plot_cv_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want,
 		# Create figure with 2 row, 1 columns
 		fig, axs = plt.subplots(2, 1, figsize=(9, 12))
 
-	color_cycle = ["red", "grey", "blue", "green"]
-	line_styles = ["-", "--", "-.", ":"]
-	markers = ["o", "s", "p", "d", "v"]
+	# Colorblind-friendly palette (Okabe–Ito)
+	color_cycle = [
+		"#0072B2",  # Blue
+		"#D55E00",  # Vermillion
+		"#009E73",  # Bluish green
+		"#CC79A7",  # Reddish purple
+	]
+
+	line_styles = [   
+		(0, ()),		   # solid
+		(0, (5, 1)),	   # densely dashed
+		(0, (3, 1, 1, 1)), # densely dashdotted
+		(0, (1, 1)),	   # densely dotted
+	]
+
+	# Open markers
+	markers = ["o", "s", "^", "D"]
+
+	#color_cycle = ["red", "grey", "blue", "green"]
+	#line_styles = ["-", "--", "-.", ":"]
+	#markers = ["o", "s", "p", "d", "v"]
 
 	# Rotational heat capacity (constant)
-	Cv_rot_equipartition_theorem = 0.695  # cm^-1 K^-1
+	cv_rot_equipartition_theorem = 0.695  # cm^-1 K^-1
 
 	# Temperature range (K)
 	T = np.linspace(0, 1000, 200)
 
 	# Create an array of same size
-	Cv_array = np.full_like(T, Cv_rot_equipartition_theorem)
+	cv_array = np.full_like(T, cv_rot_equipartition_theorem)
 
+	temperature_list = get_temperature_list("heat_capacity")
 	for mol_idx, (molecule, thermo_dict) in enumerate(thermo_dict_by_molecule.items()):
-		temperature_list = get_temperature_list(molecule)
 
 		if len(temperature_list) == 1 and isinstance(temperature_list[0], (list, tuple)):
 			temperature_list = temperature_list[0]
@@ -278,104 +298,98 @@ def plot_cv_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want,
 
 		for curve_idx, ((jmax, E), thermo_data) in enumerate(thermo_dict.items()):
 			cv_values = [thermo_data[T]["heat_capacity"] for T in temperature_list]
-			print(cv_values)
-			whoami()
 			unit_cv = thermo_data[temperature_list[0]]["display_cv_unit"]
 
 			cum_populations_field = thermo_data[100]["cum_populations"]
 			states_field = np.arange(1, len(cum_populations_field) + 1)
 
-
-			if num_molecules != 1:
-				ls = line_styles[curve_idx % len(line_styles)]
-				plt.plot(
+			if num_molecules > 1:
+				ax.plot(
 					temperature_list,
 					cv_values,
-					linestyle='none',
-					marker=mk,
-					markersize=8,
-					#`markerfacecolor='none',
-					color=color,
-					alpha=0.65,
-					label=rf"{molecule}"
+					color=color_cycle[mol_idx],
+					linestyle=line_styles[mol_idx],
+					linewidth=1.5,
+					label=molecule,
 				)
 
-				if ((mol_idx%num_molecules) == (num_molecules-1)):
-					# Plot
-					plt.plot(
+				# Plot the classical limit only once
+				if mol_idx == num_molecules - 1:
+					ax.plot(
 						T,
-						Cv_array,
-						'k--',
-						linewidth=2,
-						label=r'Classical limit: $C_{V,\mathrm{rot}} = k_\mathrm{B} \approx 0.695\ \mathrm{cm^{-1}\,K^{-1}}$'
+						cv_array,
+						color="black",
+						linestyle=(0, (3, 1, 1, 1, 1, 1)),
+						linewidth=1.5,
+						label=r"Classical limit ($C_V = k_\mathrm{B}$)",
 					)
+
 
 			if num_molecules == 1:
 				axs[0].plot(
 					temperature_list,
 					cv_values,
-					linestyle='none',
-					#linewidth=1.6,
-					marker='o',
-					markersize=8,
-					#markerfacecolor='none',
-					color=color,
+					color=color_cycle[mol_idx],
+					linestyle=line_styles[mol_idx],
+					linewidth=1.5,
 					label=rf"{molecule} (static electric field, $E={E:.0f}\,\mathrm{{kV/cm}}$)"
 				)
-
+ 
 				axs[0].plot(
 					temperature_list,
 					cv_values_free,
-					linestyle='none',
-					#linewidth=1.4,
-					marker='p',
-					markersize=8,
-					color="blue",
-					alpha=0.65,
+					color=color_cycle[mol_idx+1],
+					linestyle=line_styles[mol_idx+1],
+					linewidth=1.5,
 					label=rf"{molecule} (field-free rotor)"
 				)
-
+ 
 				# Plot
 				axs[0].plot(
 					T,
-					Cv_array,
-					'k--',
-					linewidth=2,
-					label=r'Classical limit: $C_{V,\mathrm{rot}} = R \approx 0.695\ \mathrm{cm^{-1}\,K^{-1}}$'
+					cv_array,
+					color="black",
+					linestyle=(0, (3, 1, 1, 1, 1, 1)),
+					linewidth=1.5,
+					label=r"Classical limit ($C_V = k_\mathrm{B}$)",
 				)
 
+
+				# Static electric field
 				axs[1].plot(
 					states_field,
 					cum_populations_field,
 					linestyle='none',
-					#linewidth=1.6,
 					marker='o',
 					markersize=8,
-					#markerfacecolor='none',
-					color=color,
-					label=rf"{molecule} (static electric field, $E={E:.0f}\,\mathrm{{kV/cm}}$)"
+					markerfacecolor=color,
+					markeredgecolor=color,
+					alpha=1.0,
+					label=rf"{molecule} ($E={E:.0f}\,\mathrm{{kV/cm}}$)"
 				)
 
+				# Field-free rotor
 				axs[1].plot(
 					states_free,
 					cum_populations_free,
 					linestyle='none',
-					#linewidth=1.4,
-					marker='p',
+					marker='o',
 					markersize=8,
-					color="blue",
-					alpha=0.65,
-					label=rf"{molecule} (field-free rotor)"
+					markerfacecolor='white',
+					markeredgecolor=color,
+					markeredgewidth=1.5,
+					alpha=0.6,
+					label=rf"{molecule} (field-free)"
 				)
 
 	if num_molecules == 1:
 		# -----------------------------
 		# Axis labels
 		# -----------------------------
-		axs[0].set_xlabel("Temperature (K)", fontsize=18)
+		axs[0].set_xlabel("Temperature (K)")
 
 		safe_unit = unit_cv.replace("^-1", "$^{-1}$")
-		axs[0].set_ylabel(rf"Heat Capacity [{safe_unit}]", fontsize=18)
+		axs[0].set_ylabel(rf"Heat Capacity [{safe_unit}]")
 
 		# -----------------------------
 		# Limits
@@ -398,13 +412,8 @@ def plot_cv_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want,
 		# -----------------------------
 		# Tick styling (publication quality)
 		# -----------------------------
-		axs[0].tick_params(axis='both', which='major',
-					   direction='in', length=7, width=1.2,
-					   labelsize=18, top=True, right=True)
-
-		axs[0].tick_params(axis='both', which='minor',
-					   direction='in', length=4, width=1.0,
-					   top=True, right=True)
+		axs[0].tick_params(axis='both', which='major', direction='in', length=7, width=1.2, labelsize=18, top=True, right=True)
+		axs[0].tick_params(axis='both', which='minor', direction='in', length=4, width=1.0, top=True, right=True)
 
 		# -----------------------------
 		# Spines (frame thickness)
@@ -447,13 +456,8 @@ def plot_cv_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want,
 		# -----------------------------
 		# Tick styling (publication quality)
 		# -----------------------------
-		axs[1].tick_params(axis='both', which='major',
-					   direction='in', length=7, width=1.2,
-					   labelsize=18, top=True, right=True)
-
-		axs[1].tick_params(axis='both', which='minor',
-					   direction='in', length=4, width=1.0,
-					   top=True, right=True)
+		axs[1].tick_params(axis='both', which='major', direction='in', length=7, width=1.2, labelsize=18, top=True, right=True)
+		axs[1].tick_params(axis='both', which='minor', direction='in', length=4, width=1.0, top=True, right=True)
 
 		# -----------------------------
 		# Spines (frame thickness)
@@ -473,11 +477,7 @@ def plot_cv_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want,
 		# Labels (a), (b)
 		labels = ["(a)", "(b)"]
 		for i, ax in enumerate(axs):
-			ax.text(0.02, 0.97, labels[i],
-					transform=ax.transAxes,
-					fontsize=20,
-					fontweight='bold',
-					va='top', ha='left')
+			ax.text(0.02, 0.97, labels[i], transform=ax.transAxes, fontsize=20, fontweight='bold', va='top', ha='left')
 
 
 	if num_molecules != 1:
@@ -510,13 +510,8 @@ def plot_cv_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want,
 		# -----------------------------
 		# Tick styling (publication quality)
 		# -----------------------------
-		ax.tick_params(axis='both', which='major',
-					   direction='in', length=7, width=1.2,
-					   labelsize=18, top=True, right=True)
-
-		ax.tick_params(axis='both', which='minor',
-					   direction='in', length=4, width=1.0,
-					   top=True, right=True)
+		ax.tick_params(axis='both', which='major', direction='in', length=7, width=1.2, labelsize=18, top=True, right=True)
+		ax.tick_params(axis='both', which='minor', direction='in', length=4, width=1.0, top=True, right=True)
 
 		# -----------------------------
 		# Spines (frame thickness)
@@ -1227,17 +1222,10 @@ def plot_dipole_panel(
 ):
 	"""Plot the thermal dipole orientation for a single electric field."""
 
+	temperature_list = get_temperature_list(dipole_orientation=True,)
 	for molecule, thermo_dict in thermo_dict_by_molecule.items():
 
-		temperature_list = get_temperature_list(
-			molecule,
-			dipole_orientation=True,
-		)
-
-		if (
-			len(temperature_list) == 1
-			and isinstance(temperature_list[0], (list, tuple))
-		):
+		if ( len(temperature_list) == 1 and isinstance(temperature_list[0], (list, tuple))):
 			temperature_list = temperature_list[0]
 
 		for (jmax, Ef), thermo_data in thermo_dict.items():
@@ -1404,175 +1392,11 @@ def plot_dipole_orientation_comparison(
 	return fig, axes
 
 
-def plot_all_molecules_3d(
-	thermo_dict_by_molecule,
-	get_temperature_list,
-	out_path,
-):
-
-	out_path = Path(out_path)
-	out_path.parent.mkdir(parents=True, exist_ok=True)
-
-	fig = plt.figure(figsize=(10, 8))
-	ax = fig.add_subplot(111, projection="3d")
-
-	cmaps = {
-		"HF": "Reds",
-		"HCl": "Blues",
-		"HBr": "Greens",
-		"HI": "Purples",
-	}
-
-	legend_handles = []
-
-	for molecule, thermo_dict in thermo_dict_by_molecule.items():
-
-		# Temperature list
-		T = np.asarray(
-			get_temperature_list(molecule, dipole_orientation=True),
-			dtype=float
-		)
-
-		if T.ndim > 1:
-			T = T.ravel()
-
-		# Electric fields
-		fields = sorted({E for (_, E) in thermo_dict.keys()})
-
-		# Largest jmax
-		jmax = max(j for (j, _) in thermo_dict.keys())
-
-		TT, EE = np.meshgrid(T, fields)
-
-		Z = np.zeros_like(TT, dtype=float)
-
-		for i, E in enumerate(fields):
-
-			thermo = thermo_dict[(jmax, E)]
-
-			for j, temp in enumerate(T):
-				Z[i, j] = thermo[temp]["dipole_orientation"]
-
-		ax.plot_surface(
-			TT,
-			EE,
-			Z,
-			cmap=cmaps[molecule],
-			alpha=0.55,
-			edgecolor="none",
-			antialiased=True
-		)
-
-		legend_handles.append(
-			Patch(
-				facecolor=plt.get_cmap(cmaps[molecule])(0.75),
-				label=molecule
-			)
-		)
-
-	ax.set_xlabel("Temperature (K)", fontsize=13)
-	ax.set_ylabel("Electric Field (kV/cm)", fontsize=13)
-	ax.set_zlabel(r"$\langle\cos\theta\rangle$", fontsize=13)
-
-	ax.set_title(
-		r"Dipole Orientation $\langle\cos\theta\rangle$",
-		fontsize=16
-	)
-
-	ax.view_init(elev=30, azim=-135)
-
-	ax.legend(
-		handles=legend_handles,
-		loc="upper left",
-		frameon=True
-	)
-
-	plt.tight_layout()
-	plt.savefig(out_path, dpi=300)
-	plt.close()
-
-	print(f"[INFO] Saved {out_path}")
-
-def plot_dipole_orientation_3d(
-		thermo_dict_by_molecule,
-		get_temperature_list,
-		out_dir):
-
-	out_dir = Path(out_dir)
-	out_dir.mkdir(parents=True, exist_ok=True)
-
-	for molecule, thermo_dict in thermo_dict_by_molecule.items():
-
-		# Temperature grid
-		T = np.asarray(
-			get_temperature_list(molecule, dipole_orientation=True),
-			dtype=float
-		)
-
-		if T.ndim > 1:
-			T = T.ravel()
-
-		# Electric fields
-		fields = sorted({E for (_, E) in thermo_dict.keys()})
-
-		# Assume a common Jmax
-		jmax = next(iter(thermo_dict))[0]
-
-		# Meshgrid
-		TT, EE = np.meshgrid(T, fields)
-
-		# Dipole orientation
-		Z = np.empty_like(TT)
-
-		for i, E in enumerate(fields):
-
-			thermo_data = thermo_dict[(jmax, E)]
-
-			for j, temp in enumerate(T):
-				Z[i, j] = thermo_data[temp]["dipole_orientation"]
-
-		fig = plt.figure(figsize=(8,6))
-		ax = fig.add_subplot(111, projection="3d")
-
-		surf = ax.plot_surface(
-			TT,
-			EE,
-			Z,
-			cmap="viridis",
-			edgecolor="none",
-			antialiased=True
-		)
-
-		ax.set_xlabel("Temperature (K)", fontsize=13, labelpad=10)
-		ax.set_ylabel("Electric Field (kV/cm)", fontsize=13, labelpad=10)
-		ax.set_zlabel(r"$\langle\cos\theta\rangle$", fontsize=13, labelpad=10)
-
-		ax.set_title(molecule, fontsize=16)
-
-		# View angle
-		ax.view_init(elev=30, azim=-135)
-
-		# Colorbar
-		cbar = fig.colorbar(
-			surf,
-			shrink=0.75,
-			pad=0.08
-		)
-		cbar.set_label(r"$\langle\cos\theta\rangle$", fontsize=12)
-
-		plt.tight_layout()
-
-		outfile = out_dir / f"{molecule}_3D_surface.png"
-		plt.savefig(outfile, dpi=300, bbox_inches="tight")
-		plt.close(fig)
-
-		print(f"[INFO] Saved {outfile}")
-
 def get_ground_state_dipole_orientation(thermo_dict_by_molecule, get_temperature_list):
 	output = []
 
+	temperature_list = get_temperature_list(dipole_orientation=True)
 	for molecule, thermo_dict in thermo_dict_by_molecule.items():
-		temperature_list = get_temperature_list(molecule, dipole_orientation=True)
 
 		if len(temperature_list) == 1 and isinstance(temperature_list[0], (list, tuple)):
 			temperature_list = temperature_list[0]
