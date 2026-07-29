@@ -285,7 +285,7 @@ def set_plot_style():
 		# ---------- Axes ----------
 		"axes.labelsize": 18,
 		"axes.titlesize": 18,
-		"axes.linewidth": 2.5,
+		"axes.linewidth": 1.5,
 
 		# ---------- Ticks ----------
 		"xtick.labelsize": 15,
@@ -294,9 +294,9 @@ def set_plot_style():
 		"ytick.direction": "in",
 		"xtick.top": True,
 		"ytick.right": True,
-		"xtick.major.size": 6,
+		"xtick.major.size": 7,
 		"xtick.major.width": 1.2,
-		"ytick.major.size": 6,
+		"ytick.major.size": 7,
 		"ytick.major.width": 1.2,
 		"xtick.minor.size": 3,
 		"xtick.minor.width": 1.0,

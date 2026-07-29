@@ -242,12 +242,14 @@ def plot_cv_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want,
 	# Figure setup
 	# -----------------------------
 	if num_molecules != 1:
-		fig, ax = plt.subplots(figsize=(9, 6))
+		fig, ax = plt.subplots(figsize=(8, 6))
 
 	else:
 		# Create figure with 2 row, 1 columns
-		fig, axs = plt.subplots(2, 1, figsize=(9, 12))
-
+		fig, axs = plt.subplots(
+			2, 1,
+			figsize=(8, 12),
+		)
 	# Colorblind-friendly palette (Okabe–Ito)
 	color_cycle = [
 		"#0072B2",  # Blue
@@ -265,10 +267,6 @@ def plot_cv_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want,
 
 	# Open markers
 	markers = ["o", "s", "^", "D"]
-
-	#color_cycle = ["red", "grey", "blue", "green"]
-	#line_styles = ["-", "--", "-.", ":"]
-	#markers = ["o", "s", "p", "d", "v"]
 
 	# Rotational heat capacity (constant)
 	cv_rot_equipartition_theorem = 0.695  # cm^-1 K^-1
@@ -332,7 +330,7 @@ def plot_cv_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want,
 					color=color_cycle[mol_idx],
 					linestyle=line_styles[mol_idx],
 					linewidth=1.5,
-					label=rf"{molecule} (static electric field, $E={E:.0f}\,\mathrm{{kV/cm}}$)"
+					label=rf"{molecule} ($E={E:.0f}\,\mathrm{{kV/cm}}$)"
 				)
  
 				axs[0].plot(
@@ -341,7 +339,7 @@ def plot_cv_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want,
 					color=color_cycle[mol_idx+1],
 					linestyle=line_styles[mol_idx+1],
 					linewidth=1.5,
-					label=rf"{molecule} (field-free rotor)"
+					label=rf"{molecule} (field-free)"
 				)
  
 				# Plot
@@ -361,7 +359,7 @@ def plot_cv_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want,
 					cum_populations_field,
 					linestyle='none',
 					marker='o',
-					markersize=8,
+					markersize=7,
 					markerfacecolor=color,
 					markeredgecolor=color,
 					alpha=1.0,
@@ -374,159 +372,81 @@ def plot_cv_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want,
 					cum_populations_free,
 					linestyle='none',
 					marker='o',
-					markersize=8,
-					markerfacecolor='white',
-					markeredgecolor=color,
+					markersize=7,
+					markerfacecolor='none',
+					markeredgecolor="#D55E00",
 					markeredgewidth=1.5,
 					alpha=0.6,
 					label=rf"{molecule} (field-free)"
 				)
 
 	if num_molecules == 1:
+
+		safe_unit = unit_cv.replace("^-1", "$^{-1}$")
+
 		# -----------------------------
-		# Axis labels
+		# Heat-capacity panel
 		# -----------------------------
 		axs[0].set_xlabel("Temperature (K)")
-
-		safe_unit = unit_cv.replace("^-1", "$^{-1}$")
-		axs[0].set_ylabel(rf"Heat Capacity [{safe_unit}]")
-
-		# -----------------------------
-		# Limits
-		# -----------------------------
-		axs[0].set_xlim(-0.5, 100.5)
-		axs[0].set_ylim(-0.01, 0.8)
+		axs[0].set_ylabel(rf"$C_V$ [{safe_unit}]")
+		axs[0].set_xlim(-2.0, 102)
+		axs[0].set_ylim(-0.01, 0.801)
+		axs[0].minorticks_on()
+		axs[0].legend(loc="best")
 
 		# -----------------------------
-		# Major ticks
+		# Cumulative population panel
 		# -----------------------------
-		axs[0].set_xticks(np.arange(0, 101, 10))
-		axs[0].yaxis.set_major_locator(MultipleLocator(0.1))
-
-		# -----------------------------
-		# Minor ticks
-		# -----------------------------
-		axs[0].xaxis.set_minor_locator(MultipleLocator(2))
-		axs[0].yaxis.set_minor_locator(MultipleLocator(0.02))
-
-		# -----------------------------
-		# Tick styling (publication quality)
-		# -----------------------------
-		axs[0].tick_params(axis='both', which='major', direction='in', length=7, width=1.2, labelsize=18, top=True, right=True)
-		axs[0].tick_params(axis='both', which='minor', direction='in', length=4, width=1.0, top=True, right=True)
-
-		# -----------------------------
-		# Spines (frame thickness)
-		# -----------------------------
-		for spine in axs[0].spines.values():
-			spine.set_linewidth(1.2)
-
-		# -----------------------------
-		# Optional: light grid (very subtle)
-		# -----------------------------
-		#ax.grid(which='major', linestyle='--', linewidth=0.5, alpha=0.5)
-		#ax.grid(which='minor', linestyle=':', linewidth=0.4, alpha=0.4)
-
-		axs[0].legend(fontsize=18, loc="best")
-		# -----------------------------
-		# -----------------------------
-		# Axis labels
-		# -----------------------------
-		axs[1].set_xlabel("Index of states", fontsize=18)
-		axs[1].set_ylabel(rf"Cumulative population", fontsize=18)
-
-		# -----------------------------
-		# Limits
-		# -----------------------------
-		#axs[1].set_xlim(-0.5, 100.5)
+		axs[1].set_xlabel("State index")
+		axs[1].set_ylabel("Cumulative population")
 		axs[1].set_ylim(-0.01, 1.01)
+		axs[1].minorticks_on()
+		axs[1].legend(loc="lower right")
 
 		# -----------------------------
-		# Major ticks
+		# Common formatting
 		# -----------------------------
-		#axs[1].set_xticks(np.arange(0, 101, 10))
-		#axs[1].yaxis.set_major_locator(MultipleLocator(0.1))
-
-		# -----------------------------
-		# Minor ticks
-		# -----------------------------
-		axs[1].xaxis.set_minor_locator(MultipleLocator(1))
-		axs[1].yaxis.set_minor_locator(MultipleLocator(0.02))
-
-		# -----------------------------
-		# Tick styling (publication quality)
-		# -----------------------------
-		axs[1].tick_params(axis='both', which='major', direction='in', length=7, width=1.2, labelsize=18, top=True, right=True)
-		axs[1].tick_params(axis='both', which='minor', direction='in', length=4, width=1.0, top=True, right=True)
-
-		# -----------------------------
-		# Spines (frame thickness)
-		# -----------------------------
-		for spine in axs[1].spines.values():
-			spine.set_linewidth(1.2)
-
-		# -----------------------------
-		# Optional: light grid (very subtle)
-		# -----------------------------
-		#ax.grid(which='major', linestyle='--', linewidth=0.5, alpha=0.5)
-		#ax.grid(which='minor', linestyle=':', linewidth=0.4, alpha=0.4)
-
-		axs[1].legend(fontsize=18, loc="lower right")
-		# -----------------------------
-
-		# Labels (a), (b)
-		labels = ["(a)", "(b)"]
 		for i, ax in enumerate(axs):
-			ax.text(0.02, 0.97, labels[i], transform=ax.transAxes, fontsize=20, fontweight='bold', va='top', ha='left')
+			ax.margins(x=0.02)
+			ax.xaxis.set_minor_locator(AutoMinorLocator())
+			ax.yaxis.set_minor_locator(AutoMinorLocator())
 
+			# Panel labels
+			ax.text(
+				-0.10, 1.03,
+				f"({chr(97+i)})",
+				transform=ax.transAxes,
+				va="bottom",
+				ha="left",
+			)
 
 	if num_molecules != 1:
+
+		safe_unit = unit_cv.replace("^-1", "$^{-1}$")
+
 		# -----------------------------
 		# Axis labels
 		# -----------------------------
-		ax.set_xlabel("Temperature (K)", fontsize=18)
-
-		safe_unit = unit_cv.replace("^-1", "$^{-1}$")
-		ax.set_ylabel(rf"Heat Capacity [{safe_unit}]", fontsize=18)
+		ax.set_xlabel("Temperature (K)")
+		ax.set_ylabel(rf"$C_V$ [{safe_unit}]")
 
 		# -----------------------------
-		# Limits
+		# Axis limits
 		# -----------------------------
-		ax.set_xlim(-0.5, 100.5)
-		ax.set_ylim(-0.01, 0.8)
+		ax.set_xlim(-2.0, 102)
+		ax.set_ylim(-0.01, 0.801)
 
 		# -----------------------------
-		# Major ticks
+		# Tick locations
 		# -----------------------------
-		ax.set_xticks(np.arange(0, 101, 10))
-		ax.yaxis.set_major_locator(MultipleLocator(0.1))
+		ax.xaxis.set_minor_locator(AutoMinorLocator())
+		ax.yaxis.set_minor_locator(AutoMinorLocator())
 
 		# -----------------------------
-		# Minor ticks
+		# Legend
 		# -----------------------------
-		ax.xaxis.set_minor_locator(MultipleLocator(2))
-		ax.yaxis.set_minor_locator(MultipleLocator(0.02))
-
-		# -----------------------------
-		# Tick styling (publication quality)
-		# -----------------------------
-		ax.tick_params(axis='both', which='major', direction='in', length=7, width=1.2, labelsize=18, top=True, right=True)
-		ax.tick_params(axis='both', which='minor', direction='in', length=4, width=1.0, top=True, right=True)
-
-		# -----------------------------
-		# Spines (frame thickness)
-		# -----------------------------
-		for spine in ax.spines.values():
-			spine.set_linewidth(1.2)
-
-		# -----------------------------
-		# Optional: light grid (very subtle)
-		# -----------------------------
-		#ax.grid(which='major', linestyle='--', linewidth=0.5, alpha=0.5)
-		#ax.grid(which='minor', linestyle=':', linewidth=0.4, alpha=0.4)
-
-		plt.legend(fontsize=18, loc="best")
-		# -----------------------------
+		ax.legend(loc="best")
+	# -----------------------------
 	# Layout
 	# -----------------------------
 	plt.tight_layout()
@@ -1262,13 +1182,13 @@ def plot_dipole_panel(
 	)
 
 	# Minor ticks
-	ax.minorticks_on()
-	ax.xaxis.set_minor_locator(AutoMinorLocator())
-	ax.yaxis.set_minor_locator(AutoMinorLocator())
+	#ax.minorticks_on()
+	#ax.xaxis.set_minor_locator(AutoMinorLocator())
+	#ax.yaxis.set_minor_locator(AutoMinorLocator())
 
 	# Slightly thicker border than the default
-	for spine in ax.spines.values():
-		spine.set_linewidth(1.5)
+	#for spine in ax.spines.values():
+	#	spine.set_linewidth(1.5)
 
 
 def add_panel_labels(axes):
