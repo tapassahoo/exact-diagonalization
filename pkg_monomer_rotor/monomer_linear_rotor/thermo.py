@@ -14,6 +14,8 @@ from matplotlib import cm
 from matplotlib.ticker import MultipleLocator
 from matplotlib.ticker import MaxNLocator
 from matplotlib.ticker import AutoMinorLocator
+from matplotlib.patches import Patch
+from mpl_toolkits.mplot3d import Axes3D
 from scipy.constants import R as GAS_CONSTANT_J_PER_MOL_K
 from scipy.constants import k as BOLTZMANN_J_PER_K
 import warnings
@@ -29,6 +31,7 @@ from monomer_linear_rotor.utils import convert_dipole_field_energy_to_cm_inv
 
 from monomer_linear_rotor.utils import (
 	wavenumber_to_joules_per_mole,
+	set_plot_style,
 )
 
 from monomer_linear_rotor.hamiltonian import (
@@ -38,12 +41,21 @@ from monomer_linear_rotor.hamiltonian import (
 from pkg_utils.utils import whoami
 from pkg_utils.config import *
 from pkg_utils.env_report import whom
+
+
 # ============================================================
 # CONSTANT
 # ============================================================
 
 # Boltzmann constant in cm^{-1} K^{-1}
 KB_CM_INV_PER_K = 0.69503476
+
+styles = {
+	"HF":  {"linestyle": "-",  "marker": "o"},
+	"HCl": {"linestyle": "--", "marker": "s"},
+	"HBr": {"linestyle": "-.", "marker": "D"},
+	"HI":  {"linestyle": ":",  "marker": "^"},
+}
 
 
 def compute_rotational_levels_cum(
@@ -266,6 +278,8 @@ def plot_cv_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want,
 
 		for curve_idx, ((jmax, E), thermo_data) in enumerate(thermo_dict.items()):
 			cv_values = [thermo_data[T]["heat_capacity"] for T in temperature_list]
+			print(cv_values)
+			whoami()
 			unit_cv = thermo_data[temperature_list[0]]["display_cv_unit"]
 
 			cum_populations_field = thermo_data[100]["cum_populations"]
@@ -1203,148 +1217,370 @@ def compute_cos_theta_vectorized(evals, evecs, i_idx, j_idx, A, T_list):
 
 	return T_array, (2.0 / Z) * total
 
-def plot_dipole_orientation_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want, out_path):
-	"""
-	Plots heat capacity vs temperature for multiple molecules together.
 
-	Parameters:
-		thermo_dict_by_molecule (dict): { molecule: {(jmax, E): thermo_data} }
-		get_temperature_list (function): Function to fetch temperature list for a molecule.
-		unit_want (str): Unit for Cv display.
-		out_path (str or Path): Path to save combined plot.
-	"""
-	fig, ax = plt.subplots(figsize=(9, 6))
+def plot_dipole_panel(
+	ax,
+	E,
+	thermo_dict_by_molecule,
+	get_temperature_list,
+	styles,
+):
+	"""Plot the thermal dipole orientation for a single electric field."""
 
-	styles = {
-		"HF":  {"color": "black", "linestyle": "-",  "marker": "o"},
-		"HCl": {"color": "black", "linestyle": "--", "marker": "s"},
-		"HBr": {"color": "black", "linestyle": "-.", "marker": "D"},
-		"HI":  {"color": "black", "linestyle": ":",  "marker": "^"}
-	}
+	for molecule, thermo_dict in thermo_dict_by_molecule.items():
 
-	for mol_idx, (molecule, thermo_dict) in enumerate(thermo_dict_by_molecule.items()):
-		temperature_list = get_temperature_list(molecule, dipole_orientation=True)
+		temperature_list = get_temperature_list(
+			molecule,
+			dipole_orientation=True,
+		)
 
-		if len(temperature_list) == 1 and isinstance(temperature_list[0], (list, tuple)):
+		if (
+			len(temperature_list) == 1
+			and isinstance(temperature_list[0], (list, tuple))
+		):
 			temperature_list = temperature_list[0]
 
-		for curve_idx, ((jmax, E), thermo_data) in enumerate(thermo_dict.items()):
-			dipole_orientation_values = [thermo_data[T]["dipole_orientation"] for T in temperature_list]
+		for (jmax, Ef), thermo_data in thermo_dict.items():
 
-			style = styles[molecule]
+			if Ef != E:
+				continue
 
-			# Smooth line
-			plt.plot(
+			dipole = [
+				thermo_data[T]["dipole_orientation"]
+				for T in temperature_list
+			]
+
+			ax.plot(
 				temperature_list,
-				dipole_orientation_values,
+				dipole,
 				color="black",
-				linestyle=style["linestyle"],
-				linewidth=2.2,
-				label=molecule
+				linestyle=styles[molecule]["linestyle"],
+				label=molecule,
 			)
 
-			"""
-			plt.scatter(
-				temperature_list[::5],
-				dipole_orientation_values[::5],
-				facecolors='none',
-				edgecolors='black',
-				marker=style["marker"],
-				s=28,
-				linewidths=1,
-			)
-			"""
-
-	plt.text(
-		0.5, 0.85,
-		r"Electric Field:" "\n" fr"$E = {E:.1f}\ \mathrm{{kV/cm}}$",
-		transform=plt.gca().transAxes,
-		fontsize=14,
-		ha='center',
-		va='center',
-		bbox=dict(boxstyle="round", facecolor="white", edgecolor="black")
+	# Electric field annotation
+	ax.text(
+		0.50,
+		0.90,
+		fr"$E = {E:.0f}\,\mathrm{{kV/cm}}$",
+		transform=ax.transAxes,
+		ha="center",
+		va="center",
+		bbox=dict(
+			boxstyle="round",
+			facecolor="white",
+			edgecolor="black",
+		),
 	)
 
-	# -----------------------------
-	# Axis labels
-	# -----------------------------
-	ax.set_xlabel("Temperature (K)", fontsize=18)
-	ax.set_ylabel(r"$\langle \cos\theta \rangle$", fontsize=18)
-
-	# -----------------------------
-	# Limits
-	# -----------------------------
-	ax.set_xlim(-0.5, 100.5)
-	#ax.set_ylim(-0.01, 0.8)
-	ax.margins(y=0.05)
-
-	# -----------------------------
-	# Major ticks
-	# -----------------------------
-	ax.set_xticks(np.arange(0, 101, 10))
-	#ax.yaxis.set_major_locator(MultipleLocator(0.1))
-	ax.yaxis.set_major_locator(MaxNLocator(nbins=6))
-
-	# -----------------------------
 	# Minor ticks
-	# -----------------------------
-	ax.xaxis.set_minor_locator(MultipleLocator(2))
+	ax.minorticks_on()
+	ax.xaxis.set_minor_locator(AutoMinorLocator())
 	ax.yaxis.set_minor_locator(AutoMinorLocator())
-	#ax.yaxis.set_minor_locator(MultipleLocator(0.02))
 
-	# -----------------------------
-	# Tick styling (publication quality)
-	# -----------------------------
-	ax.tick_params(axis='both', which='major',
-				   direction='in', length=7, width=1.2,
-				   labelsize=18, top=True, right=True)
-
-	ax.tick_params(axis='both', which='minor',
-				   direction='in', length=4, width=1.0,
-				   top=True, right=True)
-
-	# -----------------------------
-	# Spines (frame thickness)
-	# -----------------------------
+	# Slightly thicker border than the default
 	for spine in ax.spines.values():
 		spine.set_linewidth(1.5)
 
-	# -----------------------------
-	# Optional: light grid (very subtle)
-	# -----------------------------
-	#ax.grid(which='major', linestyle='--', linewidth=0.5, alpha=0.5)
-	#ax.grid(which='minor', linestyle=':', linewidth=0.4, alpha=0.4)
 
-	plt.legend(fontsize=18, loc="best")
-	# -----------------------------
-	# Layout
-	# -----------------------------
+def add_panel_labels(axes):
+	"""Add panel labels (a), (b), (c), ... to each subplot."""
+
+	for i, ax in enumerate(axes):
+		ax.text(
+			0.03,
+			0.97,
+			f"({chr(97 + i)})",
+			transform=ax.transAxes,
+			ha="left",
+			va="top",
+		)
+
+
+def set_common_ylim(axes, ymin=0.0, padding=0.05):
+	"""Set identical y-limits for all subplots."""
+
+	ymax = max(ax.get_ylim()[1] for ax in axes)
+
+	for ax in axes:
+		ax.set_ylim(ymin, ymax * (1.0 + padding))
+
+
+def plot_dipole_orientation_comparison(
+	thermo_dict_by_molecule,
+	electric_field_list,
+	get_temperature_list,
+	figsize=(12, 9),
+	save_path=None,
+):
+	"""
+	Plot the thermal dipole orientation, <cos(theta)>, as a function of
+	temperature for multiple electric fields in a 2×2 panel.
+
+	Parameters
+	----------
+	thermo_dict_by_molecule : dict
+		Thermodynamic results for all molecules.
+
+	electric_field_list : sequence
+		Electric field strengths (typically four).
+
+	get_temperature_list : callable
+		Function returning the temperature grid.
+
+	styles : dict
+		Plot style for each molecule.
+
+	figsize : tuple, optional
+		Figure size in inches.
+
+	save_path : str or pathlib.Path, optional
+		Output filename. If None, the figure is not saved.
+
+	Returns
+	-------
+	fig : matplotlib.figure.Figure
+	axes : ndarray of matplotlib.axes.Axes
+	"""
+
+	set_plot_style()
+
+	fig, axes = plt.subplots(
+		2,
+		2,
+		figsize=figsize,
+		sharex=True,
+		sharey=True,
+	)
+
+	axes = axes.ravel()
+
+	# Plot each electric field
+	for ax, E in zip(axes, electric_field_list):
+		plot_dipole_panel(
+			ax=ax,
+			E=E,
+			thermo_dict_by_molecule=thermo_dict_by_molecule,
+			get_temperature_list=get_temperature_list,
+			styles=styles,
+		)
+
+
+	for ax in axes:
+		ax.margins(x=0.02)
+
+	add_panel_labels(axes)
+	set_common_ylim(axes)
+
+	# Common axis labels
+	axes[0].set_ylabel(r"$\langle\cos\theta\rangle_T$")
+	axes[2].set_ylabel(r"$\langle\cos\theta\rangle_T$")
+
+	axes[2].set_xlabel(r"Temperature (K)")
+	axes[3].set_xlabel(r"Temperature (K)")
+
+	# Common legend
+	handles, labels = axes[0].get_legend_handles_labels()
+	fig.legend(
+		handles,
+		labels,
+		loc="upper center",
+		ncol=len(labels),
+		bbox_to_anchor=(0.5, 1.02),
+	)
+
+	fig.tight_layout(rect=(0, 0, 1, 0.95))
+
+	if save_path is not None:
+		save_path = Path(save_path)
+		save_path.parent.mkdir(parents=True, exist_ok=True)
+
+		fig.savefig(save_path)
+
+		print("=" * 80)
+		print(f"[ ] Figure saved: {save_path.resolve()}")
+		print("=" * 80)
+
+	return fig, axes
+
+
+def plot_all_molecules_3d(
+	thermo_dict_by_molecule,
+	get_temperature_list,
+	out_path,
+):
+
+	out_path = Path(out_path)
+	out_path.parent.mkdir(parents=True, exist_ok=True)
+
+	fig = plt.figure(figsize=(10, 8))
+	ax = fig.add_subplot(111, projection="3d")
+
+	cmaps = {
+		"HF": "Reds",
+		"HCl": "Blues",
+		"HBr": "Greens",
+		"HI": "Purples",
+	}
+
+	legend_handles = []
+
+	for molecule, thermo_dict in thermo_dict_by_molecule.items():
+
+		# Temperature list
+		T = np.asarray(
+			get_temperature_list(molecule, dipole_orientation=True),
+			dtype=float
+		)
+
+		if T.ndim > 1:
+			T = T.ravel()
+
+		# Electric fields
+		fields = sorted({E for (_, E) in thermo_dict.keys()})
+
+		# Largest jmax
+		jmax = max(j for (j, _) in thermo_dict.keys())
+
+		TT, EE = np.meshgrid(T, fields)
+
+		Z = np.zeros_like(TT, dtype=float)
+
+		for i, E in enumerate(fields):
+
+			thermo = thermo_dict[(jmax, E)]
+
+			for j, temp in enumerate(T):
+				Z[i, j] = thermo[temp]["dipole_orientation"]
+
+		ax.plot_surface(
+			TT,
+			EE,
+			Z,
+			cmap=cmaps[molecule],
+			alpha=0.55,
+			edgecolor="none",
+			antialiased=True
+		)
+
+		legend_handles.append(
+			Patch(
+				facecolor=plt.get_cmap(cmaps[molecule])(0.75),
+				label=molecule
+			)
+		)
+
+	ax.set_xlabel("Temperature (K)", fontsize=13)
+	ax.set_ylabel("Electric Field (kV/cm)", fontsize=13)
+	ax.set_zlabel(r"$\langle\cos\theta\rangle$", fontsize=13)
+
+	ax.set_title(
+		r"Dipole Orientation $\langle\cos\theta\rangle$",
+		fontsize=16
+	)
+
+	ax.view_init(elev=30, azim=-135)
+
+	ax.legend(
+		handles=legend_handles,
+		loc="upper left",
+		frameon=True
+	)
+
 	plt.tight_layout()
-
-	# Save first, then show
 	plt.savefig(out_path, dpi=300)
-	print("")
-	print(f"[INFO] Combined dipole orientation <cos(theta)>_T plot saved: {out_path}")
+	plt.close()
 
+	print(f"[INFO] Saved {out_path}")
+
+def plot_dipole_orientation_3d(
+		thermo_dict_by_molecule,
+		get_temperature_list,
+		out_dir):
+
+	out_dir = Path(out_dir)
+	out_dir.mkdir(parents=True, exist_ok=True)
+
+	for molecule, thermo_dict in thermo_dict_by_molecule.items():
+
+		# Temperature grid
+		T = np.asarray(
+			get_temperature_list(molecule, dipole_orientation=True),
+			dtype=float
+		)
+
+		if T.ndim > 1:
+			T = T.ravel()
+
+		# Electric fields
+		fields = sorted({E for (_, E) in thermo_dict.keys()})
+
+		# Assume a common Jmax
+		jmax = next(iter(thermo_dict))[0]
+
+		# Meshgrid
+		TT, EE = np.meshgrid(T, fields)
+
+		# Dipole orientation
+		Z = np.empty_like(TT)
+
+		for i, E in enumerate(fields):
+
+			thermo_data = thermo_dict[(jmax, E)]
+
+			for j, temp in enumerate(T):
+				Z[i, j] = thermo_data[temp]["dipole_orientation"]
+
+		fig = plt.figure(figsize=(8,6))
+		ax = fig.add_subplot(111, projection="3d")
+
+		surf = ax.plot_surface(
+			TT,
+			EE,
+			Z,
+			cmap="viridis",
+			edgecolor="none",
+			antialiased=True
+		)
+
+		ax.set_xlabel("Temperature (K)", fontsize=13, labelpad=10)
+		ax.set_ylabel("Electric Field (kV/cm)", fontsize=13, labelpad=10)
+		ax.set_zlabel(r"$\langle\cos\theta\rangle$", fontsize=13, labelpad=10)
+
+		ax.set_title(molecule, fontsize=16)
+
+		# View angle
+		ax.view_init(elev=30, azim=-135)
+
+		# Colorbar
+		cbar = fig.colorbar(
+			surf,
+			shrink=0.75,
+			pad=0.08
+		)
+		cbar.set_label(r"$\langle\cos\theta\rangle$", fontsize=12)
+
+		plt.tight_layout()
+
+		outfile = out_dir / f"{molecule}_3D_surface.png"
+		plt.savefig(outfile, dpi=300, bbox_inches="tight")
+		plt.close(fig)
+
+		print(f"[INFO] Saved {outfile}")
 
 def get_ground_state_dipole_orientation(thermo_dict_by_molecule, get_temperature_list):
-	"""
-	Approximate ground-state dipole orientation using lowest available temperature
-	and compare with low-field analytical expression.
-	"""
+	output = []
 
 	for molecule, thermo_dict in thermo_dict_by_molecule.items():
 		temperature_list = get_temperature_list(molecule, dipole_orientation=True)
 
-		# Flatten if needed
 		if len(temperature_list) == 1 and isinstance(temperature_list[0], (list, tuple)):
 			temperature_list = temperature_list[0]
 
 		T_min = min(temperature_list)
 
-		print(f"\nMolecule: {molecule} (using T = {T_min} K)")
+		output.append(f"\nMolecule: {molecule} (using T = {T_min} K)")
 
-		# Molecular constants
 		B_const = MOLECULE_DATA[molecule]["B_const"]
 		dipole_moment = MOLECULE_DATA[molecule]["dipole_moment"]
 
@@ -1355,37 +1591,31 @@ def get_ground_state_dipole_orientation(thermo_dict_by_molecule, get_temperature
 					f"T={T_min} missing for {molecule}, jmax={jmax}, E={E}"
 				)
 
-			# Numerical value
 			val_num = thermo_data[T_min]["dipole_orientation"]
 
-			# Convert μE → cm^-1
 			potential_strength = convert_dipole_field_energy_to_cm_inv(
 				dipole_moment, E
 			)
 
-			# Dimensionless parameter
 			x = potential_strength / B_const
 
-			# Analytical (low-field expansion)
-			#val_ana_norm = (x / 3.0) * (1.0 - x**2 / 12.0)
-			val_ana = x / 3.0
-
-			# Difference
-			#error_norm = abs(val_num - val_ana_norm)
-			error = abs(val_num - val_ana)
-
+			val_ana_norm = (x / 3.0) * (1.0 - x**2 / 12.0)
+			error_norm = abs(val_num - val_ana_norm)
 			Z = thermo_data[T_min]["partition_function"]
 
-			print(
-				f"  jmax={jmax:2d}, E={E:10.4f}, x={x:10.4f}, Z={Z:10.4f}  |  "
-				f"<cosθ>_num = {val_num: .6f}  |  "
-				f"<cosθ>_ana = {val_ana: .6f}  |  "
-				#f"<cosθ>_ana_norm = {val_ana_norm: .6f}  |  "
-				f"Δ = {error:.2e}"
-				#f"Δ = {error_norm:.2e}"
+			output.append(
+				f"{molecule:4s}  "
+				f"jmax={jmax:2d}  "
+				f"E={E:8.1f}  "
+				f"x={x:8.4f}  "
+				f"Z={Z:10.4f}  "
+				f"<cosθ>_num={val_num:.6f}  "
+				f"<cosθ>_ana={val_ana_norm:.6f}  "
+				f"Δ={error_norm:.2e}"
 			)
 
-
+	# Executed once after ALL molecules have been processed
+	print("\n".join(output))
 
 
 # ============================================================
@@ -2113,3 +2343,6 @@ if __name__ == "__main__":
 	plt.tight_layout()
 
 	plt.show()
+
+
+

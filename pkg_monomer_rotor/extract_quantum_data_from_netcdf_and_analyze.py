@@ -5,13 +5,17 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import logging
+from pathlib import Path
 
 from monomer_linear_rotor.thermo import (
 	read_all_quantum_data_files_with_thermo,
-	plot_cv_comparison,
-	plot_dipole_orientation_comparison,
 	get_ground_state_dipole_orientation,
+	plot_cv_comparison,
+	plot_dipole_panel,
+	plot_dipole_orientation_comparison,
 	compute_angular_probability_density,
+	#plot_dipole_orientation_3d,
+	#plot_all_molecules_3d,
 )
 
 from pkg_utils.utils import whoami
@@ -372,8 +376,8 @@ def plot_cv_heatmap(
 quantum_data_root_dir="/Volumes/Schrodinger/pcsa-backup/outputs-of-exeact-diagonalization/"
 #jmax_list=list(range(20, 41, 5))
 jmax_list=[60]
-electric_field_list=[100, 200, 300, 400, 500]
-#electric_field_list=[500]
+#electric_field_list=[100, 200, 300, 400]
+electric_field_list=[400]
 dipole_orientation = True
 unit_want="wavenumber"
 #unit_want="SI",
@@ -395,27 +399,52 @@ for mol in ["HF", "HCl", "HBr", "HI"]:
 	)
 	all_results[mol] = thermo_dict
 
+if False:
 	get_ground_state_dipole_orientation(
 		all_results,
 		get_temperature_list,
 	)
-whoami()
 
-#filename = f"dipole_orientation_cos_theta_avg_{mol}_E{electric_field_list[0]}kVcm_upto_100K.png"
-filename = f"dipole_orientation_cos_theta_avg_E{electric_field_list[0]}kVcm_upto_100K.png"
-plot_dipole_orientation_comparison(
+	plot_dipole_orientation_3d(
+		thermo_dict_by_molecule=all_results,
+		get_temperature_list=get_temperature_list,
+		out_dir="/Users/tapas/academic-project/results/dipole_orientation_3D"
+	)
+
+	plot_all_molecules_3d(
+		thermo_dict_by_molecule=all_results,
+		get_temperature_list=get_temperature_list,
+		out_path="/Users/tapas/academic-project/results/dipole_orientation/all_molecules_3D.png",
+	)
+
+	plot_dipole_orientation_comparison(
+		thermo_dict_by_molecule=all_results,
+		get_temperature_list=get_temperature_list,
+		unit_want=unit_want,
+		out_dir = f"/Users/tapas/academic-project/results/"
+	)
+
+	out_dir = Path("/Users/tapas/academic-project/results/")
+	out_dir.mkdir(parents=True, exist_ok=True)
+
+	save_path = out_dir / "dipole_orientation_comparison.png"
+
+	plot_dipole_orientation_comparison(
+		thermo_dict_by_molecule=all_results,
+		electric_field_list=electric_field_list,
+		get_temperature_list=get_temperature_list,
+		save_path=save_path,
+	)
+
+	plt.show()
+
+
+#filename = f"Cv_rot_{mol}_E{electric_field_list[0]}kVcm_upto_100K.png"
+#filename = f"Cv_rot_E{electric_field_list[0]}kVcm_upto_100K.png"
+filename = f"Cv_rot_upto_100K.png"
+plot_cv_comparison(
 	thermo_dict_by_molecule=all_results,
 	get_temperature_list=get_temperature_list,
 	unit_want=unit_want,
 	out_path = f"/Users/tapas/academic-project/results/{filename}"
 )
-
-if False:
-	filename = f"Cv_rot_{mol}_E{electric_field_list[0]}kVcm_upto_100K.png"
-	#filename = f"Cv_rot_E{electric_field_list[0]}kVcm_upto_100K.png"
-	plot_cv_comparison(
-		thermo_dict_by_molecule=all_results,
-		get_temperature_list=get_temperature_list,
-		unit_want=unit_want,
-		out_path = f"/Users/tapas/academic-project/results/{filename}"
-	)

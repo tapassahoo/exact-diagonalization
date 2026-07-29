@@ -5,6 +5,8 @@ from scipy.sparse import issparse
 from datetime import datetime
 from termcolor import colored
 from typing import Optional
+import matplotlib as mpl
+
 from pkg_utils.utils import whoami
 from pkg_utils.config import *
 
@@ -259,4 +261,61 @@ def wavenumber_to_joules_per_mole(wavenumber_cm_inv):
 	"""
 	CONVERSION_FACTOR = 11.96265622  # 1 cm⁻¹ = 11.96265622 J/mol
 	return wavenumber_cm_inv * CONVERSION_FACTOR
+
+
+def set_plot_style():
+	"""Configure a consistent publication-quality Matplotlib style."""
+
+	mpl.rcParams.update({
+
+		# ---------- LaTeX ----------
+		"text.usetex": True,
+		"text.latex.preamble": r"\usepackage{amsmath,amssymb}",
+
+		# ---------- Fonts ----------
+		"font.family": "serif",
+		"font.serif": ["Computer Modern Roman"],
+		"font.size": 15,
+
+		# ---------- Figure ----------
+		"figure.dpi": 120,
+		"savefig.dpi": 600,
+		"savefig.bbox": "tight",
+
+		# ---------- Axes ----------
+		"axes.labelsize": 18,
+		"axes.titlesize": 18,
+		"axes.linewidth": 2.5,
+
+		# ---------- Ticks ----------
+		"xtick.labelsize": 15,
+		"ytick.labelsize": 15,
+		"xtick.direction": "in",
+		"ytick.direction": "in",
+		"xtick.top": True,
+		"ytick.right": True,
+		"xtick.major.size": 6,
+		"xtick.major.width": 1.2,
+		"ytick.major.size": 6,
+		"ytick.major.width": 1.2,
+		"xtick.minor.size": 3,
+		"xtick.minor.width": 1.0,
+		"ytick.minor.size": 3,
+		"ytick.minor.width": 1.0,
+
+		# ---------- Lines ----------
+		"lines.linewidth": 1.5,
+		"lines.markersize": 7,
+
+		# ---------- Legend ----------
+		"legend.fontsize": 15,
+		"legend.frameon": False,
+
+		# ---------- Grid ----------
+		"grid.linewidth": 0.8,
+
+		# ---------- PDF/PS Output ----------
+		"pdf.fonttype": 42,
+		"ps.fonttype": 42,
+	})
 
