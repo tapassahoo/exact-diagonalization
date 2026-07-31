@@ -339,7 +339,7 @@ def plot_cv_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want,
 					color=color_cycle[mol_idx+1],
 					linestyle=line_styles[mol_idx+1],
 					linewidth=1.5,
-					label=rf"{molecule} (field-free)"
+					label=rf"{molecule} (Field-free)"
 				)
  
 				# Plot
@@ -377,7 +377,7 @@ def plot_cv_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want,
 					markeredgecolor="#D55E00",
 					markeredgewidth=1.5,
 					alpha=0.6,
-					label=rf"{molecule} (field-free)"
+					label=rf"{molecule} (Field-free)"
 				)
 
 	if num_molecules == 1:
@@ -397,8 +397,8 @@ def plot_cv_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want,
 		# -----------------------------
 		# Cumulative population panel
 		# -----------------------------
-		axs[1].set_xlabel("State index")
-		axs[1].set_ylabel("Cumulative population")
+		axs[1].set_xlabel("Eigenstate index (in ascending energy)")
+		axs[1].set_ylabel("Cumulative Boltzmann population")
 		axs[1].set_ylim(-0.01, 1.01)
 		axs[1].minorticks_on()
 		axs[1].legend(loc="lower right")

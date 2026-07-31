@@ -66,8 +66,8 @@ unit_want="wavenumber"
 #unit_want="SI",
 
 all_results = {}
-#for mol in ["HI"]:
-for mol in ["HF", "HCl", "HBr", "HI"]:
+for mol in ["HBr"]:
+#for mol in ["HF", "HCl", "HBr", "HI"]:
 	thermo_dict = read_all_quantum_data_files_with_thermo(
 		quantum_data_root_dir=quantum_data_root_dir,
 		molecule=mol,
@@ -123,8 +123,8 @@ if False:
 	plt.show()
 
 
-#filename = f"Cv_rot_{mol}_E{electric_field_list[0]}kVcm_upto_100K.png"
-filename = f"Cv_rot_E{electric_field_list[0]}kVcm_upto_100K.png"
+filename = f"Cv_rot_{mol}_E{electric_field_list[0]}kVcm_upto_100K.png"
+#filename = f"Cv_rot_E{electric_field_list[0]}kVcm_upto_100K.png"
 plot_cv_comparison(
 	thermo_dict_by_molecule=all_results,
 	get_temperature_list=get_temperature_list,
