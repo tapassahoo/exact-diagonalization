@@ -34,13 +34,17 @@ def get_temperature_list(grid="default"):
 	numpy.ndarray
 	"""
 
+	#base_grid = np.concatenate((np.arange(0.1, 100.1, 0.1), [1000.0]))
+	base_grid = np.arange(0.1, 100.1, 0.1)
+
 	grids = {
 		"orientation": np.concatenate((
 			[0.01],
 			np.arange(2.0, 101.0, 1.0),
+			[200.0],
 		)),
-		"heat_capacity": np.arange(0.1, 100.1, 0.1),
-		"default": np.arange(0.1, 100.1, 0.1),
+		"heat_capacity": base_grid,
+		"default": base_grid
 	}
 
 	try:
@@ -55,7 +59,6 @@ def get_temperature_list(grid="default"):
 #temperature_list = get_temperature_list("heat_capacity")
 #print("Temperature list:")
 #print([f"{T:.2f}" for T in temperature_list])
-#whoami()
 
 quantum_data_root_dir="/Volumes/Schrodinger/pcsa-backup/outputs-of-exeact-diagonalization/"
 #jmax_list=list(range(20, 41, 5))
@@ -66,7 +69,7 @@ unit_want="wavenumber"
 #unit_want="SI",
 
 all_results = {}
-for mol in ["HBr"]:
+for mol in ["HI"]:
 #for mol in ["HF", "HCl", "HBr", "HI"]:
 	thermo_dict = read_all_quantum_data_files_with_thermo(
 		quantum_data_root_dir=quantum_data_root_dir,
@@ -82,6 +85,7 @@ for mol in ["HBr"]:
 		output_summary_dir="/Users/tapas/academic-project/results/"
 	)
 	all_results[mol] = thermo_dict
+
 
 if False:
 	get_ground_state_dipole_orientation(
