@@ -28,33 +28,35 @@ def get_temperature_list(grid="default"):
 	Parameters
 	----------
 	grid : {"default", "orientation", "heat_capacity"}
+		Name of the temperature grid to return.
 
 	Returns
 	-------
 	numpy.ndarray
+		Temperature values in K.
+
+	Raises
+	------
+	ValueError
+		If an unsupported grid name is provided.
 	"""
 
-	#base_grid = np.concatenate((np.arange(0.1, 100.1, 0.1), [1000.0]))
 	base_grid = np.arange(0.1, 100.1, 0.1)
 
-	grids = {
-		"orientation": np.concatenate((
+	if grid == "orientation":
+		return np.concatenate([
 			[0.01],
 			np.arange(2.0, 101.0, 1.0),
 			[200.0],
-		)),
-		"heat_capacity": base_grid,
-		"default": base_grid
-	}
+		])
 
-	try:
-		return grids[grid]
-	except KeyError:
-		raise ValueError(
-			f"Unknown grid '{grid}'. "
-			"Choose from 'default', 'orientation', or 'heat_capacity'."
-		)
+	if grid in {"default", "heat_capacity"}:
+		return base_grid
 
+	raise ValueError(
+		f"Unknown grid '{grid}'. "
+		"Choose from 'default', 'orientation', or 'heat_capacity'."
+	)
 
 #temperature_list = get_temperature_list("heat_capacity")
 #print("Temperature list:")
@@ -76,8 +78,8 @@ for mol in ["HI"]:
 		molecule=mol,
 		electric_field_list=electric_field_list,
 		jmax_list=jmax_list,
-		temperature_list=get_temperature_list("heat_capacity"),
-		#temperature_list=get_temperature_list(dipole_orientation = True),
+		#temperature_list=get_temperature_list("heat_capacity"),
+		temperature_list=get_temperature_list(),
 		spin_type="spinless",
 		unit_want=unit_want,
 		export_csv=False,
@@ -127,11 +129,12 @@ if False:
 	plt.show()
 
 
-filename = f"Cv_rot_{mol}_E{electric_field_list[0]}kVcm_upto_100K.png"
-#filename = f"Cv_rot_E{electric_field_list[0]}kVcm_upto_100K.png"
-plot_cv_comparison(
-	thermo_dict_by_molecule=all_results,
-	get_temperature_list=get_temperature_list,
-	unit_want=unit_want,
-	out_path = f"/Users/tapas/academic-project/results/{filename}"
-)
+if False:
+	filename = f"Cv_rot_{mol}_E{electric_field_list[0]}kVcm_upto_100K.png"
+	#filename = f"Cv_rot_E{electric_field_list[0]}kVcm_upto_100K.png"
+	plot_cv_comparison(
+		thermo_dict_by_molecule=all_results,
+		get_temperature_list=get_temperature_list,
+		unit_want=unit_want,
+		out_path = f"/Users/tapas/academic-project/results/{filename}"
+	)
