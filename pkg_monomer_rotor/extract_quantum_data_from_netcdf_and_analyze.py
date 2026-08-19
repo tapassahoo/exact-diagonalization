@@ -16,6 +16,7 @@ from monomer_linear_rotor.thermo import (
 	compute_angular_probability_density,
 	#plot_dipole_orientation_3d,
 	#plot_all_molecules_3d,
+	compute_angular_distribution_from_eigensystem,
 )
 
 from pkg_utils.utils import whoami
@@ -27,7 +28,7 @@ def get_temperature_list(grid="default"):
 
 	Parameters
 	----------
-	grid : {"default", "orientation", "heat_capacity"}
+	grid : {"default", "orientation", "angular_distribution", "heat_capacity"}
 		Name of the temperature grid to return.
 
 	Returns
@@ -50,17 +51,31 @@ def get_temperature_list(grid="default"):
 			[200.0],
 		])
 
+	if grid == "angular_distribution":
+		return np.array([1.0, 100.0, 200.0])
+
 	if grid in {"default", "heat_capacity"}:
 		return base_grid
 
 	raise ValueError(
 		f"Unknown grid '{grid}'. "
-		"Choose from 'default', 'orientation', or 'heat_capacity'."
+		"Choose from 'default', 'orientation', "
+		"'angular_distribution', or 'heat_capacity'."
 	)
 
-#temperature_list = get_temperature_list("heat_capacity")
-#print("Temperature list:")
-#print([f"{T:.2f}" for T in temperature_list])
+debug = False #True  # Set to True for debugging
+
+if debug:
+	temperature_list = get_temperature_list("angular_distribution")
+
+	print("\nTemperature list:")
+	print("-" * 30)
+
+	for i, T in enumerate(temperature_list, start=1):
+		print(f"{i:3d}.  {T:8.1f} K")
+
+	print("-" * 30)
+
 
 quantum_data_root_dir="/Volumes/Schrodinger/pcsa-backup/outputs-of-exeact-diagonalization/"
 #jmax_list=list(range(20, 41, 5))
@@ -87,6 +102,9 @@ for mol in ["HI"]:
 		output_summary_dir="/Users/tapas/academic-project/results/"
 	)
 	all_results[mol] = thermo_dict
+
+	whoami()
+
 
 
 if False:
