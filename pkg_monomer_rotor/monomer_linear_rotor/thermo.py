@@ -602,7 +602,7 @@ def compute_thermodynamics_from_spectrum(eigenvalues, temperature_list, unit, de
 
 	return results
 
-def compute_thermo_vectorized(JM_list, eigenvalues, eigenvectors, temperature_list, unit, pop_tol=1e-16, cum_tol=1-1e-14):
+def compute_thermo_vectorized(JM_list, eigenvalues, eigenvectors, temperature_list, unit):
 	"""
 	Compute thermodynamic properties (Z, populations, cumulative-population truncation, U, Cv) from energy eigenvalues,
 	and report the index and energy at which Boltzmann convergence is reached.
@@ -672,9 +672,7 @@ def compute_thermo_vectorized(JM_list, eigenvalues, eigenvectors, temperature_li
 	if unit not in {"wavenumber", "SI"}:
 		raise ValueError("Unit must be either 'wavenumber' or 'SI'.")
 
-	kB = 0.69503476  # cm^-1/K
-	E0 = energies[0]
-	Delta = energies - E0   # shifted energies (>=0)
+	kb = KB_CM_INV_PER_K  # cm^-1/K
 
 	results = {}
 
@@ -682,49 +680,32 @@ def compute_thermo_vectorized(JM_list, eigenvalues, eigenvectors, temperature_li
 		if T <= 0:
 			raise ValueError(f"Temperature must be > 0 K. Got: {T}")
 
-		beta = 1.0 / (kB * T)
+		(
+			ground_state_energy,
+			beta,
+			boltzmann_weights,
+			partition_function_shifted,
+			probabilities,
+			cum_pop,
+		) = compute_boltzmann_probabilities(
+			eigenvalues=eigenvalues,
+			temperature=T,
+		)
 
-		# ---- Full Boltzmann weights ----
-		weights = np.exp(-beta * Delta)
-
-		# ---- Partition function (FULL) ----
-		Z = np.sum(weights)
-
-		# ---- Full normalized probabilities ----
-		populations_full = weights / Z
-
-		# ==========================================================
-		# Convergence check (DO NOT use for observables)
-		# ==========================================================
-		mask = weights > pop_tol
-		populations_check = populations_full[mask]
-		cum_pop = np.cumsum(populations_check)
-
-		weights_mask = weights[mask]
-		Z_mask = np.sum(weights_mask)
-
-		missing_pop = 1.0 - (Z_mask / Z)
-
-		if missing_pop > (1.0 - cum_tol):
-			raise RuntimeError(
-				f"Population convergence NOT reached at T={T} K.\n"
-				f"Missing population = {missing_pop:.6e} exceeds tolerance {1.0 - cum_tol:.6e}.\n"
-				f"Increase basis size or relax tolerances."
-			)
 		# ==========================================================
 		# Observables (ALWAYS FULL SPACE)
 		# ==========================================================
 
 		# ---- Energy moments ----
-		E_avg = np.dot(populations_full, energies)
-		E2_avg = np.dot(populations_full, energies**2)
+		E_avg = np.dot(probabilities, energies)
+		E2_avg = np.dot(probabilities, energies**2)
 
-		Cv_cm1 = kB * beta**2 * (E2_avg - E_avg**2)
+		Cv_cm1 = kb * beta**2 * (E2_avg - E_avg**2)
 
 		# ---- Orientation ----
 		#total = np.sum(weights * pair_sum, axis=1)
-		total = np.dot(weights, pair_sum)   # FULL
-		cos_theta_avg = (2.0 / Z) * total
+		total = np.dot(boltzmann_weights, pair_sum)   # FULL
+		cos_theta_avg = (2.0 / partition_function_shifted) * total
 
 		# ---- Adaptive truncation (dominant criterion) ----
 		idx_conv = len(cum_pop)
@@ -751,13 +732,14 @@ def compute_thermo_vectorized(JM_list, eigenvalues, eigenvectors, temperature_li
 				eigenvectors=eigenvectors,
 				basis=JM_list,
 				temperature=T,
+				probabilities=probabilities,
 				n_quad=101,
 			)
 		)
 
 		x = angular_distribution_results["x"]
 		w = angular_distribution_results["weights"]
-		#P_x = angular_distribution_results["P_x"]
+		P_x = angular_distribution_results["P_x"]
 		
 		print(f"\n{'Quadrature Information':^50}")
 		print("=" * 50)
@@ -773,18 +755,16 @@ def compute_thermo_vectorized(JM_list, eigenvalues, eigenvectors, temperature_li
 		print("=" * 50)
 
 
-		#print(f"Tr(rho) = " f"{angular_distribution_results['trace_rho'].real:.15f}")
-		#print(f"Integral P(x) dx = " f"{angular_distribution_results['normalization']:.15f}")
-		#print(f"<cos(theta)> = " f"{angular_distribution_results['cos_theta_average']:.15f}")
+		print(f"Tr(rho) = " f"{angular_distribution_results['trace_rho'].real:.15f}")
+		print(f"Integral P(x) dx = " f"{angular_distribution_results['normalization']:.15f}")
 		whoami()
 
 		T_key = round(float(T), 1)
 		results[T_key] = {
 			"temperature_K": T,
 			"beta": beta,
-			"partition_function": Z,
-			"populations_full": populations_full,
-			"populations_check": populations_check,
+			"partition_function": partition_function_shifted,
+			"populations_full": probabilities,
 			"cum_populations": cum_pop,
 			"internal_energy": U_out,
 			"heat_capacity": Cv_out,
@@ -1426,14 +1406,26 @@ def compute_boltzmann_probabilities(
 	eigenvalues,
 	temperature,
 	kb=KB_CM_INV_PER_K,
+	pop_tol=1e-16, 
+	cum_tol=1-1e-14
 ):
 	r"""
-	Compute the canonical probabilities
+	Compute canonical Boltzmann probabilities.
 
-		p_n = exp(-beta E_n) / Z.
+	The canonical probability of state n is
 
-	The energies are shifted by the ground-state energy for
-	numerical stability.
+		p_n = exp(-beta E_n) / Z,
+
+	where
+
+		beta = 1 / (k_B T).
+
+	For numerical stability, the energies are shifted by the
+	ground-state energy before evaluating the Boltzmann factors.
+
+	A population-convergence check is performed using ``pop_tol``
+	and ``cum_tol``. The convergence check is diagnostic only and
+	does not modify the probabilities returned for observables.
 
 	Parameters
 	----------
@@ -1441,147 +1433,140 @@ def compute_boltzmann_probabilities(
 		Energy eigenvalues in cm^{-1}.
 
 	temperature : float
-		Temperature in K.
+		Temperature in K. Must be greater than zero.
 
-	kb : float
+	kb : float, optional
 		Boltzmann constant in cm^{-1} K^{-1}.
+
+	pop_tol : float, optional
+		Threshold below which a Boltzmann weight is considered
+		negligible for the population-convergence check.
+
+	cum_tol : float, optional
+		Required cumulative population tolerance. The retained
+		population must be at least ``cum_tol``.
 
 	Returns
 	-------
 	probabilities : ndarray
-		Normalized Boltzmann probabilities.
+		Normalized Boltzmann probabilities for all eigenstates.
 
 	beta : float
 		Inverse temperature in (cm^{-1})^{-1}.
 
 	partition_function_shifted : float
-		Partition function computed using shifted energies.
+		Partition function evaluated using energies shifted by
+		the ground-state energy.
 
 	ground_state_energy : float
-		Minimum energy.
+		Ground-state energy, i.e. the minimum eigenvalue.
+
+	Raises
+	------
+	ValueError
+		If ``temperature`` is not positive, or if ``pop_tol`` or
+		``cum_tol`` is outside its valid range.
+
+	RuntimeError
+		If the population-convergence criterion is not satisfied.
 	"""
 
+	# ==========================================================
+	# Input validation
+	# ==========================================================
 	eigenvalues = np.asarray(
 		eigenvalues,
 		dtype=np.float64,
 	)
+
+	if eigenvalues.ndim != 1:
+		raise ValueError(
+			"eigenvalues must be a one-dimensional array."
+		)
+
+	if eigenvalues.size == 0:
+		raise ValueError(
+			"eigenvalues must not be empty."
+		)
 
 	if temperature <= 0.0:
 		raise ValueError(
 			"Temperature must be greater than zero."
 		)
 
-	beta = 1.0 / (kb * temperature)
-	ground_state_energy = np.min(eigenvalues)
-	shifted_energies    = (eigenvalues - ground_state_energy)
-	boltzmann_factors   = np.exp(-beta * shifted_energies)
-	partition_function_shifted = np.sum(boltzmann_factors)
-	probabilities       = (boltzmann_factors / partition_function_shifted)
-
-	return (
-		probabilities,
-		beta,
-		partition_function_shifted,
-		ground_state_energy,
-	)
-
-
-# ============================================================
-# CONSTRUCT THERMAL DENSITY MATRIX
-# ============================================================
-
-def compute_thermal_density_matrix(
-	eigenvalues,
-	eigenvectors,
-	temperature,
-	kb=KB_CM_INV_PER_K,
-):
-	r"""
-	Compute the thermal density matrix in the |J,M> basis:
-
-		rho_{alpha,beta}
-		=
-		sum_n
-		p_n
-		c_alpha^(n)
-		c_beta^(n)*.
-
-	Here alpha and beta label the basis states |J,M>.
-
-	Parameters
-	----------
-	eigenvalues : ndarray, shape (n_states,)
-		Eigenvalues.
-
-	eigenvectors : ndarray, shape (n_basis, n_states)
-		Eigenvectors. Column n contains the nth eigenvector.
-
-	temperature : float
-		Temperature in K.
-
-	Returns
-	-------
-	rho : ndarray, shape (n_basis, n_basis)
-		Thermal density matrix.
-
-	probabilities : ndarray
-		Boltzmann probabilities.
-	"""
-
-	eigenvalues = np.asarray(
-		eigenvalues,
-		dtype=np.float64,
-	)
-
-	eigenvectors = np.asarray(
-		eigenvectors,
-		dtype=np.complex128,
-	)
-
-	if eigenvectors.shape[1] != len(eigenvalues):
+	if pop_tol <= 0.0:
 		raise ValueError(
-			"The number of eigenvector columns must equal "
-			"the number of eigenvalues."
+			"pop_tol must be greater than zero."
 		)
 
-	(
-		probabilities,
-		beta,
-		partition_function_shifted,
-		ground_state_energy,
-	) = compute_boltzmann_probabilities(
-		eigenvalues=eigenvalues,
-		temperature=temperature,
-		kb=kb,
-	)
+	if not 0.0 < cum_tol <= 1.0:
+		raise ValueError(
+			"cum_tol must satisfy 0 < cum_tol <= 1."
+		)
 
-	# --------------------------------------------------------
-	# rho = C diag(p_n) C^\dagger
-	#
-	# Equivalent to:
-	#
-	# rho_{alpha,beta}
-	# =
-	# sum_n
-	# p_n
-	# c_alpha^(n)
-	# c_beta^(n)*
-	# --------------------------------------------------------
+	# ==========================================================
+	# Inverse temperature
+	# ==========================================================
+	beta = 1.0 / (kb * temperature)
 
-	rho = (
-		eigenvectors
-		@ np.diag(probabilities)
-		@ eigenvectors.conj().T
-	)
+	# ==========================================================
+	# Shift energies by the ground-state energy
+	# ==========================================================
+	ground_state_energy = np.min(eigenvalues)
+	shifted_energies = (eigenvalues - ground_state_energy)
+
+	# ==========================================================
+	# Boltzmann weights
+	# ==========================================================
+	boltzmann_weights = np.exp(-beta * shifted_energies)
+
+	# ==========================================================
+	# Shifted partition function
+	# ==========================================================
+	partition_function_shifted = np.sum(boltzmann_weights)
+
+	# ==========================================================
+	# Normalized Boltzmann probabilities
+	#
+	# These probabilities are computed from ALL states and
+	# must be used for physical observables.
+	# ==========================================================
+	probabilities = (boltzmann_weights / partition_function_shifted)
+
+	# ==========================================================
+	# Population convergence check
+	#
+	# This check does NOT truncate the probabilities used for
+	# observables.
+	# ==========================================================
+
+	mask = boltzmann_weights > pop_tol
+	boltzmann_weights_mask = (boltzmann_weights[mask])
+	partition_function_mask = np.sum(boltzmann_weights_mask)
+	retained_population = (partition_function_mask / partition_function_shifted)
+
+	missing_population = (1.0 - retained_population)
+
+	if missing_population > (1.0 - cum_tol):
+		raise RuntimeError(
+			f"Population convergence NOT reached "
+			f"at T={temperature} K.\n"
+			f"Missing population = {missing_population:.6e} "
+			f"exceeds tolerance {1.0 - cum_tol:.6e}.\n"
+			f"Increase basis size or relax tolerances."
+		)
+
+	probabilities_mask = (probabilities[mask])
+	cum_pop = np.cumsum(probabilities_mask)
 
 	return (
-		rho,
-		probabilities,
-		beta,
-		partition_function_shifted,
 		ground_state_energy,
+		beta,
+		boltzmann_weights,
+		partition_function_shifted,
+		probabilities,
+		cum_pop,
 	)
-
 
 # ============================================================
 # EXTRACT M BLOCKS OF THE DENSITY MATRIX
@@ -1686,7 +1671,7 @@ def extract_density_matrix_M_blocks(
 # ============================================================
 
 def compute_angular_probability_density(
-	#rho_by_M,
+	rho_by_M,
 	n_quad=300,
 ):
 	r"""
@@ -1738,131 +1723,106 @@ def compute_angular_probability_density(
 	# Gauss--Legendre nodes and weights
 	x, weights = leggauss(n_quad)
 
-	if False:
-		P_x = np.zeros(
-			n_quad,
-			dtype=np.complex128,
+	P_x = np.zeros(
+		n_quad,
+		dtype=np.complex128,
+	)
+
+	# --------------------------------------------------------
+	# Sum over M sectors
+	# --------------------------------------------------------
+
+	for M, data in rho_by_M.items():
+
+		J_values = data["J_values"]
+		rho_M = data["rho"]
+
+		n_J = len(J_values)
+
+		# ----------------------------------------------------
+		# Phi[J_index, x_index]
+		#
+		# =
+		#
+		# N_J^M P_J^M(x)
+		# ----------------------------------------------------
+
+		Phi = np.empty(
+			(n_J, n_quad),
+			dtype=np.float64,
 		)
 
-		# --------------------------------------------------------
-		# Sum over M sectors
-		# --------------------------------------------------------
+		m = abs(M)
 
-		for M, data in rho_by_M.items():
+		for j_index, J in enumerate(J_values):
 
-			J_values = data["J_values"]
-			rho_M = data["rho"]
-
-			n_J = len(J_values)
-
-			# ----------------------------------------------------
-			# Phi[J_index, x_index]
-			#
-			# =
-			#
-			# N_J^M P_J^M(x)
-			# ----------------------------------------------------
-
-			Phi = np.empty(
-				(n_J, n_quad),
-				dtype=np.float64,
-			)
-
-			m = abs(M)
-
-			for j_index, J in enumerate(J_values):
-
-				N_JM = (
-					spherical_harmonic_normalization(
-						J=J,
-						M=M,
-					)
-				)
-
-				P_JM = lpmv(
-					m,
-					J,
-					x,
-				)
-
-				Phi[j_index, :] = (
-					N_JM
-					* P_JM
-				)
-
-			# ----------------------------------------------------
-			# At each x_i:
-			#
-			# P_M(x_i)
-			# =
-			# 2*pi
-			# sum_{J,J'}
-			# rho_{J,J'}^(M)
-			# Phi_J^M(x_i)
-			# Phi_{J'}^M(x_i)
-			# ----------------------------------------------------
-
-			P_x += (
-				2.0
-				* np.pi
-				* np.einsum(
-					"ji,jk,ki->i",
-					Phi.conj(),
-					rho_M,
-					Phi,
-					optimize=True,
+			N_JM = (
+				spherical_harmonic_normalization(
+					J=J,
+					M=M,
 				)
 			)
 
-		# The result must be real
-		max_imaginary_part = np.max(
-			np.abs(P_x.imag)
-		)
-
-		if max_imaginary_part > 1.0e-10:
-			print(
-				"Warning: P(x) contains a non-negligible "
-				f"imaginary part: {max_imaginary_part:.3e}"
+			P_JM = lpmv(
+				m,
+				J,
+				x,
 			)
 
-		P_x = np.real(P_x)
+			Phi[j_index, :] = (
+				N_JM
+				* P_JM
+			)
 
-		# Gauss--Legendre normalization
-		normalization = np.sum(
-			weights * P_x
+		# ----------------------------------------------------
+		# At each x_i:
+		#
+		# P_M(x_i)
+		# =
+		# 2*pi
+		# sum_{J,J'}
+		# rho_{J,J'}^(M)
+		# Phi_J^M(x_i)
+		# Phi_{J'}^M(x_i)
+		# ----------------------------------------------------
+
+		P_x += (
+			2.0
+			* np.pi
+			* np.einsum(
+				"ji,jk,ki->i",
+				Phi.conj(),
+				rho_M,
+				Phi,
+				optimize=True,
+			)
 		)
+
+	# The result must be real
+	max_imaginary_part = np.max(
+		np.abs(P_x.imag)
+	)
+
+	if max_imaginary_part > 1.0e-10:
+		print(
+			"Warning: P(x) contains a non-negligible "
+			f"imaginary part: {max_imaginary_part:.3e}"
+		)
+
+	P_x = np.real(P_x)
+
+	# Gauss--Legendre normalization
+	normalization = np.sum(
+		weights * P_x
+	)
 
 	return (
 		x,
 		weights,
-		#P_x,
-		#normalization,
+		P_x,
+		normalization,
 	)
 
-
-# ============================================================
-# EXPECTATION VALUE <cos(theta)>
-# ============================================================
-
-def compute_cos_theta_expectation(
-	x,
-	weights,
-	P_x,
-):
-	r"""
-	Compute
-
-		<cos(theta)>
-		=
-		integral_{-1}^{1}
-		x P(x) dx.
-	"""
-
-	return np.sum(
-		weights
-		* x
-		* P_x
-	)
 
 
 # ============================================================
@@ -1874,6 +1834,7 @@ def compute_angular_distribution_from_eigensystem(
 	eigenvalues,
 	eigenvectors,
 	temperature,
+	probabilities,
 	n_quad=300,
 	kb=KB_CM_INV_PER_K,
 ):
@@ -1910,30 +1871,22 @@ def compute_angular_distribution_from_eigensystem(
 	# Thermal density matrix
 	# --------------------------------------------------------
 
-	(
-		rho,
-		probabilities,
-		beta,
-		partition_function_shifted,
-		ground_state_energy,
-	) = compute_thermal_density_matrix(
-		eigenvalues=eigenvalues,
-		eigenvectors=eigenvectors,
-		temperature=temperature,
-		kb=kb,
+	rho = (
+		eigenvectors
+		@ np.diag(probabilities)
+		@ eigenvectors.conj().T
 	)
 
-	if False:
-		# --------------------------------------------------------
-		# Extract fixed-M blocks
-		# --------------------------------------------------------
+	# --------------------------------------------------------
+	# Extract fixed-M blocks
+	# --------------------------------------------------------
 
-		rho_by_M = (
-			extract_density_matrix_M_blocks(
-				rho=rho,
-				basis=basis,
-			)
+	rho_by_M = (
+		extract_density_matrix_M_blocks(
+			rho=rho,
+			basis=basis,
 		)
+	)
 
 	# --------------------------------------------------------
 	# Compute P(x)
@@ -1942,46 +1895,25 @@ def compute_angular_distribution_from_eigensystem(
 	(
 		x,
 		weights,
-		#P_x,
-		#normalization,
+		P_x,
+		normalization,
 	) = compute_angular_probability_density(
-		#rho_by_M=rho_by_M,
+		rho_by_M=rho_by_M,
 		n_quad=n_quad,
 	)
 
-	if False:
-		# --------------------------------------------------------
-		# Compute <cos(theta)>
-		# --------------------------------------------------------
+	# --------------------------------------------------------
+	# Trace of density matrix
+	# --------------------------------------------------------
 
-		cos_theta_average = (
-			compute_cos_theta_expectation(
-				x=x,
-				weights=weights,
-				P_x=P_x,
-			)
-		)
-
-		# --------------------------------------------------------
-		# Trace of density matrix
-		# --------------------------------------------------------
-
-		trace_rho = np.trace(rho)
+	trace_rho = np.trace(rho)
 
 	return {
 		"x": x,
 		"weights": weights,
-		#"P_x": P_x,
-#		"rho": rho,
-#		"rho_by_M": rho_by_M,
-#		"probabilities": probabilities,
-#		"beta": beta,
-#		"partition_function_shifted":
-#			partition_function_shifted,
-#		"ground_state_energy":
-#			ground_state_energy,
-#		"trace_rho": trace_rho,
-#		"normalization": normalization,
-#		"cos_theta_average":
-#			cos_theta_average,
+		"P_x": P_x,
+		"rho": rho,
+		"rho_by_M": rho_by_M,
+		"normalization": normalization,
+		"trace_rho": trace_rho,
 	}
