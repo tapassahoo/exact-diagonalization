@@ -18,6 +18,7 @@ from monomer_linear_rotor.thermo import (
 	#plot_all_molecules_3d,
 	compute_angular_distribution_from_eigensystem,
 	plot_angular_probability_density_comparison,
+	plot_angular_probability_density_temperature_comparison,
 )
 
 from pkg_utils.utils import whoami
@@ -53,7 +54,7 @@ def get_temperature_list(grid="default"):
 		])
 
 	if grid == "angular_distribution":
-		return np.array([1.0, 100.0, 200.0])
+		return np.array([1.0, 100.0])
 
 	if grid in {"default", "heat_capacity"}:
 		return base_grid
@@ -81,8 +82,8 @@ if debug:
 quantum_data_root_dir="/Volumes/Schrodinger/pcsa-backup/outputs-of-exeact-diagonalization/"
 #jmax_list=list(range(20, 41, 5))
 jmax_list=[60]
-electric_field_list=[100, 400]
-#electric_field_list=[400]
+#electric_field_list=[100, 400]
+electric_field_list=[400]
 unit_want="wavenumber"
 #unit_want="SI",
 
@@ -104,15 +105,25 @@ for mol in ["HF", "HCl", "HBr", "HI"]:
 	)
 	all_results[mol] = thermo_dict
 
-filename = ("angular_probability_density_" "temperature_field_comparison.png")
+filename = ("angular_probability_density_T1_T100_E400.png")
+plot_angular_probability_density_temperature_comparison(
+	thermo_dict_by_molecule=all_results,
+	electric_field=electric_field_list[0],
+	get_temperature_list=get_temperature_list,
+	out_path=( "/Users/tapas/academic-project/results/" + filename),
+)
+whoami()
 
+
+filename = ("angular_probability_density_" "temperature_field_comparison.png")
 plot_angular_probability_density_comparison(
 	thermo_dict_by_molecule=all_results,
 	electric_field_list=electric_field_list,
 	get_temperature_list=get_temperature_list,
 	out_path=("/Users/tapas/academic-project/results/" + filename),
 )
-whoami()
+
+
 
 if False:
 	get_ground_state_dipole_orientation(

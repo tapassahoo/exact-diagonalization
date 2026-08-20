@@ -2386,3 +2386,270 @@ def plot_angular_probability_density_comparison(
 
 	print(f"\nAngular probability density figure saved to:\n" f"{out_path}\n")
 
+
+def plot_angular_probability_density_temperature_comparison(
+	thermo_dict_by_molecule,
+	electric_field,
+	get_temperature_list,
+	temperatures=(1.0, 100.0),
+	out_path=None,
+):
+	r"""
+	Plot P(x) versus x = cos(theta) for all molecules at
+	two different temperatures and a fixed electric field.
+
+	Panel (a):
+		T = 1 K, E = specified electric field
+
+	Panel (b):
+		T = 100 K, E = specified electric field
+
+	Parameters
+	----------
+	thermo_dict_by_molecule : dict
+		Results organized as
+
+			thermo_dict_by_molecule[molecule]
+				[(jmax, E)]
+					[temperature]
+						["quadrature_points"]
+						["angular_probability_density"]
+
+	electric_field : float
+		Electric field in kV/cm.
+
+	get_temperature_list : callable
+		Function used to obtain the temperature grid.
+
+	temperatures : tuple of float
+		Two temperatures to compare.
+
+	out_path : str, optional
+		Output path for the figure.
+
+	Returns
+	-------
+	fig : matplotlib.figure.Figure
+
+	ax : ndarray
+		Two matplotlib Axes objects.
+	"""
+
+	# ========================================================
+	# Obtain available temperature grid
+	# ========================================================
+
+	available_temperatures = get_temperature_list("angular_distribution")
+	available_temperature_keys = {round(float(T), 1) for T in available_temperatures}
+
+	# ========================================================
+	# Molecules
+	# ========================================================
+
+	molecules = list(thermo_dict_by_molecule.keys())
+	n_molecules = len(molecules)
+
+	if n_molecules == 0:
+		raise ValueError("thermo_dict_by_molecule is empty.")
+
+	# ========================================================
+	# Create two-panel figure
+	# ========================================================
+
+	fig, axs = plt.subplots(
+		1,
+		2,
+		figsize=(12, 5),
+		sharex=True,
+		#sharey=True,
+		constrained_layout=True,
+	)
+
+	# ========================================================
+	# Line styles for molecules
+	# ========================================================
+
+	line_styles = [
+		"-",
+		"--",
+		"-.",
+		":",
+	]
+
+	# ========================================================
+	# Plot both temperatures
+	# ========================================================
+
+	for panel_idx, T in enumerate(available_temperatures):
+
+		ax = axs[panel_idx]
+
+		T_key = round(float(T), 1,)
+
+		# ----------------------------------------------------
+		# Loop over molecules
+		# ----------------------------------------------------
+
+		for mol_idx, molecule in enumerate(molecules):
+
+			thermo_dict = (thermo_dict_by_molecule[molecule])
+
+			# ------------------------------------------------
+			# Find all blocks corresponding to E
+			# ------------------------------------------------
+
+			matching_blocks = [(jmax, thermo_data,) for (jmax, E_data), thermo_data in thermo_dict.items() if np.isclose(E_data, electric_field,)]
+
+			if not matching_blocks:
+				print( f"Data unavailable for " f"{molecule}: " f"E = {electric_field:g} kV/cm")
+				continue
+
+			# ------------------------------------------------
+			# Use the largest Jmax available
+			#
+			# This is preferable to simply taking the first
+			# dictionary entry.
+			# ------------------------------------------------
+
+			jmax, thermo_data = max(matching_blocks, key=lambda item: item[0],)
+
+			# ------------------------------------------------
+			# Check requested temperature
+			# ------------------------------------------------
+
+			if T_key not in thermo_data:
+
+				print(
+					f"Data unavailable for "
+					f"{molecule}: "
+					f"Jmax = {jmax}, "
+					f"E = {electric_field:g} kV/cm, "
+					f"T = {T_key:g} K"
+				)
+
+				continue
+
+			data = thermo_data[T_key]
+
+			# ------------------------------------------------
+			# Extract quadrature points
+			# ------------------------------------------------
+
+			quadrature_points = np.asarray(data["quadrature_points"], dtype=float,)
+
+			# ------------------------------------------------
+			# Extract angular probability density
+			# ------------------------------------------------
+
+			P_x = np.asarray(data["angular_probability_density"], dtype=float,)
+
+			# ------------------------------------------------
+			# Check dimensions
+			# ------------------------------------------------
+
+			if (
+				quadrature_points.shape
+				!= P_x.shape
+			):
+				raise ValueError(
+					f"Shape mismatch for "
+					f"{molecule}, "
+					f"T = {T_key:g} K, "
+					f"E = {electric_field:g} kV/cm: "
+					f"x.shape = "
+					f"{quadrature_points.shape}, "
+					f"P_x.shape = "
+					f"{P_x.shape}"
+				)
+
+			# ------------------------------------------------
+			# Plot P(x)
+			# ------------------------------------------------
+
+			ax.plot(
+				quadrature_points,
+				P_x,
+				linestyle=(line_styles[ mol_idx % len(line_styles)]),
+				linewidth=1.8,
+				label=molecule,
+			)
+
+		# ====================================================
+		# Panel label and title
+		# ====================================================
+
+		panel_label = ("(a)" if panel_idx == 0 else "(b)")
+
+		ax.set_title( rf"{panel_label} " rf"$T={T_key:g}\,\mathrm{{K}}$", fontsize=14,)
+
+		# ====================================================
+		# x-axis
+		# ====================================================
+
+		ax.set_xlabel( r"$x=\cos\theta$", fontsize=13,)
+		ax.set_xlim( -1.0, 1.0,)
+
+		# ====================================================
+		# y-axis
+		# ====================================================
+
+		#if panel_idx == 0:
+
+		ax.set_ylabel( r"$P(x)$", fontsize=13,)
+
+		# ====================================================
+		# Ticks
+		# ====================================================
+
+		ax.minorticks_on()
+
+		ax.tick_params( axis="both", which="major", labelsize=11,)
+
+		# ====================================================
+		# Grid
+		# ====================================================
+
+		ax.grid( True, which="major", alpha=0.25,)
+
+	# ========================================================
+	# Common legend
+	# ========================================================
+
+	handles, labels = axs[
+		0
+	].get_legend_handles_labels()
+
+	fig.legend(
+		handles,
+		labels,
+		loc="upper center",
+		ncol=n_molecules,
+		frameon=False,
+		fontsize=11,
+		bbox_to_anchor=(0.5, 1.03),
+	)
+
+	# ========================================================
+	# Overall title
+	# ========================================================
+
+	fig.suptitle(
+		rf"Angular probability density "
+		rf"at $E={electric_field:g}\,\mathrm{{kV/cm}}$",
+		fontsize=15,
+	)
+
+	# ========================================================
+	# Save figure
+	# ========================================================
+
+	fig.savefig(
+		out_path,
+		dpi=300,
+		bbox_inches="tight",
+	)
+
+	print(
+		f"\nFigure saved to:\n"
+		f"{out_path}\n"
+	)
