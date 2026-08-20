@@ -722,9 +722,9 @@ def compute_thermo_vectorized(JM_list, eigenvalues, eigenvectors, temperature_li
 			display_unit = "J/mol"
 			display_cv_unit = "J/mol·K"
 
-		# --------------------------------------------------------
-		# Compute angular distribution
-		# --------------------------------------------------------
+		# ============================================================
+		# COMPUTE ANGULAR DISTRIBUTION
+		# ============================================================
 
 		angular_distribution_results = (
 			compute_angular_distribution_from_eigensystem(
@@ -737,43 +737,66 @@ def compute_thermo_vectorized(JM_list, eigenvalues, eigenvectors, temperature_li
 			)
 		)
 
-		x = angular_distribution_results["x"]
-		w = angular_distribution_results["weights"]
+		# ============================================================
+		# Extract angular-distribution results
+		# ============================================================
+
+		quadrature_points = angular_distribution_results["x"]
+		quadrature_weights = angular_distribution_results["weights"]
 		P_x = angular_distribution_results["P_x"]
-		
-		print(f"\n{'Quadrature Information':^50}")
-		print("=" * 50)
-		print(f"{'Number of quadrature points':<30}: {len(x)}")
-		print("-" * 50)
 
-		print(f"{'Index':>8} {'Quadrature Point':>20} {'Weight':>20}")
-		print("-" * 50)
+		P_x_normalization = (angular_distribution_results["normalization"])
+		trace_rho = (angular_distribution_results["trace_rho"])
 
-		for i, (xi, wi) in enumerate(zip(x, w), start=1):
-			print(f"{i:8d} {xi:20.15f} {wi:20.15f}")
-
-		print("=" * 50)
-
-
-		print(f"Tr(rho) = " f"{angular_distribution_results['trace_rho'].real:.15f}")
-		print(f"Integral P(x) dx = " f"{angular_distribution_results['normalization']:.15f}")
-		whoami()
+		# ============================================================
+		# Store all results for this temperature
+		# ============================================================
 
 		T_key = round(float(T), 1)
+
 		results[T_key] = {
+			# --------------------------------------------------------
+			# Thermodynamic quantities
+			# --------------------------------------------------------
+
 			"temperature_K": T,
 			"beta": beta,
 			"partition_function": partition_function_shifted,
-			"populations_full": probabilities,
+			"probabilities": probabilities,
 			"cum_populations": cum_pop,
 			"internal_energy": U_out,
 			"heat_capacity": Cv_out,
+
+			# --------------------------------------------------------
+			# Dipole orientation
+			# --------------------------------------------------------
+
 			"dipole_orientation": cos_theta_avg,
+
+			# --------------------------------------------------------
+			# Convergence information
+			# --------------------------------------------------------
+
 			"convergence_index": idx_conv,
 			"convergence_energy": energies[idx_conv],
+
+			# --------------------------------------------------------
+			# Units
+			# --------------------------------------------------------
+
 			"unit": unit,
 			"display_unit": display_unit,
-			"display_cv_unit": display_cv_unit
+			"display_cv_unit": display_cv_unit,
+
+			# --------------------------------------------------------
+			# Angular distribution
+			# --------------------------------------------------------
+
+			"quadrature_points": quadrature_points,
+			"quadrature_weights": quadrature_weights,
+			"angular_probability_density": P_x,
+			"P_x_normalization": P_x_normalization,
+			"trace_rho": trace_rho,
 		}
 
 	return results
@@ -1577,13 +1600,23 @@ def extract_density_matrix_M_blocks(
 	basis,
 ):
 	r"""
-	Extract
+	Extract the fixed-M blocks of the density matrix.
 
-		rho_{J,J'}^(M)
-		=
-		<J,M | rho | J',M>
+	For a basis state
 
-	from the full density matrix.
+		basis[i] = (J, M),
+
+	the full density matrix is
+
+		rho[i, j] = <J, M | rho | J', M'>.
+
+	For each fixed value of M, extract the block
+
+		rho^(M)_{J,J'}
+			= <J, M | rho | J', M>.
+
+	The basis states within each M sector are ordered
+	according to increasing J.
 
 	Parameters
 	----------
@@ -1598,49 +1631,80 @@ def extract_density_matrix_M_blocks(
 	Returns
 	-------
 	rho_by_M : dict
-		Dictionary with
+		Dictionary containing the density-matrix block
+		for each value of M.
 
-			rho_by_M[M]["J_values"]
-			rho_by_M[M]["rho"]
+		rho_by_M[M]["J_values"]
+			Array of J values in increasing order.
+
+		rho_by_M[M]["rho"]
+			Density-matrix block corresponding to
+			the fixed-M sector.
 	"""
 
-	basis = list(basis)
-	#for i, (J, M) in enumerate(basis[:20]):
-	#	print(f"{i:3d}: J = {J:3d}, M = {M:3d}")
+	# --------------------------------------------------------
+	# Ensure that basis is a list
+	# --------------------------------------------------------
 
-	#print("\n\n")
+	basis = list(basis)
+
+	# --------------------------------------------------------
+	# Check consistency between rho and basis
+	# --------------------------------------------------------
 
 	if rho.shape[0] != len(basis):
 		raise ValueError(
 			"The dimension of rho does not match the basis size."
 		)
 
+	# --------------------------------------------------------
 	# Unique M values
+	# --------------------------------------------------------
+
 	M_values = sorted(
-		set(M for J, M in basis)
+		set(
+			M
+			for J, M in basis
+		)
 	)
 
-	#for i, M in enumerate(M_values[:20]):
-	#	print(f"{i:3d}: M = {M:3d}")
+	# --------------------------------------------------------
+	# Dictionary to store M-resolved density matrices
+	# --------------------------------------------------------
 
 	rho_by_M = {}
 
+	# ========================================================
+	# Loop over M sectors
+	# ========================================================
+
 	for M in M_values:
 
+		# ----------------------------------------------------
 		# Indices belonging to this M sector
+		# ----------------------------------------------------
+
 		indices = [
 			i
 			for i, (J, M_basis) in enumerate(basis)
 			if M_basis == M
 		]
 
-		#print(f"M = {M:3d} : indices = {indices}")
+		# ----------------------------------------------------
+		# Sort indices according to increasing J
+		#
+		# basis[i] = (J, M)
+		# basis[i][0] = J
+		# ----------------------------------------------------
 
-		# Sort by J
 		indices = sorted(
 			indices,
 			key=lambda i: basis[i][0],
 		)
+
+		# ----------------------------------------------------
+		# J values corresponding to the sorted indices
+		# ----------------------------------------------------
 
 		J_values = np.array(
 			[
@@ -1650,13 +1714,20 @@ def extract_density_matrix_M_blocks(
 			dtype=int,
 		)
 
-		# Extract M block
+		# ----------------------------------------------------
+		# Extract the M block
+		# ----------------------------------------------------
+
 		rho_M = rho[
 			np.ix_(
 				indices,
 				indices,
 			)
 		]
+
+		# ----------------------------------------------------
+		# Store the M block and its J values
+		# ----------------------------------------------------
 
 		rho_by_M[M] = {
 			"J_values": J_values,
@@ -1665,54 +1736,86 @@ def extract_density_matrix_M_blocks(
 
 	return rho_by_M
 
-
 # ============================================================
-# COMPUTE P(x), x = cos(theta)
+# COMPUTE ANGULAR PROBABILITY DENSITY
 # ============================================================
 
 def compute_angular_probability_density(
 	rho_by_M,
-	n_quad=300,
+	n_quad=301,
 ):
 	r"""
-	Compute
+	Compute the angular probability density P(x), where
+
+		x = cos(theta),
+
+	from the M-resolved density-matrix blocks.
+
+	The probability density is
 
 		P(x)
 		=
 		2*pi
 		sum_M
 		sum_{J,J'}
-		rho_{J,J'}^(M)
-		N_J^M
-		N_{J'}^M
-		P_J^M(x)
-		P_{J'}^M(x),
+			rho_{J,J'}^(M)
+			Phi_J^M(x)
+			Phi_{J'}^M(x),
 
 	where
 
-		x = cos(theta).
+		Phi_J^M(x)
+		=
+		N_J^M P_J^M(x).
 
-	Gauss--Legendre quadrature is used.
+	Equivalently, for each M sector,
+
+		P_M(x)
+		=
+		2*pi
+		Phi(x)^T rho^(M) Phi(x),
+
+	and
+
+		P(x) = sum_M P_M(x).
+
+	Here x = cos(theta), and P(x) is normalized such that
+
+		integral_{-1}^{1} P(x) dx = 1.
+
+	Gauss--Legendre quadrature is used for the numerical
+	normalization.
 
 	Parameters
 	----------
 	rho_by_M : dict
-		Density-matrix blocks returned by
-		extract_density_matrix_M_blocks().
+		Dictionary containing the M-resolved density matrices,
+		as returned by extract_density_matrix_M_blocks().
 
-	n_quad : int
+		For each M,
+
+			rho_by_M[M]["J_values"]
+
+		contains the J values, and
+
+			rho_by_M[M]["rho"]
+
+		contains the corresponding density-matrix block.
+
+	n_quad : int, optional
 		Number of Gauss--Legendre quadrature points.
+		Default is 301.
 
 	Returns
 	-------
 	x : ndarray
-		Gauss--Legendre nodes in [-1,1].
+		Gauss--Legendre quadrature nodes in [-1, 1].
 
 	weights : ndarray
 		Gauss--Legendre quadrature weights.
 
 	P_x : ndarray
-		Probability density P(x).
+		Angular probability density P(x).
 
 	normalization : float
 		Numerical value of
@@ -1720,32 +1823,126 @@ def compute_angular_probability_density(
 			integral_{-1}^{1} P(x) dx.
 	"""
 
-	# Gauss--Legendre nodes and weights
+	# ========================================================
+	# Validate number of quadrature points
+	# ========================================================
+
+	if not isinstance(n_quad, (int, np.integer)):
+		raise TypeError(
+			"n_quad must be an integer."
+		)
+
+	if n_quad < 1:
+		raise ValueError(
+			"n_quad must be a positive integer."
+		)
+
+	# ========================================================
+	# Gauss--Legendre quadrature
+	# ========================================================
+
 	x, weights = leggauss(n_quad)
+
+	# ========================================================
+	# Initialize total probability density
+	# ========================================================
 
 	P_x = np.zeros(
 		n_quad,
-		dtype=np.complex128,
+		dtype=np.float64,
 	)
 
-	# --------------------------------------------------------
-	# Sum over M sectors
-	# --------------------------------------------------------
+	# ========================================================
+	# Loop over M sectors
+	# ========================================================
 
 	for M, data in rho_by_M.items():
 
-		J_values = data["J_values"]
-		rho_M = data["rho"]
+		# ----------------------------------------------------
+		# Extract J values
+		# ----------------------------------------------------
+
+		J_values = np.asarray(
+			data["J_values"],
+			dtype=int,
+		)
+
+		# ----------------------------------------------------
+		# Extract density-matrix block
+		#
+		# rho_M is generally complex Hermitian.
+		# ----------------------------------------------------
+
+		rho_M = np.asarray(
+			data["rho"],
+			dtype=np.complex128,
+		)
+
+		# ----------------------------------------------------
+		# Number of J states in this M sector
+		# ----------------------------------------------------
 
 		n_J = len(J_values)
 
 		# ----------------------------------------------------
+		# Check density-matrix dimensions
+		# ----------------------------------------------------
+
+		if rho_M.ndim != 2:
+			raise ValueError(
+				f"rho_M for M = {M} must be a two-dimensional array."
+			)
+
+		if rho_M.shape != (n_J, n_J):
+			raise ValueError(
+				f"Dimension mismatch for M = {M}: "
+				f"rho_M has shape {rho_M.shape}, "
+				f"but J_values has length {n_J}."
+			)
+
+		# ----------------------------------------------------
+		# Check that J values are ordered
+		# ----------------------------------------------------
+
+		if n_J > 1:
+			if not np.all(
+				np.diff(J_values) >= 0
+			):
+				raise ValueError(
+					f"J_values are not sorted for M = {M}."
+				)
+
+		# ----------------------------------------------------
+		# Check Hermiticity of rho_M
+		#
+		# rho_M = rho_M^\dagger
+		# ----------------------------------------------------
+
+		hermiticity_error = np.max(
+			np.abs(
+				rho_M - rho_M.conj().T
+			)
+		)
+
+		if hermiticity_error > 1.0e-10:
+			raise ValueError(
+				f"Density-matrix block for M = {M} "
+				f"is not Hermitian. "
+				f"Maximum deviation = "
+				f"{hermiticity_error:.3e}"
+			)
+
+		# ====================================================
+		# Construct Phi
+		# ====================================================
+		#
 		# Phi[J_index, x_index]
 		#
 		# =
 		#
 		# N_J^M P_J^M(x)
-		# ----------------------------------------------------
+		#
+		# ====================================================
 
 		Phi = np.empty(
 			(n_J, n_quad),
@@ -1754,14 +1951,34 @@ def compute_angular_probability_density(
 
 		m = abs(M)
 
-		for j_index, J in enumerate(J_values):
+		for J_index, J in enumerate(J_values):
 
-			N_JM = (
-				spherical_harmonic_normalization(
-					J=J,
-					M=M,
+			# ------------------------------------------------
+			# Check that |M| <= J
+			# ------------------------------------------------
+
+			if m > J:
+				raise ValueError(
+					f"Invalid basis state for M = {M}: "
+					f"|M| = {m} > J = {J}."
 				)
+
+			# ------------------------------------------------
+			# Spherical-harmonic normalization
+			# ------------------------------------------------
+
+			N_JM = spherical_harmonic_normalization(
+				J=J,
+				M=M,
 			)
+
+			# ------------------------------------------------
+			# Associated Legendre polynomial
+			#
+			# scipy.special.lpmv(m, J, x)
+			#
+			# uses m = |M|
+			# ------------------------------------------------
 
 			P_JM = lpmv(
 				m,
@@ -1769,52 +1986,82 @@ def compute_angular_probability_density(
 				x,
 			)
 
-			Phi[j_index, :] = (
-				N_JM
-				* P_JM
+			# ------------------------------------------------
+			# Construct Phi_J^M(x)
+			# ------------------------------------------------
+
+			Phi[J_index, :] = (
+				N_JM * P_JM
+			)
+
+		# ====================================================
+		# Compute the M-sector contribution
+		# ====================================================
+		#
+		# For each quadrature point x_i,
+		#
+		#	 contribution_i
+		#
+		#	 =
+		#
+		#	 sum_{J,J'}
+		#		 Phi_J(x_i)
+		#		 rho_{J,J'}
+		#		 Phi_{J'}(x_i)
+		#
+		# ====================================================
+
+		contribution = np.einsum(
+			"ji,jk,ki->i",
+			Phi,
+			rho_M,
+			Phi,
+			optimize=True,
+		)
+
+		# ----------------------------------------------------
+		# Check imaginary part
+		#
+		# Because rho_M is Hermitian and Phi is real,
+		# the final result must be real.
+		# ----------------------------------------------------
+
+		max_imaginary = np.max(
+			np.abs(
+				contribution.imag
+			)
+		)
+
+		if max_imaginary > 1.0e-10:
+			raise ValueError(
+				f"Significant imaginary component detected "
+				f"in the angular probability density for "
+				f"M = {M}. "
+				f"Maximum imaginary part = "
+				f"{max_imaginary:.3e}"
 			)
 
 		# ----------------------------------------------------
-		# At each x_i:
-		#
-		# P_M(x_i)
-		# =
-		# 2*pi
-		# sum_{J,J'}
-		# rho_{J,J'}^(M)
-		# Phi_J^M(x_i)
-		# Phi_{J'}^M(x_i)
+		# Add the real M-sector contribution
 		# ----------------------------------------------------
 
 		P_x += (
 			2.0
 			* np.pi
-			* np.einsum(
-				"ji,jk,ki->i",
-				Phi.conj(),
-				rho_M,
-				Phi,
-				optimize=True,
-			)
+			* contribution.real
 		)
 
-	# The result must be real
-	max_imaginary_part = np.max(
-		np.abs(P_x.imag)
-	)
+	# ========================================================
+	# Numerical normalization
+	# ========================================================
 
-	if max_imaginary_part > 1.0e-10:
-		print(
-			"Warning: P(x) contains a non-negligible "
-			f"imaginary part: {max_imaginary_part:.3e}"
-		)
-
-	P_x = np.real(P_x)
-
-	# Gauss--Legendre normalization
 	normalization = np.sum(
 		weights * P_x
 	)
+
+	# ========================================================
+	# Return
+	# ========================================================
 
 	return (
 		x,
@@ -1822,7 +2069,6 @@ def compute_angular_probability_density(
 		P_x,
 		normalization,
 	)
-
 
 
 # ============================================================
@@ -1917,3 +2163,161 @@ def compute_angular_distribution_from_eigensystem(
 		"normalization": normalization,
 		"trace_rho": trace_rho,
 	}
+
+
+def plot_angular_density_distribution_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want, out_path):
+	"""
+	Plots heat capacity vs temperature for multiple molecules together.
+
+	Parameters:
+		thermo_dict_by_molecule (dict): { molecule: {(jmax, E): thermo_data} }
+		get_temperature_list (function): Function to fetch temperature list for a molecule.
+		unit_want (str): Unit for Cv display.
+		out_path (str or Path): Path to save combined plot.
+	"""
+	set_plot_style()
+
+	num_molecules = len(thermo_dict_by_molecule)	
+	# -----------------------------
+	# Figure setup
+	# -----------------------------
+	fig, ax = plt.subplots(figsize=(8, 6))
+
+	# Colorblind-friendly palette (Okabe–Ito)
+	color_cycle = [
+		"#0072B2",  # Blue
+		"#D55E00",  # Vermillion
+		"#009E73",  # Bluish green
+		"#CC79A7",  # Reddish purple
+	]
+
+	line_styles = [   
+		(0, ()),		   # solid
+		(0, (5, 1)),	   # densely dashed
+		(0, (3, 1, 1, 1)), # densely dashdotted
+		(0, (1, 1)),	   # densely dotted
+	]
+
+	# Open markers
+	markers = ["o", "s", "^", "D"]
+
+	# Create an array of same size
+	temperature_list = get_temperature_list("angular_distribution")
+
+	for mol_idx, (molecule, thermo_dict) in enumerate(thermo_dict_by_molecule.items()):
+
+		color = color_cycle[mol_idx % len(color_cycle)]
+		mk = markers[mol_idx % len(markers)]
+
+		for curve_idx, ((jmax, E), thermo_data) in enumerate(thermo_dict.items()):
+
+			# ----------------------------------------------------
+			# Loop over temperatures
+			# ----------------------------------------------------
+
+			for temp_idx, T in enumerate(temperature_list):
+				T_key = round(float(T), 1,)
+
+				# ------------------------------------------------
+				# Extract quadrature points
+				# ------------------------------------------------
+
+				quadrature_points = np.asarray(thermo_data[T_key]["quadrature_points"])
+
+				# ------------------------------------------------
+				# Extract angular probability density
+				# ------------------------------------------------
+
+				angular_probability_density = np.asarray(thermo_data[T_key]["angular_probability_density"])
+
+				# ------------------------------------------------
+				# Plot P(x) versus x
+				# ------------------------------------------------
+
+				if num_molecules == 1:
+					ax.plot(quadrature_points, angular_probability_density, linewidth=1.5, label=( rf"$T={T_key:g}\,\mathrm{{K}}$"),)
+
+					ax.set_xlabel(r"$x=\cos\theta$")
+					ax.set_ylabel(r"$P(x)$")
+					ax.set_title(rf"{molecule}, $E={E:.0f}\,\mathrm{{kV/cm}}$")
+					ax.set_xlim( -1.0, 1.0,)
+					ax.legend(frameon=False)
+
+	if False:
+		if num_molecules == 1:
+
+			safe_unit = unit_cv.replace("^-1", "$^{-1}$")
+
+			# -----------------------------
+			# Heat-capacity panel
+			# -----------------------------
+			axs[0].set_xlabel("Temperature (K)")
+			axs[0].set_ylabel(rf"$C_V$ [{safe_unit}]")
+			axs[0].set_xlim(-2.0, 102)
+			axs[0].set_ylim(-0.01, 0.801)
+			axs[0].minorticks_on()
+			axs[0].legend(loc="best")
+
+			# -----------------------------
+			# Cumulative population panel
+			# -----------------------------
+			axs[1].set_xlabel("Eigenstate index (in ascending energy)")
+			axs[1].set_ylabel("Cumulative Boltzmann population")
+			axs[1].set_ylim(-0.01, 1.01)
+			axs[1].minorticks_on()
+			axs[1].legend(loc="lower right")
+
+			# -----------------------------
+			# Common formatting
+			# -----------------------------
+			for i, ax in enumerate(axs):
+				ax.margins(x=0.02)
+				ax.xaxis.set_minor_locator(AutoMinorLocator())
+				ax.yaxis.set_minor_locator(AutoMinorLocator())
+
+				# Panel labels
+				ax.text(
+					-0.10, 1.03,
+					f"({chr(97+i)})",
+					transform=ax.transAxes,
+					va="bottom",
+					ha="left",
+				)
+
+		if num_molecules != 1:
+
+			safe_unit = unit_cv.replace("^-1", "$^{-1}$")
+
+			# -----------------------------
+			# Axis labels
+			# -----------------------------
+			ax.set_xlabel("Temperature (K)")
+			ax.set_ylabel(rf"$C_V$ [{safe_unit}]")
+
+			# -----------------------------
+			# Axis limits
+			# -----------------------------
+			ax.set_xlim(-2.0, 102)
+			ax.set_ylim(-0.01, 0.801)
+
+			# -----------------------------
+			# Tick locations
+			# -----------------------------
+			ax.xaxis.set_minor_locator(AutoMinorLocator())
+			ax.yaxis.set_minor_locator(AutoMinorLocator())
+
+			# -----------------------------
+			# Legend
+			# -----------------------------
+			ax.legend(loc="best")
+	# -----------------------------
+	# Layout
+	# -----------------------------
+	plt.tight_layout()
+
+	# Save first, then show
+	plt.savefig(out_path, dpi=300)
+	print("")
+	print(f"[INFO] Combined Cv plot saved: {out_path}")
+
+
