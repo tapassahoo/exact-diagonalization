@@ -733,7 +733,7 @@ def compute_thermo_vectorized(JM_list, eigenvalues, eigenvectors, temperature_li
 				basis=JM_list,
 				temperature=T,
 				probabilities=probabilities,
-				n_quad=101,
+				n_quad=11,
 			)
 		)
 
@@ -2165,159 +2165,224 @@ def compute_angular_distribution_from_eigensystem(
 	}
 
 
-def plot_angular_density_distribution_comparison(thermo_dict_by_molecule, get_temperature_list, unit_want, out_path):
+def plot_angular_probability_density_comparison(
+	thermo_dict_by_molecule,
+	electric_field_list,
+	get_temperature_list,
+	out_path=None,
+):
+	r"""
+	Plot P(x) versus x = cos(theta) for different molecules
+	and electric fields.
+
+	Each panel corresponds to one molecule and one electric
+	field. Three curves corresponding to three temperatures
+	are plotted in each panel.
+
+	Layout
+	------
+		Rows	: molecules
+		Columns : electric fields
+		Curves  : temperatures
+
+	Parameters
+	----------
+	thermo_dict_by_molecule : dict
+		Dictionary organized as
+
+			thermo_dict_by_molecule[molecule]
+				[(jmax, E)]
+					[temperature]
+						["quadrature_points"]
+						["angular_probability_density"]
+
+	electric_field_list : sequence
+		Electric fields to plot.
+
+	temperatures : sequence
+		Three temperatures to plot.
+
+	out_path : str, optional
+		Output filename.
+
+	Returns
+	-------
+	fig : matplotlib.figure.Figure
+
+	axs : ndarray
+		Array of matplotlib Axes objects.
 	"""
-	Plots heat capacity vs temperature for multiple molecules together.
 
-	Parameters:
-		thermo_dict_by_molecule (dict): { molecule: {(jmax, E): thermo_data} }
-		get_temperature_list (function): Function to fetch temperature list for a molecule.
-		unit_want (str): Unit for Cv display.
-		out_path (str or Path): Path to save combined plot.
-	"""
-	set_plot_style()
+	# ========================================================
+	# Validate temperatures
+	# ========================================================
 
-	num_molecules = len(thermo_dict_by_molecule)	
-	# -----------------------------
-	# Figure setup
-	# -----------------------------
-	fig, ax = plt.subplots(figsize=(8, 6))
-
-	# Colorblind-friendly palette (Okabe–Ito)
-	color_cycle = [
-		"#0072B2",  # Blue
-		"#D55E00",  # Vermillion
-		"#009E73",  # Bluish green
-		"#CC79A7",  # Reddish purple
-	]
-
-	line_styles = [   
-		(0, ()),		   # solid
-		(0, (5, 1)),	   # densely dashed
-		(0, (3, 1, 1, 1)), # densely dashdotted
-		(0, (1, 1)),	   # densely dotted
-	]
-
-	# Open markers
-	markers = ["o", "s", "^", "D"]
-
-	# Create an array of same size
 	temperature_list = get_temperature_list("angular_distribution")
 
-	for mol_idx, (molecule, thermo_dict) in enumerate(thermo_dict_by_molecule.items()):
+	# ========================================================
+	# Molecules
+	# ========================================================
 
-		color = color_cycle[mol_idx % len(color_cycle)]
-		mk = markers[mol_idx % len(markers)]
+	molecules = list(thermo_dict_by_molecule.keys())
+	n_molecules = len(molecules)
+	n_fields = len(electric_field_list)
 
-		for curve_idx, ((jmax, E), thermo_data) in enumerate(thermo_dict.items()):
+	# ========================================================
+	# Line styles for temperatures
+	# ========================================================
 
-			# ----------------------------------------------------
-			# Loop over temperatures
-			# ----------------------------------------------------
+	line_styles = ["-", "--", ":",]
 
-			for temp_idx, T in enumerate(temperature_list):
-				T_key = round(float(T), 1,)
+	# ========================================================
+	# Create figure
+	# ========================================================
 
-				# ------------------------------------------------
-				# Extract quadrature points
-				# ------------------------------------------------
+	fig, axs = plt.subplots(
+		n_molecules,
+		n_fields,
+		figsize=(
+			4.5 * n_fields,
+			3.5 * n_molecules,
+		),
+		squeeze=False,
+		sharex=True,
+		sharey=True,
+		constrained_layout=True,
+	)
 
-				quadrature_points = np.asarray(thermo_data[T_key]["quadrature_points"])
+	# ========================================================
+	# Loop over molecules
+	# ========================================================
 
-				# ------------------------------------------------
-				# Extract angular probability density
-				# ------------------------------------------------
+	for mol_idx, molecule in enumerate(molecules):
 
-				angular_probability_density = np.asarray(thermo_data[T_key]["angular_probability_density"])
+		thermo_dict = (thermo_dict_by_molecule[molecule])
 
-				# ------------------------------------------------
+		# ====================================================
+		# Loop over electric fields
+		# ====================================================
+
+		for field_idx, E in enumerate(electric_field_list):
+
+			ax = axs[mol_idx, field_idx]
+
+			# ------------------------------------------------
+			# Find matching (jmax, E) block
+			# ------------------------------------------------
+
+			matching_blocks = [ thermo_data for (jmax, E_data), thermo_data in thermo_dict.items() if np.isclose( E_data, E,) ]
+
+			if not matching_blocks:
+
+				ax.text( 0.5, 0.5, "Data unavailable", ha="center", va="center", transform=ax.transAxes,)
+
+				continue
+
+			# ------------------------------------------------
+			# Select the first matching jmax
+			# ------------------------------------------------
+
+			thermo_data = matching_blocks[0]
+
+			# =================================================
+			# Plot three temperatures
+			# =================================================
+
+			for temp_idx, T in enumerate( temperature_list):
+
+				T_key = round( float(T), 1,)
+
+				if T_key not in thermo_data:
+					continue
+
+				data = thermo_data[ T_key ]
+
+				# ---------------------------------------------
+				# x = cos(theta)
+				# ---------------------------------------------
+
+				quadrature_points = np.asarray( data[ "quadrature_points" ], dtype=float,)
+
+				# ---------------------------------------------
+				# P(x)
+				# ---------------------------------------------
+
+				P_x = np.asarray( data[ "angular_probability_density" ], dtype=float,)
+
+				# ---------------------------------------------
 				# Plot P(x) versus x
-				# ------------------------------------------------
+				# ---------------------------------------------
 
-				if num_molecules == 1:
-					ax.plot(quadrature_points, angular_probability_density, linewidth=1.5, label=( rf"$T={T_key:g}\,\mathrm{{K}}$"),)
-
-					ax.set_xlabel(r"$x=\cos\theta$")
-					ax.set_ylabel(r"$P(x)$")
-					ax.set_title(rf"{molecule}, $E={E:.0f}\,\mathrm{{kV/cm}}$")
-					ax.set_xlim( -1.0, 1.0,)
-					ax.legend(frameon=False)
-
-	if False:
-		if num_molecules == 1:
-
-			safe_unit = unit_cv.replace("^-1", "$^{-1}$")
-
-			# -----------------------------
-			# Heat-capacity panel
-			# -----------------------------
-			axs[0].set_xlabel("Temperature (K)")
-			axs[0].set_ylabel(rf"$C_V$ [{safe_unit}]")
-			axs[0].set_xlim(-2.0, 102)
-			axs[0].set_ylim(-0.01, 0.801)
-			axs[0].minorticks_on()
-			axs[0].legend(loc="best")
-
-			# -----------------------------
-			# Cumulative population panel
-			# -----------------------------
-			axs[1].set_xlabel("Eigenstate index (in ascending energy)")
-			axs[1].set_ylabel("Cumulative Boltzmann population")
-			axs[1].set_ylim(-0.01, 1.01)
-			axs[1].minorticks_on()
-			axs[1].legend(loc="lower right")
-
-			# -----------------------------
-			# Common formatting
-			# -----------------------------
-			for i, ax in enumerate(axs):
-				ax.margins(x=0.02)
-				ax.xaxis.set_minor_locator(AutoMinorLocator())
-				ax.yaxis.set_minor_locator(AutoMinorLocator())
-
-				# Panel labels
-				ax.text(
-					-0.10, 1.03,
-					f"({chr(97+i)})",
-					transform=ax.transAxes,
-					va="bottom",
-					ha="left",
+				ax.plot(
+					quadrature_points,
+					P_x,
+					linestyle=( line_styles[temp_idx]),
+					linewidth=1.8,
+					label=( rf"$T={T_key:g}\,\mathrm{{K}}$"),
 				)
 
-		if num_molecules != 1:
+			# =================================================
+			# Electric-field title
+			# =================================================
 
-			safe_unit = unit_cv.replace("^-1", "$^{-1}$")
+			ax.set_title( rf"$E={E:.0f}\,\mathrm{{kV/cm}}$", fontsize=13,)
 
-			# -----------------------------
-			# Axis labels
-			# -----------------------------
-			ax.set_xlabel("Temperature (K)")
-			ax.set_ylabel(rf"$C_V$ [{safe_unit}]")
+			# =================================================
+			# Molecule label
+			# =================================================
 
-			# -----------------------------
-			# Axis limits
-			# -----------------------------
-			ax.set_xlim(-2.0, 102)
-			ax.set_ylim(-0.01, 0.801)
+			if field_idx == 0:
 
-			# -----------------------------
-			# Tick locations
-			# -----------------------------
-			ax.xaxis.set_minor_locator(AutoMinorLocator())
-			ax.yaxis.set_minor_locator(AutoMinorLocator())
+				ax.text(
+					-0.25,
+					0.50,
+					molecule,
+					transform=ax.transAxes,
+					rotation=90,
+					va="center",
+					ha="center",
+					fontsize=13,
+				)
 
-			# -----------------------------
-			# Legend
-			# -----------------------------
-			ax.legend(loc="best")
-	# -----------------------------
-	# Layout
-	# -----------------------------
-	plt.tight_layout()
+			# =================================================
+			# x-axis
+			# =================================================
 
-	# Save first, then show
-	plt.savefig(out_path, dpi=300)
-	print("")
-	print(f"[INFO] Combined Cv plot saved: {out_path}")
+			ax.set_xlim( -1.0, 1.0,)
 
+			ax.minorticks_on()
+
+			ax.tick_params( axis="both", which="major", labelsize=10,)
+
+			# =================================================
+			# x-axis label only bottom row
+			# =================================================
+
+			if mol_idx == n_molecules - 1:
+
+				ax.set_xlabel( r"$x=\cos\theta$", fontsize=13,)
+
+			# =================================================
+			# y-axis label only first column
+			# =================================================
+
+			if field_idx == 0:
+
+				ax.set_ylabel( r"$P(x)$", fontsize=13,)
+
+	# ========================================================
+	# Common temperature legend
+	# ========================================================
+
+	handles, labels = axs[ 0, 0 ].get_legend_handles_labels()
+
+	fig.legend( handles, labels, loc="upper center", ncol=3, frameon=False, fontsize=11, bbox_to_anchor=( 0.5, 1.02,),)
+
+	# ========================================================
+	# Save
+	# ========================================================
+
+	fig.savefig( out_path, dpi=300, bbox_inches="tight",)
+
+	print(f"\nAngular probability density figure saved to:\n" f"{out_path}\n")
 
